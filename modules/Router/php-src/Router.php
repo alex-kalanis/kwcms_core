@@ -5,6 +5,7 @@ namespace KWCMS\modules\Router;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
@@ -111,6 +112,7 @@ class Router extends AModule
      */
     protected function wrapped(AOutput $content): AOutput
     {
+        Lang::load('Admin');
         Styles::want('Styles', 'admin/admstyle.css');
         Styles::want('Styles', 'admin/admstylem.css');
         Styles::want('Styles', 'admin/admprint.css');

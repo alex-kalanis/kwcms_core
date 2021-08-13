@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Short;
+namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_confs\Config;
@@ -9,7 +9,7 @@ use kalanis\kw_modules\ATemplate;
 
 /**
  * Class MessageTemplate
- * @package KWCMS\modules\Short
+ * @package KWCMS\modules\Short\Lib
  */
 class MessageTemplate extends ATemplate
 {

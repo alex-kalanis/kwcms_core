@@ -1,9 +1,10 @@
 <?php
 
-namespace KWCMS\modules\Short;
+namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_table\Connector\Form;
@@ -14,7 +15,7 @@ use kalanis\kw_table\Table\Rules;
 
 /**
  * Class MessageTable
- * @package KWCMS\modules\Short
+ * @package KWCMS\modules\Short\Lib
  */
 class MessageTable
 {
@@ -44,20 +45,20 @@ class MessageTable
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
-        $table->addSortedColumn('ID', $columnUserId );
+        $table->addSortedColumn(Lang::get('short.id'), $columnUserId );
 
         $columnAdded = new Columns\Date('date', 'Y-m-d H:i:s');
         $columnAdded->style('width:150px', new Rules\Always());
-        $table->addSortedColumn('Added', $columnAdded);
+        $table->addSortedColumn(Lang::get('short.date'), $columnAdded);
 
-        $table->addSortedColumn('Title', new Columns\Bold('title'), new Form\KwField\TextContains());
-        $table->addSortedColumn('Message', new Columns\Basic('content'), new Form\KwField\TextContains());
+        $table->addSortedColumn(Lang::get('short.title'), new Columns\Bold('title'), new Form\KwField\TextContains());
+        $table->addSortedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Form\KwField\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'viewLink']));
         $columnActions->style('width:100px', new Rules\Always());
 
-        $table->addColumn('Actions', $columnActions);
+        $table->addColumn(Lang::get('short.actions'), $columnActions);
 //        $table->addColumn('Actions', $columnActions, null, new Form\KwField\Options(static::getStatuses(), [
 //            'id' => 'multiselectChange',
 //            'data-toggle' => 'modal-ajax-wide-table',
@@ -83,10 +84,10 @@ class MessageTable
         $helper = new Helper();
         $helper->fillKwJson($this->variables);
         $table = $helper->getTable();
-        $table->addColumn('ID', new Columns\Basic('id'));
-        $table->addColumn('Added', new Columns\Date('date', 'Y-m-d H:i:s'));
-        $table->addColumn('Title', new Columns\Basic('title'));
-        $table->addColumn('Message', new Columns\Basic('content'));
+        $table->addColumn(Lang::get('short.id'), new Columns\Basic('id'));
+        $table->addColumn(Lang::get('short.date'), new Columns\Date('date', 'Y-m-d H:i:s'));
+        $table->addColumn(Lang::get('short.title'), new Columns\Basic('title'));
+        $table->addColumn(Lang::get('short.message'), new Columns\Basic('content'));
 
         $table->getOutputPager()->getPager()->setLimit(5);
         $table->setDefaultSorting('id', \kalanis\kw_mapper\Interfaces\IQueryBuilder::ORDER_DESC);

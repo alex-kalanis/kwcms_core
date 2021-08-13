@@ -3,6 +3,7 @@
 namespace kalanis\kw_modules;
 
 
+use kalanis\kw_input\Entries\Entry;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Interfaces\IVariables;
 
@@ -20,7 +21,7 @@ abstract class AModule implements Interfaces\IModule
 {
     /** @var IVariables */
     protected $inputs = null;
-    /** @var string[] */
+    /** @var string[]|Entry[] */
     protected $params = [];
 
     public function init(IVariables $inputs, array $passedParams): void

@@ -9,8 +9,8 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use kalanis\kw_short\ShortException;
 use kalanis\kw_short\ShortMessage;
-use kalanis\kw_short\ShortMessageAdapter;
 
 
 /**
@@ -28,16 +28,16 @@ class Short extends AModule
     public function process(): void
     {
         try {
-            $adapter = new ShortMessageAdapter($this->inputs, Config::getPath());
+            $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
             $this->search = new Search($adapter->getRecord());
-        } catch (MapperException $ex) {
+        } catch (MapperException | ShortException $ex) {
             $this->error = $ex;
         }
     }
 
     public function output(): Output\AOutput
     {
-        $tmpl = new MessageTemplate();
+        $tmpl = new Lib\MessageTemplate();
         $messages = [];
         if ($this->search) {
             try {

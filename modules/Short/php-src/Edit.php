@@ -5,28 +5,28 @@ namespace KWCMS\modules\Short;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
-use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
+use kalanis\kw_notify\Notification;
 use kalanis\kw_short\ShortException;
-use kalanis\kw_table\TableException;
 use KWCMS\modules\Admin\Shared;
 
 
 /**
- * Class Dashboard
+ * Class Edit
  * @package KWCMS\modules\Short
- * Site's short messages - admin table
+ * Site's short messages - edit form
  */
-class Dashboard extends AAuthModule implements IModuleTitle
+class Edit extends AAuthModule implements IModuleTitle
 {
-    /** @var Search|null */
-    protected $search = null;
+    /** @var Lib\MessageForm|null */
+    protected $form = null;
     /** @var MapperException|null */
     protected $error = null;
 
@@ -34,6 +34,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         Config::load('Short');
         Lang::load('Short');
+        $this->form = new Lib\MessageForm('editMessage');
     }
 
     public function allowedAccessClasses(): array
@@ -45,8 +46,18 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         try {
             $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
-            $this->search = new Search($adapter->getRecord());
-        } catch (MapperException | ShortException $ex) {
+            $record = $adapter->getRecord();
+            $record->id = strval($this->getFromParam('id'));
+            $record->load();
+            $this->form->composeForm($record);
+            $this->form->setInputs(new InputVarsAdapter($this->inputs));
+            if ($this->form->process()) {
+                $ex = new DataExchange($record);
+                $ex->import($this->form->getValues());
+                $record->save();
+                Notification::addSuccess(Lang::get('short.updated'));
+            }
+        } catch (MapperException | FormsException | ShortException $ex) {
             $this->error = $ex;
         }
     }
@@ -61,45 +72,32 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function outHtml(): Output\AOutput
     {
         $out = new Shared\FillHtml($this->user);
-        $table = new Lib\MessageTable($this->inputs);
-        if ($this->search) {
-            try {
-                return $out->setContent($table->prepareHtml($this->search));
-            } catch (MapperException | TableException | FormsException $ex) {
-                $this->error = $ex;
+        try {
+            if ($this->error) {
+                Notification::addError($this->error->getMessage());
             }
-        }
-
-        if ($this->error) {
+            return $out->setContent($this->form->render());
+        } catch (FormsException $ex) {
             return $out->setContent($this->error->getMessage());
-        } else {
-            return $out->setContent('Table not loaded');
         }
     }
 
     public function outJson(): Output\AOutput
     {
-        $out = new Output\Json();
-        $table = new Lib\MessageTable($this->inputs);
-        try {
-            if ($this->search) {
-                return $out->setContent($table->prepareJson($this->search));
-            }
-            $this->error = new ModuleException('No table found in current directory');
-        } catch (MapperException | TableException | FormsException $ex) {
-            $this->error = $ex;
-        }
-
         if ($this->error) {
             $out = new Output\JsonError();
             return $out->setContent($this->error->getCode(), $this->error->getMessage());
+        } elseif (!$this->form->isValid()) {
+            $out = new Output\JsonError();
+            return $out->setContent(1, $this->form->renderErrorsArray());
         } else {
-            return $out->setContent('Table not loaded');
+            $out = new Output\Json();
+            return $out->setContent(['Success']);
         }
     }
 
     public function getTitle(): string
     {
-        return Lang::get('short.page');
+        return Lang::get('short.page') . ' - ' . Lang::get('short.update_message');
     }
 }
