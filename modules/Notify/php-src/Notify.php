@@ -29,8 +29,6 @@ class Notify extends AModule
 
     public function process(): void
     {
-        Styles::want('Notify', 'notify.css');
-        Scripts::want('Notify', 'notify.js');
 //        Notification::addError('Notifications loaded 1.');
 //        Notification::addWarning('Notifications loaded 2.');
 //        Notification::addSuccess('Notifications loaded 3.');
@@ -39,6 +37,8 @@ class Notify extends AModule
 
     public function output(): AOutput
     {
+        Styles::want('Notify', 'notify.css');
+        Scripts::want('Notify', 'notify.js');
         $tmpl = new Template();
         $notifications = [];
         if (Notification::getNotify()) {

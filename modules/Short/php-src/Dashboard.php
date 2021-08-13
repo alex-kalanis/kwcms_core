@@ -13,7 +13,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_short\ShortMessage;
+use kalanis\kw_short\ShortMessageAdapter;
 use kalanis\kw_table\TableException;
 use KWCMS\modules\Admin\Shared;
 
@@ -44,7 +44,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         try {
-            $this->search = new Search(new ShortMessage());
+            $adapter = new ShortMessageAdapter($this->inputs, Config::getPath());
+            $this->search = new Search($adapter->getRecord());
         } catch (MapperException $ex) {
             $this->error = $ex;
         }
@@ -61,13 +62,12 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         $out = new Shared\FillHtml($this->user);
         $table = new MessageTable($this->inputs);
-        try {
-            if ($this->search) {
+        if ($this->search) {
+            try {
                 return $out->setContent($table->prepareHtml($this->search));
+            } catch (MapperException | TableException | FormsException $ex) {
+                $this->error = $ex;
             }
-            $this->error = new ModuleException('Bad directory, no table found');
-        } catch (MapperException | TableException | FormsException $ex) {
-            $this->error = $ex;
         }
 
         if ($this->error) {

@@ -1,0 +1,27 @@
+# nginx site file from vagrant
+# what is not here is that way for reasons
+server {
+	listen 80;
+
+	server_name ~^((?<subdomain>.*)\.)?(?<domain>[^.]+)\.(?<tld>[^.]+)$;
+	if ($subdomain = "") {
+		set $subdomain "www";
+	}
+
+	root	/usr/share/nginx/html/${subdomain}/web;
+
+	index	index.php index.html index.htm;
+
+	charset utf-8;
+	error_page 404 /404.html;
+
+	include php.conf;
+
+	location / {
+		try_files	$uri $uri/ /index.php?$args;
+	}
+
+	include security-addons.conf;
+
+	try_files       $uri $uri/ /index.php?$args =404;
+}

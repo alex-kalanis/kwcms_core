@@ -21,6 +21,8 @@ use kalanis\kw_modules\Processing\Support;
 use kalanis\kw_modules\SubModules;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_scripts\Scripts;
+use kalanis\kw_styles\Styles;
 
 
 /**
@@ -30,7 +32,7 @@ use kalanis\kw_paths\Stuff;
  * What to sent back on http level - router to decide which controller will be loaded
  * - parse path from input to get correct controller which will make the page content
  * - then put result from that controller into the page layout
- * @link http://kwcms_core.lemp.dev
+ * @link http://kwcms_core.lemp.test
  */
 class Router extends AModule
 {
@@ -73,8 +75,9 @@ class Router extends AModule
                 Support::normalizeNamespacedName(Support::normalizeModuleName(Stuff::arrayToPath($wantArray)))
             );
 
-        } catch (\Error $ex) {
+        } catch (\Throwable $ex) { // Fatal error: Class not found -> output on Dashboard
 
+            Notification::addError($ex->getMessage());
             $this->module = $this->subModules->initModule(
                 'Admin',
                 $this->inputs, [], array_merge(
@@ -82,7 +85,6 @@ class Router extends AModule
                 ),
                 Support::normalizeNamespacedName(Support::normalizeModuleName($defaultModuleName))
             );
-            Notification::addError($ex->getMessage());
         }
         $this->module->process();
     }
@@ -109,6 +111,10 @@ class Router extends AModule
      */
     protected function wrapped(AOutput $content): AOutput
     {
+        Styles::want('Styles', 'admin/admstyle.css');
+        Styles::want('Styles', 'admin/admstylem.css');
+        Styles::want('Styles', 'admin/admprint.css');
+        Scripts::want('Scripts', 'admin/themes.js');
         $out = new Raw();
         $template = new RouterTemplate();
         $template->setData(

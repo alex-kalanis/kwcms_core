@@ -46,24 +46,17 @@ class Scripts extends AModule
 
     public function outLayout(): Output\AOutput
     {
-        $out = new Output\Html();
-        if (empty($this->params['path']) || '' == $this->params['path']) {
-            $content = [];
-            foreach (ExScripts::getAll() as $module => $scripts) {
-                foreach ($scripts as $script) {
-                    $moduleName = Support::normalizeModuleName($module);
-                    $content[] = $this->template->reset()->setData(
-                        $this->libExtLink->linkVariant($moduleName . '/' . $script, 'scripts', true, false)
-                    )->render();
-                }
+        $content = [];
+        foreach (ExScripts::getAll() as $module => $scripts) {
+            foreach ($scripts as $script) {
+                $moduleName = Support::normalizeModuleName($module);
+                $content[] = $this->template->reset()->setData(
+                    $this->libExtLink->linkVariant($moduleName . '/' . $script, 'scripts', true, false)
+                )->render();
             }
-            $out->setContent(implode('', $content));
-        } else {
-            $out->setContent($this->template->setData(
-                $this->libExtLink->linkVariant($this->params['path'], 'scripts', true, false)
-            )->render());
         }
-        return $out;
+        $out = new Output\Html();
+        return $out->setContent(implode('', $content));
     }
 
     public function outContent(): Output\AOutput
