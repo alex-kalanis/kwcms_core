@@ -1,0 +1,42 @@
+{
+  "author": "kalanis",
+  "name": "kwcms_core",
+  "description": "Core of KWCMS project",
+  "source": "https://github.com/alex-kalanis/kwcms_core",
+  "license": "Proprietary",
+  "require": {
+    "alex-kalanis/kw_address_handler": "dev-master",
+    "alex-kalanis/kw_auth": "dev-master",
+    "alex-kalanis/kw_bans": "dev-master",
+    "alex-kalanis/kw_confs": "dev-master",
+    "alex-kalanis/kw_extras": "dev-master",
+    "alex-kalanis/kw_filter": "dev-master",
+    "alex-kalanis/kw_input": "dev-master",
+    "alex-kalanis/kw_langs": "dev-master",
+    "alex-kalanis/kw_listing": "dev-master",
+    "alex-kalanis/kw_mapper": "dev-master",
+    "alex-kalanis/kw_menu": "dev-master",
+    "alex-kalanis/kw_mime": "dev-master",
+    "alex-kalanis/kw_modules": "dev-master",
+    "alex-kalanis/kw_notify": "dev-master",
+    "alex-kalanis/kw_pager": "dev-master",
+    "alex-kalanis/kw_paging": "dev-master",
+    "alex-kalanis/kw_paths": "dev-master",
+    "alex-kalanis/kw_rules": "dev-master",
+    "alex-kalanis/kw_scripts": "dev-master",
+    "alex-kalanis/kw_short": "dev-master",
+    "alex-kalanis/kw_styles": "dev-master",
+    "alex-kalanis/kw_table": "dev-master",
+    "alex-kalanis/kw_templates": "dev-master",
+    "alex-kalanis/kw_tree": "dev-master",
+    "ext-mbstring": "*",
+    "ext-json": "*",
+    "php": ">=7.2.0"
+  },
+  "suggest": {
+  },
+  "require-dev": {
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

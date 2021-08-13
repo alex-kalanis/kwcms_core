@@ -1,0 +1,5 @@
+Copyright 2018- Petr Plšek
+
+Only for study purposes now! No warranty! Redistribution is only at your own risk! Usual laws apply!
+
+Parts in ./vendor/ which has their own repositories uses their own licences and can be used from there.

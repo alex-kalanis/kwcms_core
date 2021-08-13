@@ -1,0 +1,21 @@
+<!-- Open Street maps layer deploy -->
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <div id="map_{ID}" style="width: {WD}px; height: {HG}px;"></div>
+    <script>
+      function init() {
+        map = new OpenLayers.Map("map_{ID}");
+        var mapnik = new OpenLayers.Layer.OSM(); // set layer mapnik (base layer)
+        var zoom = {LV}; // zoom level, num from PHP
+        var lonLat = new OpenLayers.LonLat({EW},{NS}) // Center of the map, nums from PHP
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
+          );
+        var markers = new OpenLayers.Layer.Markers( "Markers" );
+          markers.addMarker(new OpenLayers.Marker(lonLat));
+        map.addLayer(mapnik);
+        map.addLayer(markers);
+        map.setCenter(lonLat, zoom);
+      }
+      init();
+    </script>

@@ -1,0 +1,40 @@
+/***********************************************************************
+*       ADMIN/STYLE/ADMPRINT.CSS                                       *
+*       Style of administrative section                                *
+*       used CSS 3                                                     *
+*       from Kalanys@2013                                              *
+*       license GNU/GPLv2 and above                                    *
+***********************************************************************/
+
+@media print {
+ html { font-size: 1em; font-family: sans-serif; text-align: center; color: #000000; background-color: #fff; top: 0px; left: 0px; width: 100%; position: absolute; } /* body (especially background) of admin pages */
+ body { overflow: hidden; top: 0px; left: 0px; width: 100%; height: 100%; }
+ #bgimage { display: none; }
+ #wrapper { position: absolute; width: 100%; }
+ div#main { position: absolute; top: 0; left: 0; width: 100%; } /* body of working area */
+ h1 { font-weight: bold; font-size: 1.4em; }
+ p { text-align: center; }
+ img { border-width: 0px; }
+ a { color: #0000ff; text-decoration: none; }
+ table { margin-left: auto; margin-right: auto; }
+ form { width: 90%; border: 1px solid #000; margin-left: auto; margin-right: auto; padding: 0px; border-radius: 5px; }
+ fieldset { border: 0px; margin: 0 -0.65em; }
+ form .title, legend { background-color: #ff8040; color: #000; font-size: 1.1em; font-weight: bold; margin: 0; padding: 1%; width: 98%; }
+ label { font: 1.2em bold; font-family: sans-serif; color: #fff; padding-left: 0.5em; }
+ form input[type="text"], form input[type="password"] { font: 1em bold sans-serif; color: #000; background-color: #fff; border: 1px solid #ffff00; border-radius: 4px; }
+ form select { font: 1em bold sans-serif; color: #000; background-color: #fff; border: 1px solid #ffff00; padding: 3px; border-radius: 8px; }
+ form input[type="file"] { font: 1em bold sans-serif; color: #000; background-color: #fff; border: 1px solid #ffff00; vertical-align : middle; border-radius: 4px; }
+ form input[type="submit"] { display: none; }
+ form input[type="reset"] { display: none; }
+ textarea { width: 95%; height: 110%; }
+ form#login { display: none; }
+ #user { display: none; } /* user name */
+ div#sys_ops { display: none; } /* system menu */
+ div#modules { display: none; } /* module menu */
+ .panel { display: none; }
+ .menu { display: none; }
+ .select_dir, .select_file { display: none; }
+ .not_wide { display: none; }
+ #last_oper, #chdir tr, #chdir thead tr { display: none;  }
+ #use_scripting { display: none; }
+} /* media print */

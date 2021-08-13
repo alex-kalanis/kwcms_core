@@ -1,0 +1,386 @@
+/***********************************************************************
+*       ADMIN/STYLE/ADMSTYLEM.CSS                                      *
+*       Style of administrative section for mobile devices             *
+*       used CSS 3                                                     *
+*       from Kalanys@2010                                              *
+*       license GNU/GPLv2                                              *
+***********************************************************************/
+
+@media screen and (max-width: 800px) and (max-device-width: 800px) {
+    
+    html { /* body (especially background) of admin pages */
+        font-size: 1em; font-family: sans-serif; text-align: center; color: #000000; background-color: #0080C0; height: 700px; top: 0px; left: 0px; width: 100%; height: 100%; position: absolute; background-image: url();
+    }
+    
+    body {
+        overflow: hidden; top: 0px; left: 0px;
+    }
+    
+    #bgim {
+        top: 0px; left: 0px; width: 100%; height: 100%; z-index: -1; position: absolute;
+    }
+    
+    div#main { /* body of working area */
+        position: absolute; top: 5em; left: 1em; width: 95%; height: 82%; background-color: rgba(198,198,198,0.3); display: block; overflow: auto;
+    }
+    
+    h1 {
+        font-weight: bold; font-size: 1.4em;
+    }
+    
+    p {
+        text-align: center;
+    }
+    
+    img {
+        border-width: 0px;
+    }
+    
+    a {
+        color: #0000ff; text-decoration: none;
+    }
+    
+    a:hover {
+        text-decoration: underline;
+    }
+    
+    table {
+        margin-left: auto; margin-right: auto;
+    }
+    
+    form {
+        width: 90%; background-color: rgb(224,248,247); border: 2px outset #81f7f3; margin-left: auto; margin-right: auto; padding: 0px;
+        border-radius: 5px;
+    }
+    
+    fieldset {
+        border: 0px; margin: 0 -0.65em;
+    }
+    
+    form .title, legend {
+        background-color: #0080C0; color: #FFFFFF; font-size: 1.1em; font-weight: bold; margin: 0; padding: 1%; text-shadow: 2px 2px #000000; width: 98%;
+    }
+    
+    label {
+        font: 1.2em bold; font-family: sans-serif; color: #0b3861; padding-left: 0.5em;
+    }
+    
+    form input[type="text"],
+    form input[type="password"] {
+        font: 1em bold sans-serif; color: #0b3861; background-color: #f7f8e0; border-width: 1px; border-style: solid; border-color: #ffff00;
+        border-radius: 4px;
+    }
+    
+    form select {
+        font: 1em bold sans-serif; color: #0b3861; background-color: #f7f8e0; border-width: 1px; border-style: solid; border-color: #ffff00; padding: 3px;
+        border-radius: 8px;
+    }
+    
+    form input[type="file"] {
+        font: 1em bold sans-serif; color: #0b3861; background-color: #f7f8e0; border: 1px solid #ffff00;
+        vertical-align : middle;
+        border-radius: 4px;
+    }
+    
+    form input[type="submit"] {
+        font: 1.2em bold; font-family: sans-serif; color: #088a08; background-color:  #cef6ce; border-width: 1px; border-style: solid; border-color: #00ff00;
+        padding: 0 0.5em 0 1.5em;
+        background-image:url(yes.png);
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
+        border-radius: 4px;
+    }
+    
+    form input[type="reset"] {
+        font: 1.2em bold; font-family: sans-serif; color: #8a0808; background-color:  #f6cece; border-width: 1px; border-style: solid; border-color: #ff0000;
+        padding: 0 0.5em 0 1.5em;
+        background-image: url(no.png);
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
+        border-radius: 4px;
+    }
+    
+    form#login {
+        width: 20em;
+    }
+    
+    form#login table td {
+        text-align: center; width: 15em;
+    }
+    
+    div#user { /* user name */
+        font: 1.2em bold; font-family: sans-serif; color: #088a08; background-color:  #cef6ce; /*border-width: 1px; border-style: solid; border-color: #00ff00; position: absolute; top: 0.5em; left: 85%; padding: 0.1em 0.1em;*/ text-transform: none;
+/*        -moz-border-radius: 16px 4px 16px 4px;
+        -webkit-border-radius: 16px 4px 16px 4px;
+        border-radius: 16px 4px 16px 4px;*/
+    }
+    
+    div#sys_ops { /* system menu */
+        letter-spacing: 0.3px; text-align: center; position: absolute; top: 2.5em; left: 50%; padding: 0.1em 0.5em;
+    }
+    
+    div#sys_ops a.logout {
+        padding-left: 20px;
+        background: #00ffff url(log.png) no-repeat 2px 2px;
+        background-size: 15px 15px;
+    }
+    
+    div#sys_ops a.chsett {
+        padding-left: 20px;
+        background: #00ffff url(sett.png) no-repeat 2px 2px;
+        background-size: 15px 15px;
+    }
+    
+    div#sys_ops a:hover {
+        background-color: #0080ff;
+    }
+    
+    div#modules { /* module menu */
+        letter-spacing: 0.3px; text-align: center; position: absolute; top: 3em; left: 0.5em; padding: 0.1em 0.5em; width: 10em;
+    }
+    
+    .panel {
+        width: 100%; height: 2.2em; background-color: rgba(230,230,230,0.5); z-index: 100;
+        border-radius: 5px;
+    }
+    
+    .menu {
+        font-style: normal; font-weight: bold; letter-spacing: 0.3px; text-align: center; text-transform: none;
+    }
+    
+    .menu div {
+        padding-left: 15px;
+        border-radius: 5px;
+    }
+    
+    .menu ul {
+        padding: 0px; margin: 0.3em 0px; list-style-type: none; z-index: 200;
+    }
+    
+    .menu ul li {
+        float: left; height: 1.2em; width: 10em; text-align: center; text-transform: uppercase; padding: 0px 0.3em; margin-top: -9px;
+    }
+    
+    .menu li.separator {
+/*        background-color: rgba(230,230,230,0.5);*/
+        background-image: url('sep.png');
+        background-repeat: no-repeat;
+        background-position: 1em 0px;
+        background-size: 8em 5px;
+        text-transform: none;
+        height: 7px;
+    }
+    
+    .menu li.separator hr {
+        display: none;
+    }
+    
+    .menu ul a {
+        font-size: 0.7em; font-style: normal; font-weight: bold; /*background-color: #00ffff;*/ color: #000000;
+        display: block; height: 1.6em; padding: 0em 0em; /*border-style: solid; border-color: #006480; border-width: 3px;
+        border-radius: 8px 0px;
+        box-shadow: 2px 2px 5px #006480;*/
+    }
+    
+    .menu a:hover {
+        text-decoration: none; font-style: italic;
+    }
+    
+    .menu ul a:hover {
+        /*border-style: solid; border-color: #408080; border-width: 3px; color: #000000;*/ background-color: rgba(0,128,256,0.5);/* text-decoration: none; font-style: italic;*/
+    }
+    
+    .menu ul ul {
+        /* submenu style  */
+        position: absolute; visibility: hidden; text-align: left; padding: 3px 0px; margin: 0px;
+        display: block; width: 10em;
+        background-color: rgba(230,230,230,0.9);
+        border: 1px solid #000000;
+        box-shadow: 2px 2px 5px #848484;
+    }
+    
+    .menu ul ul li {
+        float: left;text-align: center; text-transform: uppercase; padding: 0px; height: 1.2em; margin: 0px;
+/*        background-color: rgba(230,230,230,0.5);*/
+    }
+    
+    .menu ul ul a {
+        /* submenu style - links */
+        display: block; height: 1.6em; padding: 0em;/* border-style: solid; border-color: #006480; border-width: 3px;*/ padding-left: 10px;
+    }
+    
+    .menu ul li:hover>ul {
+        visibility: visible;
+    }
+    
+     .menu li.work a {
+        background-color: #f5d0a9;
+    }
+    
+    .menu li.dis a {
+        background-color: #ff0000;
+    }
+    
+    /*.menu a:hover {
+        border-style: solid; border-color: #408080; border-width: 3px; color: #000000; background-color: #0080ff; text-decoration: none; font-style: italic;
+    }*/
+    
+    .menu li.work a:hover {
+        background-color: #f7be81;
+    }
+    
+    .menu li.dis a:hover {
+        background-color: #b40404;
+    }
+    
+    .icon {
+        padding-left: 20px;
+        background-repeat: no-repeat;
+        background-position: 0px;
+        background-size: 20px 20px;
+    }
+    .menu_main {
+        background-color: rgba(0,128,256,0.5); padding: 2px 5px 2px 10px; background-image: url('kala.png'); background-position: 5px 2px; text-transform: none;
+    }
+    
+    .menu_user {
+/*        padding-left: 0px;
+        padding-right: 20px;
+        background-image: url('user.png');
+        background-position: 100px 0px;
+        background-repeat: no-repeat;
+        -moz-background-size: 20px 20px;
+        -webkit-background-size: 20px 20px;
+        background-size: 20px 20px;
+        text-transform: none;*/
+    }
+    
+    .app_texts {
+        background-image: url('app_text.png');
+    }
+    
+    .app_files {
+        background-image: url('app_file.png');
+    }
+    
+    .app_images {
+        background-image: url('app_image.png');
+    }
+    
+    .app_videos {
+        background-image: url('app_video.png');
+    }
+    
+    .app_menu {
+        background-image: url('app_menu.png');
+    }
+    
+    .app_short {
+        background-image: url('app_short.png');
+    }
+    
+    .app_logout {
+        background-image: url('app_logout.png');
+    }
+    
+    .app_sett {
+        background-image: url('app_sett.png');
+    }
+    
+    #main .rowmenu>ul {
+        padding: 1em; margin: 0px; list-style-type: none;
+    }
+    
+    #main .rowmenu>ul>li {
+        float: left; height: 1.7em; width: 10em; text-align: center; text-transform: uppercase; padding: 0px 0.3em; margin-top: -10px;
+    }
+    
+    #main .rowmenu>ul>li>a {
+        font-size: 0.7em; font-style: normal; font-weight: bold; background-image: url('submnubt.png'); color: #000000;
+        display: block; height: 1.5em; padding: 0.1em 0.4em; border-style: solid; border-color: #808080; border-width: 0px 3px;
+        border-radius: 5px;
+    }
+    
+    #main .rowmenu>ul>li>a:hover {
+        /*border-style: solid; border-color: #c0c0c0; */color: #ffffff;/* background-color: rgb(0, 128, 256);*/ text-decoration: none;
+        font-style: italic; background-image: url('submnubtd.png');
+    }
+    
+    #main .rowmenu>ul>li:hover>ul {
+        visibility: visible;
+    }
+    
+    #main .rowmenu>ul>ul {
+        width: 9em;
+    }
+    
+    #main .submenu ul {
+        font-style: normal; font-weight: bold; letter-spacing: 0.3px; text-align: center; text-transform: none;
+        /* submenu style  */
+        position: absolute; visibility: hidden; text-align: left; padding: 3px 0px; margin: 0px;
+        display: block; width: 10em;
+        background-color: rgba(230,230,230,0.9);
+        border: 1px solid #000000;
+        box-shadow: 2px 2px 5px #848484;
+    }
+    
+    #main .submenu ul li {
+        float: left;text-align: center; text-transform: uppercase; padding: 0px; height: 1.2em; margin: 0px;
+/*        background-color: rgba(230,230,230,0.5);*/
+    }
+    
+    #main .submenu ul a {
+        /* submenu style - links */
+        display: block; height: 1.6em; padding: 0em;/* border-style: solid; border-color: #006480; border-width: 3px;*/ padding-left: 10px;
+    }
+    
+    .select_dir, .select_file {
+        text-align: left;
+    }
+    
+    .select_dir ul, .select_file ul {
+        margin-left: -35px;
+    }
+    
+    .select_dir li, .select_file li {
+        font-size: 0.9em; padding-left: 20px; list-style-type: none; background: url(line.png) no-repeat 0px 2px, url(sub.png) repeat 0px 2px;
+    }
+    
+    .select_dir label {
+        padding-left: 20px; background: url(dir.png) no-repeat 1px 0px;
+        background-repeat: no-repeat;
+        background-size: 20px 20px;
+    }
+    
+    .select_file label {
+        padding-left: 20px; background: url(file.png) no-repeat 1px 0px;
+        background-repeat: no-repeat;
+        background-size: 20px 20px;
+    }
+    
+    .select_file label.dir {
+        padding-left: 20px; background: url(dir.png) no-repeat 1px 0px;
+        background-repeat: no-repeat;
+        background-size: 20px 20px;
+    }
+    
+    .not_wide {
+        background-color: rgba(216, 216, 216, 0.8);
+    }
+    
+    #last_oper, #chdir tr, #chdir thead tr {
+        font-size: 1em; font-style: normal; background-color: rgba(216,216,216,0.7); width: 90%;
+        display: block; padding: 0.2em 0.4em; border-style: solid; border-color: #6e6e6e; border-width: 4px;
+        border-radius: 32px;
+    }
+    
+    #use_scripting {
+        background-image: url('script_no.png');
+        background-position: 0px 5px;
+        background-repeat: no-repeat;
+        padding: 0px 10px;
+        background-size: 20px 20px;
+        text-transform: none;
+    }
+    
+} /* media screen */
