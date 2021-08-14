@@ -18,6 +18,8 @@ $lang = [
         "system.to_down"=>"Downside",
         "system.use_lang"=>"Language",
 
+        "pager.results"=>"Showing results %d - %d of total %d",
+
         "{ACTION}"=>"Operation",
         "{FILE}"=>"File",
         "{SOURCE}"=>"From",
@@ -70,6 +72,8 @@ $lang = [
         "system.to_down"=>"Au le bas",
         "system.use_lang"=>"La langue",
 
+        "pager.results"=>"Present&#x00E9; r&#x00E9;sultats %d - %d de %d",
+
         "{ACTION}"=>"Op&#x00E9;ration",
         "{FILE}"=>"Fichier",
         "{SOURCE}"=>"Source",
@@ -121,6 +125,8 @@ $lang = [
         "system.to_up"=>"Nahoru",
         "system.to_down"=>"Dol&#x016F;",
         "system.use_lang"=>"Jazyk",
+
+        "pager.results"=>"V&#x00FD;sledky %d - %d z celkem %d",
 
         "{ACTION}"=>"Operace",
         "{FILE}"=>"Soubor",

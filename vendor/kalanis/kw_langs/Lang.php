@@ -68,7 +68,7 @@ class Lang
     public static function get(string $key, ...$pass): string
     {
         $content = (isset(static::$translations[$key])) ? static::$translations[$key] : $key ;
-        return call_user_func_array('sprintf', array_merge([$content], $pass));
+        return empty($pass) ? $content : call_user_func_array('sprintf', array_merge([$content], $pass));
     }
 
     public static function getLang(): string

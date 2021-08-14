@@ -3,14 +3,24 @@
 namespace KWCMS\modules\Short\Lib;
 
 
+use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\Sources;
+use kalanis\kw_forms\Adapters;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
+use kalanis\kw_pager\BasicPager;
+use kalanis\kw_paging\Positions;
 use kalanis\kw_table\Connector\Form;
+use kalanis\kw_table\Connector\Form\KwForm;
+use kalanis\kw_table\Connector\PageLink;
 use kalanis\kw_table\Helper;
+use kalanis\kw_table\Table;
 use kalanis\kw_table\Table\Columns;
 use kalanis\kw_table\Table\Rules;
+use kalanis\kw_table\Table\Sorter;
+use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
 
 /**
@@ -35,13 +45,29 @@ class MessageTable
      */
     public function prepareHtml(Search $search)
     {
-        $helper = new Helper();
-        $helper->fillKwPage($this->variables, 'messagesForm');
-        $table = $helper->getTable();
+        // full table init
+        $table = new Table();
+        $inputVariables = new Adapters\InputVarsAdapter($this->variables);
+        $inputFiles = new Adapters\InputFilesAdapter($this->variables);
+        $form = new \kalanis\kw_forms\Form('messagesForm');
+        $table->addHeaderFilter(new KwForm($form));
+        $form->setInputs($inputVariables, $inputFiles);
+
+        // sorter links
+        $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
+        $table->addSorter($sorter);
+
+        // pager
+        $pager = new BasicPager();
+        $pageLink = new PageLink(new Handler(new Sources\Inputs($this->variables)), $pager);
+        $pager->setActualPage($pageLink->getPageNumber());
+        $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
+
+        // now normal code - columns
         $table->setDefaultSorting('id', \kalanis\kw_mapper\Interfaces\IQueryBuilder::ORDER_DESC);
 
         $table->addHeaderFilter($table->getHeaderFilter()->getConnector()); // use that form in header which won't be used here
-        $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:100%']);
+        $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
@@ -67,7 +93,7 @@ class MessageTable
 //        $columnCheckbox->addColumn(new Columns\MultiSelectCheckbox('id'));
 //        $table->addColumn('', $columnCheckbox, null, new Form\KwField\MultiSelect( '0', ['id' => 'multiselectAll']) );
 
-        $table->getOutputPager()->getPager()->setLimit(10);
+        $pager->setLimit(10);
         $table->addDataSource(new \kalanis\kw_table\Connector\Sources\Search($search));
         return $table->render();
     }
