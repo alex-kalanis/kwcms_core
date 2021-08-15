@@ -53,6 +53,7 @@ $source->setCli($argv)->setExternal($params->getParams()); // argv is for params
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
 $session = new \kalanis\kw_input\Simplified\SessionAdapter();
+$server = new \kalanis\kw_input\Simplified\ServerAdapter();
 
 // init cookies
 \kalanis\kw_input\Simplified\CookieAdapter::init('', '/', 3600);
@@ -85,19 +86,26 @@ class ExBanned extends \kalanis\kw_auth\Methods\Banned
     }
 }
 
+$handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handler\Sources\ServerRequest());
 \kalanis\kw_auth\Auth::init(
     new ExBanned($authenticator,
-        new \kalanis\kw_auth\Methods\Certs($authenticator,
-            new \kalanis\kw_auth\Methods\TimedSessions($authenticator,
-                new \kalanis\kw_auth\Methods\CountedSessions($authenticator,
-                    null,
+        new \kalanis\kw_auth\Methods\HttpCerts($authenticator,
+            new \kalanis\kw_auth\Methods\UrlCerts($authenticator,
+                new \kalanis\kw_auth\Methods\TimedSessions($authenticator,
+                    new \kalanis\kw_auth\Methods\CountedSessions($authenticator,
+                        null,
+                        $session,
+                        100// \kalanis\kw_confs\Config::get('Admin', 'admin.max_log_count', 10)
+                    ),
                     $session,
-                    100// \kalanis\kw_confs\Config::get('Admin', 'admin.max_log_count', 10)
+                    $server
                 ),
-                $session
+                $handler
             ),
-            new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handler\Sources\ServerRequest())
-        )
+            $handler,
+            $server
+        ),
+        $server
     )
 );
 //\kalanis\kw_auth\Auth::init(
