@@ -73,6 +73,9 @@ $server = new \kalanis\kw_input\Simplified\ServerAdapter();
 
 // authorization tree
 $authenticator = new \kalanis\kw_auth\Sources\Files(
+    new \kalanis\kw_locks\Methods\FileLock(
+        $paths->getDocumentRoot() . $paths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE
+    ),
     $paths->getDocumentRoot() . $paths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web',
     strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))
 );
