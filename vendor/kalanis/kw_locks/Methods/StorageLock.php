@@ -5,7 +5,7 @@ namespace kalanis\kw_locks\Methods;
 
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Storage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -15,12 +15,12 @@ use kalanis\kw_storage\StorageException;
  */
 class StorageLock implements IPassedKey
 {
-    /** @var IStorage */
+    /** @var Storage */
     protected $storage = null;
     protected $specialKey = '';
     protected $checkContent = '';
 
-    public function __construct(IStorage $storage)
+    public function __construct(Storage $storage)
     {
         $this->storage = $storage;
     }
@@ -43,11 +43,11 @@ class StorageLock implements IPassedKey
 
     public function has(): bool
     {
-        if (!$this->storage->exists($this->specialKey)) {
-            return false;
-        }
         try {
-            if ($this->checkContent == $this->storage->load($this->specialKey)) {
+            if (!$this->storage->exists($this->specialKey)) {
+                return false;
+            }
+            if ($this->checkContent == $this->storage->get($this->specialKey)) {
                 return true;
             }
             throw new LockException('Locked by another!');
@@ -62,7 +62,7 @@ class StorageLock implements IPassedKey
             return false;
         }
         try {
-            $result = $this->storage->save($this->specialKey, $this->checkContent);
+            $result = $this->storage->set($this->specialKey, $this->checkContent);
             return $result;
         } catch (StorageException $ex) {
             throw new LockException('Problem with storage', 0, $ex);
@@ -75,7 +75,7 @@ class StorageLock implements IPassedKey
             return true;
         }
         try {
-            return $this->storage->remove($this->specialKey);
+            return $this->storage->delete($this->specialKey);
         } catch (StorageException $ex) {
             throw new LockException('Problem with storage', 0, $ex);
         }

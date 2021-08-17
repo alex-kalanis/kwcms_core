@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_extras;
+namespace kalanis\kw_cache;
 
 
 use kalanis\kw_storage\Storage;
@@ -14,13 +14,15 @@ use kalanis\kw_storage\Storage;
 class Cache implements Interfaces\ICache
 {
     protected $content = null;
-    protected $storage = '';
+    protected $cacheStorage = null;
+    protected $reloadStorage = null;
     protected $cachePath = '';
     protected $reloadPath = '';
 
-    public function __construct(Storage $storage)
+    public function __construct(Storage $cacheStorage, ?Storage $reloadStorage = null)
     {
-        $this->storage = $storage;
+        $this->cacheStorage = $cacheStorage;
+        $this->reloadStorage = $reloadStorage ?: $cacheStorage;
     }
 
     public function init(string $what): self
@@ -32,24 +34,24 @@ class Cache implements Interfaces\ICache
 
     public function wantReload(): bool
     {
-        return $this->storage->exists($this->reloadPath);
+        return $this->reloadStorage->exists($this->reloadPath);
     }
 
     public function isAvailable(): bool
     {
-        return $this->storage->exists($this->cachePath);
+        return $this->cacheStorage->exists($this->cachePath);
     }
 
     public function save(string $content): bool
     {
         $this->content = $content;
-        $result = $this->storage->set($this->cachePath, $content, null);
+        $result = $this->cacheStorage->set($this->cachePath, $content, null);
         if (false === $result) {
             return false;
         }
         # remove signal to save
         if ($this->wantReload()) {
-            $this->storage->delete($this->reloadPath);
+            $this->reloadStorage->delete($this->reloadPath);
         }
         return true;
     }
@@ -57,9 +59,15 @@ class Cache implements Interfaces\ICache
     public function get(): string
     {
         if ($this->isAvailable() && is_null($this->content)) {
-            $this->content = $this->storage->get($this->cachePath);
+            $this->content = $this->cacheStorage->get($this->cachePath);
         }
         return strval($this->content);
+    }
+
+    public function reload(): void
+    {
+        $this->reloadStorage->set($this->reloadPath, 'CACHE RELOAD');
+        $this->clear();
     }
 
     public function clear(): void

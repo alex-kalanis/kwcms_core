@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_extras\Interfaces;
+namespace kalanis\kw_cache\Interfaces;
 
 
 interface ICache

@@ -4,7 +4,7 @@ namespace KWCMS\modules\Menu;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\Cache;
+use kalanis\kw_cache\Cache;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ExternalLink;
