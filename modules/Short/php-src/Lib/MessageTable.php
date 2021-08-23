@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Short\Lib;
 
 
+use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_extras\Forward;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;

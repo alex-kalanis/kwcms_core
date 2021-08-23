@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_extras;
+namespace kalanis\kw_address_handler;
 
 
 /**
  * Class Redirect
- * @package kalanis\kw_extras
+ * @package kalanis\kw_address_handler
  * Redirects in project
  */
 class Redirect

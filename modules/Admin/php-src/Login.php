@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Admin;
 
 
+use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\Redirect;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\CookieAdapter;

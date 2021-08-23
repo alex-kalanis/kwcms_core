@@ -1,17 +1,15 @@
 <?php
 
-namespace kalanis\kw_extras;
+namespace kalanis\kw_address_handler;
 
 
-use kalanis\kw_address_handler\Handler;
-use kalanis\kw_address_handler\SingleVariable;
 use kalanis\kw_address_handler\Sources\Address;
 use kalanis\kw_address_handler\Sources\Sources;
 
 
 /**
  * Class Forward
- * @package kalanis\kw_extras
+ * @package kalanis\kw_address_handler
  * Forwarding requests
  */
 class Forward

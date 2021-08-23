@@ -3,12 +3,12 @@
 namespace kalanis\kw_modules;
 
 
+use kalanis\kw_address_handler\Headers;
+use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\Headers;
-use kalanis\kw_extras\Redirect;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_modules\Output;
 

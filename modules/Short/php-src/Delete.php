@@ -3,10 +3,10 @@
 namespace KWCMS\modules\Short;
 
 
+use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\Forward;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\AAuthModule;
