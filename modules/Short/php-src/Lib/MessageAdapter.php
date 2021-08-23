@@ -57,7 +57,10 @@ class MessageAdapter
         if (false === $path || !is_file($path)) {
             throw new ShortException(Lang::get('short.cannot_read'));
         }
-        $this->record->getMapper()->setFile($path);
+        $mapper = $this->record->getMapper();
+        /** @var \kalanis\kw_mapper\Mappers\File\ATable $mapper */
+        $mapper->setFormat('\KWCMS\modules\Short\Lib\SeparatedElements');
+        $mapper->setFile($path);
         return $this->record;
     }
 

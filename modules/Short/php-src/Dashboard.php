@@ -25,6 +25,8 @@ use KWCMS\modules\Admin\Shared;
  */
 class Dashboard extends AAuthModule implements IModuleTitle
 {
+    use Lib\TModuleTemplate;
+
     /** @var Search|null */
     protected $search = null;
     /** @var MapperException|null */
@@ -33,7 +35,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         Config::load('Short');
-        Lang::load('Short');
+        $this->initTModuleTemplate();
     }
 
     public function allowedAccessClasses(): array
@@ -64,16 +66,16 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $table = new Lib\MessageTable($this->inputs);
         if ($this->search) {
             try {
-                return $out->setContent($table->prepareHtml($this->search));
+                return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->search)));
             } catch (MapperException | TableException | FormsException $ex) {
                 $this->error = $ex;
             }
         }
 
         if ($this->error) {
-            return $out->setContent($this->error->getMessage());
+            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
         } else {
-            return $out->setContent('Table not loaded');
+            return $out->setContent($this->outModuleTemplate(Lang::get('short.cannot_read')));
         }
     }
 
@@ -94,7 +96,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $out = new Output\JsonError();
             return $out->setContent($this->error->getCode(), $this->error->getMessage());
         } else {
-            return $out->setContent('Table not loaded');
+            return $out->setContent(Lang::get('short.cannot_read'));
         }
     }
 

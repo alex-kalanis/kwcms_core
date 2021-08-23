@@ -81,7 +81,8 @@ class MessageTable
         $table->addSortedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Form\KwField\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
-        $columnActions->addColumn(new Columns\Func('id', [$this, 'viewLink']));
+        $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
+        $columnActions->addColumn(new Columns\Func('id', [$this, 'deleteLink']));
         $columnActions->style('width:100px', new Rules\Always());
 
         $table->addColumn(Lang::get('short.actions'), $columnActions);
@@ -127,8 +128,13 @@ class MessageTable
         return '<a href="/web/short/edit/?id=' . $id . '">' . $id . '</a>';
     }
 
-    public function viewLink($id)
+    public function editLink($id)
     {
-        return '<a target="_blank" href="/web/short/edit/?id=' . $id . '" title="View"><span class="fa fa-search">&nbsp;</span></a>';
+        return '<a href="/web/short/edit/?id=' . $id . '" title="Edit"><span class="fa fa-search">&nbsp;</span> ^ </a>';
+    }
+
+    public function deleteLink($id)
+    {
+        return '<a href="/web/short/delete/?id=' . $id . '" title="Delete"><span class="fa fa-trash">&nbsp;</span> X </a>';
     }
 }

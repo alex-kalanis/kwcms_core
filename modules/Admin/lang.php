@@ -34,8 +34,6 @@ $lang = [
         "{FILENAMES}"=>"Files",
         "{CURRENT_PATH}"=>"Current directory",
         "{CHANGE_DIRECTORY}"=>"Change directory",
-        "{RESET_BUTTON}"=>"Cancel",
-        "{SET_BUTTON}"=>"Set",
         "{SET_SHAPES}"=>"&gt;&gt;",
         "{SUCCESS}"=>"Done",
         "{ERROR}"=>"Error",
@@ -46,10 +44,12 @@ $lang = [
         "{DIRECTORY_SET}"=>"Set directory",
         "{DIRECTORY_TREE_SET}"=>"Set directory from tree",
         "{FILENAME_SET}"=>"Set file",
-        "{DIRECTORY_SELECT}"=>"Select directories",
         "{FILENAME_SELECT}"=>"Select files",
 
         "dashboard.page"=>"So what?",
+        "dashboard.dir_select"=>"Select directories",
+        "dashboard.button_reset"=>"Cancel",
+        "dashboard.button_set"=>"Set",
 
         "menu.chsett" => "Change settings",
         "menu.logout" => "Logout",
@@ -88,8 +88,6 @@ $lang = [
         "{FILENAMES}"=>"Fichiers",
         "{CURRENT_PATH}"=>"Fichier actuel",
         "{CHANGE_DIRECTORY}"=>"Changenment compasante",
-        "{RESET_BUTTON}"=>"Annuler",
-        "{SET_BUTTON}"=>"Assurez-le",
         "{SET_SHAPES}"=>"&gt;&gt;",
         "{SUCCESS}"=>"Commis",
         "{ERROR}"=>"Erreur",
@@ -100,10 +98,12 @@ $lang = [
         "{DIRECTORY_SET}"=>"Choisir composant",
         "{DIRECTORY_TREE_SET}"=>"Choisir composant du l'arbre",
         "{FILENAME_SET}"=>"Choisir fichier",
-        "{DIRECTORY_SELECT}"=>"S&#x00E9;lectionnez composant",
         "{FILENAME_SELECT}"=>"S&#x00E9;lectionnez fichiers",
 
         "dashboard.page"=>"Alors quoi?",
+        "dashboard.dir_select"=>"S&#x00E9;lectionnez composant",
+        "dashboard.button_reset"=>"Annuler",
+        "dashboard.button_set"=>"Assurez-le",
 
         "menu.chsett" => "Modifier les param&#x00E8;tres",
         "menu.logout" => "Se d&#x00E9;sabonner",
@@ -142,8 +142,6 @@ $lang = [
         "{FILENAMES}"=>"Soubory",
         "{CURRENT_PATH}"=>"Aktu&#x00E1;ln&#x00ED; slo&#x017E;ka",
         "{CHANGE_DIRECTORY}"=>"Zm&#x011B;&#x0148; slo&#x017E;ku",
-        "{RESET_BUTTON}"=>"Zru&#x0161;it",
-        "{SET_BUTTON}"=>"Prove&#x010F;",
         "{SET_SHAPES}"=>"&gt;&gt;",
         "{SUCCESS}"=>"Provedeno",
         "{ERROR}"=>"Chyba",
@@ -154,7 +152,6 @@ $lang = [
         "{DIRECTORY_SET}"=>"Vyber slo&#x017E;ku",
         "{DIRECTORY_TREE_SET}"=>"Vyber slo&#x017E;ku ze stromu",
         "{FILENAME_SET}"=>"Vyber soubor",
-        "{DIRECTORY_SELECT}"=>"Vyber slo&#x017E;ky",
         "{FILENAME_SELECT}"=>"Vyber soubory",
 
         "{ANOTHER_CHANGING_NOW}"=>"N&#x011B;kdo u&#x017E; to tu m&#x011B;n&#x00ED;",
@@ -176,6 +173,9 @@ $lang = [
         "{TRY_TO_HACK}"=>"To se m&#x011B; jako sna&#x017E;&#x00ED;&#x0161; hacknout?",
 
         "dashboard.page"=>"Tak co?",
+        "dashboard.dir_select"=>"Vyber slo&#x017E;ky",
+        "dashboard.button_reset"=>"Zru&#x0161;it",
+        "dashboard.button_set"=>"Prove&#x010F;",
 
         "menu.chsett" => "Zm&#x011B;na nastaven&#x00ED;",
         "menu.logout" => "Odhl&#x00E1;&#x0161;en&#x00ED;",

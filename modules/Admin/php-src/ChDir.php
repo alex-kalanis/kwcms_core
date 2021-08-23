@@ -77,8 +77,13 @@ class ChDir extends AAuthModule
             ]);
             return $out;
         } else {
-            $out = new Shared\FillHtml($this->user);
-            return $out->setContent($this->chDirForm->render());
+            return $this->htmlContent($this->chDirForm->render());
         }
+    }
+
+    protected function htmlContent(string $content): Output\AOutput
+    {
+        $out = new Shared\FillHtml($this->user);
+        return $out->setContent($content);
     }
 }

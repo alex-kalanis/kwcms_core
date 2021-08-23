@@ -310,8 +310,17 @@ class Form implements IHtmlElement
      */
     public function setSentValues(): void
     {
-        if ($this->files) $this->setValues(iterator_to_array($this->files));
-        if ($this->entries) $this->setValues(iterator_to_array($this->entries));
+        if ($this->files) $this->setValues($this->setValuesToFill($this->files));
+        if ($this->entries) $this->setValues($this->setValuesToFill($this->entries));
+    }
+
+    protected function setValuesToFill(AAdapter $adapter): array
+    {
+        $result = [];
+        foreach ($adapter as $key => $entry) {
+            $result[$key] = is_object($entry) ? $entry->getValue() : $entry ;
+        }
+        return $result;
     }
 
     /**

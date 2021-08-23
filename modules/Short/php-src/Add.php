@@ -15,15 +15,16 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_short\ShortException;
+use kalanis\kw_short\ShortMessage;
 use KWCMS\modules\Admin\Shared;
 
 
 /**
- * Class Edit
+ * Class Add
  * @package KWCMS\modules\Short
- * Site's short messages - edit form
+ * Site's short messages - add form
  */
-class Edit extends AAuthModule implements IModuleTitle
+class Add extends AAuthModule implements IModuleTitle
 {
     use Lib\TModuleTemplate;
 
@@ -34,8 +35,8 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate();
         Config::load('Short');
+        $this->initTModuleTemplate();
         $this->form = new Lib\MessageForm('editMessage');
     }
 
@@ -47,16 +48,20 @@ class Edit extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         try {
-            $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
-            $record = $adapter->getRecord();
-            $record->id = strval($this->getFromParam('id'));
-            $record->load();
-            $this->form->composeForm($record);
+            $this->form->composeForm(new ShortMessage()); // must be without file!!!
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
+                $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
+                try {
+                    $record = $adapter->getRecord();
+                } catch (ShortException $ex) { // create file when not exists
+                    $adapter->createRecordFile();
+                    $record = $adapter->getRecord();
+                }
                 $ex = new DataExchange($record);
                 $ex->import($this->form->getValues());
-                $record->save();
+                $record->date = time();
+                $record->save(true);
                 Notification::addSuccess(Lang::get('short.updated'));
             }
         } catch (MapperException | FormsException | ShortException $ex) {
@@ -79,7 +84,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 Notification::addError($this->error->getMessage());
             }
             $editTmpl = new Lib\EditTemplate();
-            return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.update_texts'))->render()));
+            return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.add_record'))->render()));
         } catch (FormsException $ex) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
         }
@@ -101,6 +106,6 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('short.page') . ' - ' . Lang::get('short.update_message');
+        return Lang::get('short.page') . ' - ' . Lang::get('short.add_record');
     }
 }

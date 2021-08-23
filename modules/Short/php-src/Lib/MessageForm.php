@@ -27,7 +27,8 @@ class MessageForm extends Form
             'cols' => 60, 'rows' => 5,
         ])
             ->addRule(IRules::IS_NOT_EMPTY, Lang::get('warn.must_fill'));
-        $this->addSubmit('postMessage', 'OK');
+        $this->addSubmit('postMessage', Lang::get('dashboard.button_set'));
+        $this->addReset('clearMessage', Lang::get('dashboard.button_reset'));
         $this->defaultRecord = $defaultRecord;
         return $this;
     }
