@@ -8,9 +8,8 @@ use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_paths\Path;
-use kalanis\kw_short\ShortException;
-use kalanis\kw_short\ShortMessage;
 use kalanis\kw_tree\TWhereDir;
+use KWCMS\modules\Short\ShortException;
 
 
 /**

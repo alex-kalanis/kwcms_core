@@ -342,7 +342,7 @@
     
     .select_dir label {
         padding-left: 20px; background: url('/web/ms:sysimage/system/dir.png') no-repeat 0px -2px;
-        background-repeat: no-repeat; line-height: 1.8em;
+        line-height: 1.8em;
         -moz-background-size: 20px 20px;
         -webkit-background-size: 20px 20px;
         background-size: 20px 20px;
@@ -350,7 +350,6 @@
     
     .select_file label {
         padding-left: 20px; background: url('/web/ms:sysimage/system/file.png') no-repeat 1px 0px;
-        background-repeat: no-repeat;
         -moz-background-size: 20px 20px;
         -webkit-background-size: 20px 20px;
         background-size: 20px 20px;
@@ -358,7 +357,6 @@
     
     .select_file label.dir {
         padding-left: 20px; background: url('/web/ms:sysimage/system/dir.png') no-repeat 1px 0px;
-        background-repeat: no-repeat;
         -moz-background-size: 20px 20px;
         -webkit-background-size: 20px 20px;
         background-size: 20px 20px;
@@ -423,14 +421,41 @@
 
     .pagination a, .listtable thead a {
         padding: 5px 20px;
+    }
+
+    a.button {
+        padding: 5px 10px;
+    }
+
+    .pagination a, .listtable thead a, a.button {
         background-color: rgba(224,248,247,0.8);
         border-radius: 7px;
     }
 
-    .pagination a:hover, .listtable thead a:hover {
+    .pagination a:hover, .listtable thead a:hover, a.button:hover {
         color: #ffffff;
         background-color: rgba(0,128,256,0.5);
         text-decoration: none;
+    }
+
+    a.button-edit {
+        color: #ffffff;
+        background-color: #088a08;
+        padding-left: 15px;
+    }
+
+    a.button-edit:hover {
+        background-color: #cef6ce;
+    }
+
+    a.button-delete {
+        color: #ffffff;
+        background-color: rgba(255,0,0,0.8);
+        padding-right: 15px;
+    }
+
+    a.button-delete:hover {
+        background-color: rgba(255,16,16,0.5);
     }
 
     .xdebug-var-dump {

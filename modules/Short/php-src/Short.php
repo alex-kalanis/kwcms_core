@@ -9,8 +9,6 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
-use kalanis\kw_short\ShortException;
-use kalanis\kw_short\ShortMessage;
 
 
 /**
@@ -46,7 +44,7 @@ class Short extends AModule
                 $this->search->orderBy('id', IQueryBuilder::ORDER_DESC);
                 $results = $this->search->getResults();
                 foreach ($results as $orm) {
-                    /** @var ShortMessage $orm */
+                    /** @var Lib\ShortMessage $orm */
                     $messages[] = $tmpl->reset()->setData((int)$orm->date, (string)$orm->title, (string)$orm->content)->render();
                 }
             } catch (MapperException $ex) {

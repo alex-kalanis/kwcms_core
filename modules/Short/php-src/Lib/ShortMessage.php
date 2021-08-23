@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_short;
+namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_mapper\Interfaces\IEntryType;
@@ -9,7 +9,7 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 
 /**
  * Class ShortMessage
- * @package kalanis\kw_short
+ * @package KWCMS\modules\Short\Lib
  * @property int id
  * @property int date
  * @property string title
@@ -23,6 +23,6 @@ class ShortMessage extends ASimpleRecord
         $this->addEntry('date', IEntryType::TYPE_INTEGER, PHP_INT_MAX);
         $this->addEntry('title', IEntryType::TYPE_STRING, 1024);
         $this->addEntry('content', IEntryType::TYPE_STRING, 8192);
-        $this->setMapper('\kalanis\kw_short\ShortMessageMapper');
+        $this->setMapper('\KWCMS\modules\Short\Lib\ShortMessageMapper');
     }
 }

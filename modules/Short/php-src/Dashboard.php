@@ -13,7 +13,6 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_short\ShortException;
 use kalanis\kw_table\TableException;
 use KWCMS\modules\Admin\Shared;
 
@@ -63,7 +62,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function outHtml(): Output\AOutput
     {
         $out = new Shared\FillHtml($this->user);
-        $table = new Lib\MessageTable($this->inputs);
+        $table = new Lib\MessageTable($this->inputs, $this->links);
         if ($this->search) {
             try {
                 return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->search)));
@@ -82,7 +81,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function outJson(): Output\AOutput
     {
         $out = new Output\Json();
-        $table = new Lib\MessageTable($this->inputs);
+        $table = new Lib\MessageTable($this->inputs, $this->links);
         try {
             if ($this->search) {
                 return $out->setContent($table->prepareJson($this->search));

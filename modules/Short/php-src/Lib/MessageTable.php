@@ -5,11 +5,13 @@ namespace KWCMS\modules\Short\Lib;
 
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
+use kalanis\kw_extras\Forward;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
+use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\Connector\Form;
@@ -29,11 +31,18 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class MessageTable
 {
+    /** @var IVariables|null */
     protected $variables = null;
+    /** @var Forward|null */
+    protected $forward = null;
+    /** @var ExternalLink|null */
+    protected $link = null;
 
-    public function __construct(IVariables $inputs)
+    public function __construct(IVariables $inputs, ExternalLink $link)
     {
         $this->variables = $inputs;
+        $this->forward = new Forward();
+        $this->link = $link;
     }
 
     /**
@@ -125,16 +134,31 @@ class MessageTable
 
     public function idLink($id)
     {
-        return '<a href="/web/short/edit/?id=' . $id . '">' . $id . '</a>';
+        $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . $id));
+        $this->forward->setForward($this->link->linkVariant('short/dashboard'));
+        return sprintf('<a href="%s" class="button">%s</a>',
+            $this->forward->getLink(),
+            strval($id)
+        );
     }
 
     public function editLink($id)
     {
-        return '<a href="/web/short/edit/?id=' . $id . '" title="Edit"><span class="fa fa-search">&nbsp;</span> ^ </a>';
+        $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . $id));
+        $this->forward->setForward($this->link->linkVariant('short/dashboard'));
+        return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x25B6; </a>',
+            $this->forward->getLink(),
+            Lang::get('short.update_texts')
+        );
     }
 
     public function deleteLink($id)
     {
-        return '<a href="/web/short/delete/?id=' . $id . '" title="Delete"><span class="fa fa-trash">&nbsp;</span> X </a>';
+        $this->forward->setLink($this->link->linkVariant('short/delete/?id=' . $id));
+        $this->forward->setForward($this->link->linkVariant('short/dashboard'));
+        return sprintf('<a href="%s" title="%s" class="button button-delete"> &#x1F7AE; </a>',
+            $this->forward->getLink(),
+            Lang::get('short.remove_record')
+        );
     }
 }

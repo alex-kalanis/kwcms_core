@@ -7,29 +7,23 @@ use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_extras\Forward;
-use kalanis\kw_forms\Adapters\InputVarsAdapter;
-use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
- * Class Edit
+ * Class Delete
  * @package KWCMS\modules\Short
- * Site's short messages - edit form
+ * Site's short messages - delete record
  */
-class Edit extends AAuthModule implements IModuleTitle
+class Delete extends AAuthModule implements IModuleTitle
 {
     use Lib\TModuleTemplate;
 
-    /** @var Lib\MessageForm|null */
-    protected $form = null;
     /** @var MapperException|null */
     protected $error = null;
     /** @var bool */
@@ -41,7 +35,6 @@ class Edit extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         Config::load('Short');
-        $this->form = new Lib\MessageForm('editMessage');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }
@@ -57,18 +50,11 @@ class Edit extends AAuthModule implements IModuleTitle
             $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
             $record = $adapter->getRecord();
             $record->id = strval($this->getFromParam('id'));
-            $record->load();
-            $this->form->composeForm($record);
-            $this->form->setInputs(new InputVarsAdapter($this->inputs));
-            if ($this->form->process()) {
-                $ex = new DataExchange($record);
-                $ex->import($this->form->getValues());
-                if ($record->save()) {
-                    Notification::addSuccess(Lang::get('short.updated'));
-                    $this->isProcessed = true;
-                }
+            if ($record->delete()) {
+                Notification::addSuccess(Lang::get('short.removed'));
+                $this->isProcessed = true;
             }
-        } catch (MapperException | FormsException | ShortException $ex) {
+        } catch (MapperException | ShortException $ex) {
             $this->error = $ex;
         }
     }
@@ -82,17 +68,13 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
-        try {
-            if ($this->error) {
-                Notification::addError($this->error->getMessage());
-            }
-            $this->forward->forward($this->isProcessed);
-            $editTmpl = new Lib\EditTemplate();
-            return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.update_texts'))->render()));
-        } catch (FormsException $ex) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+        if ($this->error) {
+            Notification::addError($this->error->getMessage());
         }
+        $this->forward->forward();
+        $this->forward->setForward($this->links->linkVariant('short/dashboard'));
+        $this->forward->forward();
+        return new Output\Raw();
     }
 
     public function outJson(): Output\AOutput
@@ -100,9 +82,6 @@ class Edit extends AAuthModule implements IModuleTitle
         if ($this->error) {
             $out = new Output\JsonError();
             return $out->setContent($this->error->getCode(), $this->error->getMessage());
-        } elseif (!$this->form->isValid()) {
-            $out = new Output\JsonError();
-            return $out->setContent(1, $this->form->renderErrorsArray());
         } else {
             $out = new Output\Json();
             return $out->setContent(['Success']);
@@ -111,6 +90,6 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('short.page') . ' - ' . Lang::get('short.update_message');
+        return Lang::get('short.page') . ' - ' . Lang::get('short.remove_record');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_short;
+namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_mapper\Mappers;
@@ -8,7 +8,7 @@ use kalanis\kw_mapper\Mappers;
 
 /**
  * Class ShortMessageMapper
- * @package kalanis\kw_short
+ * @package KWCMS\modules\Short\Lib
  */
 class ShortMessageMapper extends Mappers\File\ATable
 {

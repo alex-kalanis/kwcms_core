@@ -37,6 +37,7 @@ abstract class ATable extends AFile
     protected function insertRecord(Records\ARecord $record): bool
     {
         $matches = $this->findMatched($record, true);
+var_dump(['match' => $matches]);
         if (!empty($matches)) { // found!!!
             return false;
         }
@@ -168,9 +169,15 @@ abstract class ATable extends AFile
         // through relations
         foreach ($this->relations as $objectKey => $recordKey) {
             if (!$record->offsetExists($objectKey)) { // nothing with unknown data
+                if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
+                    return []; // probably error?
+                }
                 continue;
             }
             if (empty($record->offsetGet($objectKey))) { // nothing with empty data
+                if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
+                    return [];
+                }
                 continue;
             }
 
@@ -179,7 +186,6 @@ abstract class ATable extends AFile
                     continue;
                 }
                 if ($usePks && !in_array($objectKey, $this->primaryKeys)) { // is not PK
-                    unset($toProcess[$knownKey]);
                     continue;
                 }
                 if ( !$knownRecord->offsetExists($objectKey) ) { // unknown is not need to compare
@@ -192,6 +198,7 @@ abstract class ATable extends AFile
                 }
                 if ( strval($knownRecord->offsetGet($objectKey)) != strval($record->offsetGet($objectKey)) ) {
                     unset($toProcess[$knownKey]);
+                    continue;
                 }
             }
         }
