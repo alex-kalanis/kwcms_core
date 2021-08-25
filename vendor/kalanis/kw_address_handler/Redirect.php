@@ -7,6 +7,7 @@ namespace kalanis\kw_address_handler;
  * Class Redirect
  * @package kalanis\kw_address_handler
  * Redirects in project
+ * @codeCoverageIgnore access external call
  */
 class Redirect
 {

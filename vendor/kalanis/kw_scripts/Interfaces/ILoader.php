@@ -16,7 +16,7 @@ interface ILoader
     /**
      * @param string $module which module it will be looked for
      * @param string $path which path will be looked for
-     * @return string[] content of that source
+     * @return string content of that source
      * @throws ScriptsException
      */
     public function load(string $module, string $path = ''): string;

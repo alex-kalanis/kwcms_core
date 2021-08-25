@@ -25,7 +25,15 @@ class Styles
             $loader = new Loaders\PhpLoader();
             $loader->setPathLib($path);
             static::$loader = $loader;
+        } elseif ($loader) {
+            static::$loader = $loader;
         }
+    }
+
+    public static function reset(Path $path, ?ILoader $loader = null): void
+    {
+        static::$loader = null;
+        static::init($path, $loader);
     }
 
     public static function want(string $module, string $path): void

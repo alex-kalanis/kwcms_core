@@ -3,10 +3,6 @@
 namespace kalanis\kw_address_handler;
 
 
-use kalanis\kw_address_handler\Sources\Address;
-use kalanis\kw_address_handler\Sources\Sources;
-
-
 /**
  * Class Forward
  * @package kalanis\kw_address_handler
@@ -26,7 +22,7 @@ class Forward
 
     public function setLink(string $link): self
     {
-        return $this->setSource(new Address($link));
+        return $this->setSource(new Sources\Address($link));
     }
 
     public function getLink(): string
@@ -34,7 +30,7 @@ class Forward
         return $this->urlHandler->getAddress();
     }
 
-    public function setSource(Sources $sources): self
+    public function setSource(Sources\Sources $sources): self
     {
         $this->urlHandler->setSource($sources);
         return $this;
@@ -48,10 +44,14 @@ class Forward
         return $this;
     }
 
+    /**
+     * @param bool $extraRule
+     * @codeCoverageIgnore access external call
+     */
     public function forward(bool $extraRule = true): void
     {
         if ($extraRule && $this->has()) {
-            new Redirect($this->get());
+            new Redirect($this->get()); // external
         }
     }
 

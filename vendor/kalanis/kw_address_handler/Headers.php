@@ -45,6 +45,11 @@ class Headers
         505 => '505 HTTP Version Not Supported',
     ];
 
+    /**
+     * @param string $protocol
+     * @param int $code
+     * @codeCoverageIgnore access external
+     */
     public static function setCustomCode(string $protocol, int $code): void
     {
         header($protocol . ' ' . static::codeToHeader($code));
@@ -58,6 +63,11 @@ class Headers
      */
     public static function codeToHeader(int $code, int $default = 404): string
     {
-        return isset(static::$headerCodes[$code]) ? static::$headerCodes[$code] : static::$headerCodes[$default];
+        return isset(static::$headerCodes[$code])
+            ? static::$headerCodes[$code]
+            : (isset(static::$headerCodes[$default])
+                ? static::$headerCodes[$default]
+                : static::$headerCodes[500]
+            );
     }
 }

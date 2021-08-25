@@ -14,7 +14,6 @@ use kalanis\kw_paths\Path;
  * @package kalanis\kw_langs
  * Load config data from defined source
  * Contains personalized autoloader for configs!
- * @codeCoverageIgnore because internal autoloading
  */
 class PhpLoader implements ILoader
 {
@@ -57,13 +56,14 @@ class PhpLoader implements ILoader
         }
         $basicLookupDir = $this->pathLib->getDocumentRoot() . $this->pathLib->getPathToSystemRoot();
         foreach ($this->pathMasks as $pathMask) {
-            $path = realpath(sprintf( $pathMask,
+            $unmasked = sprintf( $pathMask,
                 DIRECTORY_SEPARATOR, $basicLookupDir,
                 IPaths::DIR_USER, $this->pathLib->getUser(),
                 IPaths::DIR_MODULE, $module,
                 IPaths::DIR_LANG, $lang, IPaths::EXT
-            ));
-            if ($path) {
+            );
+            $path = realpath($unmasked);
+            if ($path && is_file($path)) {
                 return $path;
             }
         }

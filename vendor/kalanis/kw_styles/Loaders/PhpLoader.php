@@ -13,7 +13,6 @@ use kalanis\kw_styles\StylesException;
  * Class PhpLoader
  * @package kalanis\kw_styles\Loaders
  * Load scripts and styles from predefined paths
- * @codeCoverageIgnore contains external autoloader
  */
 class PhpLoader implements ILoader
 {
@@ -56,7 +55,7 @@ class PhpLoader implements ILoader
                 IPaths::DIR_STYLE, $conf
             );
             $path = realpath($unmasked);
-            if ($path) {
+            if ($path && is_file($path)) {
                 return $path;
             }
         }
