@@ -71,12 +71,20 @@ class Tree
             $node = $this->nodeAdapter->process($item);
             $nodes[$node->getPath()] = $node; // full path
         }
+        if (empty($nodes[$this->rootDir . $this->startFromPath])) {
+            $item = new SplFileInfo($this->rootDir . $this->startFromPath);
+            $node = $this->nodeAdapter->process($item);
+            $nodes[$node->getPath()] = $node; // root node
+            $primary = $node->getPath();
+        } else {
+            $primary = DIRECTORY_SEPARATOR;
+        }
         foreach ($nodes as &$node) {
             if ($nodes[$node->getDir()] !== $node) { // beware of unintended recursion
                 $nodes[$node->getDir()]->addSubNode($node); // and now only to parent dir
             }
         }
-        $this->loadedTree = $nodes[DIRECTORY_SEPARATOR];
+        $this->loadedTree = $nodes[$primary];
     }
 
     public function filterDoubleDot(SplFileInfo $info): bool

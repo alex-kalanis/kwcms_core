@@ -27,10 +27,15 @@ class ChDir extends AAuthModule
 {
     use TWhereDir;
 
+    /** @var UserDir|null */
     protected $userDir = null;
+    /** @var Tree|null */
     protected $tree = null;
+    /** @var DirFilter|null */
     protected $filter = null;
+    /** @var Forms\ChDirForm|null */
     protected $chDirForm = null;
+    /** @var bool */
     protected $processedForm = false;
 
     public function __construct()
