@@ -24,7 +24,7 @@ class EditFileForm extends Form
     {
         $this->setMethod(IEntry::SOURCE_POST);
         $this->addTextarea('content', Lang::get('texts.edit_file'), $defaultContent, [
-            'cols' => 110, 'rows' => 50,
+            'cols' => 80, 'rows' => 50,
         ]);
         $this->addHidden('content_base64', base64_encode($defaultContent));
         $this->addSubmit('saveFile', Lang::get('texts.save_file'));
