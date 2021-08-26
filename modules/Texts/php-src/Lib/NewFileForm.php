@@ -22,8 +22,8 @@ class NewFileForm extends Form
 {
     public function composeForm(ExternalLink $links): self
     {
-        $this->setMethod(IEntry::SOURCE_POST);
-        $this->setAttribute('target', $links->linkVariant('texts/edit'));
+        $this->setMethod(IEntry::SOURCE_GET);
+        $this->setAttribute('action', $links->linkVariant('texts/edit'));
         $this->addText('fileName', Lang::get('texts.file_name'));
         $this->addSubmit('openFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));

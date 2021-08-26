@@ -15,6 +15,11 @@ class Params
 {
     public function filterFiles(SplFileInfo $info): bool
     {
-        return in_array($info->getExtension(), ['htm', 'html', 'txt', 'mkd', 'ini', 'inf',]);
+        return in_array($info->getExtension(), $this->filteredTypes());
+    }
+
+    public function filteredTypes(): array
+    {
+        return ['htm', 'html', 'txt', 'mkd', 'ini', 'inf', ];
     }
 }

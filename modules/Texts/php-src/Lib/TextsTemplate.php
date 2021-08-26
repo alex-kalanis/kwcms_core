@@ -37,7 +37,7 @@ class TextsTemplate extends ATemplate
     /**
      * @param NewFileForm $newForm
      * @param OpenFileForm $openForm
-     * @return TextsTemplate
+     * @return $this
      * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(NewFileForm $newForm, OpenFileForm $openForm): self

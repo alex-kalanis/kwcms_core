@@ -24,8 +24,8 @@ class OpenFileForm extends Form
 {
     public function composeForm(string $defaultWhere, ?FileNode $tree, ExternalLink $links): self
     {
-        $this->setMethod(IEntry::SOURCE_POST);
-        $this->setAttribute('target', $links->linkVariant('texts/edit'));
+        $this->setMethod(IEntry::SOURCE_GET);
+        $this->setAttribute('action', $links->linkVariant('texts/edit'));
 
         $radios = new FileRadio();
         $radios->set('fileName', $defaultWhere, Lang::get('texts.set_file'), $tree);
