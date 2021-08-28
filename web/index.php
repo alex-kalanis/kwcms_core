@@ -122,7 +122,7 @@ class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
     {
         $this->records = [];
         $this->fileName = implode(DIRECTORY_SEPARATOR, [
-            $this->path->getDocumentRoot() . $this->path->getPathToSystemRoot(),
+            $this->moduleConfPath,
             \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE,
             sprintf('%s.%d.%s', \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE, $level, \kalanis\kw_paths\Interfaces\IPaths::DIR_CONF )
         ]);
@@ -131,6 +131,18 @@ class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
 
 
 // And now we have all necessary variables to build the page
-$processor = new ExProcessor($paths, new \kalanis\kw_modules\Processing\ModuleRecord());
-$module = new \kalanis\kw_modules\Module($inputs, new \kalanis\kw_modules\Processing\Modules($processor));
-echo $module->get(); // dump output
+try {
+    $processor = new ExProcessor(
+        new \kalanis\kw_modules\Processing\ModuleRecord(),
+        \kalanis\kw_confs\Config::getPath()->getDocumentRoot() . \kalanis\kw_confs\Config::getPath()->getPathToSystemRoot()
+    );
+    $module = new \kalanis\kw_modules\Module(
+        new \kalanis\kw_input\Variables($inputs),'',
+        new \kalanis\kw_modules\Processing\Modules($processor)
+    );
+    echo $module->process()->get(); // dump output
+} catch (\Exception $ex) {
+    echo get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine() . PHP_EOL;
+    echo "Stack trace:" . PHP_EOL;
+    echo $ex->getTraceAsString() . PHP_EOL;
+}

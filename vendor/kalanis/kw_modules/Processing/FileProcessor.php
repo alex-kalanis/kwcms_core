@@ -19,8 +19,8 @@ class FileProcessor implements IModuleProcessor
 {
     const SEPARATOR = '|';
 
-    /** @var Path */
-    protected $path = null;
+    /** @var string */
+    protected $moduleConfPath = '';
     /** @var IModuleRecord */
     protected $baseRecord = null;
     /** @var string */
@@ -28,9 +28,9 @@ class FileProcessor implements IModuleProcessor
     /** @var IModuleRecord[] */
     protected $records = [];
 
-    public function __construct(Path $path, IModuleRecord $baseRecord)
+    public function __construct(IModuleRecord $baseRecord, string $moduleConfPath)
     {
-        $this->path = $path;
+        $this->moduleConfPath = $moduleConfPath;
         $this->baseRecord = $baseRecord;
     }
 
@@ -38,7 +38,7 @@ class FileProcessor implements IModuleProcessor
     {
         $this->records = [];
         $this->fileName = Stuff::sanitize(implode(DIRECTORY_SEPARATOR, [
-            $this->path->getDocumentRoot() . $this->path->getPathToSystemRoot(),
+            $this->moduleConfPath,
             IPaths::DIR_MODULE,
             sprintf('%s.%d.%s', IPaths::DIR_MODULE, $level, IPaths::DIR_CONF )
         ]));

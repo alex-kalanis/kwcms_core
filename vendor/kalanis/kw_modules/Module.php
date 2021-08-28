@@ -5,8 +5,7 @@ namespace kalanis\kw_modules;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_input\Interfaces\IInputs;
-use kalanis\kw_input\Variables;
+use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_modules\Loaders\KwLoader;
 use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
@@ -21,23 +20,42 @@ use kalanis\kw_modules\Processing\Modules;
  */
 class Module
 {
+    /** @var IVariables|null */
+    protected $inputs = null;
+    /** @var Interfaces\ILoader|null */
+    protected $loader = null;
+    /** @var Modules|null|null */
+    protected $processor = null;
     /** @var Interfaces\IModule|null */
     protected $module = null;
 
     /**
-     * @param IInputs $inputs
+     * @param IVariables $inputs
+     * @param string $moduleDefinitionDir
      * @param Modules|null $processor
      * @param Interfaces\ILoader|null $loader
      * @throws ModuleException
      */
-    public function __construct(IInputs $inputs, ?Modules $processor, ?Interfaces\ILoader $loader = null)
+    public function __construct(IVariables $inputs, string $moduleDefinitionDir, ?Modules $processor, ?Interfaces\ILoader $loader = null)
     {
-        $loader = $loader ?: new KwLoader();
-        $processor = $processor ?: new Modules(new FileProcessor(Config::getPath(), new ModuleRecord()));
+        $this->inputs = $inputs;
+        $this->loader = $loader ?: new KwLoader();
+        if (empty($moduleDefinitionDir) && empty($processor)) {
+            throw new ModuleException('You must set at least directory with module definitions or the whole processor itself');
+        }
+        $this->processor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), $moduleDefinitionDir));
+    }
 
-        $inputHelper = new Variables($inputs);
-        $this->module = $loader->load('Core', null, [$loader, $processor]);
-        $this->module->init($inputHelper, $inputHelper->getInArray(null, [IEntry::SOURCE_EXTERNAL]));
+    /**
+     * @param string $defaultModule
+     * @return $this
+     * @throws ModuleException
+     */
+    public function process($defaultModule = 'Core'): self
+    {
+        $this->module = $this->loader->load($defaultModule, null, [$this->loader, $this->processor]);
+        $this->module->init($this->inputs, $this->inputs->getInArray(null, [IEntry::SOURCE_EXTERNAL]));
+        return $this;
     }
 
     /**
