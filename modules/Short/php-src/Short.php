@@ -23,6 +23,11 @@ class Short extends AModule
     /** @var MapperException|null */
     protected $error = null;
 
+    public function __construct()
+    {
+        Config::load('Short');
+    }
+
     public function process(): void
     {
         try {

@@ -28,7 +28,7 @@ class Logout extends AAuthModule implements IModuleTitle
 
     protected function run(): void
     {
-        Auth::getMethod()->remove();
+        $this->getAuthTree()->getMethod()->remove();
     }
 
     public function allowedAccessClasses(): array

@@ -90,7 +90,7 @@ class ExBanned extends \kalanis\kw_auth\Methods\Banned
 }
 
 $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handler\Sources\ServerRequest());
-\kalanis\kw_auth\Auth::init(
+\kalanis\kw_auth\Auth::fill(
     new ExBanned($authenticator,
         new \kalanis\kw_auth\Methods\HttpCerts($authenticator,
             new \kalanis\kw_auth\Methods\UrlCerts($authenticator,
@@ -111,7 +111,7 @@ $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handl
         $server
     )
 );
-//\kalanis\kw_auth\Auth::init(
+//\kalanis\kw_auth\Auth::fill(
 //    new \kalanis\kw_auth\Methods\Everytime(null, null)
 //);
 
