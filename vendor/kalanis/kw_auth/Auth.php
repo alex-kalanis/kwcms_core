@@ -9,7 +9,7 @@ use kalanis\kw_auth\Interfaces\IAuthTree;
 /**
  * Class Auth
  * @package kalanis\kw_auth
- * Authenticate the user with predefined methods
+ * Authenticate the user with predefined methods - pass auth tree into module
  */
 class Auth
 {

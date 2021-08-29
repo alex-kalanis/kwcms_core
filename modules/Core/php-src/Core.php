@@ -37,7 +37,7 @@ class Core extends AModule
         Config::load(static::getClassName(static::class), 'site');
         Lang::load(static::getClassName(static::class));
         $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(Config::getPath(), new ModuleRecord()));
+        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
     }
 
     public function process(): void

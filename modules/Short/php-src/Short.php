@@ -25,7 +25,7 @@ class Short extends AModule
 
     public function __construct()
     {
-        Config::load('Short');
+        Config::load(static::getClassName(static::class));
     }
 
     public function process(): void

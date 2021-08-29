@@ -3,7 +3,6 @@
 namespace kalanis\kw_modules;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_modules\Loaders\KwLoader;

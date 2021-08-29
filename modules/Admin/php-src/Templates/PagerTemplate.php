@@ -15,7 +15,7 @@ class PagerTemplate extends Pager
 {
     protected function templatePath(): string
     {
-        return __DIR__ . '/../../style/Pager.phtml';
+        return __DIR__ . '/../../style/Pager.html';
     }
 
     protected function getHelpingText(): string

@@ -38,7 +38,7 @@ class Page extends AModule
     {
         Config::load('Core', 'page');
         $loader = $loader ?: new KwLoader();
-        $moduleProcessor = $processor ?: new Modules(new FileProcessor(Config::getPath(), new ModuleRecord()));
+        $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
         $moduleProcessor->setLevel(ISitePart::SITE_CONTENT);
         $this->subModules = new SubModules($loader, $moduleProcessor);
         $this->link = new InternalLink(Config::getPath());

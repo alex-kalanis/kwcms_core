@@ -43,7 +43,7 @@ class Layout extends AModule
     {
         Config::load('Core', 'page');
         $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(Config::getPath(), new ModuleRecord()));
+        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
         $this->subModules = new SubModules($this->loader, $this->moduleProcessor);
     }
 

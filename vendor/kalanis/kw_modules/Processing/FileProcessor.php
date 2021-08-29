@@ -7,7 +7,6 @@ use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\IModuleProcessor;
 use kalanis\kw_modules\Interfaces\IModuleRecord;
 use kalanis\kw_paths\Interfaces\IPaths;
-use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
 
 
