@@ -1,0 +1,14 @@
+@media screen {
+    #files #open, #files #new {
+        margin: 0.2em 0px 0px 0px;
+    }
+
+    #files .selection img {
+        border: 1px dotted #c0c0c0; border-radius: 1em;
+    }
+
+    #files .selection img:hover {
+        box-shadow: inset 0px 0px 1em #c0c0c0;
+    }
+
+} /* media screen */

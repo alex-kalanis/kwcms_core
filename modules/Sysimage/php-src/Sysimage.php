@@ -9,6 +9,8 @@ use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
+use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -28,9 +30,17 @@ class Sysimage extends AModule
 
     public function process(): void
     {
+        $path = Config::getPath();
+        $pathArray = Stuff::pathToArray($path->getPath());
+        $module = array_shift($pathArray);
         $this->imagePath = realpath(implode(DIRECTORY_SEPARATOR, [
-            __DIR__ , '..', 'images', Config::getPath()->getPath()
+            $path->getDocumentRoot() . $path->getPathToSystemRoot(), 'modules', Support::normalizeModuleName($module), 'images', Stuff::arrayToPath($pathArray)
         ]));
+        if (!$this->imagePath) {
+            $this->imagePath = realpath(implode(DIRECTORY_SEPARATOR, [
+                __DIR__, '..', 'images', $path->getPath()
+            ]));
+        }
         if (!$this->imagePath) {
             $this->imagePath = realpath(implode(DIRECTORY_SEPARATOR, [
                 __DIR__, '..', 'images', 'no_image_available.png'
