@@ -297,6 +297,7 @@ trait TControl
     {
         $file = new Controls\File();
         $file->set($alias, $label)->addAttributes($attributes);
+        $this->setAttribute('enctype', 'multipart/form-data');
         $this->addControl($file);
         return $file;
     }
@@ -313,6 +314,7 @@ trait TControl
     {
         $file = new Controls\Files();
         $file->set($alias, $inputs, $label, $attributes);
+        $this->setAttribute('enctype', 'multipart/form-data');
         $this->addControl($file);
         return $file;
     }
@@ -468,4 +470,6 @@ trait TControl
     }
 
     abstract public function addControl(Controls\AControl $control): void;
+
+    abstract public function setAttribute(string $name, string $value): void;
 }

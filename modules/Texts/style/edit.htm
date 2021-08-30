@@ -1,6 +1,10 @@
 <div id="form">
     {FORM_START}
-    {INPUT_CONTENT}<br />
+    <span id="text_edit_content">{INPUT_CONTENT}</span><br />
     {INPUT_SUBMIT} &nbsp; {INPUT_RESET}
     {FORM_END}
 </div>
+<script type="text/javascript">
+	window.addEventListener('load', previewWindow.initialize, false);
+	document.body.addEventListener('keyup', previewWindow.tick, false);
+</script>

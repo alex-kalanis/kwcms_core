@@ -14,19 +14,21 @@ use kalanis\kw_langs\Lang;
  * @package KWCMS\modules\Texts\Lib
  * Edit file
  * @property Controls\Textarea content
- * @property Controls\Hidden content_base64
  * @property Controls\Submit saveFile
  * @property Controls\Reset resetFile
  */
 class EditFileForm extends Form
 {
-    public function composeForm(string $defaultContent): self
+    public function composeForm(string $defaultContent, string $fileName, string $targetLink = ''): self
     {
+        $this->setAttribute('id', $this->getAlias());
         $this->setMethod(IEntry::SOURCE_POST);
         $this->addTextarea('content', Lang::get('texts.edit_file'), $defaultContent, [
             'cols' => 80, 'rows' => 50,
         ]);
-        $this->addHidden('content_base64', base64_encode($defaultContent));
+        $this->addHidden('fileName', $fileName);
+        $link = $this->addHidden('targetLink', $targetLink);
+        $link->setAttribute('id', 'editTargetLink');
         $this->addSubmit('saveFile', Lang::get('texts.save_file'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;

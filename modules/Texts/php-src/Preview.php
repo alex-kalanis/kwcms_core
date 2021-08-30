@@ -6,8 +6,7 @@ namespace KWCMS\modules\Texts;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_extras\UserDir;
-use kalanis\kw_forms\Adapters\InputVarsAdapter;
-use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mime\MimeType;
@@ -31,8 +30,6 @@ class Preview extends AAuthModule
 
     /** @var UserDir|null */
     protected $userDir = null;
-    /** @var Lib\EditFileForm|null */
-    protected $editFileForm = null;
     /** @var Storage|null */
     protected $storage = null;
     /** @var MimeType|null */
@@ -46,7 +43,6 @@ class Preview extends AAuthModule
     {
         $this->initTModuleTemplate();
         $this->userDir = new UserDir(Config::getPath());
-        $this->editFileForm = new Lib\EditFileForm('editFileForm');
         Storage\Key\DirKey::setDir(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
         $this->storage = new Storage(new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory()));
         $this->storage->init('volume');
@@ -63,11 +59,12 @@ class Preview extends AAuthModule
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         $this->userDir->setUserPath($this->user->getDir());
         $this->userDir->process();
-        $fileName = $this->getFromParam('fileName');
+        $fileName = $this->inputs->getInArray('fileName', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
         if (empty($fileName)) {
             $this->error = new TextsException(Lang::get('texts.file_not_sent'));
             return;
         }
+        $fileName = reset($fileName);
         $this->ext = Stuff::fileExt(Stuff::filename($fileName));
         if (!in_array($this->ext, $this->getParams()->filteredTypes())) {
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
@@ -75,20 +72,14 @@ class Preview extends AAuthModule
         }
         $path = Stuff::sanitize($this->userDir->getRealDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
         try {
-            $content = $this->storage->exists($path) ? $this->storage->get($path) : '';
-            $this->editFileForm->composeForm($content);
-            $this->editFileForm->setInputs(new InputVarsAdapter($this->inputs));
-            if ($this->editFileForm->process()) {
-                $content = strval($this->editFileForm->getValue('content'));
-                if (empty($content)) {
-                    $content = base64_decode($this->editFileForm->getValue('content_base64'), true);
-                    if (false === $content) {
-                        throw new TextsException(Lang::get('texts.file_wrong_content'));
-                    }
-                }
-            }
-            $this->displayContent = $content;
-        } catch (TextsException | StorageException | FormsException $ex) {
+            $externalContent = $this->inputs->getInArray('content', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
+            $this->displayContent = (!empty($externalContent))
+                ? strval(reset($externalContent))
+                : ( $this->storage->exists($path)
+                    ? $this->storage->get($path)
+                    : ''
+                );
+        } catch (StorageException $ex) {
             $this->error = $ex;
         }
     }

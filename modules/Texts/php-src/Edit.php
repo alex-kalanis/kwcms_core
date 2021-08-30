@@ -16,8 +16,10 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_scripts\Scripts;
 use kalanis\kw_storage\Storage;
 use kalanis\kw_storage\StorageException;
+use kalanis\kw_styles\Styles;
 use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
@@ -74,7 +76,7 @@ class Edit extends AAuthModule implements IModuleTitle
         $path = Stuff::sanitize($this->userDir->getRealDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
         try {
             $content = $this->storage->exists($path) ? $this->storage->get($path) : '{CREATE_NEW_FREE_FILE}';
-            $this->editFileForm->composeForm($content);
+            $this->editFileForm->composeForm($content, $fileName, $this->links->linkVariant($this->targetPreview()));
             $this->editFileForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editFileForm->process()) {
                 $content = strval($this->editFileForm->getValue('content'));
@@ -98,6 +100,11 @@ class Edit extends AAuthModule implements IModuleTitle
         return new Lib\Params();
     }
 
+    protected function targetPreview(): string
+    {
+        return 'texts/preview';
+    }
+
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -114,6 +121,8 @@ class Edit extends AAuthModule implements IModuleTitle
             }
             $this->error = null;
         }
+        Scripts::want('Texts', 'preview.js');
+        Styles::want('Texts', 'preview.css');
         $out = new Shared\FillHtml($this->user);
         $page = new Lib\EditTemplate();
         try {

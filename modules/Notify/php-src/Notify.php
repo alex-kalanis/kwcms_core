@@ -37,8 +37,8 @@ class Notify extends AModule
 
     public function output(): AOutput
     {
-        Styles::want('Notify', 'notify.css');
-        Scripts::want('Notify', 'notify.js');
+        Styles::want(static::getClassName(static::class), 'notify.css');
+        Scripts::want(static::getClassName(static::class), 'notify.js');
         $tmpl = new Template();
         $notifications = [];
         if (Notification::getNotify()) {

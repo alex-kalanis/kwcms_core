@@ -1,0 +1,12 @@
+#text_edit_content {
+    display: block;
+}
+
+#text_edit_content textarea,  #text_edit_content iframe {
+    display: inline;
+}
+
+#text_edit_content iframe {
+    width: 40em;
+    height: 47em;
+}
