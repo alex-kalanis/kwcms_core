@@ -29,12 +29,18 @@ class ProcessFile implements IProcessFiles
 
     public function uploadFile(FileForm $form): bool
     {
-        $entry = $form->getControl('uploadedFile')->getValue();
-        if (empty($entry) || !($entry instanceof IFileEntry)) {
-            throw new FilesException(Lang::get('files.must_be_sent'));
+        // We got a real files, so it's a bit complicated
+        $entry = $form->getControl('uploadedFile');
+        if (empty($entry)) {
+            throw new FilesException(Lang::get('files.must_be_set'));
         }
+        if (!method_exists($entry, 'getFile')) {
+            throw new FilesException(Lang::get('files.must_contain_file'));
+        }
+        /** @var IFileEntry $file */
+        $file = $entry->getFile();
         try {
-            return move_uploaded_file($entry->getTempName(), $this->sourcePath . DIRECTORY_SEPARATOR . $this->findFreeName($entry->getValue()));
+            return move_uploaded_file($file->getTempName(), $this->sourcePath . DIRECTORY_SEPARATOR . $this->findFreeName($file->getValue()));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage());
         }

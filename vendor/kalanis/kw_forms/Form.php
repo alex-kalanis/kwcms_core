@@ -115,7 +115,7 @@ class Form implements IHtmlElement
      */
     public function getControl(string $key): ?AControl
     {
-        foreach ($this->controls as $control) {
+        foreach ($this->controls as &$control) {
             if ($control instanceof Controls\AControl) {
                 if ($control->getKey() == $key) {
                     return $control;
@@ -146,7 +146,7 @@ class Form implements IHtmlElement
     public function getValues()
     {
         $array = [];
-        foreach ($this->controls as $key => $child) {
+        foreach ($this->controls as $key => &$child) {
             if ($child instanceof Interfaces\IMultiValue) {
                 $array += $child->getValues();
             } else {
@@ -158,7 +158,7 @@ class Form implements IHtmlElement
     }
 
     /**
-     * Set values to all children, !!undefined values will be set too!!
+     * Set values to all children, !!undefined values will NOT be set!!
      * <b>Usage</b>
      * <code>
      *  $form->setValues($this->context->post) // set values from Post
@@ -169,12 +169,14 @@ class Form implements IHtmlElement
      */
     public function setValues(array $data = [])
     {
-        foreach ($this->controls as $key => $child) {
+        foreach ($this->controls as $key => &$child) {
             if ($child instanceof Interfaces\IMultiValue) {
                 $child->setValues($data);
             } else {
                 $_alias = ($child instanceof AControl) ? $child->getKey() : $key ;
-                $child->setValue(isset($data[$_alias]) ? $data[$_alias] : null);
+                if (isset($data[$_alias])) {
+                    $child->setValue($data[$_alias]);
+                }
             }
         }
         return $this;
@@ -211,7 +213,7 @@ class Form implements IHtmlElement
     public function getLabels()
     {
         $array = [];
-        foreach ($this->controls as $child) {
+        foreach ($this->controls as &$child) {
             $array[$child->getKey()] = $child->getLabel();
         }
         return $array;
@@ -224,7 +226,7 @@ class Form implements IHtmlElement
      */
     public function setLabels(array $array = [])
     {
-        foreach ($this->controls as $child) {
+        foreach ($this->controls as &$child) {
             if (isset($array[$child->getKey()])) {
                 $child->setLabel($array[$child->getKey()]);
             }
@@ -296,7 +298,7 @@ class Form implements IHtmlElement
         }
 
         // lookup for submit button
-        foreach ($this->controls as $control) {
+        foreach ($this->controls as &$control) {
             if ($control instanceof Controls\Submit && !empty($control->getValue())) {
                 return true;
             }
@@ -310,15 +312,20 @@ class Form implements IHtmlElement
      */
     public function setSentValues(): void
     {
-        if ($this->files) $this->setValues($this->setValuesToFill($this->files));
+        if ($this->files) $this->setValues($this->setValuesToFill($this->files, true));
         if ($this->entries) $this->setValues($this->setValuesToFill($this->entries));
     }
 
-    protected function setValuesToFill(AAdapter $adapter): array
+    protected function setValuesToFill(AAdapter $adapter, bool $raw = false): array
     {
         $result = [];
         foreach ($adapter as $key => $entry) {
-            $result[$key] = is_object($entry) ? $entry->getValue() : $entry ;
+            $result[$key] = is_object($entry) && !$raw
+                ? ( method_exists($entry, 'getValue')
+                    ? $entry->getValue()
+                    : strval($entry)
+                )
+                : $entry ;
         }
         return $result;
     }
@@ -332,7 +339,7 @@ class Form implements IHtmlElement
     {
         $this->errors = [];
         $validation = true;
-        foreach ($this->controls as $child) {
+        foreach ($this->controls as &$child) {
             if ($child instanceof Controls\AControl) {
                 $validation &= $this->validate->validate($child);
                 $this->errors += $this->validate->getErrors();
@@ -402,7 +409,7 @@ class Form implements IHtmlElement
     public function renderErrorsArray()
     {
         $errors = [];
-        foreach ($this->controls as $child) {
+        foreach ($this->controls as &$child) {
             if ($child instanceof Controls\AControl) {
                 if (isset($this->errors[$child->getKey()])) {
                     if (!$child->wrappersErrors()) {
@@ -425,7 +432,7 @@ class Form implements IHtmlElement
     {
         $return = '';
         $hidden = '';
-        foreach ($this->controls as $child) {
+        foreach ($this->controls as &$child) {
 
             if ($child instanceof IHtmlElement) {
                 if ($child instanceof Controls\AControl) {
@@ -495,7 +502,7 @@ class Form implements IHtmlElement
         $this->addAttributes($attributes);
         $return = sprintf($this->templateStart, $this->renderAttributes());
         if (!$noChildren) {
-            foreach ($this->controls as $control) {
+            foreach ($this->controls as &$control) {
                 if ($control instanceof Controls\Hidden) {
                     $return .= $control->renderInput() . PHP_EOL;
                 }
