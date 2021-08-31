@@ -69,11 +69,11 @@ class Router extends AModule
 
         try {
             $this->module = $this->subModules->initModule(
-                Support::normalizeNamespacedName(Support::normalizeModuleName(array_shift($wantArray))),
+                Support::normalizeNamespacedName(array_shift($wantArray)),
                 $this->inputs, [], array_merge(
                     $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_ROUTED]
                 ),
-                Support::normalizeNamespacedName(Support::normalizeModuleName(Stuff::arrayToPath($wantArray)))
+                Support::normalizeNamespacedName(Stuff::arrayToPath($wantArray))
             );
 
         } catch (\Throwable $ex) { // Fatal error: Class not found -> output on Dashboard
@@ -84,7 +84,7 @@ class Router extends AModule
                 $this->inputs, [], array_merge(
                     $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_ROUTED]
                 ),
-                Support::normalizeNamespacedName(Support::normalizeModuleName($defaultModuleName))
+                Support::normalizeNamespacedName($defaultModuleName)
             );
         }
         $this->module->process();

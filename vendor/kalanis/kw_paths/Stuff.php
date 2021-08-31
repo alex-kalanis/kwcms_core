@@ -105,4 +105,22 @@ class Stuff
     {
         return (mb_substr($path, -1, 1) == DIRECTORY_SEPARATOR) ? mb_substr($path, 0, -1) : $path ;
     }
+
+    /**
+     * Return correct name with no non-ascii characters
+     * @param string $name
+     * @param int $maxLen
+     * @return string
+     */
+    public static function canonize(string $name, int $maxLen = 127): string
+    {
+        $fName = preg_replace('/((&[[:alpha:]]{1,6};)|(&#[[:alnum:]]{1,7};))/', '', $name); // remove ascii-escaped chars
+        $fName = preg_replace('/[^[:alnum:]_\s\-\.]/', '', $fName); // remove non-alnum + dots
+        $fName = preg_replace('/[\s]/', '_', $fName); // whitespaces to underscore
+        $ext = static::fileExt($fName);
+        $base = static::fileBase($fName);
+        $extLen = strlen($ext);
+        $cut = substr($base, 0, ($maxLen - $extLen));
+        return ($extLen) ? $cut . IPaths::SPLITTER_DOT . $ext : $cut ;
+    }
 }

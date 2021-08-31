@@ -26,10 +26,16 @@ class Support
 
     public static function normalizeNamespacedName(string $moduleName): string
     {
-        return implode('\\',
-            array_filter(array_filter(
-                kw_paths\Stuff::linkToArray($moduleName)
-            ), ['\kalanis\kw_paths\Stuff', 'notDots'])
+        return implode('\\', // MUST be backslashes!! - translate to class name
+            array_map('ucfirst',
+                array_map(['\kalanis\kw_modules\Processing\Support', 'normalizeModuleName'],
+                    array_filter(
+                        array_filter(
+                            kw_paths\Stuff::linkToArray($moduleName)
+                        ), ['\kalanis\kw_paths\Stuff', 'notDots']
+                    )
+                )
+            )
         );
     }
 
