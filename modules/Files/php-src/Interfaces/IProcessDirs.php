@@ -3,25 +3,22 @@
 namespace KWCMS\modules\Files\Interfaces;
 
 
-use kalanis\kw_input\Interfaces\IFileEntry;
 use KWCMS\modules\Files\FilesException;
 
 
 /**
- * Interface IProcessFiles
+ * Interface IProcessDirs
  * @package KWCMS\modules\Files\Lib
- * Process files in basic ways
+ * Process dirs in basic ways
  */
-interface IProcessFiles
+interface IProcessDirs
 {
-    const FREE_NAME_SEPARATOR = '_';
-
     /**
-     * @param IFileEntry $file
+     * @param string $entry
      * @return bool
      * @throws FilesException
      */
-    public function uploadFile(IFileEntry $file): bool;
+    public function newDir(string $entry): bool;
 
     /**
      * @param string $entry
@@ -29,7 +26,7 @@ interface IProcessFiles
      * @return bool
      * @throws FilesException
      */
-    public function copyFile(string $entry, string $to): bool;
+    public function copyDir(string $entry, string $to): bool;
 
     /**
      * @param string $entry
@@ -37,7 +34,7 @@ interface IProcessFiles
      * @return bool
      * @throws FilesException
      */
-    public function moveFile(string $entry, string $to): bool;
+    public function moveDir(string $entry, string $to): bool;
 
     /**
      * @param string $entry
@@ -45,12 +42,12 @@ interface IProcessFiles
      * @return bool
      * @throws FilesException
      */
-    public function renameFile(string $entry, string $to): bool;
+    public function renameDir(string $entry, string $to): bool;
 
     /**
      * @param string $entry
      * @return bool
      * @throws FilesException
      */
-    public function deleteFile(string $entry): bool;
+    public function deleteDir(string $entry): bool;
 }

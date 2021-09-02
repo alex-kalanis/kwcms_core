@@ -19,8 +19,8 @@ class UploadTemplate extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{FILE_UPLOAD_TEXT}', Lang::get('files.upload_file'));
-        $this->addInput('{LABEL_FILE}', Lang::get('files.upload_file'));
+        $this->addInput('{FILE_UPLOAD_TEXT}', Lang::get('files.file.upload'));
+        $this->addInput('{LABEL_FILE}', Lang::get('files.file.upload'));
         $this->addInput('{FORM_START}');
         $this->addInput('{INPUT_FILE}');
         $this->addInput('{INPUT_SUBMIT}');

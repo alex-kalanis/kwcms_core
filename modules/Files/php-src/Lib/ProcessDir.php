@@ -4,19 +4,17 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use Error;
-use kalanis\kw_input\Interfaces\IFileEntry;
-use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Files\FilesException;
-use KWCMS\modules\Files\Interfaces\IProcessFiles;
+use KWCMS\modules\Files\Interfaces\IProcessDirs;
 
 
 /**
- * Class ProcessFile
+ * Class ProcessDir
  * @package KWCMS\modules\Files\Lib
- * Process files in many ways
+ * Process dirs in basic ways
  */
-class ProcessFile implements IProcessFiles
+class ProcessDir implements IProcessDirs
 {
     protected $sourcePath = '';
 
@@ -25,34 +23,16 @@ class ProcessFile implements IProcessFiles
         $this->sourcePath = $sourcePath;
     }
 
-    public function uploadFile(IFileEntry $file): bool
+    public function newDir(string $entry): bool
     {
         try {
-            return move_uploaded_file($file->getTempName(), $this->sourcePath . DIRECTORY_SEPARATOR . $this->findFreeName($file->getValue()));
+            return mkdir($this->sourcePath . DIRECTORY_SEPARATOR . Stuff::filename($entry));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    protected function findFreeName(string $name): string
-    {
-        $name = Stuff::canonize($name);
-        $ext = Stuff::fileExt($name);
-        if (0 < strlen($ext)) {
-            $ext = IPaths::SPLITTER_DOT . $ext;
-        }
-        $fileName = Stuff::fileBase($name);
-        if (!file_exists($this->sourcePath . $fileName . $ext)) {
-            return $fileName . $ext;
-        }
-        $i = 0;
-        while (file_exists($this->sourcePath . $fileName . static::FREE_NAME_SEPARATOR . $i . $ext)) {
-            $i++;
-        }
-        return $fileName . static::FREE_NAME_SEPARATOR . $i . $ext;
-    }
-
-    public function copyFile(string $entry, string $to): bool
+    public function copyDir(string $entry, string $to): bool
     {
         $fileName = Stuff::filename($entry);
         try {
@@ -65,7 +45,7 @@ class ProcessFile implements IProcessFiles
         }
     }
 
-    public function moveFile(string $entry, string $to): bool
+    public function moveDir(string $entry, string $to): bool
     {
         $fileName = Stuff::filename($entry);
         try {
@@ -78,7 +58,7 @@ class ProcessFile implements IProcessFiles
         }
     }
 
-    public function renameFile(string $entry, string $to): bool
+    public function renameDir(string $entry, string $to): bool
     {
         try {
             return rename(
@@ -90,10 +70,10 @@ class ProcessFile implements IProcessFiles
         }
     }
 
-    public function deleteFile(string $entry): bool
+    public function deleteDir(string $entry): bool
     {
         try {
-            return unlink(
+            return rmdir(
                 $this->sourcePath . DIRECTORY_SEPARATOR . $entry
             );
         } catch (Error $ex) {

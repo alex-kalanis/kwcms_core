@@ -9,6 +9,7 @@ use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
@@ -24,7 +25,7 @@ use KWCMS\modules\Files\Lib;
 
 /**
  * Class Upload
- * @package KWCMS\modules\Texts
+ * @package KWCMS\modules\Files\File
  * Site's Upload content
  */
 class Upload extends AAuthModule implements IModuleTitle
@@ -55,7 +56,15 @@ class Upload extends AAuthModule implements IModuleTitle
             $this->fileForm->composeUploadFile();
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs), new InputFilesAdapter($this->inputs));
             if ($this->fileForm->process()) {
-                $this->processed = $this->getLibAction()->uploadFile($this->fileForm);
+                $entry = $this->fileForm->getControl('uploadedFile');
+                if (!method_exists($entry, 'getFile')) {
+                    throw new FilesException(Lang::get('files.error.must_contain_file'));
+                }
+                $file = $entry->getFile();
+                if (!$file instanceof IFileEntry) {
+                    throw new FilesException(Lang::get('files.error.must_contain_file'));
+                }
+                $this->processed = $this->getLibAction()->uploadFile($file);
             }
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;
@@ -87,6 +96,9 @@ class Upload extends AAuthModule implements IModuleTitle
             Notification::addError($this->error->getMessage());
         }
         try {
+            if ($this->processed) {
+                Notification::addSuccess(Lang::get('files.uploaded', $this->fileForm->getControl('uploadedFile')->getValue()));
+            }
             return $out->setContent($this->outModuleTemplate($page->setData($this->fileForm)->render()));
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;

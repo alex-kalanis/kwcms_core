@@ -4,7 +4,6 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use kalanis\kw_input\Interfaces\IFileEntry;
-use kalanis\kw_langs\Lang;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\Interfaces\IStorage;
@@ -29,25 +28,15 @@ class ProcessStorageFile implements IProcessFiles
         $this->sourcePath = $sourcePath;
     }
 
-    public function uploadFile(FileForm $form): bool
+    public function uploadFile(IFileEntry $file): bool
     {
-        // We got a real file, so it's a bit complicated
-        $entry = $form->getControl('uploadedFile');
-        if (empty($entry)) {
-            throw new FilesException(Lang::get('files.must_be_set'));
-        }
-        if (!method_exists($entry, 'getFile')) {
-            throw new FilesException(Lang::get('files.must_contain_file'));
-        }
-        /** @var IFileEntry $file */
-        $file = $entry->getFile();
         try {
             return $this->storage->save(
                 $this->sourcePath . DIRECTORY_SEPARATOR . $this->findFreeName($file->getValue()),
                 file_get_contents($file->getTempName())
             );
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage());
+            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
@@ -69,10 +58,8 @@ class ProcessStorageFile implements IProcessFiles
         return $fileName . static::FREE_NAME_SEPARATOR . $i . $ext;
     }
 
-    public function copyFile(FileForm $form): bool
+    public function copyFile(string $entry, string $to): bool
     {
-        $entry = strval($form->getControl('fileName')->getValue());
-        $to = strval($form->getControl('targetPath')->getValue());
         $fileName = Stuff::filename($entry);
         try {
             return $this->storage->save(
@@ -80,14 +67,12 @@ class ProcessStorageFile implements IProcessFiles
                 $this->storage->load($this->sourcePath . DIRECTORY_SEPARATOR . $entry)
             );
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage());
+            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function moveFile(FileForm $form): bool
+    public function moveFile(string $entry, string $to): bool
     {
-        $entry = strval($form->getControl('fileName')->getValue());
-        $to = strval($form->getControl('targetPath')->getValue());
         $fileName = Stuff::filename($entry);
         try {
             $action1 = $this->storage->save(
@@ -99,14 +84,12 @@ class ProcessStorageFile implements IProcessFiles
             );
             return $action1 && $action2;
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage());
+            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function renameFile(FileForm $form): bool
+    public function renameFile(string $entry, string $to): bool
     {
-        $entry = strval($form->getControl('fileName')->getValue());
-        $to = strval($form->getControl('targetPath')->getValue());
         try {
             $action1 = $this->storage->save(
                 $this->sourcePath . DIRECTORY_SEPARATOR . $to,
@@ -118,17 +101,16 @@ class ProcessStorageFile implements IProcessFiles
             return $action1 && $action2;
 
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage());
+            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function deleteFile(FileForm $form): bool
+    public function deleteFile(string $entry): bool
     {
-        $entry = strval($form->getControl('fileName')->getValue());
         try {
             return $this->storage->remove($entry);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage());
+            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 }

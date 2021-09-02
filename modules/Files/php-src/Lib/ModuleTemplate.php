@@ -33,20 +33,20 @@ class ModuleTemplate extends ATemplate
         $this->addInput('{LINK_DIR_DELETE}', '#');
         $this->addInput('{LINK_CHDIR}', '#');
 
-        $this->addInput('{TEXT_DASHBOARD}', Lang::get('files.dashboard'));
+        $this->addInput('{TEXT_DASHBOARD}', Lang::get('files.dashboard.short'));
         $this->addInput('{TEXT_FILES}', Lang::get('files.files'));
         $this->addInput('{TEXT_DIRS}', Lang::get('files.dirs'));
-        $this->addInput('{TEXT_FILE_UPLOAD}', Lang::get('files.file.upload'));
-        $this->addInput('{TEXT_FILE_COPY}', Lang::get('files.file.copy'));
-        $this->addInput('{TEXT_FILE_MOVE}', Lang::get('files.file.move'));
-        $this->addInput('{TEXT_FILE_RENAME}', Lang::get('files.file.rename'));
-        $this->addInput('{TEXT_FILE_DELETE}', Lang::get('files.file.delete'));
-        $this->addInput('{TEXT_FILE_READ}', Lang::get('files.file.read'));
-        $this->addInput('{TEXT_DIR_NEW}', Lang::get('files.dir.new'));
-        $this->addInput('{TEXT_DIR_COPY}', Lang::get('files.dir.copy'));
-        $this->addInput('{TEXT_DIR_MOVE}', Lang::get('files.dir.move'));
-        $this->addInput('{TEXT_DIR_RENAME}', Lang::get('files.dir.rename'));
-        $this->addInput('{TEXT_DIR_DELETE}', Lang::get('files.dir.delete'));
+        $this->addInput('{TEXT_FILE_UPLOAD}', Lang::get('files.file.upload.short'));
+        $this->addInput('{TEXT_FILE_COPY}', Lang::get('files.file.copy.short'));
+        $this->addInput('{TEXT_FILE_MOVE}', Lang::get('files.file.move.short'));
+        $this->addInput('{TEXT_FILE_RENAME}', Lang::get('files.file.rename.short'));
+        $this->addInput('{TEXT_FILE_DELETE}', Lang::get('files.file.delete.short'));
+        $this->addInput('{TEXT_FILE_READ}', Lang::get('files.file.read.short'));
+        $this->addInput('{TEXT_DIR_NEW}', Lang::get('files.dir.new.short'));
+        $this->addInput('{TEXT_DIR_COPY}', Lang::get('files.dir.copy.short'));
+        $this->addInput('{TEXT_DIR_MOVE}', Lang::get('files.dir.move.short'));
+        $this->addInput('{TEXT_DIR_RENAME}', Lang::get('files.dir.rename.short'));
+        $this->addInput('{TEXT_DIR_DELETE}', Lang::get('files.dir.delete.short'));
         $this->addInput('{TEXT_CHANGE_DIRECTORY}', Lang::get('dashboard.dir_select'));
     }
 
