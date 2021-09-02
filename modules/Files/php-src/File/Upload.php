@@ -4,8 +4,6 @@ namespace KWCMS\modules\Files\File;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -19,17 +17,17 @@ use kalanis\kw_notify\Notification;
 use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 use KWCMS\modules\Files\FilesException;
-use KWCMS\modules\Files\Interfaces\IProcessFiles;
 use KWCMS\modules\Files\Lib;
 
 
 /**
  * Class Upload
  * @package KWCMS\modules\Files\File
- * Site's Upload content
+ * Upload content
  */
 class Upload extends AAuthModule implements IModuleTitle
 {
+    use Lib\TLibAction;
     use Lib\TModuleTemplate;
     use TWhereDir;
 
@@ -64,21 +62,16 @@ class Upload extends AAuthModule implements IModuleTitle
                 if (!$file instanceof IFileEntry) {
                     throw new FilesException(Lang::get('files.error.must_contain_file'));
                 }
-                $this->processed = $this->getLibAction()->uploadFile($file);
+                $this->processed = $this->getLibFileAction()->uploadFile($file);
             }
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;
         }
     }
 
-    protected function getLibAction(): IProcessFiles
+    protected function getUserDir(): string
     {
-        $userDir = new UserDir(Config::getPath());
-        $userDir->setUserPath($this->user->getDir());
-        $userDir->process();
-        return new Lib\ProcessFile(
-            $userDir->getWebRootDir() . $userDir->getRealDir() . $this->getWhereDir()
-        );
+        return $this->user->getDir();
     }
 
     public function result(): Output\AOutput
@@ -123,6 +116,6 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('files.page');
+        return Lang::get('files.page') . ' - ' . Lang::get('files.file.upload.short');
     }
 }

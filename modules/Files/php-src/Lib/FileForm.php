@@ -36,16 +36,29 @@ class FileForm extends Form
         return $this;
     }
 
+    public function composeSeeFile(FileNode $sourceTree): self
+    {
+        $this->setMethod(IEntry::SOURCE_POST);
+
+        $checkboxes = new FileRadio();
+        $checkboxes->set('sourceName', '', Lang::get('files.file.select'), $sourceTree);
+        $this->addControl($checkboxes);
+
+        $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
+        $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
+        return $this;
+    }
+
     public function composeCopyFile(FileNode $sourceTree, FileNode $targetTree): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileCheckboxes();
-        $checkboxes->set('fileName', null, Lang::get('files.file.selectMany'), $sourceTree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
         $this->addControl($checkboxes);
 
         $radios = new DirSelect();
-        $radios->set('targetPath', null, Lang::get('files.dir.selectTo'), $targetTree);
+        $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
         $this->addControl($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -58,11 +71,11 @@ class FileForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileCheckboxes();
-        $checkboxes->set('fileName', null, Lang::get('files.file.selectMany'), $sourceTree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
         $this->addControl($checkboxes);
 
         $radios = new DirSelect();
-        $radios->set('targetPath', null, Lang::get('files.dir.selectTo'), $targetTree);
+        $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
         $this->addControl($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -75,10 +88,10 @@ class FileForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
 
         $radios = new FileRadio();
-        $radios->set('fileName', null, Lang::get('files.file.select'), $tree);
+        $radios->set('sourceName', '', Lang::get('files.file.select'), $tree);
         $this->addControl($radios);
 
-        $this->addText('targetPath', null, Lang::get('files.file.newName'));
+        $this->addText('targetPath', '', Lang::get('files.file.newName'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;
@@ -89,7 +102,7 @@ class FileForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileCheckboxes();
-        $checkboxes->set('fileName', null, Lang::get('files.file.selectMany'), $tree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $tree);
         $this->addControl($checkboxes);
 
         $radios = new Controls\RadioSet();
