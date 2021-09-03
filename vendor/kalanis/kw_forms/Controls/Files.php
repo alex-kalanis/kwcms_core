@@ -34,6 +34,8 @@ use kalanis\kw_forms\Interfaces\IMultiValue;
  */
 class Files extends AControl implements IMultiValue
 {
+    use TShorterKey;
+
     protected $templateLabel = '<label>%2$s</label>';
     protected $templateInput = '%3$s';
 
@@ -65,10 +67,16 @@ class Files extends AControl implements IMultiValue
     {
         foreach ($this->children as $child) {
             if ($child instanceof File) {
-                $key = $child->getKey();
-                if (isset($array[$key])) {
-                    $child->setValue($array[$key]);
-                }
+                $shortKey = $this->shorterKey($child->getKey());
+                $child->setValue(
+                    isset($array[$shortKey])
+                        ? $array[$shortKey]
+                        : (
+                    isset($array[$child->getKey()])
+                        ? $array[$child->getKey()]
+                        : ''
+                    )
+                );
             }
         }
     }

@@ -30,6 +30,7 @@ use kalanis\kw_forms\Interfaces\IMultiValue;
  */
 class Checkboxes extends AControl implements IMultiValue
 {
+    use TShorterKey;
 
     public $templateLabel = '<label>%2$s</label>';
     public $templateInput = '%3$s';
@@ -98,11 +99,20 @@ class Checkboxes extends AControl implements IMultiValue
      * !! UNDEFINED values will be SET too !!
      * @param string[]|array $array
      */
-    public function setValues(array $array): void
+    public function setValues(array $array = []): void
     {
         foreach ($this->children as $child) {
             if ($child instanceof Checkbox) {
-                $child->setValue(isset($array[$child->getKey()]) ? $array[$child->getKey()] : '');
+                $shortKey = $this->shorterKey($child->getKey());
+                $child->setValue(
+                isset($array[$shortKey])
+                    ? $array[$shortKey]
+                    : (
+                    isset($array[$child->getKey()])
+                        ? $array[$child->getKey()]
+                        : ''
+                    )
+                );
             }
         }
     }

@@ -3,12 +3,15 @@
 namespace kalanis\kw_forms\Controls;
 
 
+use kalanis\kw_forms\Interfaces\IOriginalValue;
+
+
 /**
  * Class Checkbox
  * @package kalanis\kw_forms\Controls
  * Form element for checkboxes
  */
-class Checkbox extends AControl
+class Checkbox extends AControl implements IOriginalValue
 {
     use TChecked;
 
@@ -21,6 +24,11 @@ class Checkbox extends AControl
         $this->setAttribute('id', sprintf('%s_%s', $this->getKey(), self::$uniqid));
         self::$uniqid++;
         return $this;
+    }
+
+    public function getOriginalValue()
+    {
+        return $this->originalValue;
     }
 
     protected function fillTemplate(): string

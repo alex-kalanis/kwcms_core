@@ -13,7 +13,7 @@ use kalanis\kw_tree\FileNode;
  */
 trait TSubEntry
 {
-    protected function renderTree(?FileNode $baseNode, string $presetValue): string
+    protected function renderTree(?FileNode $baseNode): string
     {
         if (empty($baseNode)) {
             return '';
@@ -22,7 +22,7 @@ trait TSubEntry
         $legend = HtmlElement::init('legend');
         $div = HtmlElement::init('div', ['class' => 'select_dir']);
         $legend->addChild($this->getLabel());
-        $div->addChild($this->fillEntries([$baseNode], $presetValue));
+        $div->addChild($this->fillEntries([$baseNode]));
         $fieldset->addChild($legend);
         $fieldset->addChild($div);
         return $fieldset->render();
@@ -36,4 +36,6 @@ trait TSubEntry
         $entry->addChild($label);
         return $entry;
     }
+
+    abstract protected function fillEntries(array $nodes): string;
 }

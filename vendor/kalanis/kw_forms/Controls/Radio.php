@@ -3,12 +3,15 @@
 namespace kalanis\kw_forms\Controls;
 
 
+use kalanis\kw_forms\Interfaces\IOriginalValue;
+
+
 /**
  * Class Radio
  * @package kalanis\kw_forms\Controls
  * Render input for selecting by radio checkbox
  */
-class Radio extends AControl
+class Radio extends AControl implements IOriginalValue
 {
     use TChecked;
 

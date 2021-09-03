@@ -8,6 +8,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Interfaces\IMultiValue;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
@@ -77,10 +78,9 @@ class Move extends AAuthModule implements IModuleTitle
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->fileForm->process()) {
                 $entries = $this->fileForm->getControl('sourceName[]');
-                if (!method_exists($entries, 'getValues')) {
+                if (!$entries instanceof IMultiValue) {
                     throw new FilesException(Lang::get('files.error.must_contain_files'));
                 }
-//var_dump(['post', $this->inputs->getInArray(null, ['POST']), $entries->getValues(), $this->fileForm->getControl('targetPath')->getValue(), ]);
                 $actionLib = $this->getLibFileAction();
                 foreach ($entries->getValues() as $item) {
                     $this->processed[$item] = false;

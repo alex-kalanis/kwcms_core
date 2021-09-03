@@ -3,7 +3,7 @@
 namespace kalanis\kw_tree\Controls;
 
 
-use kalanis\kw_forms\Controls\AControl;
+use kalanis\kw_forms\Controls;
 
 
 /**
@@ -12,14 +12,19 @@ use kalanis\kw_forms\Controls\AControl;
  */
 trait TMultiValue
 {
-    /** @var AControl[] */
+    use Controls\TShorterKey;
+
+    /** @var Controls\AControl[]|Controls\Checkbox[] */
     protected $inputs = [];
 
     public function getValues(): array
     {
         $array = [];
         foreach ($this->inputs as $child) {
-            $array[$child->getKey()] = $child->getValue();
+            if (empty($child->getValue())) {
+                continue;
+            }
+            $array[] = $child->getValue();
         }
         return $array;
     }
@@ -32,7 +37,20 @@ trait TMultiValue
     public function setValues(array $array): void
     {
         foreach ($this->inputs as $child) {
-            $child->setValue(isset($array[$child->getKey()]) ? $array[$child->getKey()] : '');
+            $shortKey = $this->shorterKey($child->getKey());
+            $child->setValue(
+                isset($array[$shortKey])
+                && is_array($array[$shortKey])
+                && in_array($child->getOriginalValue(), $array[$shortKey])
+                    ? $child->getOriginalValue()
+                    : (
+                    isset($array[$child->getKey()])
+                    && is_array($array[$child->getKey()])
+                    && in_array($child->getOriginalValue(), $array[$child->getKey()])
+                        ? $child->getOriginalValue()
+                        : ''
+                )
+            );
         }
     }
 }

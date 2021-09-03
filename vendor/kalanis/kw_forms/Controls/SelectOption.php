@@ -3,12 +3,15 @@
 namespace kalanis\kw_forms\Controls;
 
 
+use kalanis\kw_forms\Interfaces\IOriginalValue;
+
+
 /**
  * Class SelectOption
  * @package kalanis\kw_forms\Controls
  * Form element for selection - single option line
  */
-class SelectOption extends AControl
+class SelectOption extends AControl implements IOriginalValue
 {
     use TSelected;
 
