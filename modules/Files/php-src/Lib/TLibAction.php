@@ -21,7 +21,7 @@ trait TLibAction
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessFile(
-            $userDir->getWebRootDir() . $userDir->getRealDir() . $this->getWhereDir()
+            $userDir->getWebRootDir() . $userDir->getRealDir(), $this->getWhereDir()
         );
     }
 
@@ -31,7 +31,7 @@ trait TLibAction
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessDir(
-            $userDir->getWebRootDir() . $userDir->getRealDir() . $this->getWhereDir()
+            $userDir->getWebRootDir() . $userDir->getRealDir(), $this->getWhereDir()
         );
     }
 

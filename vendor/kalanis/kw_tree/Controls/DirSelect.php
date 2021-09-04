@@ -45,7 +45,7 @@ class DirSelect extends ATreeControl
     protected function getInput(FileNode $node): Controls\AControl
     {
         $input = new Controls\SelectOption();
-        $input->setEntry($this->getKey(), $node->getPath(), $node->getPath());
+        $input->setEntry($this->getKey(), $node->getPath(), $node->getPath() . DIRECTORY_SEPARATOR);
         $this->inputs[] = $input;
         return $input;
     }

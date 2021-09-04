@@ -17,16 +17,19 @@ use KWCMS\modules\Files\Interfaces\IProcessDirs;
 class ProcessDir implements IProcessDirs
 {
     protected $sourcePath = '';
+    protected $currentDir = '';
 
-    public function __construct(string $sourcePath)
+    public function __construct(string $sourcePath, string $currentDir)
     {
         $this->sourcePath = $sourcePath;
+        $this->currentDir = $currentDir;
+//var_dump(['proc file', $sourcePath, $currentDir]);
     }
 
     public function newDir(string $entry): bool
     {
         try {
-            return mkdir($this->sourcePath . DIRECTORY_SEPARATOR . Stuff::filename($entry));
+            return mkdir($this->sourcePath . $this->currentDir . Stuff::filename($entry));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
@@ -37,8 +40,8 @@ class ProcessDir implements IProcessDirs
         $fileName = Stuff::filename($entry);
         try {
             return copy(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry,
-                strval($to) . DIRECTORY_SEPARATOR . $fileName
+                $this->sourcePath . $this->currentDir . $entry,
+                $this->sourcePath . strval($to) . DIRECTORY_SEPARATOR . $fileName
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -50,8 +53,8 @@ class ProcessDir implements IProcessDirs
         $fileName = Stuff::filename($entry);
         try {
             return rename(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry,
-                strval($to) . DIRECTORY_SEPARATOR . $fileName
+                $this->sourcePath . $this->currentDir . $entry,
+                $this->sourcePath . strval($to) . DIRECTORY_SEPARATOR . $fileName
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -62,8 +65,8 @@ class ProcessDir implements IProcessDirs
     {
         try {
             return rename(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry,
-                $this->sourcePath . DIRECTORY_SEPARATOR . $to
+                $this->sourcePath . $this->currentDir . $entry,
+                $this->sourcePath . $this->currentDir . $to
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -74,7 +77,7 @@ class ProcessDir implements IProcessDirs
     {
         try {
             return rmdir(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry
+                $this->sourcePath . $this->currentDir . $entry
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);

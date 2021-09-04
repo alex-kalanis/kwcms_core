@@ -13,6 +13,9 @@ use SplFileInfo;
  * Class NodeAdapter
  * @package kalanis\kw_tree\Adapters
  * Create tree node from SplFileInfo
+path - the whole path against cutDir
+name - name of that none
+dir - upper directory with ending slash
  */
 class NodeAdapter
 {
@@ -28,12 +31,13 @@ class NodeAdapter
     {
         $node = new FileNode();
         $path = $this->cutPath($info->getRealPath());
+        $dir = Stuff::directory($path);
         if (ITree::CURRENT_DIR == $info->getFilename()) {
             $name = Stuff::filename($path);
             $node->setData(
                 empty($name) ? DIRECTORY_SEPARATOR : $name,
-                Stuff::directory($path),
-                empty($name) ? $path : $path . DIRECTORY_SEPARATOR,
+                empty($dir) ? DIRECTORY_SEPARATOR : $dir,
+                $path,
                 $info->getSize(),
                 $info->getType(),
                 $info->isReadable(),
@@ -42,7 +46,7 @@ class NodeAdapter
         } else {
             $node->setData(
                 $info->getFilename(),
-                Stuff::directory($path),
+                empty($dir) ? DIRECTORY_SEPARATOR : $dir,
                 $path,
                 $info->getSize(),
                 $info->getType(),
@@ -55,6 +59,6 @@ class NodeAdapter
 
     protected function cutPath(string $path): string
     {
-        return DIRECTORY_SEPARATOR . mb_substr($path, mb_strlen($this->cutDir));
+        return mb_substr($path, min(mb_strlen($this->cutDir), mb_strlen($path)));
     }
 }

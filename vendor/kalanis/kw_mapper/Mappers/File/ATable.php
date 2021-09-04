@@ -37,7 +37,6 @@ abstract class ATable extends AFile
     protected function insertRecord(Records\ARecord $record): bool
     {
         $matches = $this->findMatched($record, true);
-var_dump(['match' => $matches]);
         if (!empty($matches)) { // found!!!
             return false;
         }

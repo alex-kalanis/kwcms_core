@@ -83,12 +83,16 @@ class Move extends AAuthModule implements IModuleTitle
                 }
                 $actionLib = $this->getLibFileAction();
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = false;
-//                    $this->processed[$item] = $actionLib->moveFile(
-//                        $item,
-//                        $this->fileForm->getControl('targetPath')->getValue()
-//                    );
+                    $this->processed[$item] = $actionLib->moveFile(
+                        $item,
+                        $this->fileForm->getControl('targetPath')->getValue()
+                    );
                 }
+                $this->tree->process();
+                $sourceTree = $this->tree->getTree();
+                $this->fileForm->composeMoveFile($sourceTree, $targetTree); // again, change in tree
+                $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
+                $this->fileForm->setSentValues();
             }
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;

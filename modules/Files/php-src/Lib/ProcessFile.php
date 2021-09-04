@@ -19,16 +19,19 @@ use KWCMS\modules\Files\Interfaces\IProcessFiles;
 class ProcessFile implements IProcessFiles
 {
     protected $sourcePath = '';
+    protected $currentDir = '';
 
-    public function __construct(string $sourcePath)
+    public function __construct(string $sourcePath, string $currentDir)
     {
         $this->sourcePath = $sourcePath;
+        $this->currentDir = $currentDir;
+//var_dump(['proc file', $sourcePath, $currentDir]);
     }
 
     public function uploadFile(IFileEntry $file): bool
     {
         try {
-            return move_uploaded_file($file->getTempName(), $this->sourcePath . DIRECTORY_SEPARATOR . $this->findFreeName($file->getValue()));
+            return move_uploaded_file($file->getTempName(), $this->sourcePath . $this->currentDir . $this->findFreeName($file->getValue()));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
@@ -42,11 +45,11 @@ class ProcessFile implements IProcessFiles
             $ext = IPaths::SPLITTER_DOT . $ext;
         }
         $fileName = Stuff::fileBase($name);
-        if (!file_exists($this->sourcePath . $fileName . $ext)) {
+        if (!file_exists($this->sourcePath . $this->currentDir . $fileName . $ext)) {
             return $fileName . $ext;
         }
         $i = 0;
-        while (file_exists($this->sourcePath . $fileName . static::FREE_NAME_SEPARATOR . $i . $ext)) {
+        while (file_exists($this->sourcePath . $this->currentDir . $fileName . static::FREE_NAME_SEPARATOR . $i . $ext)) {
             $i++;
         }
         return $fileName . static::FREE_NAME_SEPARATOR . $i . $ext;
@@ -57,8 +60,8 @@ class ProcessFile implements IProcessFiles
         $fileName = Stuff::filename($entry);
         try {
             return copy(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry,
-                strval($to) . DIRECTORY_SEPARATOR . $fileName
+                $this->sourcePath  . $this->currentDir . $entry,
+                $this->sourcePath . strval($to) . DIRECTORY_SEPARATOR . $fileName
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -70,8 +73,8 @@ class ProcessFile implements IProcessFiles
         $fileName = Stuff::filename($entry);
         try {
             return rename(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry,
-                strval($to) . DIRECTORY_SEPARATOR . $fileName
+                $this->sourcePath . $this->currentDir . $entry,
+                $this->sourcePath . strval($to) . DIRECTORY_SEPARATOR . $fileName
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -82,8 +85,8 @@ class ProcessFile implements IProcessFiles
     {
         try {
             return rename(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry,
-                $this->sourcePath . DIRECTORY_SEPARATOR . $to
+                $this->sourcePath . $this->currentDir . $entry,
+                $this->sourcePath . $this->currentDir . $to
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -94,7 +97,7 @@ class ProcessFile implements IProcessFiles
     {
         try {
             return unlink(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $entry
+                $this->sourcePath . $this->currentDir . $entry
             );
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
