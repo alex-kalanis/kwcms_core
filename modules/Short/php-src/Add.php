@@ -67,10 +67,7 @@ class Add extends AAuthModule implements IModuleTitle
                 $ex = new DataExchange($record);
                 $ex->import($this->form->getValues());
                 $record->date = time();
-                if ($record->save(true)) {
-                    Notification::addSuccess(Lang::get('short.updated'));
-                    $this->isProcessed = true;
-                }
+                $this->isProcessed = $record->save(true);
             }
         } catch (MapperException | FormsException | ShortException $ex) {
             $this->error = $ex;
@@ -90,6 +87,9 @@ class Add extends AAuthModule implements IModuleTitle
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());
+            }
+            if ($this->isProcessed) {
+                Notification::addSuccess(Lang::get('short.updated'));
             }
             $this->forward->forward($this->isProcessed);
             $editTmpl = new Lib\EditTemplate();

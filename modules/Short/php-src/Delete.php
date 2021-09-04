@@ -50,10 +50,7 @@ class Delete extends AAuthModule implements IModuleTitle
             $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
             $record = $adapter->getRecord();
             $record->id = strval($this->getFromParam('id'));
-            if ($record->delete()) {
-                Notification::addSuccess(Lang::get('short.removed'));
-                $this->isProcessed = true;
-            }
+            $this->isProcessed = $record->delete();
         } catch (MapperException | ShortException $ex) {
             $this->error = $ex;
         }
@@ -70,6 +67,9 @@ class Delete extends AAuthModule implements IModuleTitle
     {
         if ($this->error) {
             Notification::addError($this->error->getMessage());
+        }
+        if ($this->isProcessed) {
+            Notification::addSuccess(Lang::get('short.removed'));
         }
         $this->forward->forward();
         $this->forward->setForward($this->links->linkVariant('short/dashboard'));

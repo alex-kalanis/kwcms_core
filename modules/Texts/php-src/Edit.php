@@ -86,9 +86,7 @@ class Edit extends AAuthModule implements IModuleTitle
                         throw new TextsException(Lang::get('texts.file_wrong_content'));
                     }
                 }
-                $this->storage->set($path, $content);
-                Notification::addSuccess(Lang::get('texts.file_saved'));
-                $this->isProcessed = true;
+                $this->isProcessed = $this->storage->set($path, $content);
             }
         } catch (TextsException | StorageException | FormsException $ex) {
             $this->error = $ex;
@@ -125,6 +123,9 @@ class Edit extends AAuthModule implements IModuleTitle
         Styles::want('Texts', 'preview.css');
         $out = new Shared\FillHtml($this->user);
         $page = new Lib\EditTemplate();
+        if ($this->isProcessed) {
+            Notification::addSuccess(Lang::get('texts.file_saved'));
+        }
         try {
             $page->setData($this->editFileForm);
             return $out->setContent($this->outModuleTemplate($page->render()));

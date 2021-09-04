@@ -63,10 +63,7 @@ class Edit extends AAuthModule implements IModuleTitle
             if ($this->form->process()) {
                 $ex = new DataExchange($record);
                 $ex->import($this->form->getValues());
-                if ($record->save()) {
-                    Notification::addSuccess(Lang::get('short.updated'));
-                    $this->isProcessed = true;
-                }
+                $this->isProcessed = $record->save();
             }
         } catch (MapperException | FormsException | ShortException $ex) {
             $this->error = $ex;
@@ -86,6 +83,9 @@ class Edit extends AAuthModule implements IModuleTitle
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());
+            }
+            if ($this->isProcessed) {
+                Notification::addSuccess(Lang::get('short.updated'));
             }
             $this->forward->forward($this->isProcessed);
             $editTmpl = new Lib\EditTemplate();
