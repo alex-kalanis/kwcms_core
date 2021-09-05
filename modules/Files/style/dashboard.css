@@ -11,4 +11,9 @@
         box-shadow: inset 0px 0px 1em #c0c0c0;
     }
 
+    #file_read pre {
+        text-align: left;
+        background-color: #f0f0f0;
+        padding: 10px;
+    }
 } /* media screen */

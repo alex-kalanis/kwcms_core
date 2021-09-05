@@ -5,6 +5,7 @@ namespace KWCMS\modules\Files\Lib;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_extras\UserDir;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Files\Interfaces;
 
 
@@ -21,7 +22,9 @@ trait TLibAction
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessFile(
-            $userDir->getWebRootDir() . $userDir->getRealDir(), $this->getWhereDir()
+            Stuff::removeEndingSlash($userDir->getWebRootDir()) . DIRECTORY_SEPARATOR
+            . Stuff::removeEndingSlash($userDir->getHomeDir()) . DIRECTORY_SEPARATOR
+            , Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
         );
     }
 
@@ -31,7 +34,9 @@ trait TLibAction
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessDir(
-            $userDir->getWebRootDir() . $userDir->getRealDir(), $this->getWhereDir()
+            Stuff::removeEndingSlash($userDir->getWebRootDir()) . DIRECTORY_SEPARATOR
+            . Stuff::removeEndingSlash($userDir->getHomeDir()) . DIRECTORY_SEPARATOR
+            , Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
         );
     }
 

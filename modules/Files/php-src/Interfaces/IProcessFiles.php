@@ -25,6 +25,15 @@ interface IProcessFiles
 
     /**
      * @param string $entry
+     * @param int|null $offset
+     * @param int|null $length
+     * @return string
+     * @throws FilesException
+     */
+    public function readFile(string $entry, ?int $offset = null, ?int $length = null): string;
+
+    /**
+     * @param string $entry
      * @param string $to
      * @return bool
      * @throws FilesException

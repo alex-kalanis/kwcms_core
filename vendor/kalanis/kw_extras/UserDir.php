@@ -128,8 +128,8 @@ class UserDir
         if (false !== strpbrk($path, ':')) {
             return false;
         }
-        $this->canUseHomeDir = DIRECTORY_SEPARATOR == substr($path, 0, 1); # may use data dir
-        $this->canUseDataDir = DIRECTORY_SEPARATOR == substr($path, -1, 1); # may use sub dirs
+        $this->canUseHomeDir = DIRECTORY_SEPARATOR != substr($path, 0, 1); # may use data dir - does not start with slash
+        $this->canUseDataDir = DIRECTORY_SEPARATOR != substr($path, -1, 1); # may use sub dirs - does not end with slash
         $this->userPath = $path;
         return true;
     }

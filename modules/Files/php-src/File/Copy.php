@@ -12,15 +12,15 @@ use KWCMS\modules\Files\FilesException;
 
 
 /**
- * Class Move
+ * Class Copy
  * @package KWCMS\modules\Files\File
- * Move content
+ * Copy content
  */
-class Move extends AFile
+class Copy extends AFile
 {
     protected function getFormAlias(): string
     {
-        return 'moveFileForm';
+        return 'copyFileForm';
     }
 
     public function run(): void
@@ -41,7 +41,7 @@ class Move extends AFile
             $this->tree->process();
             $sourceTree = $this->tree->getTree();
 
-            $this->fileForm->composeMoveFile($sourceTree, $targetTree);
+            $this->fileForm->composeCopyFile($sourceTree, $targetTree);
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->fileForm->process()) {
                 $entries = $this->fileForm->getControl('sourceName[]');
@@ -50,14 +50,14 @@ class Move extends AFile
                 }
                 $actionLib = $this->getLibFileAction();
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->moveFile(
+                    $this->processed[$item] = $actionLib->copyFile(
                         $item,
                         $this->fileForm->getControl('targetPath')->getValue()
                     );
                 }
                 $this->tree->process();
                 $sourceTree = $this->tree->getTree();
-                $this->fileForm->composeMoveFile($sourceTree, $targetTree); // again, changes in tree
+                $this->fileForm->composeCopyFile($sourceTree, $targetTree); // again, changes in tree
                 $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
                 $this->fileForm->setSentValues();
             }
@@ -68,21 +68,21 @@ class Move extends AFile
 
     protected function getFormTitleLangKey(): string
     {
-        return 'files.file.move';
+        return 'files.file.copy';
     }
 
     protected function getSuccessLangKey(): string
     {
-        return 'files.file.moved';
+        return 'files.file.copied';
     }
 
     protected function getFailureLangKey(): string
     {
-        return 'files.file.not_moved';
+        return 'files.file.not_copied';
     }
 
     protected function getTitleLangKey(): string
     {
-        return 'files.file.move.short';
+        return 'files.file.copy.short';
     }
 }

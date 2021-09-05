@@ -58,6 +58,22 @@ class ProcessStorageFile implements IProcessFiles
         return $fileName . static::FREE_NAME_SEPARATOR . $i . $ext;
     }
 
+    public function readFile(string $entry, ?int $offset = null, ?int $length = null): string
+    {
+        try {
+            $content = $this->storage->load($this->sourcePath . DIRECTORY_SEPARATOR . $entry);
+            if (is_null($length) && !is_null($offset)) {
+                return substr($content, $offset);
+            } elseif (is_null($offset)) {
+                return substr($content, 0, $length);
+            } else {
+                return substr($content, $offset, $length);
+            }
+        } catch (StorageException $ex) {
+            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+    }
+
     public function copyFile(string $entry, string $to): bool
     {
         $fileName = Stuff::filename($entry);

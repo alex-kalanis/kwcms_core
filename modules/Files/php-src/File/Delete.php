@@ -12,15 +12,15 @@ use KWCMS\modules\Files\FilesException;
 
 
 /**
- * Class Move
+ * Class Delete
  * @package KWCMS\modules\Files\File
- * Move content
+ * Delete content
  */
-class Move extends AFile
+class Delete extends AFile
 {
     protected function getFormAlias(): string
     {
-        return 'moveFileForm';
+        return 'deleteFileForm';
     }
 
     public function run(): void
@@ -30,19 +30,13 @@ class Move extends AFile
             $this->userDir->setUserPath($this->user->getDir());
             $this->userDir->process();
 
-            $this->tree->startFromPath($this->userDir->getHomeDir());
-            $this->tree->canRecursive(true);
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
-            $this->tree->process();
-            $targetTree = $this->tree->getTree();
             $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
             $this->tree->canRecursive(false);
             $this->tree->setFilterCallback([$this, 'filterFiles']);
             $this->tree->process();
-            $sourceTree = $this->tree->getTree();
-
-            $this->fileForm->composeMoveFile($sourceTree, $targetTree);
+            $this->fileForm->composeDeleteFile($this->tree->getTree());
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
+
             if ($this->fileForm->process()) {
                 $entries = $this->fileForm->getControl('sourceName[]');
                 if (!$entries instanceof IMultiValue) {
@@ -50,14 +44,11 @@ class Move extends AFile
                 }
                 $actionLib = $this->getLibFileAction();
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->moveFile(
-                        $item,
-                        $this->fileForm->getControl('targetPath')->getValue()
-                    );
+                    $this->processed[$item] = $actionLib->deleteFile($item);
+//                    $this->fileForm->getControl('targetPath')->getValue()
                 }
                 $this->tree->process();
-                $sourceTree = $this->tree->getTree();
-                $this->fileForm->composeMoveFile($sourceTree, $targetTree); // again, changes in tree
+                $this->fileForm->composeDeleteFile($this->tree->getTree()); // again, changes in tree
                 $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
                 $this->fileForm->setSentValues();
             }
@@ -68,21 +59,21 @@ class Move extends AFile
 
     protected function getFormTitleLangKey(): string
     {
-        return 'files.file.move';
+        return 'files.file.delete';
     }
 
     protected function getSuccessLangKey(): string
     {
-        return 'files.file.moved';
+        return 'files.file.deleted';
     }
 
     protected function getFailureLangKey(): string
     {
-        return 'files.file.not_moved';
+        return 'files.file.not_deleted';
     }
 
     protected function getTitleLangKey(): string
     {
-        return 'files.file.move.short';
+        return 'files.file.delete.short';
     }
 }

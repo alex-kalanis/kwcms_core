@@ -20,7 +20,7 @@ use kalanis\kw_tree\FileNode;
  * Process files in many ways
  * @property Controls\File uploadedFile
  * @property FileRadio fileName
- * @property DirSelect|Controls\Text targetPath
+ * @property DirSelect|Controls\Text|Controls\RadioSet targetPath
  * @property Controls\Submit saveFile
  * @property Controls\Reset resetFile
  */
@@ -36,7 +36,7 @@ class FileForm extends Form
         return $this;
     }
 
-    public function composeSeeFile(FileNode $sourceTree): self
+    public function composeReadFile(FileNode $sourceTree): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
@@ -91,7 +91,7 @@ class FileForm extends Form
         $radios->set('sourceName', '', Lang::get('files.file.select'), $tree);
         $this->addControl($radios);
 
-        $this->addText('targetPath', '', Lang::get('files.file.newName'));
+        $this->addText('targetPath', Lang::get('files.file.newName'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;
@@ -106,10 +106,11 @@ class FileForm extends Form
         $this->addControl($checkboxes);
 
         $radios = new Controls\RadioSet();
-        $radios->set('confirm', 'no', Lang::get('files.check.really'), [
+        $radios->set('targetPath', 'no', Lang::get('files.check.really'), [
             'yes' => Lang::get('files.check.yes'),
             'no' => Lang::get('files.check.no'),
         ]);
+        $this->addControl($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
