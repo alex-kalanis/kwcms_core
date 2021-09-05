@@ -52,7 +52,7 @@ class DashboardTemplate extends ATemplate
         $this->addInput('{TEXT_FILE_RENAME}', Lang::get('files.file.rename'));
         $this->addInput('{TEXT_FILE_DELETE}', Lang::get('files.file.delete'));
         $this->addInput('{TEXT_FILE_READ}', Lang::get('files.file.read'));
-        $this->addInput('{TEXT_DIR_NEW}', Lang::get('files.dir.new'));
+        $this->addInput('{TEXT_DIR_NEW}', Lang::get('files.dir.create'));
         $this->addInput('{TEXT_DIR_COPY}', Lang::get('files.dir.copy'));
         $this->addInput('{TEXT_DIR_MOVE}', Lang::get('files.dir.move'));
         $this->addInput('{TEXT_DIR_RENAME}', Lang::get('files.dir.rename'));

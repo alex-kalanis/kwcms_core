@@ -36,7 +36,7 @@ class DirRadio extends ATreeControl
 
     protected function getEntry(FileNode $node): HtmlElement
     {
-        $entry = HtmlElement::init('li');
+        $entry = HtmlElement::init('li', ['class' => 'dir']);
         $entry->addChild($node->getControl());
         return $entry;
     }

@@ -20,7 +20,7 @@ trait TSubEntry
         }
         $fieldset = HtmlElement::init('fieldset');
         $legend = HtmlElement::init('legend');
-        $div = HtmlElement::init('div', ['class' => 'select_dir']);
+        $div = HtmlElement::init('div', ['class' => 'select_tree']);
         $legend->addChild($this->getLabel());
         $div->addChild($this->fillEntries([$baseNode]));
         $fieldset->addChild($legend);

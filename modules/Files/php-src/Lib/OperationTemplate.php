@@ -30,12 +30,12 @@ class OperationTemplate extends ATemplate
     }
 
     /**
-     * @param FileForm $form
+     * @param AForm $form
      * @param string $action
      * @return $this
      * @throws RenderException
      */
-    public function setData(FileForm $form, string $action): self
+    public function setData(AForm $form, string $action): self
     {
         $this->updateItem('{FILE_ACTION_TEXT}', $action);
         $this->updateItem('{FORM_START}', $form->renderStart());

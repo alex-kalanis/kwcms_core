@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Files\File;
+namespace KWCMS\modules\Files\Dir;
 
 
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -12,15 +12,15 @@ use KWCMS\modules\Files\FilesException;
 
 
 /**
- * Class Delete
- * @package KWCMS\modules\Files\File
- * Delete content
+ * Class Move
+ * @package KWCMS\modules\Files\Dir
+ * Move content
  */
-class Delete extends AFile
+class Move extends ADir
 {
     protected function getFormAlias(): string
     {
-        return 'deleteFileForm';
+        return 'moveDirForm';
     }
 
     public function run(): void
@@ -30,27 +30,36 @@ class Delete extends AFile
             $this->userDir->setUserPath($this->user->getDir());
             $this->userDir->process();
 
+            $this->tree->startFromPath($this->userDir->getHomeDir());
+            $this->tree->canRecursive(true);
+            $this->tree->setFilterCallback([$this, 'filterDirs']);
+            $this->tree->process();
+            $targetTree = $this->tree->getTree();
             $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
             $this->tree->canRecursive(false);
-            $this->tree->setFilterCallback([$this, 'filterFiles']);
+            $this->tree->setFilterCallback([$this, 'filterDirs']);
             $this->tree->process();
-            $this->fileForm->composeDeleteFile($this->tree->getTree());
-            $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
+            $sourceTree = $this->tree->getTree();
 
-            if ($this->fileForm->process()) {
-                $entries = $this->fileForm->getControl('sourceName[]');
+            $this->dirForm->composeMoveDir($sourceTree, $targetTree);
+            $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
+            if ($this->dirForm->process()) {
+                $entries = $this->dirForm->getControl('sourceName[]');
                 if (!$entries instanceof IMultiValue) {
                     throw new FilesException(Lang::get('files.error.must_contain_files'));
                 }
-                if ('yes' != $this->fileForm->getControl('targetPath')->getValue()) {
-                    return;
-                }
                 $actionLib = $this->getLibFileAction();
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->deleteFile($item);
+                    $this->processed[$item] = $actionLib->moveFile(
+                        $item,
+                        $this->dirForm->getControl('targetPath')->getValue()
+                    );
                 }
                 $this->tree->process();
-                $this->fileForm->composeDeleteFile($this->tree->getTree()); // again, changes in tree
+                $sourceTree = $this->tree->getTree();
+                $this->dirForm->composeMoveDir($sourceTree, $targetTree); // again, changes in tree
+                $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
+                $this->dirForm->setSentValues();
             }
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;
@@ -59,21 +68,21 @@ class Delete extends AFile
 
     protected function getFormTitleLangKey(): string
     {
-        return 'files.file.delete';
+        return 'files.dir.move';
     }
 
     protected function getSuccessLangKey(): string
     {
-        return 'files.file.deleted';
+        return 'files.dir.moved';
     }
 
     protected function getFailureLangKey(): string
     {
-        return 'files.file.not_deleted';
+        return 'files.dir.not_moved';
     }
 
     protected function getTitleLangKey(): string
     {
-        return 'files.file.delete.short';
+        return 'files.dir.move.short';
     }
 }

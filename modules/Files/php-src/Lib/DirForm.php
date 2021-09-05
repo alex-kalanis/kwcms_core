@@ -6,49 +6,34 @@ namespace KWCMS\modules\Files\Lib;
 use kalanis\kw_forms\Controls;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_rules\Interfaces\IRules;
+use kalanis\kw_tree\Controls\DirCheckboxes;
 use kalanis\kw_tree\Controls\DirSelect;
-use kalanis\kw_tree\Controls\FileCheckboxes;
 use kalanis\kw_tree\Controls\FileRadio;
 use kalanis\kw_tree\FileNode;
 
 
 /**
- * Class FileForm
+ * Class DirForm
  * @package KWCMS\modules\Files\Lib
- * Process files in many ways
+ * Process dirs in many ways
  */
-class FileForm extends AForm
+class DirForm extends AForm
 {
-    public function composeUploadFile(): self
+    public function composeCreateDir(): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
-        $this->addFile('uploadedFile', Lang::get('files.file.select'))
-            ->addRule(IRules::FILE_RECEIVED, Lang::get('files.must_be_sent'));
+        $this->addText('targetPath', Lang::get('files.dir.newName'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;
     }
 
-    public function composeReadFile(FileNode $sourceTree): self
+    public function composeCopyDir(FileNode $sourceTree, FileNode $targetTree): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
-        $checkboxes = new FileRadio();
-        $checkboxes->set('sourceName', '', Lang::get('files.file.select'), $sourceTree);
-        $this->addControl($checkboxes);
-
-        $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
-        $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
-        return $this;
-    }
-
-    public function composeCopyFile(FileNode $sourceTree, FileNode $targetTree): self
-    {
-        $this->setMethod(IEntry::SOURCE_POST);
-
-        $checkboxes = new FileCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
+        $checkboxes = new DirCheckboxes();
+        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree);
         $this->addControl($checkboxes);
 
         $radios = new DirSelect();
@@ -60,12 +45,12 @@ class FileForm extends AForm
         return $this;
     }
 
-    public function composeMoveFile(FileNode $sourceTree, FileNode $targetTree): self
+    public function composeMoveDir(FileNode $sourceTree, FileNode $targetTree): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
-        $checkboxes = new FileCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
+        $checkboxes = new DirCheckboxes();
+        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree);
         $this->addControl($checkboxes);
 
         $radios = new DirSelect();
@@ -77,26 +62,26 @@ class FileForm extends AForm
         return $this;
     }
 
-    public function composeRenameFile(FileNode $tree): self
+    public function composeRenameDir(FileNode $tree): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
         $radios = new FileRadio();
-        $radios->set('sourceName', '', Lang::get('files.file.select'), $tree);
+        $radios->set('sourceName', '', Lang::get('files.dir.select'), $tree);
         $this->addControl($radios);
 
-        $this->addText('targetPath', Lang::get('files.file.newName'));
+        $this->addText('targetPath', Lang::get('files.dir.newName'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;
     }
 
-    public function composeDeleteFile(FileNode $tree): self
+    public function composeDeleteDir(FileNode $tree): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
-        $checkboxes = new FileCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $tree);
+        $checkboxes = new DirCheckboxes();
+        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $tree);
         $this->addControl($checkboxes);
 
         $radios = new Controls\RadioSet();

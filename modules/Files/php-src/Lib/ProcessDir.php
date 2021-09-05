@@ -26,7 +26,7 @@ class ProcessDir implements IProcessDirs
 //var_dump(['proc file', $sourcePath, $currentDir]);
     }
 
-    public function newDir(string $entry): bool
+    public function createDir(string $entry): bool
     {
         try {
             return mkdir($this->sourcePath . $this->currentDir . Stuff::filename($entry));

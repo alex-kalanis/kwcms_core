@@ -18,7 +18,7 @@ interface IProcessDirs
      * @return bool
      * @throws FilesException
      */
-    public function newDir(string $entry): bool;
+    public function createDir(string $entry): bool;
 
     /**
      * @param string $entry

@@ -40,7 +40,7 @@ class FileRadio extends ATreeControl
 
     protected function getEntry(FileNode $node): HtmlElement
     {
-        $entry = HtmlElement::init('li');
+        $entry = HtmlElement::init('li', ['class' => 'file']);
         $entry->addChild($node->getControl());
         return $entry;
     }

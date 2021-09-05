@@ -42,7 +42,7 @@ class ModuleTemplate extends ATemplate
         $this->addInput('{TEXT_FILE_RENAME}', Lang::get('files.file.rename.short'));
         $this->addInput('{TEXT_FILE_DELETE}', Lang::get('files.file.delete.short'));
         $this->addInput('{TEXT_FILE_READ}', Lang::get('files.file.read.short'));
-        $this->addInput('{TEXT_DIR_NEW}', Lang::get('files.dir.new.short'));
+        $this->addInput('{TEXT_DIR_NEW}', Lang::get('files.dir.create.short'));
         $this->addInput('{TEXT_DIR_COPY}', Lang::get('files.dir.copy.short'));
         $this->addInput('{TEXT_DIR_MOVE}', Lang::get('files.dir.move.short'));
         $this->addInput('{TEXT_DIR_RENAME}', Lang::get('files.dir.rename.short'));
