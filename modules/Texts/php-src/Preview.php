@@ -70,7 +70,7 @@ class Preview extends AAuthModule
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }
-        $path = Stuff::sanitize($this->userDir->getRealDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
+        $path = Stuff::sanitize($this->userDir->getHomeDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
         try {
             $externalContent = $this->inputs->getInArray('content', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
             $this->displayContent = (!empty($externalContent))

@@ -57,7 +57,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $this->userDir->setUserPath($this->user->getDir());
         $this->userDir->process();
         $this->tree->canRecursive(false);
-        $this->tree->startFromPath($this->userDir->getRealDir() . $this->getWhereDir());
+        $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
         $this->tree->setFilterCallback([$this->getParams(), 'filterFiles']);
         $this->tree->process();
         $this->newFileForm->composeForm($this->links);

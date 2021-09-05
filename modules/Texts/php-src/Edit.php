@@ -73,7 +73,7 @@ class Edit extends AAuthModule implements IModuleTitle
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }
-        $path = Stuff::sanitize($this->userDir->getRealDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
+        $path = Stuff::sanitize($this->userDir->getHomeDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
         try {
             $content = $this->storage->exists($path) ? $this->storage->get($path) : '{CREATE_NEW_FREE_FILE}';
             $this->editFileForm->composeForm($content, $fileName, $this->links->linkVariant($this->targetPreview()));

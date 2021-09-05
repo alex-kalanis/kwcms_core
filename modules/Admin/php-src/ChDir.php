@@ -58,7 +58,7 @@ class ChDir extends AAuthModule
         $this->userDir->setUserPath($this->user->getDir());
         $this->userDir->process();
         $this->tree->canRecursive(true);
-        $this->tree->startFromPath($this->userDir->getRealDir());
+        $this->tree->startFromPath($this->userDir->getHomeDir());
         $this->tree->process();
         $this->chDirForm->composeForm($this->getWhereDir(), $this->filter->filter($this->tree->getTree()));
         $inputVars = new InputVarsAdapter($this->inputs);
