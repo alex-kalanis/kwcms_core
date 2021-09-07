@@ -1,0 +1,44 @@
+/***********************************************************************
+*       ADMIN/MODULE/IMAGES/STYLE/MODULE.CSS                           *
+*       Style of module IMAGES                                         *
+*       used CSS 3                                                     *
+*       from Kalanys@2010                                              *
+*       license GNU/GPLv2                                              *
+***********************************************************************/
+
+@media screen {
+    
+    #tree #chdir tr, #tree thead tr {
+        font-size: 0.8em;
+        padding: 0.2em 0.4em;
+    }
+
+    #tree tbody tr.after {
+        background-color: #F2F2F2;
+    }
+
+    #tree tbody input.file {
+        font-size: 0.8em; width: 10em; color: #585858; background-color: #d8d8d8; border-color: #585858;
+    }
+    
+    #tree tbody input.name {
+        font-size: 0.8em; width: 11em;
+    }
+    
+    #tree tbody input.desc {
+        font-size: 0.8em; width: 12em;
+    }
+    
+    #tree tbody input.pos {
+        font-size: 0.8em; width: 3em;
+    }
+    
+    #tree tbody div.pos {
+        display: inline;
+    }
+
+    #tree tbody button[disabled] {
+        color: #585858; background-color: #d8d8d8; border: 1px solid #585858;
+    }
+    
+} /* media screen */

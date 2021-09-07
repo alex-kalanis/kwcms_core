@@ -1,9 +1,10 @@
 <?php
 
-namespace KWCMS\modules\Menu;
+namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_menu\Menu\Item;
+use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MoreFiles;
 use kalanis\kw_modules\InternalLink;
@@ -13,7 +14,7 @@ use kalanis\kw_paths\Stuff;
 
 /**
  * Class Tree
- * @package KWCMS\modules\Menu
+ * @package KWCMS\modules\Menu\Lib
  * Menu tree
  */
 class Tree
@@ -27,7 +28,7 @@ class Tree
         $this->link = new InternalLink($path);
     }
 
-    public function output(string $startPath): ?\kalanis\kw_menu\Menu\Menu
+    public function output(string $startPath): ?Menu
     {
         try {
             $menu = $this->processor->setPath($this->link->userContent($startPath, false, false))->getMenu();

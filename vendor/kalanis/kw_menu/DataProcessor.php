@@ -4,6 +4,8 @@ namespace kalanis\kw_menu;
 
 
 use kalanis\kw_menu\Interfaces\IMenu;
+use kalanis\kw_storage\Storage;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -15,6 +17,8 @@ class DataProcessor
 {
     /** @var string path to menu file */
     protected $path = '';
+    /** @var Storage|null */
+    protected $storage = null;
     /** @var Menu\Menu */
     protected $menu = null;
     /** @var Menu\Item */
@@ -24,10 +28,11 @@ class DataProcessor
     /** @var Menu\Item[] */
     protected $workList = [];
 
-    public function __construct()
+    public function __construct(?Storage $storage = null)
     {
         $this->menu = new Menu\Menu();
         $this->item = new Menu\Item();
+        $this->storage = $storage;
     }
 
     public function setPath(string $path): self
@@ -67,6 +72,15 @@ class DataProcessor
      */
     protected function readLines(): array
     {
+        if ($this->storage) {
+            try {
+                if ($this->storage->exists($this->path)) {
+                    return explode("\r\n", $this->storage->get($this->path));
+                }
+            } catch (StorageException $ex) {
+                throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
         $load = @file($this->path);
         if (false === $load) {
             throw new MenuException('Cannot load menu file');
@@ -286,6 +300,15 @@ class DataProcessor
             }
         }
         $content[] = '';
+
+        if ($this->storage) {
+            try {
+                $this->storage->set($this->path, implode("\r\n", $content));
+                return;
+            } catch (StorageException $ex) {
+                throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
 
         if ( false === @file_put_contents($this->path, implode("\r\n", $content) ) ) {
             throw new MenuException('Cannot save menu file');

@@ -39,7 +39,7 @@ class Menu extends AModule
         $this->cache = new Cache($storage);
         $this->cache->init('Menu');
         $this->link = new ExternalLink(Config::getPath());
-        $this->tree = new Tree(Config::getPath());
+        $this->tree = new Lib\Tree(Config::getPath());
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
     }

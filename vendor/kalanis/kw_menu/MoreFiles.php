@@ -5,6 +5,7 @@ namespace kalanis\kw_menu;
 
 use kalanis\kw_menu\Interfaces\IMenu;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_storage\Storage;
 
 
 /**
@@ -18,9 +19,9 @@ class MoreFiles
     /** @var DataProcessor */
     protected $data = null;
 
-    public function __construct()
+    public function __construct(?Storage $storage = null)
     {
-        $this->data = new DataProcessor();
+        $this->data = new DataProcessor($storage);
     }
 
     /**
