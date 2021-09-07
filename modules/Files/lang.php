@@ -249,15 +249,15 @@ $lang = [
         "files.file.not_deleted" => "Soubor %s nebyl smaz&#x00E1;n.",
 
         "files.dir.created" => "Slo&#x017E;ka %s vytvo&#x0159;ena.",
-        "files.dir.copied" => "Slo&#x017E;ka %s zkop&#x00ED;rov&#x00E1;n.",
+        "files.dir.copied" => "Slo&#x017E;ka %s zkop&#x00ED;rov&#x00E1;na.",
         "files.dir.moved" => "Slo&#x017E;ka %s p&#x0159;esunuta.",
         "files.dir.renamed" => "Slo&#x017E;ka %s p&#x0159;ejmenov&#x00E1;na.",
         "files.dir.deleted" => "Slo&#x017E;ka %s smaz&#x00E1;na.",
         "files.dir.not_created" => "Slo&#x017E;ka %s nebyla vytvo&#x0159;ena.",
-        "files.dir.not_copied" => "Slo&#x017E;ka %s nebyla zkop&#x00ED;rov&#x00E1;n.",
-        "files.dir.not_moved" => "Slo&#x017E;ka %s nebyla p&#x0159;esunut.",
-        "files.dir.not_renamed" => "Slo&#x017E;ka %s nebyla p&#x0159;ejmenov&#x00E1;n.",
-        "files.dir.not_deleted" => "Slo&#x017E;ka %s nebyla smaz&#x00E1;n.",
+        "files.dir.not_copied" => "Slo&#x017E;ka %s nebyla zkop&#x00ED;rov&#x00E1;na.",
+        "files.dir.not_moved" => "Slo&#x017E;ka %s nebyla p&#x0159;esunuta.",
+        "files.dir.not_renamed" => "Slo&#x017E;ka %s nebyla p&#x0159;ejmenov&#x00E1;na.",
+        "files.dir.not_deleted" => "Slo&#x017E;ka %s nebyla smaz&#x00E1;na.",
 
         // menu naming
         "files.dashboard.short" => "Operace",

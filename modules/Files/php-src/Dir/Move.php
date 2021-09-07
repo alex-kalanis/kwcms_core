@@ -48,9 +48,9 @@ class Move extends ADir
                 if (!$entries instanceof IMultiValue) {
                     throw new FilesException(Lang::get('files.error.must_contain_files'));
                 }
-                $actionLib = $this->getLibFileAction();
+                $actionLib = $this->getLibDirAction();
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->moveFile(
+                    $this->processed[$item] = $actionLib->moveDir(
                         $item,
                         $this->dirForm->getControl('targetPath')->getValue()
                     );

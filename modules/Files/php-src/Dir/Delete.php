@@ -45,9 +45,9 @@ class Delete extends ADir
                 if ('yes' != $this->dirForm->getControl('targetPath')->getValue()) {
                     return;
                 }
-                $actionLib = $this->getLibFileAction();
+                $actionLib = $this->getLibDirAction();
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->deleteFile($item);
+                    $this->processed[$item] = $actionLib->deleteDir($item);
                 }
                 $this->tree->process();
                 $this->dirForm->composeDeleteDir($this->tree->getTree()); // again, changes in tree
