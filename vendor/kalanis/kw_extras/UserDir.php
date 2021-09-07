@@ -28,7 +28,9 @@ class UserDir
 
     public function __construct(Path $path)
     {
-        $this->webRootDir = $path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
+        $this->webRootDir =
+            Stuff::removeEndingSlash($path->getDocumentRoot()) . DIRECTORY_SEPARATOR
+            . Stuff::removeEndingSlash($path->getPathToSystemRoot()) . DIRECTORY_SEPARATOR;
     }
 
     public function getWebRootDir(): string

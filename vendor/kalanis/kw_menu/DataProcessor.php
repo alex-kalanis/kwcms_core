@@ -3,9 +3,8 @@
 namespace kalanis\kw_menu;
 
 
+use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\Interfaces\IMenu;
-use kalanis\kw_storage\Storage;
-use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -17,7 +16,7 @@ class DataProcessor
 {
     /** @var string path to menu file */
     protected $path = '';
-    /** @var Storage|null */
+    /** @var Interfaces\IDataSource|null */
     protected $storage = null;
     /** @var Menu\Menu */
     protected $menu = null;
@@ -28,7 +27,7 @@ class DataProcessor
     /** @var Menu\Item[] */
     protected $workList = [];
 
-    public function __construct(?Storage $storage = null)
+    public function __construct(Interfaces\IDataSource $storage)
     {
         $this->menu = new Menu\Menu();
         $this->item = new Menu\Item();
@@ -42,6 +41,15 @@ class DataProcessor
         $this->highest = 0;
         $this->workList = [];
         return $this;
+    }
+
+    /**
+     * @return bool
+     * @throws MenuException
+     */
+    public function exists(): bool
+    {
+        return $this->storage->exists($this->path);
     }
 
     /**
@@ -72,20 +80,10 @@ class DataProcessor
      */
     protected function readLines(): array
     {
-        if ($this->storage) {
-            try {
-                if ($this->storage->exists($this->path)) {
-                    return explode("\r\n", $this->storage->get($this->path));
-                }
-            } catch (StorageException $ex) {
-                throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
-            }
+        if ($this->storage->exists($this->path)) {
+            return explode("\r\n", $this->storage->load($this->path));
         }
-        $load = @file($this->path);
-        if (false === $load) {
-            throw new MenuException('Cannot load menu file');
-        }
-        return $load;
+        throw new MenuException(Lang::get('menu.error.cannot_open'));
     }
 
     protected function loadHeader(string $line): void
@@ -97,6 +95,9 @@ class DataProcessor
     protected function loadItems(array $lines): void
     {
         foreach ($lines as $line) {
+            if (empty($line)) {
+                continue;
+            }
             if (in_array($line[0], ['#', ';'])) {
                 continue;
             }
@@ -144,8 +145,8 @@ class DataProcessor
     {
         $name = empty($name) ? $file : $name;
         $item = clone $this->item;
-        $this->workList[$this->highest] = $item->setData($name, $desc, $file, $this->highest, $sub);
         $this->highest++;
+        $this->workList[$this->highest] = $item->setData($name, $desc, $file, $this->highest, $sub);
     }
 
     /**
@@ -157,10 +158,10 @@ class DataProcessor
      */
     public function update(string $file, ?string $name, ?string $desc, ?bool $sub): void
     {
-        # null sign means not free, but unchanged
+        # null sign means not free, just unchanged
         $item = $this->getItem($file);
         if (!$item) {
-            throw new MenuException(sprintf('Item for file *%s* not found', $file));
+            throw new MenuException(Lang::get('menu.error.item_not_found', $file));
         }
 
         $item->setData(
@@ -190,7 +191,7 @@ class DataProcessor
         $prepared = [];
         foreach ($positions as $old => &$new) {
             if (!is_numeric($old) || !is_numeric($new)) {
-                throw new MenuException('You post problematic data!');
+                throw new MenuException(Lang::get('menu.error.problematic_data'));
             }
         }
 
@@ -235,7 +236,7 @@ class DataProcessor
             $this->highest = max($this->highest, $i);
         }
 
-        $this->workList = $use; # save singularized
+        $this->workList = $use; # save as unique ones
     }
 
     protected function clearHoles(): void
@@ -286,32 +287,22 @@ class DataProcessor
             $this->menu->getFile(),
             $this->menu->getDisplayCount(),
             $this->menu->getName(),
-            $this->menu->getTitle()
+            $this->menu->getTitle(),
+            '',
         ]);
-        $content[] = '';
-        for ($i = 0; $i < $this->highest; $i++) { // items
-            if (isset($this->workList[$i])) {
-                $content[] = implode(IMenu::SEPARATOR, [
-                    $this->workList[$i]->getFile(),
-                    $this->workList[$i]->getName(),
-                    $this->workList[$i]->getTitle(),
-                    (string)intval($this->workList[$i]->canGoSub()),
-                ]);
-            }
+        $content[] = '#';
+        foreach ($this->workList as $item) { // save all! Limit only on render
+            $content[] = implode(IMenu::SEPARATOR, [
+                $item->getFile(),
+                strval($item->getPosition()),
+                $item->getName(),
+                $item->getTitle(),
+                strval(intval($item->canGoSub())),
+                '',
+            ]);
         }
         $content[] = '';
 
-        if ($this->storage) {
-            try {
-                $this->storage->set($this->path, implode("\r\n", $content));
-                return;
-            } catch (StorageException $ex) {
-                throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
-            }
-        }
-
-        if ( false === @file_put_contents($this->path, implode("\r\n", $content) ) ) {
-            throw new MenuException('Cannot save menu file');
-        }
+        $this->storage->save($this->path, implode("\r\n", $content));
     }
 }

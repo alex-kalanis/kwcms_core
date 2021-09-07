@@ -5,68 +5,87 @@ namespace kalanis\kw_menu;
 
 use kalanis\kw_menu\Interfaces\IMenu;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_storage\Storage;
 
 
 /**
  * Class MoreFiles
  * @package kalanis\kw_menu
+ * Process the menu against the file tree
  * Load more already unloaded files and remove non-existing ones
  */
 class MoreFiles
 {
-    protected $path = '';
+    /** @var string */
+    protected $metaFile = '';
+    /** @var string */
+    protected $directoryPath = '';
     /** @var DataProcessor */
     protected $data = null;
+    /** @var Interfaces\IDataSource */
+    protected $storage = null;
 
-    public function __construct(?Storage $storage = null)
+    public function __construct(Interfaces\IDataSource $storage, string $metaFile = '')
     {
         $this->data = new DataProcessor($storage);
+        $this->storage = $storage;
+        $this->metaFile = !empty($metaFile) ? Stuff::filename($metaFile) : 'index' . IMenu::EXT_MENU ;
     }
 
     /**
-     * @param string $path directory
-     * @return DataProcessor
+     * @param string $directoryPath directory
+     * @return $this
+     */
+    public function setPath(string $directoryPath): self
+    {
+        $this->directoryPath = Stuff::removeEndingSlash($directoryPath);
+        $this->data->setPath($this->directoryPath . DIRECTORY_SEPARATOR . $this->metaFile);
+        return $this;
+    }
+
+    /**
+     * @return $this
      * @throws MenuException
      */
-    public function setPath(string $path): DataProcessor
+    public function load(): self
     {
-        $this->path = $path;
-        $filePath = $path . DIRECTORY_SEPARATOR . $this->menuFileName();
-        $this->data->setPath($filePath);
-        if (is_file($filePath)) { # meta already exists
+        if ($this->data->exists()) {
             $this->data->load();
             $this->fillMissing();
         } else {
             $this->createNew();
         }
-        return $this->data;
+        return $this;
     }
 
-    public function createNew(): void
+    /**
+     * @throws MenuException
+     */
+    protected function createNew(): void
     {
-        foreach ($this->listFiles() as $file) {
+        foreach ($this->storage->getFiles($this->directoryPath) as $file) {
             $this->data->add($file);
         }
     }
 
+    /**
+     * @throws MenuException
+     */
     protected function fillMissing(): void
     {
-        $listed = $this->listFiles();
         $toRemoval = [];
         foreach ($this->data->getWorking() as $item) {
             $toRemoval[$item->getPosition()] = true;
         }
-        foreach ($listed as $fileName) {
+        foreach ($this->storage->getFiles($this->directoryPath) as $file) {
             $alreadyKnown = false;
             foreach ($this->data->getWorking() as $item) { # stay
-                if ((!$alreadyKnown) && ($item->getFile() == $fileName)) {
+                if ((!$alreadyKnown) && ($item->getFile() == $file)) {
                     $alreadyKnown = true;
                     $toRemoval[$item->getPosition()] = false;
                 }
             }
             if (!$alreadyKnown) {
-                $this->data->add($fileName);
+                $this->data->add($file);
             }
         }
         foreach ($this->data->getWorking() as $item) {
@@ -76,18 +95,8 @@ class MoreFiles
         }
     }
 
-    public function listFiles(): array
+    public function getData(): DataProcessor
     {
-        return array_filter(array_filter(scandir($this->path), ['\kalanis\kw_paths\Stuff', 'notDots']), [$this, 'onlyHtml']);
-    }
-
-    public function onlyHtml(string $in): bool
-    {
-        return in_array(Stuff::fileExt($in), ['htm', 'html']);
-    }
-
-    protected function menuFileName(): string
-    {
-        return 'index' . IMenu::EXT_MENU;
+        return $this->data;
     }
 }

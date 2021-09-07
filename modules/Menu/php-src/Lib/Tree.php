@@ -3,6 +3,8 @@
 namespace KWCMS\modules\Menu\Lib;
 
 
+use kalanis\kw_confs\Config;
+use kalanis\kw_menu\DataSource;
 use kalanis\kw_menu\Menu\Item;
 use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
@@ -24,14 +26,16 @@ class Tree
 
     public function __construct(Path $path)
     {
-        $this->processor = new MoreFiles();
+        $this->processor = new MoreFiles(new DataSource\Volume(
+            Stuff::removeEndingSlash($path->getDocumentRoot()) . DIRECTORY_SEPARATOR . Stuff::removeEndingSlash($path->getPathToSystemRoot())
+        ), Config::get('Menu','meta'));
         $this->link = new InternalLink($path);
     }
 
     public function output(string $startPath): ?Menu
     {
         try {
-            $menu = $this->processor->setPath($this->link->userContent($startPath, false, false))->getMenu();
+            $menu = $this->processor->setPath($this->link->userContent($startPath, false, false))->load()->getData()->getMenu();
         } catch (MenuException $ex) {
             return null;
         }
@@ -48,7 +52,7 @@ class Tree
         }
         $localPath = $deepLink . DIRECTORY_SEPARATOR . Stuff::fileBase($item->getName());
         try {
-            $menu = $this->processor->setPath($this->link->userContent($localPath, false, false))->getMenu();
+            $menu = $this->processor->setPath($this->link->userContent($localPath, false, false))->load()->getData()->getMenu();
             if (!empty($menu)) {
                 foreach ($menu->getItems() as $item) {
                     $this->loadSub($item, $localPath);

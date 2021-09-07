@@ -10,6 +10,7 @@ use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_menu as menu;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
@@ -41,10 +42,14 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
+        Config::load('Menu');
         $this->initTModuleTemplate();
         $this->userDir = new UserDir(Config::getPath());
         $this->editPropsForm = new Lib\EditPropsForm('editPropsForm');
-        $this->libMenu = new \kalanis\kw_menu\DataProcessor();
+        $this->libMenu = new menu\MoreFiles(
+            new menu\DataSource\Volume($this->userDir->getWebRootDir()),
+            Config::get('Menu', 'meta')
+        );
         Config::load('Menu');
     }
 
@@ -59,14 +64,15 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $this->userDir->setUserPath($this->user->getDir());
         $this->userDir->process();
 
-        $this->libMenu->setPath(
-            Stuff::removeEndingSlash($this->userDir->getWebRootDir()) . DIRECTORY_SEPARATOR
-            . Stuff::removeEndingSlash($this->userDir->getRealDir()) . DIRECTORY_SEPARATOR
-            . Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
-            . Config::get('Menu', 'meta')
-        );
         try {
-            $item = $this->libMenu->getMenu();
+            $this->libMenu->setPath(
+                Stuff::removeEndingSlash($this->userDir->getRealDir()) . DIRECTORY_SEPARATOR
+                . Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
+            );
+            $item = $this->libMenu->load()->getData()->getMenu();
+            if (empty($item->getFile())) {
+                $item->setData($this->getWhereDir(), $item->getName(), $item->getTitle(), $item->getDisplayCount());
+            }
         } catch (MenuException $ex) {
             $item = new \kalanis\kw_menu\Menu\Menu();
             $item->setData(
@@ -80,14 +86,15 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $this->editPropsForm->composeForm($item);
             $this->editPropsForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editPropsForm->process()) {
-                $this->libMenu->updateInfo(
+                $this->libMenu->getData()->updateInfo(
                     (string)$this->editPropsForm->getControl('menuName')->getValue(),
                     (string)$this->editPropsForm->getControl('menuDesc')->getValue(),
                     (int)$this->editPropsForm->getControl('menuCount')->getValue()
                 );
+                $this->libMenu->getData()->save();
                 $this->isProcessed = true;
             }
-        } catch (FormsException $ex) {
+        } catch (FormsException | MenuException $ex) {
             $this->error = $ex;
         }
     }

@@ -29,6 +29,8 @@ $lang = [
         "menu.error.cannot_write" => "Cannot write.",
         "menu.error.cannot_open" => "Cannot open metadata.",
         "menu.error.cannot_save" => "Cannot write metadata.",
+        "menu.error.item_not_found" => "Item for file *%s* not found.",
+        "menu.error.problematic_data" => "You post problematic data!",
 
         "menu.tree.props" => "Actualiztion of properties in menu",
         "menu.tree.current_dir.update" => "Actualization of properties of menu",
@@ -55,6 +57,8 @@ $lang = [
         "menu.error.cannot_write" => "Cannot write",
         "menu.error.cannot_open" => "Cannot open metadata",
         "menu.error.cannot_save" => "Cannot write metadata",
+        "menu.error.item_not_found" => "Item for file *%s* not found.",
+        "menu.error.problematic_data" => "You post problematic data!",
 
         "menu.tree.props" => "Actualize propri&#x00E9;t&#x00E9;s au menu",
         "menu.tree.current_dir.update" => "Actualize propri&#x00E9;t&#x00E9;s de menu",
@@ -81,6 +85,8 @@ $lang = [
         "menu.error.cannot_write" => "Nejde to zapsat",
         "menu.error.cannot_open" => "Nejde otev&#x0159;&#x00ED;t metadata",
         "menu.error.cannot_save" => "Nejde zapsat metadata",
+        "menu.error.item_not_found" => "Polo&#x017E;ku *%s* nelze nal&#x00E9;zt.",
+        "menu.error.problematic_data" => "P&#x0159;ed&#x00E1;na problematick&#x00E1; data!",
 
         "menu.tree.props" => "Aktualizace vlastnost&#x00ED; v menu",
         "menu.tree.current_dir.update" => "Aktualizace vlastnost&#x00ED; menu",

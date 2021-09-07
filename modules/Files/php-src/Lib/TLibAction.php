@@ -22,8 +22,7 @@ trait TLibAction
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessFile(
-            Stuff::removeEndingSlash($userDir->getWebRootDir()) . DIRECTORY_SEPARATOR
-            . Stuff::removeEndingSlash($userDir->getHomeDir()) . DIRECTORY_SEPARATOR
+            $userDir->getWebRootDir() . $userDir->getHomeDir()
             , Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
         );
     }
@@ -34,8 +33,7 @@ trait TLibAction
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessDir(
-            Stuff::removeEndingSlash($userDir->getWebRootDir()) . DIRECTORY_SEPARATOR
-            . Stuff::removeEndingSlash($userDir->getHomeDir()) . DIRECTORY_SEPARATOR
+            $userDir->getWebRootDir() . $userDir->getHomeDir()
             , Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
         );
     }
