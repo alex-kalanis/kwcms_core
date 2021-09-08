@@ -51,6 +51,8 @@ $lang = [
         "dashboard.button_reset"=>"Cancel",
         "dashboard.button_set"=>"Set",
         "dashboard.button_ok"=>"OK",
+        "dashboard.button_yes"=>"Yes",
+        "dashboard.button_no"=>"No",
 
         "menu.chsett" => "Change settings",
         "menu.logout" => "Logout",
@@ -106,6 +108,8 @@ $lang = [
         "dashboard.button_reset"=>"Annuler",
         "dashboard.button_set"=>"Assurez-le",
         "dashboard.button_ok"=>"OK",
+        "dashboard.button_yes"=>"Oui",
+        "dashboard.button_no"=>"Non",
 
         "menu.chsett" => "Modifier les param&#x00E8;tres",
         "menu.logout" => "Se d&#x00E9;sabonner",
@@ -179,6 +183,8 @@ $lang = [
         "dashboard.button_reset"=>"Zru&#x0161;it",
         "dashboard.button_set"=>"Prove&#x010F;",
         "dashboard.button_ok"=>"OK",
+        "dashboard.button_yes"=>"Ano",
+        "dashboard.button_no"=>"Ne",
 
         "menu.chsett" => "Zm&#x011B;na nastaven&#x00ED;",
         "menu.logout" => "Odhl&#x00E1;&#x0161;en&#x00ED;",

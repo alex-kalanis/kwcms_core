@@ -4,11 +4,13 @@ namespace KWCMS\modules\Short;
 
 
 use kalanis\kw_confs\Config;
+use kalanis\kw_extras\UserDir;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -22,16 +24,22 @@ class Short extends AModule
     protected $search = null;
     /** @var MapperException|null */
     protected $error = null;
+    /** @var UserDir|null */
+    protected $userDir = null;
 
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
+        $this->userDir = new UserDir(Config::getPath());
     }
 
     public function process(): void
     {
         try {
-            $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
+            $adapter = new Lib\MessageAdapter(
+                $this->userDir->getWebRootDir()
+                . Stuff::removeEndingSlash($this->getFromParam('target')) . DIRECTORY_SEPARATOR
+            );
             $this->search = new Search($adapter->getRecord());
         } catch (MapperException | ShortException $ex) {
             $this->error = $ex;

@@ -7,8 +7,10 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
@@ -16,6 +18,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -27,11 +30,14 @@ use KWCMS\modules\Admin\Shared;
 class Add extends AAuthModule implements IModuleTitle
 {
     use Lib\TModuleTemplate;
+    use TWhereDir;
 
     /** @var Lib\MessageForm|null */
     protected $form = null;
     /** @var MapperException|null */
     protected $error = null;
+    /** @var UserDir|null */
+    protected $userDir = null;
     /** @var bool */
     protected $isProcessed = false;
     /** @var Forward */
@@ -44,6 +50,7 @@ class Add extends AAuthModule implements IModuleTitle
         $this->form = new Lib\MessageForm('editMessage');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
+        $this->userDir = new UserDir(Config::getPath());
     }
 
     public function allowedAccessClasses(): array
@@ -57,7 +64,10 @@ class Add extends AAuthModule implements IModuleTitle
             $this->form->composeForm(new Lib\ShortMessage()); // must be without file!!!
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
-                $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
+                $this->initWhereDir(new SessionAdapter(), $this->inputs);
+                $this->userDir->setUserPath($this->user->getDir());
+                $this->userDir->process();
+                $adapter = new Lib\MessageAdapter($this->userDir->getWebRootDir() . $this->userDir->getHomeDir() . $this->getWhereDir());
                 try {
                     $record = $adapter->getRecord();
                 } catch (ShortException $ex) { // create file when not exists

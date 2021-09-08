@@ -75,7 +75,6 @@ class MessageTable
         // now normal code - columns
         $table->setDefaultSorting('id', \kalanis\kw_mapper\Interfaces\IQueryBuilder::ORDER_DESC);
 
-        $table->addHeaderFilter($table->getHeaderFilter()->getConnector()); // use that form in header which won't be used here
         $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);

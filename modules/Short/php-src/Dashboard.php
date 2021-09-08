@@ -5,7 +5,9 @@ namespace KWCMS\modules\Short;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
@@ -14,6 +16,7 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_table\TableException;
+use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -25,9 +28,12 @@ use KWCMS\modules\Admin\Shared;
 class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Lib\TModuleTemplate;
+    use TWhereDir;
 
     /** @var Search|null */
     protected $search = null;
+    /** @var UserDir|null */
+    protected $userDir = null;
     /** @var MapperException|null */
     protected $error = null;
 
@@ -35,6 +41,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         Config::load('Short');
         $this->initTModuleTemplate();
+        $this->userDir = new UserDir(Config::getPath());
     }
 
     public function allowedAccessClasses(): array
@@ -45,7 +52,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         try {
-            $adapter = new Lib\MessageAdapter($this->inputs, Config::getPath());
+            $this->initWhereDir(new SessionAdapter(), $this->inputs);
+            $this->userDir->setUserPath($this->user->getDir());
+            $this->userDir->process();
+            $adapter = new Lib\MessageAdapter($this->userDir->getWebRootDir() . $this->userDir->getHomeDir() . $this->getWhereDir());
             $this->search = new Search($adapter->getRecord());
         } catch (MapperException | ShortException $ex) {
             $this->error = $ex;

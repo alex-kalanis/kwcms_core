@@ -4,11 +4,7 @@ namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_input\Interfaces\IVariables;
-use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_paths\Path;
-use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Short\ShortException;
 
 
@@ -19,17 +15,14 @@ use KWCMS\modules\Short\ShortException;
  */
 class MessageAdapter
 {
-    use TWhereDir;
-
     protected $record = null;
     protected $targetDir = null;
 
-    public function __construct(IVariables $inputs, Path $path)
+    public function __construct(string $targetDir)
     {
         Config::load('Short');
-        $this->initWhereDir(new SessionAdapter(), $inputs);
         $this->record = new ShortMessage();
-        $this->targetDir = $path->getDocumentRoot() . $path->getPathToSystemRoot() . $this->getWhereDir();
+        $this->targetDir = $targetDir;
     }
 
     /**

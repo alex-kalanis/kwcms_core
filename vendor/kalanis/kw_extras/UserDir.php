@@ -16,7 +16,6 @@ use UnexpectedValueException;
  */
 class UserDir
 {
-
     protected $userName = ''; # obtained user's name (when need)
     protected $userPath = ''; # system path to user's home dir
     protected $webRootDir = ''; # system path to web root dir
