@@ -5,17 +5,13 @@ namespace KWCMS\modules\Texts;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_storage\Storage;
 use kalanis\kw_storage\StorageException;
-use kalanis\kw_tree\TWhereDir;
 
 
 /**
@@ -25,13 +21,9 @@ use kalanis\kw_tree\TWhereDir;
  */
 class Preview extends AAuthModule
 {
+    use Lib\TTexts;
     use Lib\TModuleTemplate;
-    use TWhereDir;
 
-    /** @var UserDir|null */
-    protected $userDir = null;
-    /** @var Storage|null */
-    protected $storage = null;
     /** @var MimeType|null */
     protected $mime = null;
     /** @var string */
@@ -41,11 +33,8 @@ class Preview extends AAuthModule
 
     public function __construct()
     {
-        $this->initTModuleTemplate();
-        $this->userDir = new UserDir(Config::getPath());
-        Storage\Key\DirKey::setDir(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
-        $this->storage = new Storage(new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory()));
-        $this->storage->init('volume');
+        $this->initTModuleTemplate(Config::getPath());
+        $this->initTTexts(Config::getPath());
         $this->mime = new MimeType(true);
     }
 
@@ -56,9 +45,8 @@ class Preview extends AAuthModule
 
     public function run(): void
     {
-        $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        $this->userDir->setUserPath($this->user->getDir());
-        $this->userDir->process();
+        $this->runTTexts($this->inputs, $this->user->getDir());
+
         $fileName = $this->inputs->getInArray('fileName', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
         if (empty($fileName)) {
             $this->error = new TextsException(Lang::get('texts.file_not_sent'));

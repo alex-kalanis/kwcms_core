@@ -6,10 +6,8 @@ namespace KWCMS\modules\Texts;
 use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
-use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
@@ -17,10 +15,8 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts;
-use kalanis\kw_storage\Storage;
 use kalanis\kw_storage\StorageException;
 use kalanis\kw_styles\Styles;
-use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -31,26 +27,19 @@ use KWCMS\modules\Admin\Shared;
  */
 class Edit extends AAuthModule implements IModuleTitle
 {
+    use Lib\TTexts;
     use Lib\TModuleTemplate;
-    use TWhereDir;
 
-    /** @var UserDir|null */
-    protected $userDir = null;
     /** @var Lib\EditFileForm|null */
     protected $editFileForm = null;
-    /** @var Storage|null */
-    protected $storage = null;
     /** @var bool */
     protected $isProcessed = false;
 
     public function __construct()
     {
-        $this->initTModuleTemplate();
-        $this->userDir = new UserDir(Config::getPath());
+        $this->initTModuleTemplate(Config::getPath());
+        $this->initTTexts(Config::getPath());
         $this->editFileForm = new Lib\EditFileForm('editFileForm');
-        Storage\Key\DirKey::setDir(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
-        $this->storage = new Storage(new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory()));
-        $this->storage->init('volume');
     }
 
     public function allowedAccessClasses(): array
@@ -60,9 +49,7 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function run(): void
     {
-        $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        $this->userDir->setUserPath($this->user->getDir());
-        $this->userDir->process();
+        $this->runTTexts($this->inputs, $this->user->getDir());
         $fileName = $this->getFromParam('fileName');
         if (empty($fileName)) {
             $this->error = new TextsException(Lang::get('texts.file_not_sent'));

@@ -4,6 +4,7 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_table\Connector\Sources\Mapper;
+use kalanis\kw_table\Interfaces\Table\IRow;
 
 
 /**
@@ -13,10 +14,8 @@ use kalanis\kw_table\Connector\Sources\Mapper;
  */
 class SourceItem extends Mapper
 {
-    protected function parseData(): void
+    protected function getTranslated($data): IRow
     {
-        foreach ($this->rawData as $record) {
-            $this->translatedData[] = new ConnectItem($record);
-        }
+        return new ConnectItem($data);
     }
 }

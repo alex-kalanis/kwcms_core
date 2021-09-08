@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Texts;
 
 
+use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -21,7 +22,7 @@ class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
     public function __construct()
     {
         parent::__construct();
-        $this->initTModuleTemplate();
+        $this->initTModuleTemplate(Config::getPath());
     }
 
     protected function htmlContent(string $content): Output\AOutput

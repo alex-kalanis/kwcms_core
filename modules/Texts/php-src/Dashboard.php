@@ -39,7 +39,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate();
+        $this->initTModuleTemplate(Config::getPath());
         $this->tree = new Tree(Config::getPath());
         $this->userDir = new UserDir(Config::getPath());
         $this->newFileForm = new Lib\NewFileForm('newFileForm');
