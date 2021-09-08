@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Menu\Lib;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_paths\Path;
 
 
 /**
@@ -17,11 +17,11 @@ trait TModuleTemplate
     /** @var ExternalLink|null */
     protected $links = null;
 
-    public function initTModuleTemplate()
+    public function initTModuleTemplate(Path $path)
     {
         Lang::load('Menu');
         Lang::load('Admin');
-        $this->links = new ExternalLink(Config::getPath());
+        $this->links = new ExternalLink($path);
     }
 
     protected function outModuleTemplate(string $content): string

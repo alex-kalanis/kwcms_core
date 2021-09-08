@@ -5,20 +5,15 @@ namespace KWCMS\modules\Menu;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
-use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_menu as menu;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
-use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -29,27 +24,19 @@ use KWCMS\modules\Admin\Shared;
  */
 class Dashboard extends AAuthModule implements IModuleTitle
 {
+    use Lib\TMenu;
     use Lib\TModuleTemplate;
-    use TWhereDir;
 
-    /** @var UserDir|null */
-    protected $userDir = null;
     /** @var Lib\EditPropsForm|null */
     protected $editPropsForm = null;
     /** @var bool */
     protected $isProcessed = false;
-    protected $libMenu = null;
 
     public function __construct()
     {
-        Config::load('Menu');
-        $this->initTModuleTemplate();
-        $this->userDir = new UserDir(Config::getPath());
+        $this->initTModuleTemplate(Config::getPath());
+        $this->initTMenu(Config::getPath());
         $this->editPropsForm = new Lib\EditPropsForm('editPropsForm');
-        $this->libMenu = new menu\MoreFiles(
-            new menu\DataSource\Volume($this->userDir->getWebRootDir()),
-            Config::get('Menu', 'meta')
-        );
     }
 
     public function allowedAccessClasses(): array
@@ -59,16 +46,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function run(): void
     {
-        $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        $this->userDir->setUserPath($this->user->getDir());
-        $this->userDir->process();
-
         try {
-            $this->libMenu->setPath(
-                Stuff::removeEndingSlash($this->userDir->getRealDir()) . DIRECTORY_SEPARATOR
-                . Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
-            );
-            $item = $this->libMenu->load()->getData()->getMenu();
+            $this->runTMenu($this->inputs, $this->user->getDir());
+            $item = $this->libMenu->getData()->getMenu();
             if (empty($item->getFile())) {
                 $item->setData($this->getWhereDir(), $item->getName(), $item->getTitle(), $item->getDisplayCount());
             }

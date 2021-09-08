@@ -27,6 +27,7 @@ $lang = [
         "menu.position" => "Position",
         "menu.submenu" => "Allow submenu",
         "menu.actions"=>"Actions",
+        "menu.updated"=>"Updated",
         "menu.update_texts"=>"Update entry",
 
         "menu.error.cannot_read" => "Cannot read!",
@@ -59,6 +60,7 @@ $lang = [
         "menu.position" => "Position",
         "menu.submenu" => "Avec submenu",
         "menu.actions"=>"Actions",
+        "menu.updated"=>"Actualis&#x00E9;",
         "menu.update_texts"=>"Actualiser une enregistrement",
 
         "menu.error.cannot_read" => "Cannot read!",
@@ -91,6 +93,7 @@ $lang = [
         "menu.position" => "M&#x00ED;sto",
         "menu.submenu" => "Povol submenu",
         "menu.actions"=>"Operace",
+        "menu.updated"=>"Upraveno",
         "menu.update_texts"=>"Upravit polo&#x017E;ku",
 
         "menu.error.cannot_read" => "Nejde to p&#x0159;e&#x010D;&#x00ED;st!",
