@@ -138,15 +138,18 @@ class DataProcessor
      */
     public function getWorking(): array
     {
+        $this->sortItems();
         return $this->workList;
     }
 
     public function add(string $file, string $name = '', string $desc = '', bool $sub = false): void
     {
-        $name = empty($name) ? $file : $name;
-        $item = clone $this->item;
-        $this->highest++;
-        $this->workList[$this->highest] = $item->setData($name, $desc, $file, $this->highest, $sub);
+        if (!$this->getItem($file)) {
+            $name = empty($name) ? $file : $name;
+            $item = clone $this->item;
+            $this->highest++;
+            $this->workList[$file] = $item->setData($name, $desc, $file, $this->highest, $sub);
+        }
     }
 
     /**
@@ -175,68 +178,64 @@ class DataProcessor
 
     public function remove(string $file): void
     {
-        $item = $this->getItem($file);
-        if ($item) {
-            unset($this->workList[$item->getPosition()]);
+        if ($item = $this->getItem($file)) {
+            unset($this->workList[$item->getFile()]);
         }
     }
 
     /**
-     * @param int[] $positions
+     * @param array<string, int> $positions
      * @throws MenuException
      */
-    public function newPositions(array $positions): void
+    public function rearrangePositions(array $positions): void
     {
         # get assoc array with new positioning of files
-        $prepared = [];
-        foreach ($positions as $old => &$new) {
-            if (!is_numeric($old) || !is_numeric($new)) {
+        # key is file name, value is new position
+        if (empty($positions)) {
+            throw new MenuException(Lang::get('menu.error.problematic_data'));
+        }
+        $matrix = [];
+        foreach ($positions as $file => &$position) {
+            if (empty($this->workList[$file])) {
+                throw new MenuException(Lang::get('menu.error.item_not_found', $file));
+            }
+            if (!is_numeric($position)) {
                 throw new MenuException(Lang::get('menu.error.problematic_data'));
             }
+            $matrix[$this->workList[$file]->getPosition()] = intval($position);
         }
 
-        foreach ($positions as $old => &$new) { # move staying
-            if ($old == $new) {
-                $prepared[$new] = $this->workList[$old];
+        $prepared = [];
+        foreach ($matrix as $old => &$new) {
+            if ($old == $new) { # don't move, stay there
+                $prepared[$new] = $old;
+                unset($matrix[$old]);
             }
-            unset($positions[$old]);
         }
 
-        while (count($positions) > 0) {
-            foreach ($positions as $old => &$new) {
-                if (!isset($prepared[$new])) {
-                    $prepared[$new] = $this->workList[$old];
-                    unset($positions[$old]);
+        while (count($matrix) > 0) {
+            foreach ($matrix as $old => &$new) {
+                if (!isset($prepared[$new])) { # nothing on new position
+                    $prepared[$new] = $old;
+                    unset($matrix[$old]);
                 } else {
-                    $positions[$old]++;
+                    $matrix[$old]++; # on next round try next position
                 }
             }
         }
-        $this->workList = $prepared;
+
+        $prepared = array_flip($prepared); # flip positions back, index is original one, not new one
+        foreach ($this->workList as &$item) {
+            $item->setPosition($prepared[$item->getPosition()]);
+        }
     }
 
     public function clearData(): self
     {
-        $this->clearRepeating();
+        $this->highest = $this->getHighestKnownPosition();
         $this->clearHoles();
-        $this->updatePositions();
+        $this->highest = $this->getHighestKnownPosition();
         return $this;
-    }
-
-    protected function clearRepeating(): void
-    {
-        $rep = [];
-        foreach ($this->workList as $i => &$item) { # indexing by names - last one stay alive
-            $rep[$item->getFile()] = $i;
-        }
-
-        $use = [];
-        foreach ($rep as $i) { # get meta with new indexes
-            $use[$i] = $this->workList[$i];
-            $this->highest = max($this->highest, $i);
-        }
-
-        $this->workList = $use; # save as unique ones
     }
 
     protected function clearHoles(): void
@@ -246,9 +245,15 @@ class DataProcessor
         $hole = false;
         $j = 0;
 
+        /** @var Menu\Item[] $workList */
+        $workList = [];
+        foreach ($this->workList as &$item) {
+            $workList[$item->getPosition()] = $item->getFile(); # old position contains file ***
+        }
+
         for ($i = 0; $i < $max; $i++) {
-            if (!empty($this->workList[$i])) { # position contains data
-                $use[$j] = $this->workList[$i];
+            if (!empty($workList[$i])) { # position contains data
+                $use[$j] = $workList[$i]; # new position contains file named *** from old one...
                 $j++;
                 $hole = false;
             } elseif (!$hole) { # first free position
@@ -257,24 +262,21 @@ class DataProcessor
             }
             # more than one free position
         }
+        $use = array_flip($use); # flip back to names as PK
 
-        $this->highest = $j;
-        $this->workList = $use;
+        foreach ($this->workList as &$item) {
+            $item->setPosition($use[$item->getFile()]);
+        }
     }
 
-    protected function updatePositions(): void
+    protected function getHighestKnownPosition(): int
     {
-        $this->highest = 0;
-        foreach ($this->workList as $pos => &$item) {
-            $item->setData(
-                $item->getName(),
-                $item->getTitle(),
-                $item->getFile(),
-                $pos,
-                $item->canGoSub()
-            );
-            $this->highest = max($this->highest, $pos);
-        }
+        return (int)array_reduce($this->workList, [$this, 'maxPosition'], 0);
+    }
+
+    public function maxPosition($carry, Menu\Item $item)
+    {
+        return max($carry, $item->getPosition());
     }
 
     /**
@@ -291,6 +293,7 @@ class DataProcessor
             '',
         ]);
         $content[] = '#';
+        $this->sortItems();
         foreach ($this->workList as $item) { // save all! Limit only on render
             $content[] = implode(IMenu::SEPARATOR, [
                 $item->getFile(),
@@ -304,5 +307,15 @@ class DataProcessor
         $content[] = '';
 
         $this->storage->save($this->path, implode("\r\n", $content));
+    }
+
+    protected function sortItems(): void
+    {
+        uasort($this->workList, [$this, 'sortWorkList']);
+    }
+
+    public function sortWorkList(Menu\Item $a, Menu\Item $b)
+    {
+        return $a->getPosition() <=> $b->getPosition();
     }
 }

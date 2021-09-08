@@ -29,6 +29,12 @@ class Item
         return $this;
     }
 
+    public function setPosition(int $position): self
+    {
+        $this->position = $position;
+        return $this;
+    }
+
     public function addSubmenu(?Menu $menu): self
     {
         $this->submenu = $menu;

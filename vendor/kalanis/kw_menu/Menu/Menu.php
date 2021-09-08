@@ -34,7 +34,7 @@ class Menu
 
     public function addItem(Item $item): self
     {
-        $this->items[$item->getPosition()] = $item;
+        $this->items[$item->getFile()] = $item;
         return $this;
     }
 

@@ -50,7 +50,6 @@ class ItemTable
         $table->addColumn(Lang::get('menu.entry_name'), new Columns\Func('file', [$this, 'idLink']));
         $table->addColumn(Lang::get('menu.name_in_menu'), new Columns\Basic('name'));
         $table->addColumn(Lang::get('menu.desc_in_menu'), new Columns\Basic('desc'));
-        $table->addColumn(Lang::get('menu.position'), new Columns\Basic('pos'));
         $table->addColumn(Lang::get('menu.submenu'), new Columns\Map('sub', [
             0 => Lang::get('dashboard.button_no'),
             1 => Lang::get('dashboard.button_yes'),

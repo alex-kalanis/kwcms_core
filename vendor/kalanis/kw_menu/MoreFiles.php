@@ -72,16 +72,15 @@ class MoreFiles
      */
     protected function fillMissing(): void
     {
-        $toRemoval = [];
-        foreach ($this->data->getWorking() as $item) {
-            $toRemoval[$item->getPosition()] = true;
-        }
+        $toRemoval = array_map([$this, 'fileName'], $this->data->getWorking());
+        $toRemoval = array_combine($toRemoval, array_fill(0, count($toRemoval), true));
+
         foreach ($this->storage->getFiles($this->directoryPath) as $file) {
             $alreadyKnown = false;
             foreach ($this->data->getWorking() as $item) { # stay
                 if ((!$alreadyKnown) && ($item->getFile() == $file)) {
                     $alreadyKnown = true;
-                    $toRemoval[$item->getPosition()] = false;
+                    $toRemoval[$item->getFile()] = false;
                 }
             }
             if (!$alreadyKnown) {
@@ -89,10 +88,15 @@ class MoreFiles
             }
         }
         foreach ($this->data->getWorking() as $item) {
-            if (!empty($toRemoval[$item->getPosition()])) {
+            if (!empty($toRemoval[$item->getFile()])) {
                 $this->data->remove($item->getFile());
             }
         }
+    }
+
+    public function fileName(Menu\Item $item): string
+    {
+        return $item->getFile();
     }
 
     public function getData(): DataProcessor

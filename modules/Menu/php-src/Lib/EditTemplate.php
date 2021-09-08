@@ -35,7 +35,7 @@ class EditTemplate extends ATemplate
     /**
      * @param EditNamesForm $form
      * @param string $action
-     * @return EditTemplate
+     * @return $this
      * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(EditNamesForm $form, string $action): self
