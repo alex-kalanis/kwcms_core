@@ -25,5 +25,4 @@ $config = [
     "admin.lang"=>'cze', //STRING;help=admin translation#
     "admin.style"=>'default', //STRING;path=/style;help=admin style#
     "admin.script"=>false, //BOOLEAN;help=enable scripting in admin#
-    "site.default_display_module"=>'Router', //STRING;path=/modules;help=which module will be loaded#
 ];

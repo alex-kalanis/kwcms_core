@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+ <html>
+  <head>
+    <meta http-equiv="content-Type" content="text/html; charset=utf-8">
+    <title>{TITLE}</title>
+    <meta name="author" content="Kalanis">
+    <meta lang="{LANG}" name="keywords" content="{KEYWORDS}">
+    <meta lang="{LANG}" name="description" content="{ABOUT}">
+    {ICON}path=favicon.ico{/ICON}
+    {STYLES}{/STYLES}
+    {SCRIPTS}{/SCRIPTS}
+  </head>
+  <body>
+    <div id="telo">
+      <div id="head">
+        <h1 id="title">
+          {SITE_NAME}
+        </h1>
+{LOGO}{/LOGO}
+      </div>
+      <div id="page_iframe">
+        <div id="iframed_page">
+          {CONTENT}
+        </div>
+      </div>
+      <div id="contact">
+        {CONTACT}
+      </div>
+      <div id="noscript">
+        <noscript>
+          <hr>
+          {NOSCRIPT}
+          <hr>
+        </noscript>
+      </div>
+    </div>
+  </body>
+</html>

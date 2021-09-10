@@ -43,7 +43,7 @@ class Core extends AModule
     public function process(): void
     {
         $this->moduleProcessor->setLevel(ISitePart::SITE_RESPONSE);
-        $defaultModuleName = Config::get('Admin', 'site.default_display_module', 'Layout');
+        $defaultModuleName = Config::get('Core', 'site.default_display_module', 'Layout');
         $wantModuleName = Config::getPath()->getModule() ?: $defaultModuleName ;
         $moduleRecord = $this->moduleProcessor->read($wantModuleName);
         $moduleRecord = $moduleRecord ?: $this->moduleProcessor->read($defaultModuleName);
@@ -53,7 +53,7 @@ class Core extends AModule
         }
 
         $this->module = $this->loader->load($moduleRecord->getModuleName(), null,
-            (in_array($moduleRecord->getModuleName(), ['Layout', 'Router']) ? [$this->loader, $this->moduleProcessor] : [])
+            (in_array($moduleRecord->getModuleName(), $this->modulesWithPassingParams()) ? [$this->loader, $this->moduleProcessor] : [])
         );
         $this->module->init($this->inputs, array_merge(
             Support::paramsIntoArray($moduleRecord->getParams()),
@@ -61,6 +61,15 @@ class Core extends AModule
             [ISitePart::KEY_LEVEL => ISitePart::SITE_RESPONSE]
         ));
         $this->module->process();
+    }
+
+    /**
+     * Real modules with basic templates - admin, page, ...
+     * @return array
+     */
+    protected function modulesWithPassingParams(): array
+    {
+        return ['Layout', 'Router', 'SinglePage'];
     }
 
     public function output(): AOutput

@@ -16,5 +16,6 @@ $config = [
     "site.fake_dir"=>"web/", //STRING;help=virtual dir for rewrite#
     "site.contact"=>'Somewhere', //STRING;help=mail to admin#
     "site.far_debug"=>true, //BOOLEAN;help=debugging from far machine#
-    "site.debug"=>false //BOOLEAN;help=debugging output#
+    "site.debug"=>false, //BOOLEAN;help=debugging output#
+    "site.default_display_module"=>'router', //STRING;path=/modules;help=which module will be loaded, presented as in query string#
 ];
