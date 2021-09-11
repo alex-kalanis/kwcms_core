@@ -53,6 +53,7 @@ class Positions extends AAuthModule implements IModuleTitle
             if ($this->editPosForm->process()) {
                 $this->libMenu->getData()->rearrangePositions($this->editPosForm->getPositions());
                 $this->libMenu->getData()->save();
+                $this->libSemaphore->want();
                 // AGAIN! - re-create form
                 $this->editPosForm = new Lib\EditPosForm('editPosForm');
                 $this->editPosForm->composeForm($this->libMenu->getData()->getWorking(), $this->libMenu->getData()->getMenu()->getDisplayCount());

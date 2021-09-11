@@ -71,6 +71,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                     (int)$this->editPropsForm->getControl('menuCount')->getValue()
                 );
                 $this->libMenu->getData()->save();
+                $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
         } catch (FormsException | MenuException $ex) {

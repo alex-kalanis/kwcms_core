@@ -27,7 +27,7 @@ class Storage implements IDataSource
     /** @var XStorage */
     protected $storage = null;
 
-    public function __construct(Path $path, ?XStorage $storage = null)
+    public function __construct(Path $path, XStorage $storage)
     {
         $this->tree = new Tree($path);
         $this->storage = $storage;

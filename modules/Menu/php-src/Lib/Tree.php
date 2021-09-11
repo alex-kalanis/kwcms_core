@@ -10,7 +10,6 @@ use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MoreFiles;
 use kalanis\kw_modules\InternalLink;
-use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
 
 
@@ -24,18 +23,17 @@ class Tree
     protected $link = null;
     protected $processor = null;
 
-    public function __construct(Path $path)
+    public function __construct(InternalLink $link)
     {
-        $this->processor = new MoreFiles(new DataSource\Volume(
-            Stuff::removeEndingSlash($path->getDocumentRoot()) . DIRECTORY_SEPARATOR . Stuff::removeEndingSlash($path->getPathToSystemRoot())
-        ), Config::get('Menu','meta'));
-        $this->link = new InternalLink($path);
+        // set path from link is a bit aggressive, so do not set real volume path in advance
+        $this->processor = new MoreFiles(new DataSource\Volume(''), Config::get('Menu','meta'));
+        $this->link = $link;
     }
 
     public function output(string $startPath): ?Menu
     {
         try {
-            $menu = $this->processor->setPath($this->link->userContent($startPath, false, false))->load()->getData()->getMenu();
+            $menu = $this->processor->setPath($this->link->userContent($startPath, true, false))->load()->getData()->getMenu();
         } catch (MenuException $ex) {
             return null;
         }
@@ -52,7 +50,7 @@ class Tree
         }
         $localPath = $deepLink . DIRECTORY_SEPARATOR . Stuff::fileBase($item->getName());
         try {
-            $menu = $this->processor->setPath($this->link->userContent($localPath, false, false))->load()->getData()->getMenu();
+            $menu = $this->processor->setPath($this->link->userContent($localPath, true, false))->load()->getData()->getMenu();
             if (!empty($menu)) {
                 foreach ($menu->getItems() as $item) {
                     $this->loadSub($item, $localPath);

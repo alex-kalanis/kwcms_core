@@ -11,6 +11,7 @@ use kalanis\kw_menu\DataSource;
 use kalanis\kw_menu\Interfaces;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MoreFiles;
+use kalanis\kw_menu\Semaphore;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\TWhereDir;
@@ -29,17 +30,25 @@ trait TMenu
     protected $userDir = null;
     /** @var MoreFiles|null */
     protected $libMenu = null;
+    /** @var Interfaces\ISemaphore|null */
+    protected $libSemaphore = null;
 
     protected function initTMenu(Path $path)
     {
         Config::load('Menu');
         $this->userDir = new UserDir($path);
         $this->libMenu = new MoreFiles( $this->initMenuVolume(), $this->getMenuMeta() );
+        $this->libSemaphore = $this->initMenuSemaphore();
     }
 
     protected function initMenuVolume(): Interfaces\IDataSource
     {
         return new DataSource\Volume($this->userDir->getWebRootDir());
+    }
+
+    protected function initMenuSemaphore(): Interfaces\ISemaphore
+    {
+        return new Semaphore\Volume($this->userDir->getWebRootDir() . $this->userDir->getWorkDir() . Config::get('Menu', 'meta_regen'));
     }
 
     protected function getMenuMeta(): string

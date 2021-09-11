@@ -20,8 +20,6 @@ use KWCMS\modules\Admin\Shared;
  * Class Names
  * @package KWCMS\modules\Menu
  * Site's Menu - Names of files
- *
- * @todo: Umístění je tabulka taky, ale až moc specifická. Takže bude potřeba jí udělat specificky.
  */
 class Names extends AAuthModule implements IModuleTitle
 {

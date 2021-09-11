@@ -71,6 +71,7 @@ class Edit extends AAuthModule implements IModuleTitle
                     boolval(intval($this->form->getControl('menuGoSub')->getValue()))
                 );
                 $this->libMenu->getData()->save();
+                $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
         } catch (FormsException | MenuException $ex) {
