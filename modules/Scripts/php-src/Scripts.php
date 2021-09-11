@@ -49,9 +49,8 @@ class Scripts extends AModule
         $content = [];
         foreach (ExScripts::getAll() as $module => $scripts) {
             foreach ($scripts as $script) {
-                $moduleName = Support::normalizeModuleName($module);
                 $content[] = $this->template->reset()->setData(
-                    $this->libExtLink->linkVariant($moduleName . '/' . $script, 'scripts', true, false)
+                    $this->libExtLink->linkVariant($module . '/' . $script, 'scripts', true, false)
                 )->render();
             }
         }

@@ -60,13 +60,18 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
         $this->tree->setFilterCallback([$this->getParams(), 'filterFiles']);
         $this->tree->process();
-        $this->newFileForm->composeForm($this->links);
-        $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getTree(), $this->links);
+        $this->newFileForm->composeForm($this->links->linkVariant($this->getTargetEdit()));
+        $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getTree(), $this->links->linkVariant($this->getTargetEdit()));
     }
 
     protected function getParams(): Lib\Params
     {
         return new Lib\Params();
+    }
+
+    protected function getTargetEdit(): string
+    {
+        return 'texts/edit';
     }
 
     public function result(): Output\AOutput

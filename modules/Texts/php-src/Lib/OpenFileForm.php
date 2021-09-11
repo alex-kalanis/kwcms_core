@@ -7,7 +7,6 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_tree\Controls\FileRadio;
 use kalanis\kw_tree\FileNode;
 
@@ -22,10 +21,10 @@ use kalanis\kw_tree\FileNode;
  */
 class OpenFileForm extends Form
 {
-    public function composeForm(string $defaultWhere, ?FileNode $tree, ExternalLink $links): self
+    public function composeForm(string $defaultWhere, ?FileNode $tree, string $editLink): self
     {
         $this->setMethod(IEntry::SOURCE_GET);
-        $this->setAttribute('action', $links->linkVariant('texts/edit'));
+        $this->setAttribute('action', $editLink);
 
         $radios = new FileRadio();
         $radios->set('fileName', $defaultWhere, Lang::get('texts.set_file'), $tree);

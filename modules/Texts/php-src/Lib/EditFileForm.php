@@ -24,7 +24,7 @@ class EditFileForm extends Form
         $this->setAttribute('id', $this->getAlias());
         $this->setMethod(IEntry::SOURCE_POST);
         $this->addTextarea('content', Lang::get('texts.edit_file'), $defaultContent, [
-            'cols' => 80, 'rows' => 50,
+            'cols' => 80, 'rows' => 50, 'id' => 'fileContent'
         ]);
         $this->addHidden('fileName', $fileName);
         $link = $this->addHidden('targetLink', $targetLink);

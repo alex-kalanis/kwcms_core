@@ -20,6 +20,6 @@ class Params
 
     public function filteredTypes(): array
     {
-        return ['htm', 'html', 'txt', 'mkd', 'ini', 'inf', ];
+        return ['htm', 'html', 'xhtm', 'xhtml', 'txt', 'mkd', 'md', 'ini', 'inf', ];
     }
 }

@@ -23,7 +23,7 @@ use KWCMS\modules\Admin\Shared;
 /**
  * Class Edit
  * @package KWCMS\modules\Texts
- * Site's text content - list available files in directory
+ * Site's text content - edit correct file
  */
 class Edit extends AAuthModule implements IModuleTitle
 {
@@ -102,7 +102,7 @@ class Edit extends AAuthModule implements IModuleTitle
         if ($this->error) {
             Notification::addError($this->error->getMessage());
             if ($this->error instanceof TextsException) {
-                new Redirect($this->links->linkVariant('texts/dashboard'));
+                new Redirect($this->links->linkVariant($this->targetDone()));
             }
             $this->error = null;
         }
@@ -136,6 +136,11 @@ class Edit extends AAuthModule implements IModuleTitle
             ]);
             return $out;
         }
+    }
+
+    protected function targetDone(): string
+    {
+        return 'texts/dashboard';
     }
 
     public function getTitle(): string

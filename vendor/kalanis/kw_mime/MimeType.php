@@ -22,7 +22,11 @@ class MimeType
         'js' => 'application/javascript',
         'json' => 'application/json',
         'xml' => 'application/xml',
+        'xhtm' => 'application/xhtml+xml',
+        'xhtml' => 'application/xhtml+xml',
         'rtf' => 'application/x-rtf',
+        'md' => 'text/markdown',
+        'mkd' => 'text/markdown',
         'wml' => 'text/vnd.wap.wml',
         'wmls' => 'text/vnd.wap.wmlscript',
         // images
@@ -129,6 +133,11 @@ class MimeType
         $this->localAtFirst = $localAtFirst;
     }
 
+    /**
+     * @param string $path
+     * @return string
+     * @codeCoverageIgnore because has access to external resources
+     */
     public function mimeByPath(string $path): string
     {
         if ($this->localAtFirst) {

@@ -17,7 +17,7 @@ use kalanis\kw_storage\StorageException;
 /**
  * Class Preview
  * @package KWCMS\modules\Texts
- * Site's text content - list available files in directory
+ * Site's text preview - show what will be rendered and saved
  */
 class Preview extends AAuthModule
 {

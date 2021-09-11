@@ -73,6 +73,6 @@ class Storage implements IDataSource
 
     public function filterHtml(SplFileInfo $info): bool
     {
-        return in_array($info->getExtension(), ['htm', 'html']);
+        return in_array($info->getExtension(), ['htm', 'html', 'xhtm', 'xhtml']);
     }
 }

@@ -1,0 +1,14 @@
+<div id="form">
+    {FORM_START}
+    <span id="text_edit_content">{INPUT_CONTENT}</span><br/>
+    {INPUT_SUBMIT} &nbsp; {INPUT_RESET}
+    {FORM_END}
+</div>
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function () {
+		// Use it to attach the editor directly to a defined textarea
+		WYSIWYG.attach('filecontent'); // default setup
+		// WYSIWYG.attach('fileContent', full); // full featured setup
+		// WYSIWYG.attach('fileContent', small); // small setup
+	});
+</script>

@@ -47,11 +47,10 @@ class Styles extends AModule
     public function outLayout(): Output\AOutput
     {
         $content = [];
-        foreach (ExStyles::getAll() as $module => $scripts) {
-            foreach ($scripts as $script) {
-                $moduleName = Support::normalizeModuleName($module);
+        foreach (ExStyles::getAll() as $module => $styles) {
+            foreach ($styles as $style) {
                 $content[] = $this->template->reset()->setData(
-                    $this->libExtLink->linkVariant($moduleName . '/' . $script, 'styles', true, false)
+                    $this->libExtLink->linkVariant($module . '/' . $style, 'styles', true, false)
                 )->render();
             }
         }
