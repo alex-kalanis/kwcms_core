@@ -89,7 +89,7 @@ abstract class ADir extends AAuthModule implements IModuleTitle
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;
         }
-        return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+        return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
     }
 
     abstract protected function getFormTitleLangKey(): string;

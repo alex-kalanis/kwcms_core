@@ -128,7 +128,7 @@ class Edit extends AAuthModule implements IModuleTitle
             Styles::want('Menu', 'menu.css');
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('menu.update_texts'))->render()));
         } catch (FormsException $ex) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
     }
 

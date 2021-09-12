@@ -105,7 +105,7 @@ class Add extends AAuthModule implements IModuleTitle
             $editTmpl = new Lib\EditTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.add_record'))->render()));
         } catch (FormsException $ex) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
     }
 

@@ -101,7 +101,7 @@ class Edit extends AAuthModule implements IModuleTitle
             $editTmpl = new Lib\EditTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.update_texts'))->render()));
         } catch (FormsException $ex) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
     }
 

@@ -90,7 +90,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         $out = new Shared\FillHtml($this->user);
         if (!empty($this->error)) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
         Styles::want('Menu', 'menu.css');
         Scripts::want('Menu', 'counter.js');

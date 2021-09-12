@@ -122,7 +122,7 @@ class Read extends AAuthModule implements IModuleTitle
         } catch (FormsException $ex) {
             $this->error = $ex;
         }
-        return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+        return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
     }
 
     public function outRaw(): Output\AOutput

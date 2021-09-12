@@ -72,7 +72,7 @@ class Names extends AAuthModule implements IModuleTitle
         }
 
         if ($this->error) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage()));
+            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         } else {
             return $out->setContent($this->outModuleTemplate(Lang::get('menu.error.cannot_read')));
         }
