@@ -14,6 +14,11 @@ use kalanis\kw_pedigree\PedigreeException;
  */
 class FactoryAdapter
 {
+    /**
+     * @param ARecord $record
+     * @return AEntryAdapter
+     * @throws PedigreeException
+     */
     public static function getAdapter(ARecord $record): AEntryAdapter
     {
         if ($record instanceof File\PedigreeRecord) {

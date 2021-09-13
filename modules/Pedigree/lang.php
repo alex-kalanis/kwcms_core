@@ -27,6 +27,7 @@ $lang = [
         "pedigree.which_one" => "Which one?",
 
         "pedigree.text.id" => "Id",
+        "pedigree.text.key" => "Key",
         "pedigree.text.name" => "Name",
         "pedigree.text.family" => "Family",
         "pedigree.text.birth_date" => "Birth date",
@@ -113,6 +114,7 @@ $lang = [
         "pedigree.which_one" => "Koho?",
 
         "pedigree.text.id" => "Id",
+        "pedigree.text.key" => "Kl&#x00ED;&#x010D;",
         "pedigree.text.name" => "Jm&#x00E9;no",
         "pedigree.text.family" => "Rod",
         "pedigree.text.birth_date" => "Datum narozen&#x00ED;",

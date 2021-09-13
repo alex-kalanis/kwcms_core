@@ -75,8 +75,8 @@ class Pedigree extends AModule
 
         $out = new Output\Html();
         if ($this->error) {
-//            return $out->setContent($this->error->getMessage());
-            return $out->setContent($this->error->getMessage() . nl2br($this->error->getTraceAsString()));
+            return $out->setContent($this->error->getMessage());
+//            return $out->setContent($this->error->getMessage() . nl2br($this->error->getTraceAsString()));
         } else {
             $table = HtmlElement::init('table', ['border' => '1', 'id' => 'pedigree']);
             $row1 = HtmlElement::init('tr');
@@ -117,17 +117,21 @@ class Pedigree extends AModule
     protected function getTree(string $key): array
     {
         # read database and fill data
-        $tree = [];
-        $tree[0] = $this->readData($key);
-        if (empty($tree[0])) {
+        if (empty($key)) {
             return [];
         }
 
+        $record = $this->entries->getByKey($key);
+        $id = strval($record->offsetGet($this->entries->getStorage()->getIdKey()));
+        if (empty($id)) {
+            return [];
+        }
+
+        $tree = [];
         $depth = 0; # for getting depth of path
         $used = array_fill(0, $this->depth + 1, 0); # test for already read data - depth - used branches
         $previous = array_fill(0, $this->depth + 1, null); # which one is previous - depth - previous item on position
         $all = $this->countCells($this->countLines(), $this->depth);
-        $id = $key;
         for ($i = 0; $i < $all; $i++) {
             $tree[$i] = $this->readData($id);
             if ($depth < $this->depth) {
@@ -164,6 +168,7 @@ class Pedigree extends AModule
     /**
      * @param ARecord|null $record
      * @return ARecord[]
+     * @throws MapperException
      */
     protected function getDescendants(?ARecord $record): array
     {

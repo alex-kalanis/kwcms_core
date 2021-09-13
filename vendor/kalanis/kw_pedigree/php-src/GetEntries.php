@@ -3,6 +3,7 @@
 namespace kalanis\kw_pedigree;
 
 
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Search\Search;
 
@@ -39,6 +40,11 @@ class GetEntries
         return $this->storage;
     }
 
+    /**
+     * @param string $id
+     * @return ARecord
+     * @throws MapperException
+     */
     public function getById(string $id): ARecord
     {
         $record = clone $this->record;
@@ -47,6 +53,24 @@ class GetEntries
         return $record;
     }
 
+    /**
+     * @param string $key
+     * @return ARecord
+     * @throws MapperException
+     */
+    public function getByKey(string $key): ARecord
+    {
+        $record = clone $this->record;
+        $record->offsetSet($this->storage->getKeyKey(), $key);
+        $record->load();
+        return $record;
+    }
+
+    /**
+     * @param string $sex
+     * @return array
+     * @throws MapperException
+     */
     public function getBySex(string $sex): array
     {
         $search = new Search($this->record);

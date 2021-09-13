@@ -121,6 +121,7 @@ class PedigreeTable
         $table = $helper->getTable();
         $storage = $this->entries->getStorage();
         $table->addColumn(Lang::get('pedigree.text.id'), new Columns\Basic($storage->getIdKey()));
+        $table->addColumn(Lang::get('pedigree.text.key'), new Columns\Basic($storage->getKeyKey()));
         $table->addColumn(Lang::get('pedigree.text.name'), new Columns\Basic($storage->getNameKey()));
         $table->addColumn(Lang::get('pedigree.text.family'), new Columns\Basic($storage->getFamilyKey()));
         $table->addColumn(Lang::get('pedigree.text.birth_date'), new Columns\Basic($storage->getBirthKey()));

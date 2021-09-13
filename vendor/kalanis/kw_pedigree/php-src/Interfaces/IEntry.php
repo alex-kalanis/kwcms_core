@@ -17,6 +17,8 @@ interface IEntry
     const BREED_NO = 'no';
     const BREED_YES = 'yes';
 
+    public function getKeyKey(): string;
+
     public function getIdKey(): string;
 
     public function setId(string $id): self;
