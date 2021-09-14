@@ -48,7 +48,7 @@ $lang = [
         "pedigree.{IDENTIFIER}" => "Identificator",
         "pedigree.{REALLY}" => "Really?",
 
-        "pedigree.{NO_ONE}" => "No one existing yet",
+        "pedigree.no_one" => "No one existing yet",
         "pedigree.text.male" => "Male",
         "pedigree.text.female" => "Female",
         "pedigree.{INPUT}" => "Add",
@@ -58,12 +58,15 @@ $lang = [
         "pedigree.{ASCENDING}" => "Ascending",
         "pedigree.{DESCENDING}" => "Descending",
 
-        "pedigree.{RECORD_ADDED}" => "Record added.",
-        "pedigree.{NOT_ADDED}" => "Cannot add record.",
-        "pedigree.{RECORD_UPDATED}" => "Record updated.",
-        "pedigree.{NOT_UPDATED}" => "Cannot update record.",
-        "pedigree.{RECORD_DELETED}" => "Record deleted.",
-        "pedigree.{NOT_DELETED}" => "Cannot delete record.",
+        "pedigree.warn.already_exists" => "Record already exists!",
+        "pedigree.warn.contains_bad_chars" => "Key contains problematic chars!",
+
+        "pedigree.added" => "Record added.",
+        "pedigree.not_added" => "Cannot add record.",
+        "pedigree.updated" => "Record updated.",
+        "pedigree.not_updated" => "Cannot update record.",
+        "pedigree.removed" => "Record deleted.",
+        "pedigree.not_removed" => "Cannot delete record.",
 
         "pedigree.create_new_file" => "New file was created.",
         "pedigree.cannot_read" => "Cannot read datasource.",
@@ -135,7 +138,7 @@ $lang = [
         "pedigree.{IDENTIFIER}" => "Identifik&#x00E1;tor",
         "pedigree.{REALLY}" => "Opravdu?",
 
-        "pedigree.{NO_ONE}" => "&#x017D;&#x00E1;dn&#x00FD; st&#x00E1;vaj&#x00ED;c&#x00ED;",
+        "pedigree.no_one" => "&#x017D;&#x00E1;dn&#x00FD; st&#x00E1;vaj&#x00ED;c&#x00ED;",
         "pedigree.text.male" => "Samec",
         "pedigree.text.female" => "Samice",
         "pedigree.{INPUT}" => "Vlo&#x017E;it",
@@ -145,12 +148,15 @@ $lang = [
         "pedigree.{ASCENDING}" => "Vzr&#x016F;staj&#x00ED;c&#x00ED;",
         "pedigree.{DESCENDING}" => "Klesaj&#x00ED;c&#x00ED;",
 
-        "pedigree.{RECORD_ADDED}" => "Z&#x00E1;znam p&#x0159;id&#x00E1;n.",
-        "pedigree.{NOT_ADDED}" => "Z&#x00E1;znam ne&#x0161;lo p&#x0159;idat.",
-        "pedigree.{RECORD_UPDATED}" => "Z&#x00E1;znam aktualizov&#x00E1;n.",
-        "pedigree.{NOT_UPDATED}" => "Z&#x00E1;znam ne&#x0161;lo aktualizovat.",
-        "pedigree.{RECORD_DELETED}" => "Z&#x00E1;znam smaz&#x00E1;n.",
-        "pedigree.{NOT_DELETED}" => "Z&#x00E1;znam ne&#x0161;lo smazat.",
+        "pedigree.warn.already_exists" => "Z&#x00E1;znam ji&#x017E; existuje!",
+        "pedigree.warn.contains_bad_chars" => "Kl&#x00ED;&#x010D; obsahuje problematick&#x00E9; znaky!",
+
+        "pedigree.added" => "Z&#x00E1;znam p&#x0159;id&#x00E1;n.",
+        "pedigree.not_added" => "Z&#x00E1;znam ne&#x0161;lo p&#x0159;idat.",
+        "pedigree.updated" => "Z&#x00E1;znam aktualizov&#x00E1;n.",
+        "pedigree.not_updated" => "Z&#x00E1;znam ne&#x0161;lo aktualizovat.",
+        "pedigree.removed" => "Z&#x00E1;znam smaz&#x00E1;n.",
+        "pedigree.not_removed" => "Z&#x00E1;znam ne&#x0161;lo smazat.",
 
         "pedigree.create_new_file" => "Vytvo&#x0159;en nov&#x00FD; soubor.",
         "pedigree.cannot_read" => "Nebyl nalezen datov&#x00FD; zdroj.",

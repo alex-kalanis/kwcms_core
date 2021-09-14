@@ -18,6 +18,7 @@ class PedigreeItemMapper extends Mappers\Database\ADatabase
         $this->setSource('pedigree');
         $this->setTable('kal_pedigree_upd');
         $this->setRelation('id', 'kp_id');
+        $this->setRelation('key', 'kp_key');
         $this->setRelation('name', 'kp_name');
         $this->setRelation('kennel', 'kp_kennel');
         $this->setRelation('birth', 'kp_birth');

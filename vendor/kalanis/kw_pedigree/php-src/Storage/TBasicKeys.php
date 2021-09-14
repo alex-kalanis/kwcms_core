@@ -17,7 +17,7 @@ trait TBasicKeys
 
     public function getKeyKey(): string
     {
-        return 'id';
+        return 'key';
     }
 
     public function getNameKey(): string

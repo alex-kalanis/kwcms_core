@@ -1,0 +1,53 @@
+{FORM_START}
+<fieldset>
+    <legend>{RECORD_ACTION}</legend>
+    <table>
+        <tr>
+            <td>{LABEL_NAME}</td>
+            <td>{INPUT_NAME} {ERROR_NAME}</td>
+        </tr>
+        <tr>
+            <td>{LABEL_FAMILY}</td>
+            <td>{INPUT_FAMILY} {ERROR_FAMILY}</td>
+        </tr>
+        <tr>
+            <td>{LABEL_BIRTHDAY}<br>{BIRTH_DATE_FORM} (yyyy-mm-dd)</td>
+            <td>{INPUT_BIRTHDAY} {ERROR_BIRTHDAY}</td>
+        </tr>
+        <tr>
+            <td>{LABEL_SEX}</td>
+            <td>{INPUT_SEX} {ERROR_SEX}</td>
+        </tr>
+        <tr>
+            <td>{LABEL_BASIC_INFO}</td>
+            <td>{INPUT_BASIC_INFO} {ERROR_BASIC_INFO}</td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">{LABEL_FULL}</td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">{INPUT_FULL} {ERROR_FULL}</td>
+        </tr>
+        <tr>
+            <td>{LABEL_KEY}</td>
+            <td>{INPUT_KEY} {ERROR_KEY}</td>
+        </tr>
+        <tr>
+            <td>{LABEL_FATHER}</td>
+            <td>{INPUT_FATHER} {ERROR_FATHER}
+                <div id="father_help"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>{LABEL_MOTHER}</td>
+            <td>{INPUT_MOTHER} {ERROR_MOTHER}
+                <div id="mother_help"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>{INPUT_SUBMIT}</td>
+            <td>{INPUT_RESET}</td>
+        </tr>
+    </table>
+</fieldset>
+{FORM_END}

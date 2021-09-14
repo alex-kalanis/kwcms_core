@@ -17,12 +17,32 @@ interface IEntry
     const BREED_NO = 'no';
     const BREED_YES = 'yes';
 
+    /**
+     * Under which table key is that key string
+     * @return string
+     */
     public function getKeyKey(): string;
 
+    public function setKey(string $key): self;
+
+    /**
+     * Key string by which it will be accessed
+     * @return string
+     */
+    public function getKey(): string;
+
+    /**
+     * Under which key is that PK, usually number or string
+     * @return string
+     */
     public function getIdKey(): string;
 
     public function setId(string $id): self;
 
+    /**
+     * PK of that record, return as string, might be a number
+     * @return string
+     */
     public function getId(): string;
 
     public function getNameKey(): string;
@@ -43,11 +63,11 @@ interface IEntry
 
     public function getBirth(): string;
 
-    public function setFatherId(string $fatherId): self;
+    public function setFatherId(string $fatherId): bool;
 
     public function getFatherId(): string;
 
-    public function setMotherId(string $motherId): self;
+    public function setMotherId(string $motherId): bool;
 
     public function getMotherId(): string;
 

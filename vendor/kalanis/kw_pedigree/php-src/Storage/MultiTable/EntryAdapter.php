@@ -14,52 +14,53 @@ use kalanis\kw_pedigree\Storage\AEntryAdapter;
  */
 class EntryAdapter extends AEntryAdapter
 {
-    public function setFatherId(string $fatherId): IEntry
+    public function setFatherId(string $fatherId): bool
     {
-        $result = $this->parentLookup(IEntry::SEX_MALE);
-        if (!empty($result)) {
+        return $this->setParentId($fatherId, IEntry::SEX_MALE);
+    }
+
+    public function setMotherId(string $motherId): bool
+    {
+        return $this->setParentId($motherId, IEntry::SEX_FEMALE);
+    }
+
+    protected function setParentId(string $parentId, string $sex): bool
+    {
+        $result = $this->parentLookup($sex);
+        if (!empty($result) && !empty($parentId)) {
             // rewrite record
-            $result->parentId = $fatherId;
-            $result->save();
-        } else {
+            if ($result->parentId != $parentId) {
+                $result->parentId = $parentId;
+                return $result->save();
+            }
+            return true;
+        } elseif (!empty($parentId)) {
             // new one
             /** @var PedigreeRelateRecord $record */
             $record = new PedigreeRelateRecord();
             $record->childId = $this->getId();
-            $record->parentId = $fatherId;
-            $record->save();
+            $record->parentId = $parentId;
+            return $record->save();
+        } else {
+            // remove current one
+            return $result->delete();
         }
-        return $this;
     }
 
     public function getFatherId(): string
     {
-        $results = $this->parentLookup(IEntry::SEX_MALE);
-        return empty($results) ? '' : $results->parentId;
-    }
-
-    public function setMotherId(string $motherId): IEntry
-    {
-        $result = $this->parentLookup(IEntry::SEX_FEMALE);
-        if (!empty($result)) {
-            // rewrite record
-            $result->parentId = $motherId;
-            $result->save();
-        } else {
-            // new one
-            /** @var PedigreeRelateRecord $record */
-            $record = new PedigreeRelateRecord();
-            $record->childId = $this->getId();
-            $record->parentId = $motherId;
-            $record->save();
-        }
-        return $this;
+        return $this->getParentId(IEntry::SEX_MALE);
     }
 
     public function getMotherId(): string
     {
-        $results = $this->parentLookup(IEntry::SEX_FEMALE);
-        return empty($results) ? '' : $results->parentId;
+        return $this->getParentId(IEntry::SEX_FEMALE);
+    }
+
+    protected function getParentId(string $sex): string
+    {
+        $results = $this->parentLookup($sex);
+        return empty($results) ? '' : strval($results->parentId);
     }
 
     protected function parentLookup(string $sex): ?PedigreeRelateRecord
@@ -83,6 +84,11 @@ class EntryAdapter extends AEntryAdapter
 
     public function mapChildren(PedigreeRelateRecord $record): string
     {
-        return $record->childId;
+        return strval($record->childId);
+    }
+
+    public function saveFamily(string $fatherId, string $motherId): bool
+    {
+        return $this->setFatherId($fatherId) && $this->setMotherId($motherId);
     }
 }

@@ -68,13 +68,22 @@ class GetEntries
 
     /**
      * @param string $sex
+     * @param string|null $emptyString If you want to add empty record, you need to set an empty string
      * @return array
      * @throws MapperException
      */
-    public function getBySex(string $sex): array
+    public function getBySex(string $sex, ?string $emptyString = null): array
     {
         $search = new Search($this->record);
         $search->exact($this->storage->getSexKey(), $sex);
-        return $search->getResults();
+        if (is_null($emptyString)) {
+            return $search->getResults();
+        }
+        $emptyRecord = clone $this->record;
+        $emptyRecord->offsetSet($this->storage->getIdKey(), '');
+        $emptyRecord->offsetSet($this->storage->getKeyKey(), '');
+        $emptyRecord->offsetSet($this->storage->getNameKey(), $emptyString);
+        $emptyRecord->offsetSet($this->storage->getFamilyKey(), '');
+        return array_merge( [$emptyRecord], $search->getResults() );
     }
 }

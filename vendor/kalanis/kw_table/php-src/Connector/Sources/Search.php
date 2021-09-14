@@ -36,13 +36,23 @@ class Search extends AConnector implements IConnector
     protected function parseData(): void
     {
         foreach ($this->rawData as $mapper) {
-            $this->translatedData[] = $this->getTranslated($mapper);
+            $this->translatedData[$this->getPrimaryKey($mapper)] = $this->getTranslated($mapper);
         }
     }
 
     protected function getTranslated(ARecord $data): IRow
     {
         return new Mapper($data);
+    }
+
+    protected function getPrimaryKey(ARecord $record): string
+    {
+        $pks = $record->getMapper()->getPrimaryKeys();
+        $values = [];
+        foreach ($pks as $pk) {
+            $values[] = strval($record->offsetGet($pk));
+        }
+        return implode('_', $values);
     }
 
     public function setFiltering(string $colName, string $value, IFilterType $type): void

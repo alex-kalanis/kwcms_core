@@ -424,6 +424,20 @@ class Form implements IHtmlElement
     }
 
     /**
+     * @param string $key
+     * @return string
+     * @throws Exceptions\RenderException
+     */
+    public function renderControlErrors(string $key): string
+    {
+        $control = $this->getControl($key);
+        if (isset($this->errors[$control->getKey()])) {
+            return $control->renderErrors($this->errors[$control->getKey()]);
+        }
+        return '';
+    }
+
+    /**
      * Render all form controls, add missing wrappers
      * @return string
      * @throws Exceptions\RenderException

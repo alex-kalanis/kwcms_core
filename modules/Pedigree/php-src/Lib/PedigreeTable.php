@@ -7,6 +7,7 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_forms\Adapters;
+use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -25,6 +26,7 @@ use kalanis\kw_table\Table;
 use kalanis\kw_table\Table\Columns;
 use kalanis\kw_table\Table\Rules;
 use kalanis\kw_table\Table\Sorter;
+use kalanis\kw_table\TableException;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
 
@@ -42,6 +44,8 @@ class PedigreeTable
     protected $link = null;
     /** @var GetEntries|null */
     protected $entries = null;
+    /** @var Table|null */
+    protected $table = null;
 
     public function __construct(IVariables $inputs, ExternalLink $link, GetEntries $entries)
     {
@@ -49,70 +53,71 @@ class PedigreeTable
         $this->forward = new Forward();
         $this->link = $link;
         $this->entries = $entries;
+        $this->table = null;
     }
 
     /**
      * @return string
      * @throws MapperException
-     * @throws \kalanis\kw_forms\Exceptions\FormsException
-     * @throws \kalanis\kw_table\TableException
+     * @throws FormsException
+     * @throws TableException
      */
     public function prepareHtml()
     {
         // full table init
-        $table = new Table();
+        $this->table = new Table();
         $inputVariables = new Adapters\InputVarsAdapter($this->variables);
         $inputFiles = new Adapters\InputFilesAdapter($this->variables);
         $form = new \kalanis\kw_forms\Form('filterForm');
-        $table->addHeaderFilter(new KwForm($form));
+        $this->table->addHeaderFilter(new KwForm($form));
         $form->setInputs($inputVariables, $inputFiles);
 
         // sorter links
         $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $table->addSorter($sorter);
+        $this->table->addSorter($sorter);
 
         // pager
         $pager = new BasicPager();
         $pageLink = new PageLink(new Handler(new Sources\Inputs($this->variables)), $pager);
         $pager->setActualPage($pageLink->getPageNumber());
-        $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
+        $this->table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         $storage = $this->entries->getStorage();
         // now normal code - columns
-        $table->setDefaultSorting($storage->getIdKey(), IQueryBuilder::ORDER_DESC);
+        $this->table->setDefaultSorting($storage->getIdKey(), IQueryBuilder::ORDER_DESC);
 
-        $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
+        $this->table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
-        $columnUserId = new Columns\Func($storage->getIdKey(), [$this, 'idLink']);
-        $columnUserId->style('width:40px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('pedigree.text.id'), $columnUserId );
+        $columnRecordId = new Columns\Func($storage->getIdKey(), [$this, 'idLink']);
+        $columnRecordId->style('width:40px', new Rules\Always());
+        $this->table->addSortedColumn(Lang::get('pedigree.text.id'), $columnRecordId );
 
-        $table->addSortedColumn(Lang::get('pedigree.text.name'), new Columns\Bold($storage->getNameKey()), new Form\KwField\TextContains());
-        $table->addSortedColumn(Lang::get('pedigree.text.family'), new Columns\Basic($storage->getFamilyKey()), new Form\KwField\TextContains());
+        $this->table->addSortedColumn(Lang::get('pedigree.text.name'), new Columns\Bold($storage->getNameKey()), new Form\KwField\TextContains());
+        $this->table->addSortedColumn(Lang::get('pedigree.text.family'), new Columns\Basic($storage->getFamilyKey()), new Form\KwField\TextContains());
 
         $columnAdded = new Columns\Basic($storage->getBirthKey());
         $columnAdded->style('width:150px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('pedigree.text.birth_date'), $columnAdded);
+        $this->table->addSortedColumn(Lang::get('pedigree.text.birth_date'), $columnAdded);
 
-        $table->addSortedColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Form\KwField\TextContains());
+        $this->table->addSortedColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Form\KwField\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
         $columnActions->addColumn(new Columns\Func('id', [$this, 'deleteLink']));
         $columnActions->style('width:100px', new Rules\Always());
 
-        $table->addColumn(Lang::get('pedigree.actions'), $columnActions);
+        $this->table->addColumn(Lang::get('pedigree.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSource(new Connector\Sources\Search(new Search($this->entries->getRecord())));
-        return $table->render();
+        $this->table->addDataSource(new Connector\Sources\Search(new Search($this->entries->getRecord())));
+        return $this->table->render();
     }
 
     /**
      * @return mixed
      * @throws MapperException
-     * @throws \kalanis\kw_forms\Exceptions\FormsException
-     * @throws \kalanis\kw_table\TableException
+     * @throws FormsException
+     * @throws TableException
      */
     public function prepareJson()
     {
@@ -136,7 +141,8 @@ class PedigreeTable
 
     public function idLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('pedigree/edit/?id=' . $id));
+        $key = $this->table->getDataSource()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
+        $this->forward->setLink($this->link->linkVariant('pedigree/edit/?key=' . $key));
         $this->forward->setForward($this->link->linkVariant('pedigree/dashboard'));
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
@@ -146,7 +152,8 @@ class PedigreeTable
 
     public function editLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('pedigree/edit/?id=' . $id));
+        $key = $this->table->getDataSource()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
+        $this->forward->setLink($this->link->linkVariant('pedigree/edit/?key=' . $key));
         $this->forward->setForward($this->link->linkVariant('pedigree/dashboard'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x25B6; </a>',
             $this->forward->getLink(),
@@ -156,7 +163,8 @@ class PedigreeTable
 
     public function deleteLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('pedigree/delete/?id=' . $id));
+        $key = $this->table->getDataSource()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
+        $this->forward->setLink($this->link->linkVariant('pedigree/delete/?key=' . $key));
         $this->forward->setForward($this->link->linkVariant('pedigree/dashboard'));
         return sprintf('<a href="%s" title="%s" class="button button-delete"> &#x1F7AE; </a>',
             $this->forward->getLink(),

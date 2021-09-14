@@ -37,7 +37,18 @@ abstract class AEntryAdapter implements IEntry
 
     public function getId(): string
     {
-        return $this->record->id;
+        return strval($this->record->id);
+    }
+
+    public function setKey(string $key): IEntry
+    {
+        $this->record->key = $key;
+        return $this;
+    }
+
+    public function getKey(): string
+    {
+        return strval($this->record->key);
     }
 
     public function setName(string $name): IEntry
@@ -48,7 +59,7 @@ abstract class AEntryAdapter implements IEntry
 
     public function getName(): string
     {
-        return $this->record->name;
+        return strval($this->record->name);
     }
 
     public function setFamily(string $family): IEntry
@@ -59,7 +70,7 @@ abstract class AEntryAdapter implements IEntry
 
     public function getFamily(): string
     {
-        return $this->record->kennel;
+        return strval($this->record->kennel);
     }
 
     public function setBirth(string $birth): IEntry
@@ -70,29 +81,33 @@ abstract class AEntryAdapter implements IEntry
 
     public function getBirth(): string
     {
-        return $this->record->birth;
+        return strval($this->record->birth);
     }
 
-    public function setFatherId(string $fatherId): IEntry
+    public function setFatherId(string $fatherId): bool
     {
-        $this->record->fatherId = $fatherId;
-        return $this;
+        if ($this->record->fatherId != $fatherId) {
+            $this->record->fatherId = $fatherId;
+        }
+        return true;
     }
 
     public function getFatherId(): string
     {
-        return $this->record->fatherId;
+        return strval($this->record->fatherId);
     }
 
-    public function setMotherId(string $motherId): IEntry
+    public function setMotherId(string $motherId): bool
     {
-        $this->record->motherId = $motherId;
-        return $this;
+        if ($this->record->motherId != $motherId) {
+            $this->record->motherId = $motherId;
+        }
+        return true;
     }
 
     public function getMotherId(): string
     {
-        return $this->record->motherId;
+        return strval($this->record->motherId);
     }
 
     public function getChildren(): array
@@ -104,6 +119,13 @@ abstract class AEntryAdapter implements IEntry
         return $search->getResults();
     }
 
+    public function saveFamily(string $fatherId, string $motherId): bool
+    {
+        $this->setFatherId($fatherId);
+        $this->setMotherId($motherId);
+        return $this->record->save();
+    }
+
     public function setTrials(string $trials): IEntry
     {
         $this->record->trials = $trials;
@@ -112,7 +134,7 @@ abstract class AEntryAdapter implements IEntry
 
     public function getTrials(): string
     {
-        return $this->record->trials;
+        return strval($this->record->trials);
     }
 
     public function setBreed(string $breed): IEntry
@@ -123,7 +145,7 @@ abstract class AEntryAdapter implements IEntry
 
     public function getBreed(): string
     {
-        return $this->record->breed;
+        return strval($this->record->breed);
     }
 
     public function setSex(string $sex): IEntry
@@ -134,7 +156,7 @@ abstract class AEntryAdapter implements IEntry
 
     public function getSex(): string
     {
-        return $this->record->sex;
+        return strval($this->record->sex);
     }
 
     public function setText(string $text): IEntry
@@ -145,6 +167,6 @@ abstract class AEntryAdapter implements IEntry
 
     public function getText(): string
     {
-        return $this->record->text;
+        return strval($this->record->text);
     }
 }

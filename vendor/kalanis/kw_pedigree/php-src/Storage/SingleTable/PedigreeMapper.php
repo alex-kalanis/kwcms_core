@@ -20,8 +20,6 @@ class PedigreeMapper extends Mappers\Database\ADatabase
         $this->setRelation('name', 'name');
         $this->setRelation('kennel', 'kennel');
         $this->setRelation('birth', 'birth');
-        $this->setRelation('father', 'father');
-        $this->setRelation('mother', 'mother');
         $this->setRelation('fatherId', 'father_id');
         $this->setRelation('motherId', 'mother_id');
         $this->setRelation('address', 'address');
@@ -33,6 +31,8 @@ class PedigreeMapper extends Mappers\Database\ADatabase
         $this->setRelation('sex', 'sex');
         $this->setRelation('blood', 'blood');
         $this->setRelation('text', 'text');
+        $this->addForeignKey('father', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeMapper', 'fatherId', 'id');
+        $this->addForeignKey('mother', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeMapper', 'motherId', 'id');
         $this->addPrimaryKey('id');
     }
 }

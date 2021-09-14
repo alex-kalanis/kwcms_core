@@ -14,8 +14,6 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
  * @property string name
  * @property string kennel
  * @property string birth
- * @property string father
- * @property string mother
  * @property string fatherId
  * @property string motherId
  * @property string address
@@ -26,6 +24,8 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
  * @property string breed
  * @property string sex
  * @property string text
+ * @property PedigreeMapper[] father
+ * @property PedigreeMapper[] mother
  */
 class PedigreeRecord extends ASimpleRecord
 {
@@ -35,8 +35,6 @@ class PedigreeRecord extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 75);
         $this->addEntry('kennel', IEntryType::TYPE_STRING, 255);
         $this->addEntry('birth', IEntryType::TYPE_STRING, 32);
-        $this->addEntry('father', IEntryType::TYPE_STRING, 75);
-        $this->addEntry('mother', IEntryType::TYPE_STRING, 75);
         $this->addEntry('fatherId', IEntryType::TYPE_STRING, 50);
         $this->addEntry('motherId', IEntryType::TYPE_STRING, 50);
         $this->addEntry('address', IEntryType::TYPE_STRING, 255);
@@ -44,15 +42,12 @@ class PedigreeRecord extends ASimpleRecord
         $this->addEntry('photo', IEntryType::TYPE_STRING, 255);
         $this->addEntry('photoX', IEntryType::TYPE_INTEGER, 2048);
         $this->addEntry('photoY', IEntryType::TYPE_INTEGER, 2048);
-        $this->addEntry('breed', IEntryType::TYPE_SET, ['no','yes','died']);
+        $this->addEntry('breed', IEntryType::TYPE_SET, ['no','yes','died', '']);
         $this->addEntry('sex', IEntryType::TYPE_SET, ['female','male']);
-        $this->addEntry('blood', IEntryType::TYPE_SET, ['our','other']);
+        $this->addEntry('blood', IEntryType::TYPE_SET, ['our','other', '']);
         $this->addEntry('text', IEntryType::TYPE_STRING, 8192);
+        $this->addEntry('father', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
+        $this->addEntry('mother', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
         $this->setMapper('\kalanis\kw_pedigree\Storage\SingleTable\PedigreeMapper');
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 }

@@ -32,6 +32,7 @@ class PedigreeRecord extends ASimpleRecord
     protected function addEntries(): void
     {
         $this->addEntry('id', IEntryType::TYPE_STRING, 50);
+        $this->addEntry('key', IEntryType::TYPE_INTEGER, 4096);
         $this->addEntry('name', IEntryType::TYPE_STRING, 75);
         $this->addEntry('kennel', IEntryType::TYPE_STRING, 255);
         $this->addEntry('birth', IEntryType::TYPE_STRING, 32);
