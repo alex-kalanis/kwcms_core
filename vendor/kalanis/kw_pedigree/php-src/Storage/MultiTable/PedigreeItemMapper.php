@@ -52,4 +52,33 @@ class PedigreeItemMapper extends Mappers\Database\ADatabase
         }
         return parent::beforeDelete($record);
     }
+
+    public function getLike(string $what, ?string $sex): array
+    {
+        $query = 'SELECT `%1$s` AS `id`, `%2$s` AS `key`, `%3$s` AS `name`, `%4$s` AS `kennel` FROM `%5$s` WHERE (`%3$s` LIKE :named1 OR `%4$s` LIKE :named1)';
+        $params = [':named1' => sprintf('%%%s%%', $what)];
+        if (!is_null($sex)) {
+            $query .= ' AND `%6$s` = :sx1';
+            $params[':sx1'] = $sex;
+        }
+        $query .= ' ORDER BY `%4$s` ASC, `%3$s` ASC LIMIT 0, 30;';
+
+        $result = $this->database->query(sprintf($query,
+            $this->relations['id'],
+            $this->relations['key'],
+            $this->relations['name'],
+            $this->relations['kennel'],
+            $this->getTable(),
+            $this->relations['sex']
+        ), $params);
+
+        $items = [];
+        foreach ($result as $line) {
+            $item = new PedigreeItemRecord();
+            $item->loadWithData($line);
+            $items[] = $item;
+        }
+        return $items;
+    }
+
 }

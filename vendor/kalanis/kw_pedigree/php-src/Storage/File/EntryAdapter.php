@@ -12,4 +12,9 @@ use kalanis\kw_pedigree\Storage\AEntryAdapter;
  */
 class EntryAdapter extends AEntryAdapter
 {
+    public function getLike(string $what, $sex): array
+    {
+        // @todo: parse from sources; probably load all and then kick out that unusable
+        return $this->record->getMapper()->getLike($what, $sex);
+    }
 }

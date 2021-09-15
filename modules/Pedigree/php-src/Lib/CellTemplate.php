@@ -42,7 +42,6 @@ class CellTemplate extends ATemplate
         $this->addInput('{MORE}', Lang::get('pedigree.more'));
         $this->addInput('{INFO}');
         $this->addInput('{DESCENDANTS}', Lang::get('pedigree.descendants'));
-//        $this->addInput('{DESCENDANTS_LIST}');
         $this->addInput('{NO_INFORMATION}', Lang::get('pedigree.no_info'));
     }
 

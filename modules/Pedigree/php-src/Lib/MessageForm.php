@@ -24,10 +24,11 @@ class MessageForm extends Form
     /** @var GetEntries|null */
     protected $entry = null;
 
-    public function composeForm(GetEntries $entry): self
+    public function composeForm(GetEntries $entry, string $targetHelper): self
     {
         $this->entry = $entry;
         $this->setMethod(IEntry::SOURCE_POST);
+        $this->addHidden('helperTargetLink', $targetHelper, ['id' => 'helper_target_link']);
         $this->addText($entry->getStorage()->getNameKey(), Lang::get('pedigree.text.name'), $entry->getStorage()->getName())
             ->addRule(IRules::IS_NOT_EMPTY, Lang::get('warn.must_fill'));
         $this->addText($entry->getStorage()->getFamilyKey(), Lang::get('pedigree.text.family'), $entry->getStorage()->getFamily());

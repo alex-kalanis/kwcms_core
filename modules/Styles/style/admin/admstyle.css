@@ -430,6 +430,16 @@
         text-decoration: none;
     }
 
+    a.button-preview {
+        color: #ffffff;
+        background-color: rgba(224,248,247,0.8);
+        padding-left: 15px;
+    }
+
+    a.button-preview:hover {
+        background-color: rgba(0,128,256,0.5);
+    }
+
     a.button-edit {
         color: #ffffff;
         background-color: #088a08;

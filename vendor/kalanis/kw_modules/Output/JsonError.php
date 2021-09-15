@@ -20,6 +20,7 @@ class JsonError extends AOutput
 
     public function output(): string
     {
+        header("Content-Type: application/json");
         return json_encode($this->content);
     }
 }

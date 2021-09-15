@@ -102,9 +102,10 @@ class PedigreeTable
         $this->table->addSortedColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Form\KwField\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
+        $columnActions->addColumn(new Columns\Func('id', [$this, 'showLink']));
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
         $columnActions->addColumn(new Columns\Func('id', [$this, 'deleteLink']));
-        $columnActions->style('width:100px', new Rules\Always());
+        $columnActions->style('width:200px', new Rules\Always());
 
         $this->table->addColumn(Lang::get('pedigree.actions'), $columnActions);
 
@@ -147,6 +148,15 @@ class PedigreeTable
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
             strval($id)
+        );
+    }
+
+    public function showLink($id)
+    {
+        $key = $this->table->getDataSource()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
+        return sprintf('<a href="%s" title="%s" class="button button-preview"> &#x1F50D; </a>',
+            $this->link->linkVariant('pedigree/pedigree/?key=' . $key),
+            Lang::get('pedigree.show')
         );
     }
 

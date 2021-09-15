@@ -31,8 +31,35 @@ class PedigreeMapper extends Mappers\Database\ADatabase
         $this->setRelation('sex', 'sex');
         $this->setRelation('blood', 'blood');
         $this->setRelation('text', 'text');
-        $this->addForeignKey('father', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeMapper', 'fatherId', 'id');
-        $this->addForeignKey('mother', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeMapper', 'motherId', 'id');
+        $this->addForeignKey('father', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeRecord', 'fatherId', 'id');
+        $this->addForeignKey('mother', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeRecord', 'motherId', 'id');
         $this->addPrimaryKey('id');
+    }
+
+    public function getLike(string $what, ?string $sex): array
+    {
+        $query = 'SELECT `%1$s` AS `id`, `%2$s` AS `name`, `%3$s` AS `kennel` FROM `%4$s` WHERE (`%2$s` LIKE :named1 OR `%3$s` LIKE :named1)';
+        $params = [':named1' => sprintf('%%%s%%', $what)];
+        if (!is_null($sex)) {
+            $query .= ' AND `%5$s` = :sx1';
+            $params[':sx1'] = $sex;
+        }
+        $query .= ' ORDER BY `%3$s` ASC, `%2$s` ASC LIMIT 0, 30;';
+
+        $result = $this->database->query(sprintf($query,
+            $this->relations['id'],
+            $this->relations['name'],
+            $this->relations['kennel'],
+            $this->getTable(),
+            $this->relations['sex']
+        ), $params);
+
+        $items = [];
+        foreach ($result as $line) {
+            $item = new PedigreeRecord();
+            $item->loadWithData($line);
+            $items[] = $item;
+        }
+        return $items;
     }
 }

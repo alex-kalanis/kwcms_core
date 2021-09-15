@@ -14,12 +14,14 @@ use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\AAuthModule;
+use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
+use kalanis\kw_scripts\Scripts;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -42,12 +44,15 @@ class Add extends AAuthModule implements IModuleTitle
     protected $forward = null;
     /** @var GetEntries */
     protected $entry = null;
+    /** @var ExternalLink */
+    protected $extLink = null;
 
     public function __construct()
     {
         Config::load('Pedigree');
         $this->initTModuleTemplate();
         $this->form = new Lib\MessageForm('editPedigree');
+        $this->extLink = new ExternalLink(Config::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }
@@ -62,7 +67,7 @@ class Add extends AAuthModule implements IModuleTitle
         try {
             $this->entry = new GetEntries($this->getRecord());
             $this->entry->getStorage()->setRecord($this->entry->getRecord());
-            $this->form->composeForm($this->entry);
+            $this->form->composeForm($this->entry, $this->extLink->linkVariant('pedigree/lookup'));
             $this->form->addIdentifier();
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
@@ -109,6 +114,7 @@ class Add extends AAuthModule implements IModuleTitle
                 Notification::addSuccess(Lang::get('pedigree.added'));
             }
             $this->forward->forward($this->isProcessed);
+            Scripts::want('Pedigree', 'names.js');
             $editTmpl = new Lib\EditTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, $this->entry, Lang::get('pedigree.add_record'))->render()));
         } catch (FormsException $ex) {
