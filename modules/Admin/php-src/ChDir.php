@@ -23,7 +23,7 @@ use kalanis\kw_tree\TWhereDir;
  * Admin Change working Directory
  * @link http://kwcms_core.lemp.test/web/ch-dir?
  */
-class ChDir extends AAuthModule
+abstract class ChDir extends AAuthModule
 {
     use TWhereDir;
 

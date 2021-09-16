@@ -23,6 +23,11 @@ class LoginForm extends Form
             ->addRule(IRules::IS_NOT_EMPTY, Lang::get('warn.must_fill'));
         $pass = $this->addPassword('pass', Lang::get('login.pass'));
         $pass->addRule(IRules::IS_NOT_EMPTY, Lang::get('warn.must_fill'));
+//        $this->addSelect('lang', Lang::get('system.use_lang'), null, [
+//            'cze' => 'Cesky',
+//            'eng' => 'English',
+//            'fra' => 'Francais',
+//        ]);
 //        $this->addCsrf('csrf', $cookie, Lang::get('warn.late'));
         $this->addSubmit('login', Lang::get('login.button'));
         return $this;

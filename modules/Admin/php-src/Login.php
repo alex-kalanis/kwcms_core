@@ -30,22 +30,18 @@ class Login extends AAuthModule implements IModuleTitle
     {
         Lang::load('Admin');
         $this->form = new Forms\LoginForm('login');
-        $this->form->fill(new CookieAdapter());
     }
 
     public function process(): void
     {
-        parent::process();
-        if (!$this->user) {
-            try {
-                $inputAdapter = new InputVarsAdapter($this->inputs);
-                $inputAdapter->loadEntries(InputVarsAdapter::SOURCE_POST);
-                $this->form->setInputs($inputAdapter);
-                $this->form->process();
-
-            } catch (FormsException $ex) {
-                $this->error = $ex;
+        try {
+            $this->form->fill(new CookieAdapter());
+            $this->form->setInputs(new InputVarsAdapter($this->inputs));
+            if ($this->form->process()) {
+                parent::process();
             }
+        } catch (FormsException $ex) {
+            $this->error = $ex;
         }
     }
 

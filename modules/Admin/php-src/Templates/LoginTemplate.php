@@ -36,6 +36,7 @@ class LoginTemplate extends ATemplate
     {
         $this->updateItem('{INPUT_NAME}', $form->getControl('user')->renderInput());
         $this->updateItem('{INPUT_PASS}', $form->getControl('pass')->renderInput());
+//        $this->updateItem('{INPUT_LANG}', $form->getControl('lang')->renderInput());
         $this->updateItem('{INPUT_BUTTON}', $form->getControl('login')->renderInput());
         $this->updateItem('{FORM_ERROR}', $form->renderErrors());
         return $this;
