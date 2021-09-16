@@ -165,7 +165,7 @@ class PedigreeTable
         $key = $this->table->getDataSource()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
         $this->forward->setLink($this->link->linkVariant('pedigree/edit/?key=' . $key));
         $this->forward->setForward($this->link->linkVariant('pedigree/dashboard'));
-        return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x25B6; </a>',
+        return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
             $this->forward->getLink(),
             Lang::get('pedigree.update')
         );

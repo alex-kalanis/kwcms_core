@@ -21,12 +21,14 @@ class RouterTemplate extends ATemplate
     {
         $this->addInput('{CONTENT}');
         $this->addInput('{TITLE}');
+        $this->addInput('{BACKGROUND_IMAGE_PATH}');
         $this->addInput('{ADMINISTRATION}', Lang::get('system.administration'));
     }
 
     public function setData(string $content, string $title = ''): self
     {
         $this->updateItem('{CONTENT}', $content);
+        $this->updateItem('{BACKGROUND_IMAGE_PATH}', Config::get('Core', 'page.admin_background'));
         $this->updateItem('{TITLE}', $title ?: Config::get('Core', 'page.page_title'));
         return $this;
     }

@@ -21,7 +21,7 @@ $config = [
     "admin.captcha_length"=>6, //INT;help=length of captcha#
     "admin.image_size_x"=>200, //INT;help=captcha size#
     "admin.image_size_y"=>100, //INT;help=captcha size#
-    "admin.background"=>'style/back/bazina.jpg', //STRING;help=admin background#
+    "admin.background"=>'/web/ms:sysimage/system/background.png', //STRING;help=admin background#
     "admin.lang"=>'cze', //STRING;help=admin translation#
     "admin.style"=>'default', //STRING;path=/style;help=admin style#
     "admin.script"=>false, //BOOLEAN;help=enable scripting in admin#

@@ -43,12 +43,13 @@ let Names = function () {
 			return;
 		}
 		let inp = document.createElement('input');
-		let lst = document.createElement('div');
 		inp.setAttribute('type', 'text');
 		inp.setAttribute('id', inputId);
 		inp.setAttribute('placeholder', 'Part of wanted name');
 		inp.setAttribute('onKeyUp', 'names.updateHelper(\'' + inputId + '\',\'' + type + '\',\'' + inputListing + '\',\'' + inputSelect + '\')');
+		let lst = document.createElement('ul');
 		lst.setAttribute('id', inputListing);
+		lst.setAttribute('class', 'menu submenu nowrap');
 		ajx_pos.appendChild(inp);
 		ajx_pos.appendChild(lst);
 	};

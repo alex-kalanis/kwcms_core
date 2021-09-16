@@ -9,17 +9,19 @@
 @media screen {
     
     html { /* body (especially background) of admin pages */
-        font-size: 1em; font-family: sans-serif; text-align: center; color: #000000; /* background-color: #d8d8d8;*/ height: 700px; /*background-image: url('/web/ms:sysimage/system/background.png');*/ top: 0px; left: 0px; width: 100%; height: 100%; position: absolute;
+        font-size: 1em; font-family: sans-serif; text-align: center; color: #000000; /* background-color: #d8d8d8;*/
+        top: 0px; left: 0px; width: 100%; height: 100%; position: absolute;
     }
     
     body {
-        /*overflow: hidden;*/ top: 0px; left: 0px; width: 99%; height: 99%;
+        top: 0px; left: 0px; width: 99%; height: 99%;
     }
     
     #bgimage {
-        z-index: -999; min-height: 100%; min-width: 100%; height: auto; position: fixed;
+        min-height: 100%; min-width: 100%; height: 100%; position: fixed;
         top: 0px; left: 0px; z-index: -1;
-        background-image: url("/web/ms:sysimage/system/background.png");
+        /*background-image: url("/web/ms:sysimage/system/background.png");*/
+        background-position: center; background-repeat: no-repeat; background-size: cover;
     }
     
     #wrapper {
@@ -176,6 +178,10 @@
         float: left; height: 1.2em; width: 10em; text-align: center; text-transform: uppercase; padding: 0px 0.3em; margin-top: -9px;
     }
     
+    .menu ul.nowrap li {
+        float: initial;
+    }
+
     .menu li.separator {
 /*        background-color: rgba(230,230,230,0.5);*/
         background-image: url('/web/ms:sysimage/system/sep.png');
@@ -276,15 +282,19 @@
         text-transform: none;*/
     }
     
-    #main .rowmenu>ul {
+    .rowmenu>ul {
         padding: 1em; margin: 0px; list-style-type: none;
     }
     
-    #main .rowmenu>ul>li {
+    .rowmenu>ul>li {
         float: left; height: 1.7em; width: 10em; text-align: center; text-transform: uppercase; padding: 0px 0.3em; margin-top: -10px;
     }
-    
-    #main .rowmenu>ul>li>a {
+
+    .rowmenu>ul.nowrap>li {
+        float: initial;
+    }
+
+    .rowmenu>ul>li>a {
         font-size: 0.7em; font-style: normal; font-weight: bold; background-image: url('/web/ms:sysimage/system/submnubt.png'); color: #000000;
         display: block; height: 1.5em; padding: 0.1em 0.4em; border-style: solid; border-color: #808080; border-width: 0px 3px;
         -moz-border-radius: 5px;
@@ -292,21 +302,21 @@
         border-radius: 5px;
     }
     
-    #main .rowmenu>ul>li>a:hover {
+    .rowmenu>ul>li>a:hover {
         /*border-style: solid; border-color: #c0c0c0; */color: #ffffff;/* background-color: rgb(0, 128, 256);*/ text-decoration: none;
         font-style: italic; background-image: url('/web/ms:sysimage/system/submnubtd.png');
     }
     
-    #main .rowmenu>ul>li:hover>ul {
+    .rowmenu>ul>li:hover>ul {
         visibility: visible;
     }
     
-    #main .rowmenu>ul>ul {
+    .rowmenu>ul>ul {
         width: 9em;
     }
     
-    #main .submenu ul {
-        font-style: normal; font-weight: bold; letter-spacing: 0.3px; text-align: center; text-transform: none;
+    .submenu ul {
+        font-style: normal; font-weight: bold; letter-spacing: 0.3px; text-transform: none;
         /* submenu style  */
         position: absolute; visibility: hidden; text-align: left; padding: 3px 0px; margin: 0px;
         display: block; width: 10em;
@@ -317,12 +327,12 @@
         box-shadow: 2px 2px 5px #848484;
     }
     
-    #main .submenu ul li {
+    .submenu ul li {
         float: left;text-align: center; text-transform: uppercase; padding: 0px; height: 1.2em; margin: 0px;
 /*        background-color: rgba(230,230,230,0.5);*/
     }
     
-    #main .submenu ul a {
+    .submenu ul a {
         /* submenu style - links */
         display: block; height: 1.6em; padding: 0em;/* border-style: solid; border-color: #006480; border-width: 3px;*/ padding-left: 10px;
     }

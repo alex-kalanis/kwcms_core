@@ -145,7 +145,7 @@ class MessageTable
     {
         $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . $id));
         $this->forward->setForward($this->link->linkVariant('short/dashboard'));
-        return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x25B6; </a>',
+        return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
             $this->forward->getLink(),
             Lang::get('short.update_texts')
         );
