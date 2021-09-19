@@ -259,6 +259,7 @@ class UserDir
 
     /**
      * Remove sub dirs and their content recursively
+     * SHALL NOT BE SEPARATED INTO EXTRA CLASS
      * @param $dirPath
      */
     protected function removeCycle(string $dirPath): void
