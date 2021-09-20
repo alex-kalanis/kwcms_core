@@ -32,6 +32,21 @@ class ExtendDir
         return $this->webRootDir;
     }
 
+    public function getDescDir(): string
+    {
+        return $this->descDir;
+    }
+
+    public function getDescExt(): string
+    {
+        return $this->descExt;
+    }
+
+    public function getThumbDir(): string
+    {
+        return $this->thumbDir;
+    }
+
     /**
      * Make dir with extended properties
      * @param string $path
@@ -47,10 +62,10 @@ class ExtendDir
             return true;
         }
         if ((!@mkdir($descDir)) && (!is_dir($descDir))) {
-            throw new ExtrasException('DESC_DIR_CANNOT_CREATE');
+            throw new ExtrasException('Cannot create description dir');
         }
         if ((!@mkdir($thumbDir)) && (!is_dir($thumbDir))) {
-            throw new ExtrasException('THUMB_DIR_CANNOT_CREATE');
+            throw new ExtrasException('Cannot create thumbnail dir');
         }
         return true;
     }
@@ -92,7 +107,7 @@ class ExtendDir
 
         if (!is_null($descPath))  {
             if (false === file_put_contents($descPath, $content)) {
-                throw new ExtrasException('DIR_DESC_NOT_WRITE');
+                throw new ExtrasException('Cannot write dir desc!');
             }
             return true;
         } else {
@@ -111,14 +126,12 @@ class ExtendDir
         $descDir = $this->webRootDir . $current . $this->descDir;
         $descFile = $this->descFile . $this->descExt;
 
-        $descPath = null;
-        if (!is_null($this->isUsable($descDir, $descFile))) {
-            $descPath = $descDir . DIRECTORY_SEPARATOR . $descFile;
+        if (is_null($this->isUsable($descDir, $descFile))) {
+            return '';
         }
-
-        $content = file_get_contents($descPath);
+        $content = file_get_contents($descDir . DIRECTORY_SEPARATOR . $descFile);
         if (false === $content) {
-            throw new ExtrasException('DIR_DESC_NOT_READ');
+            throw new ExtrasException('Cannot read dir desc!');
         }
         return $content;
     }
@@ -148,12 +161,12 @@ class ExtendDir
      * @return bool
      * @throws ExtrasException
      */
-    protected function isReadable(string $path): bool
+    public function isReadable(string $path): bool
     {
         if (is_dir($path) && is_readable($path)) {
             return true;
         }
-        throw new ExtrasException('CANNOT_ACCESS_DIR_READ');
+        throw new ExtrasException('Cannot access wanted directory!');
     }
 
     /**
@@ -161,12 +174,12 @@ class ExtendDir
      * @return bool
      * @throws ExtrasException
      */
-    protected function isWritable(string $path): bool
+    public function isWritable(string $path): bool
     {
         if (is_dir($path) && is_writable($path)) {
             return true;
         }
-        throw new ExtrasException('CANNOT_ACCESS_DIR_WRITE');
+        throw new ExtrasException('Cannot write into that directory!');
     }
 
     /**
@@ -183,6 +196,6 @@ class ExtendDir
         if (!file_exists($path . DIRECTORY_SEPARATOR . $file) && is_readable($path) && is_writable($path)) {
             return null;
         }
-        throw new ExtrasException('CANNOT_ACCESS_FILE');
+        throw new ExtrasException('Cannot access that file!');
     }
 }
