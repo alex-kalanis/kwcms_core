@@ -37,6 +37,11 @@ class ExtendDir
         return $this->descDir;
     }
 
+    public function getDescFile(): string
+    {
+        return $this->descFile;
+    }
+
     public function getDescExt(): string
     {
         return $this->descExt;
@@ -134,6 +139,24 @@ class ExtendDir
             throw new ExtrasException('Cannot read dir desc!');
         }
         return $content;
+    }
+
+    /**
+     * @param string $path
+     * @return bool
+     * @throws ExtrasException
+     */
+    public function removeDirDescription(string $path): bool
+    {
+        $current = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
+        $descDir = $this->webRootDir . $current . $this->descDir;
+        $descFile = $this->descFile . $this->descExt;
+
+        $descPath = $descDir . DIRECTORY_SEPARATOR . $descFile;
+        if (is_file($descPath) && !unlink($descPath)) {
+            throw new ExtrasException('Cannot remove dir desc!');
+        }
+        return true;
     }
 
     /**

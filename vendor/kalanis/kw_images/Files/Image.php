@@ -1,39 +1,36 @@
 <?php
 
-namespace kalanis\kw_images;
+namespace kalanis\kw_images\Files;
 
 
 use kalanis\kw_extras\ExtendDir;
 use kalanis\kw_extras\ExtrasException;
+use kalanis\kw_images\Graphics;
+use kalanis\kw_images\ImagesException;
 use kalanis\kw_paths\Stuff;
 
 
 /**
- * Class Files
- * @package kalanis\kw_images
- *
- * ucel aktualni hry je odsekat ty casti, ktere reprezentuji samotny obrazek a vyhodit je do samostatne tridy - stejne jako byly vyhozeny thumby a popisky
- * Tady zustanou jen hromadna volani operaci nad celou sbirkou souboru
+ * Class Image
+ * @package kalanis\kw_images\Files
  */
-class Files extends Files\AFiles
+class Image extends AFiles
 {
-    protected $imageMaxWidth = 1024;
-    protected $imageMaxHeight = 1024;
-    protected $imageMaxFileSize = 1024;
-    protected $libThumb = null;
-    protected $libDesc = null;
+    protected $maxWidth = 1024;
+    protected $maxHeight = 1024;
+    protected $maxFileSize = 1024;
+    protected $libGraphics = null;
 
-    public function __construct(ExtendDir $libExtendDir, Files\Thumb $thumb, Files\Desc $desc, array $params = [])
+    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [])
     {
         parent::__construct($libExtendDir);
-        $this->libThumb = $thumb;
-        $this->libDesc = $desc;
-        $this->imageMaxWidth = !empty($params["max_width"]) ? strval($params["max_width"]) : $this->imageMaxWidth;
-        $this->imageMaxHeight = !empty($params["max_height"]) ? strval($params["max_height"]) : $this->imageMaxHeight;
-        $this->imageMaxFileSize = !empty($params["max_size"]) ? strval($params["max_size"]) : $this->imageMaxFileSize;
+        $this->libGraphics = $libGraphics;
+        $this->maxWidth = !empty($params["max_width"]) ? strval($params["max_width"]) : $this->maxWidth;
+        $this->maxHeight = !empty($params["max_height"]) ? strval($params["max_height"]) : $this->maxHeight;
+        $this->maxFileSize = !empty($params["max_size"]) ? strval($params["max_size"]) : $this->maxFileSize;
     }
 
-    public function getImageCreated(string $path, string $format = 'd.m.Y \@ H:i:s'): ?string
+    public function getCreated(string $path, string $format = 'd.m.Y \@ H:i:s'): ?string
     {
         $created = filemtime($this->libExtendDir->getWebRootDir() . $path);
         return (false === $created) ? null : date($format, $created);
@@ -46,26 +43,27 @@ class Files extends Files\AFiles
 
     /**
      * @param string $path
-     * @param string $desc
-     * @param bool $hasThumb
      * @return bool
      * @throws ImagesException
      */
-    public function add(string $path, string $desc = '', bool $hasThumb = true): bool
+    public function upload(string $path): bool
     {
-        $this->libThumb->remove($path);
-        if ($hasThumb) {
-            $this->libThumb->create($path);
-        }
-
-        if (!empty($desc)) {
-            $this->libDesc->set($path, $desc);
-        } else {
-            $this->libDesc->remove($path);
-        }
-
+        $this->libGraphics->load($path);
+        $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
+        $this->libGraphics->resample($sizes['width'], $sizes['height']);
+        $this->libGraphics->save($path);
         return true;
     }
+
+    /**
+     * @param string $path
+     * @throws ImagesException
+     */
+    public function remove(string $path): void
+    {
+        $this->deleteFile($this->getPath($path), 'Cannot remove image!');
+    }
+
 
     /**
      * @param string $path
