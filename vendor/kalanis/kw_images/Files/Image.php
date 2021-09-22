@@ -12,6 +12,7 @@ use kalanis\kw_paths\Stuff;
 
 /**
  * Class Image
+ * Main image itself
  * @package kalanis\kw_images\Files
  */
 class Image extends AFiles
@@ -43,10 +44,25 @@ class Image extends AFiles
 
     /**
      * @param string $path
+     * @throws ImagesException
+     */
+    public function check(string $path): void
+    {
+        $size = filesize($path);
+        if (false === $size) {
+            throw new ImagesException('Cannot read file size. Exists?');
+        }
+        if ($this->maxFileSize < $size) {
+            throw new ImagesException('This image is too big to use.');
+        }
+    }
+
+    /**
+     * @param string $path
      * @return bool
      * @throws ImagesException
      */
-    public function upload(string $path): bool
+    public function processUploaded(string $path): bool
     {
         $this->libGraphics->load($path);
         $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
@@ -54,16 +70,6 @@ class Image extends AFiles
         $this->libGraphics->save($path);
         return true;
     }
-
-    /**
-     * @param string $path
-     * @throws ImagesException
-     */
-    public function remove(string $path): void
-    {
-        $this->deleteFile($this->getPath($path), 'Cannot remove image!');
-    }
-
 
     /**
      * @param string $path
@@ -82,35 +88,16 @@ class Image extends AFiles
         $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir);
 
         $this->checkWritable($targetPath);
-
-        if (!is_file($sourcePath . DIRECTORY_SEPARATOR . $fileName)) {
-            throw new ImagesException('Cannot find that file.');
-        }
-
-        if (is_file($targetPath . DIRECTORY_SEPARATOR . $fileName) && !$overwrite) {
-            throw new ImagesException('File with the same name already exists here.');
-        }
-
-        $this->dataOverwriteCopy(
+        $this->dataCopy(
             $sourcePath . DIRECTORY_SEPARATOR . $fileName,
             $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            $overwrite,
+            'Cannot find that image.',
+            'Image with the same name already exists here.',
             'Cannot remove old image.',
             'Cannot copy base image.'
         );
 
-        $this->dataOverwriteCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            $targetPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            'Cannot remove old description.',
-            'Cannot copy description.'
-        );
-
-        $this->dataOverwriteCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $fileName,
-            'Cannot remove old thumb.',
-            'Cannot copy thumb.'
-        );
         return true;
     }
 
@@ -118,11 +105,10 @@ class Image extends AFiles
      * @param string $path
      * @param string $targetDir
      * @param bool $overwrite
-     * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function move(string $path, string $targetDir, bool $overwrite = false): bool
+    public function move(string $path, string $targetDir, bool $overwrite = false): void
     {
         $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
         $fileName = Stuff::filename($path);
@@ -131,47 +117,25 @@ class Image extends AFiles
         $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir);
 
         $this->checkWritable($targetPath);
-
-        if (!is_file($sourcePath . DIRECTORY_SEPARATOR . $fileName)) {
-            throw new ImagesException('Cannot find that file.');
-        }
-
-        if (is_file($targetPath . DIRECTORY_SEPARATOR . $fileName) && !$overwrite) {
-            throw new ImagesException('File with the same name already exists here.');
-        }
-
-        $this->dataOverwriteRename(
+        $this->dataRename(
             $sourcePath . DIRECTORY_SEPARATOR . $fileName,
             $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            $overwrite,
+            'Cannot find that image.',
+            'Image with the same name already exists here.',
             'Cannot remove old image.',
             'Cannot move base image.'
         );
-
-        $this->dataOverwriteRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            $targetPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            'Cannot remove old description.',
-            'Cannot move description.'
-        );
-
-        $this->dataOverwriteRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $fileName,
-            'Cannot remove old thumb.',
-            'Cannot move thumb.'
-        );
-        return true;
     }
 
     /**
      * @param string $path
      * @param string $targetName
      * @param bool $overwrite
-     * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function rename(string $path, string $targetName, bool $overwrite = false): bool
+    public function rename(string $path, string $targetName, bool $overwrite = false): void
     {
         $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
         $fileName = Stuff::filename($path);
@@ -179,72 +143,23 @@ class Image extends AFiles
         $whatPath = $this->libExtendDir->getWebRootDir() . $filePath;
 
         $this->checkWritable($whatPath);
-
-        if (!is_file($whatPath . DIRECTORY_SEPARATOR . $fileName)) {
-            throw new ImagesException('Cannot find that file.');
-        }
-
-        if (is_file($whatPath . DIRECTORY_SEPARATOR . $targetName) && !$overwrite) {
-            throw new ImagesException('File with the same name already exists here.');
-        }
-
-        $this->dataOverwriteRename(
+        $this->dataRename(
             $whatPath . DIRECTORY_SEPARATOR . $fileName,
             $whatPath . DIRECTORY_SEPARATOR . $targetName,
+            $overwrite,
+            'Cannot find that image.',
+            'Image with the same name already exists here.',
             'Cannot remove old image.',
             'Cannot rename base image.'
         );
-
-        $this->dataOverwriteRename(
-            $whatPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            $whatPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $targetName . $this->libExtendDir->getDescExt(),
-            'Cannot remove old description.',
-            'Cannot rename description.'
-        );
-
-        $this->dataOverwriteRename(
-            $whatPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $fileName,
-            $whatPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $targetName,
-            'Cannot remove old thumb.',
-            'Cannot rename thumb.'
-        );
-        return true;
     }
 
     /**
      * @param string $path
-     * @return bool
-     * @throws ExtrasException
      * @throws ImagesException
      */
-    public function delete(string $path): bool
+    public function delete(string $path): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $whatPath = $this->libExtendDir->getWebRootDir() . $filePath;
-
-        $this->checkWritable($whatPath);
-
-        if (!is_file($whatPath . DIRECTORY_SEPARATOR . $fileName)) {
-            return true;
-        }
-
-        $this->dataRemove(
-            $whatPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            'Cannot remove description!'
-        );
-
-        $this->dataRemove(
-            $whatPath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $fileName,
-            'Cannot remove thumb!'
-        );
-
-        $this->dataRemove(
-            $whatPath . DIRECTORY_SEPARATOR . $fileName,
-            'Cannot remove file!'
-        );
-
-        return true;
+        $this->deleteFile($this->getPath($path), 'Cannot remove image!');
     }
 }

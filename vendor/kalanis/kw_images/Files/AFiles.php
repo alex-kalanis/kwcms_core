@@ -11,6 +11,7 @@ use kalanis\kw_paths\Stuff;
 
 /**
  * Class AFiles
+ * Shared operations over files
  * @package kalanis\kw_images\Files
  */
 abstract class AFiles
@@ -156,6 +157,31 @@ abstract class AFiles
     /**
      * @param string $source
      * @param string $target
+     * @param bool $overwrite
+     * @param string $sourceFileNotExistsErr
+     * @param string $targetFileExistsErr
+     * @param string $unlinkErr
+     * @param string $copyErr
+     * @throws ImagesException
+     */
+    protected function dataCopy(
+        string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
+    ): void
+    {
+        if (!is_file($source)) {
+            throw new ImagesException($sourceFileNotExistsErr);
+        }
+
+        if (is_file($target) && !$overwrite) {
+            throw new ImagesException($targetFileExistsErr);
+        }
+
+        $this->dataOverwriteCopy( $source, $target, $unlinkErr, $copyErr);
+    }
+
+    /**
+     * @param string $source
+     * @param string $target
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws ImagesException
@@ -168,6 +194,31 @@ abstract class AFiles
         if (is_file($source) && !copy($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
+    }
+
+    /**
+     * @param string $source
+     * @param string $target
+     * @param bool $overwrite
+     * @param string $sourceFileNotExistsErr
+     * @param string $targetFileExistsErr
+     * @param string $unlinkErr
+     * @param string $copyErr
+     * @throws ImagesException
+     */
+    protected function dataRename(
+        string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
+    ): void
+    {
+        if (!is_file($source)) {
+            throw new ImagesException($sourceFileNotExistsErr);
+        }
+
+        if (is_file($target) && !$overwrite) {
+            throw new ImagesException($targetFileExistsErr);
+        }
+
+        $this->dataOverwriteRename( $source, $target, $unlinkErr, $copyErr);
     }
 
     /**

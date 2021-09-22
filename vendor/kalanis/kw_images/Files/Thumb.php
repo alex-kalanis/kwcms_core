@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Files;
 
 
 use kalanis\kw_extras\ExtendDir;
+use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_paths\Stuff;
@@ -61,9 +62,92 @@ class Thumb extends AFiles
 
     /**
      * @param string $path
+     * @param string $targetDir
+     * @param bool $overwrite
+     * @return bool
+     * @throws ExtrasException
      * @throws ImagesException
      */
-    public function remove(string $path): void
+    public function copy(string $path, string $targetDir, bool $overwrite = false): bool
+    {
+        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
+        $fileName = Stuff::filename($path);
+
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+
+        $this->checkWritable($targetPath);
+        $this->dataCopy(
+            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
+            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            $overwrite,
+            'Cannot find that thumb.',
+            'Thumb with the same name already exists here.',
+            'Cannot remove old thumb.',
+            'Cannot copy base thumb.'
+        );
+
+        return true;
+    }
+
+    /**
+     * @param string $path
+     * @param string $targetDir
+     * @param bool $overwrite
+     * @throws ExtrasException
+     * @throws ImagesException
+     */
+    public function move(string $path, string $targetDir, bool $overwrite = false): void
+    {
+        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
+        $fileName = Stuff::filename($path);
+
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+
+        $this->checkWritable($targetPath);
+        $this->dataRename(
+            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
+            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            $overwrite,
+            'Cannot find that thumb.',
+            'Thumb with the same name already exists here.',
+            'Cannot remove old thumb.',
+            'Cannot move base thumb.'
+        );
+    }
+
+    /**
+     * @param string $path
+     * @param string $targetName
+     * @param bool $overwrite
+     * @throws ExtrasException
+     * @throws ImagesException
+     */
+    public function rename(string $path, string $targetName, bool $overwrite = false): void
+    {
+        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
+        $fileName = Stuff::filename($path);
+
+        $whatPath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+
+        $this->checkWritable($whatPath);
+        $this->dataRename(
+            $whatPath . DIRECTORY_SEPARATOR . $fileName,
+            $whatPath . DIRECTORY_SEPARATOR . $targetName,
+            $overwrite,
+            'Cannot find that thumb.',
+            'Thumb with the same name already exists here.',
+            'Cannot remove old thumb.',
+            'Cannot rename base thumb.'
+        );
+    }
+
+    /**
+     * @param string $path
+     * @throws ImagesException
+     */
+    public function delete(string $path): void
     {
         $this->deleteFile($this->getPath($path), 'Cannot remove thumb!');
     }
