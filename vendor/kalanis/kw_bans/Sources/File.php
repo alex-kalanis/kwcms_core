@@ -13,6 +13,10 @@ use kalanis\kw_bans\BanException;
  */
 class File extends ASources
 {
+    /**
+     * @param string $file
+     * @throws BanException
+     */
     public function __construct(string $file)
     {
         $rows = @file($file);

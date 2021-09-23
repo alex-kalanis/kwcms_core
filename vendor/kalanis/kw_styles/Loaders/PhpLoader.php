@@ -41,6 +41,12 @@ class PhpLoader implements ILoader
         return (!empty($includingPath)) ? $this->includedStyles($includingPath) : '';
     }
 
+    /**
+     * @param string $module
+     * @param string $conf
+     * @return string|null
+     * @throws StylesException
+     */
     public function contentPath(string $module, string $conf = ''): ?string
     {
         if (empty($this->pathLib)) {

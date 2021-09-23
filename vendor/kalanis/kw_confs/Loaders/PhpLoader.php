@@ -43,6 +43,12 @@ class PhpLoader implements ILoader
         return (!empty($path)) ? $this->includedConf($path) : [];
     }
 
+    /**
+     * @param string $module
+     * @param string $conf
+     * @return string|null
+     * @throws ConfException
+     */
     public function contentPath(string $module, string $conf = ''): ?string
     {
         if (empty($this->pathLib)) {

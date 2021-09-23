@@ -4,6 +4,7 @@ namespace kalanis\kw_cache;
 
 
 use kalanis\kw_storage\Storage;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -14,7 +15,9 @@ use kalanis\kw_storage\Storage;
 class Cache implements Interfaces\ICache
 {
     protected $content = null;
+    /** @var Storage|null */
     protected $cacheStorage = null;
+    /** @var Storage|null */
     protected $reloadStorage = null;
     protected $cachePath = '';
     protected $reloadPath = '';
@@ -32,16 +35,29 @@ class Cache implements Interfaces\ICache
         return $this;
     }
 
+    /**
+     * @return bool
+     * @throws StorageException
+     */
     public function wantReload(): bool
     {
         return $this->reloadStorage->exists($this->reloadPath);
     }
 
+    /**
+     * @return bool
+     * @throws StorageException
+     */
     public function isAvailable(): bool
     {
         return $this->cacheStorage->exists($this->cachePath);
     }
 
+    /**
+     * @param string $content
+     * @return bool
+     * @throws StorageException
+     */
     public function save(string $content): bool
     {
         $this->content = $content;
@@ -56,6 +72,10 @@ class Cache implements Interfaces\ICache
         return true;
     }
 
+    /**
+     * @return string
+     * @throws StorageException
+     */
     public function get(): string
     {
         if ($this->isAvailable() && is_null($this->content)) {
@@ -64,6 +84,9 @@ class Cache implements Interfaces\ICache
         return strval($this->content);
     }
 
+    /**
+     * @throws StorageException
+     */
     public function reload(): void
     {
         $this->reloadStorage->set($this->reloadPath, 'CACHE RELOAD');

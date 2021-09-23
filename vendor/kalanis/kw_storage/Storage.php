@@ -81,7 +81,7 @@ class Storage
     public function add(string $key, $value, ?int $expire = 8600): bool
     {
         $this->checkStorage();
-        // safeadd for multithread at any system
+        // safe add for multi-thread at any system
         if ($this->storage->write($key, $value, $expire)) {
             return ( $value == $this->get($key) );
         }

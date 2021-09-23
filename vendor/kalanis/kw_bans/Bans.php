@@ -11,6 +11,10 @@ class Bans
     /** @var Bans\ABan[] */
     protected $sources = null;
 
+    /**
+     * @param mixed ...$sources
+     * @throws BanException
+     */
     public function __construct(...$sources)
     {
         $factory = new Bans\Factory();
