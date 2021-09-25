@@ -77,6 +77,16 @@ class InternalLink
         return $checkPath ? ( realpath($target) ? $target : null ) : $target ;
     }
 
+    public function shortContent(?string $path = null, bool $withLang = false, bool $checkPath = true): ?string
+    {
+        $lang = $withLang ? $this->langPath : '' ;
+        $path = is_null($path) ? $this->path->getPath() : $path ;
+        $target = implode(DIRECTORY_SEPARATOR, array_filter(
+            [$this->userPath, $lang, $path]
+        ));
+        return $checkPath ? ( realpath($this->path->getDocumentRoot() . $this->path->getPathToSystemRoot() . DIRECTORY_SEPARATOR . $target) ? $target : null ) : $target ;
+    }
+
     /**
      * Output statical (and real) path to file in system dirs
      * @param string $module

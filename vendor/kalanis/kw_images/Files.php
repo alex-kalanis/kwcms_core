@@ -16,12 +16,14 @@ class Files
     protected $libImage = null;
     protected $libThumb = null;
     protected $libDesc = null;
+    protected $libDirDesc = null;
 
-    public function __construct(Files\Image $image, Files\Thumb $thumb, Files\Desc $desc)
+    public function __construct(Files\Image $image, Files\Thumb $thumb, Files\Desc $desc, Files\DirDesc $dirDesc)
     {
         $this->libImage = $image;
         $this->libThumb = $thumb;
         $this->libDesc = $desc;
+        $this->libDirDesc = $dirDesc;
     }
 
     /**
@@ -108,5 +110,25 @@ class Files
         $this->libThumb->delete($path);
         $this->libImage->delete($path);
         return true;
+    }
+
+    public function getLibImage(): Files\Image
+    {
+        return $this->libImage;
+    }
+
+    public function getLibThumb(): Files\Thumb
+    {
+        return $this->libThumb;
+    }
+
+    public function getLibDesc(): Files\Desc
+    {
+        return $this->libDesc;
+    }
+
+    public function getLibDirDesc(): Files\DirDesc
+    {
+        return $this->libDirDesc;
     }
 }

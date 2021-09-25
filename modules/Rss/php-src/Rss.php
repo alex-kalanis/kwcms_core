@@ -25,7 +25,7 @@ class Rss extends AModule
 {
     /** @var UserDir|null */
     protected $userDir = null;
-    /** @var UserDir|null */
+    /** @var ExternalLink|null */
     protected $libExternal = null;
 
     public function __construct()
