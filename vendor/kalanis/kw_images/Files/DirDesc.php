@@ -3,6 +3,7 @@
 namespace kalanis\kw_images\Files;
 
 
+use kalanis\kw_extras\ExtendDir;
 use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_paths\Stuff;
 
@@ -49,5 +50,10 @@ class DirDesc extends AFiles
     {
         return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir()
             . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescFile() . $this->libExtendDir->getDescExt();
+    }
+
+    public function getExtendDir(): ExtendDir
+    {
+        return $this->libExtendDir;
     }
 }

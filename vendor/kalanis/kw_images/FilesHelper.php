@@ -16,13 +16,14 @@ class FilesHelper
 {
     /**
      * @param string $webRootDir
+     * @param array $params
      * @return Files
      * @throws ImagesException
      */
-    public static function get(string $webRootDir): Files
+    public static function get(string $webRootDir, array $params = []): Files
     {
         $libExtDir = new ExtendDir($webRootDir);
         $libGraphics = new Graphics(new Graphics\Format\Factory(), new MimeType());
-        return new Files(new Files\Image($libExtDir, $libGraphics), new Files\Thumb($libExtDir, $libGraphics), new Files\Desc($libExtDir), new Files\DirDesc($libExtDir));
+        return new Files(new Files\Image($libExtDir, $libGraphics, $params), new Files\Thumb($libExtDir, $libGraphics, $params), new Files\Desc($libExtDir), new Files\DirDesc($libExtDir));
     }
 }
