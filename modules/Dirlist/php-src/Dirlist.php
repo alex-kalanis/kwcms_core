@@ -4,6 +4,8 @@ namespace KWCMS\modules\Dirlist;
 
 
 use kalanis\kw_confs\Config;
+use kalanis\kw_images\Files;
+use kalanis\kw_images\FilesHelper;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_listing\DirectoryListing;
 use kalanis\kw_modules\AModule;
@@ -35,6 +37,8 @@ class Dirlist extends AModule
     protected $linkExternal = null;
     /** @var DirectoryListing|null */
     protected $dirList = null;
+    /** @var Files|null */
+    protected $libFiles = null;
 
     protected $path = '';
     protected $dir = '';
@@ -50,6 +54,7 @@ class Dirlist extends AModule
         $this->templateDisplay = new Templates\Display();
         $this->linkInternal = new InternalLink(Config::getPath());
         $this->linkExternal = new ExternalLink(Config::getPath());
+        $this->libFiles = FilesHelper::get(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot());
     }
 
     public function process(): void
@@ -131,6 +136,24 @@ class Dirlist extends AModule
         return $out->setContent($this->templateMain->render());
     }
 
+    protected function getLink(string $file): string
+    {
+        $ext = Stuff::fileExt($file);
+        if (in_array($ext, ['htm','html','xhtml','xhtm','htx','htt','php'])) { // create links for normally accessible pages
+            return $this->linkExternal->linkVariant($this->path . IPaths::SPLITTER_SLASH . $file);
+        } else { // rest of the world must pass as file passed through external link
+            return $this->linkExternal->linkVariant($this->path . IPaths::SPLITTER_SLASH . $file, 'File', true);
+        }
+    }
+
+    protected function getThumb(string $file): string
+    {
+        $want = $this->libFiles->getLibThumb()->getPath($this->path . DIRECTORY_SEPARATOR . $file);
+        return $this->linkInternal->userContent($want)
+            ? $this->linkExternal->linkVariant($want, 'Image', true)
+            : $this->getIcon($file) ;
+    }
+
     protected function getIcon(string $file): string
     {
         $ext = strtolower(Stuff::fileExt($file));
@@ -139,24 +162,6 @@ class Dirlist extends AModule
             $pt = $this->linkExternal->linkModule('Sysimage','images/files/dummy.png');
         }
         return $pt;
-    }
-
-    protected function getLink(string $file): string
-    {
-        $ext = Stuff::fileExt($file);
-        if (in_array($ext, ['htm','html','xhtml','xhtm','htx','htt','php'])) {
-            return $this->linkExternal->linkVariant($this->path . IPaths::SPLITTER_SLASH . $file);
-        } else {
-            return $this->linkExternal->linkStatic($this->path . IPaths::SPLITTER_SLASH . $file);
-        }
-    }
-
-    protected function getThumb(string $file): string
-    {
-        $thumbPath = Config::get($this->module, 'thumb', '.tmb');
-        $want = $this->path . DIRECTORY_SEPARATOR . $thumbPath . DIRECTORY_SEPARATOR . $file;
-        $pt = $this->linkInternal->userContent($want);
-        return $pt ?: $this->getIcon($file) ;
     }
 
     protected function getName(string $file): string
@@ -187,10 +192,10 @@ class Dirlist extends AModule
 
     protected function detailLink(string $fileName)
     {
-        $descDir = Config::get($this->module, 'desc', '.txt');
+        $extendDir = $this->libFiles->getLibDirDesc()->getExtendDir();
         return [
-            $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, $descDir, Stuff::fileBase($fileName) . '.dsc'])), // files
-            $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, Stuff::fileBase($fileName), $descDir, 'index.dsc'])), // dirs
+            $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, $extendDir->getDescDir(), Stuff::fileBase($fileName) . $extendDir->getDescExt() ])), // files
+            $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, Stuff::fileBase($fileName), $extendDir->getDescDir(), $extendDir->getDescFile() . $extendDir->getDescExt() ])), // dirs
         ];
     }
 
