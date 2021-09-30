@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Images\Lib;
+namespace KWCMS\modules\Images\Templates;
 
 
 use kalanis\kw_confs\Config;
@@ -10,7 +10,7 @@ use kalanis\kw_modules\ExternalLink;
 
 /**
  * Trait TModuleTemplate
- * @package KWCMS\modules\Images\Lib
+ * @package KWCMS\modules\Images\Templates
  */
 trait TModuleTemplate
 {
