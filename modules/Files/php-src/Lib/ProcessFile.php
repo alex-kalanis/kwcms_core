@@ -4,9 +4,9 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use Error;
+use kalanis\kw_extras\TNameFinder;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Files\FilesException;
 use KWCMS\modules\Files\Interfaces\IProcessFiles;
@@ -19,6 +19,8 @@ use KWCMS\modules\Files\Interfaces\IProcessFiles;
  */
 class ProcessFile implements IProcessFiles
 {
+    use TNameFinder;
+
     protected $sourcePath = '';
     protected $currentDir = '';
 
@@ -37,22 +39,19 @@ class ProcessFile implements IProcessFiles
         }
     }
 
-    protected function findFreeName(string $name): string
+    protected function getSeparator(): string
     {
-        $name = Stuff::canonize($name);
-        $ext = Stuff::fileExt($name);
-        if (0 < strlen($ext)) {
-            $ext = IPaths::SPLITTER_DOT . $ext;
-        }
-        $fileName = Stuff::fileBase($name);
-        if (!file_exists($this->sourcePath . $this->currentDir . $fileName . $ext)) {
-            return $fileName . $ext;
-        }
-        $i = 0;
-        while (file_exists($this->sourcePath . $this->currentDir . $fileName . static::FREE_NAME_SEPARATOR . $i . $ext)) {
-            $i++;
-        }
-        return $fileName . static::FREE_NAME_SEPARATOR . $i . $ext;
+        return static::FREE_NAME_SEPARATOR;
+    }
+
+    protected function getTargetDir(): string
+    {
+        return $this->sourcePath . $this->currentDir;
+    }
+
+    protected function targetExists(string $path): bool
+    {
+        return file_exists($path);
     }
 
     public function readFile(string $entry, ?int $offset = null, ?int $length = null): string
