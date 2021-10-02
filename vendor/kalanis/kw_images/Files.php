@@ -4,6 +4,7 @@ namespace kalanis\kw_images;
 
 
 use kalanis\kw_extras\ExtrasException;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -27,75 +28,169 @@ class Files
     }
 
     /**
-     * @param string $path
+     * @param string $currentPath
      * @param string $desc
      * @param bool $hasThumb
      * @return bool
      * @throws ImagesException
      */
-    public function add(string $path, string $desc = '', bool $hasThumb = true): bool
+    public function add(string $currentPath, string $desc = '', bool $hasThumb = true): bool
     {
-        $this->libImage->check($path);
+        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
+        $fileName = Stuff::filename($currentPath);
 
-        $this->libThumb->delete($path);
+        $this->libImage->check($currentPath);
+
+        $this->libThumb->delete($origDir, $fileName);
         if ($hasThumb) {
-            $this->libThumb->create($path);
+            $this->libThumb->create($currentPath);
         }
 
         if (!empty($desc)) {
-            $this->libDesc->set($path, $desc);
+            $this->libDesc->set($currentPath, $desc);
         } else {
-            $this->libDesc->delete($path);
+            $this->libDesc->delete($origDir, $fileName);
         }
 
         return true;
     }
 
     /**
-     * @param string $path
+     * @param string $currentPath
+     * @param string $targetDir
+     * @param bool $overwrite
+     * @return bool
+     * @throws ImagesException
+     */
+    public function copy(string $currentPath, string $targetDir, bool $overwrite = false): bool
+    {
+        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
+        $fileName = Stuff::filename($currentPath);
+        $targetDir = Stuff::removeEndingSlash($targetDir);
+        try {
+            $this->libImage->copy($fileName, $origDir, $targetDir, $overwrite);
+        } catch (ImagesException $ex) {
+            return false;
+        } catch (ExtrasException $ex) {
+            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
+            try {
+                $this->libThumb->copy($fileName, $origDir, $targetDir, $overwrite);
+            } catch (ImagesException $ex) {
+                $this->libImage->delete($targetDir, $fileName);
+                return false;
+            } catch (ExtrasException $ex) {
+                $this->libImage->delete($targetDir, $fileName);
+                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
+        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libDesc->getPath($currentPath))) {
+            try {
+                $this->libDesc->copy($fileName, $origDir, $targetDir, $overwrite);
+            } catch (ImagesException $ex) {
+                $this->libThumb->delete($targetDir, $fileName);
+                $this->libImage->delete($targetDir, $fileName);
+                return false;
+            } catch (ExtrasException $ex) {
+                $this->libThumb->delete($targetDir, $fileName);
+                $this->libImage->delete($targetDir, $fileName);
+                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param string $currentPath
      * @param string $targetDir
      * @param bool $overwrite
      * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function copy(string $path, string $targetDir, bool $overwrite = false): bool
+    public function move(string $currentPath, string $targetDir, bool $overwrite = false): bool
     {
-        $this->libImage->copy($path, $targetDir, $overwrite);
-        $this->libThumb->copy($path, $targetDir, $overwrite);
-        $this->libDesc->copy($path, $targetDir, $overwrite);
+        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
+        $fileName = Stuff::filename($currentPath);
+        $targetDir = Stuff::removeEndingSlash($targetDir);
+        try {
+            $this->libImage->move($fileName, $origDir, $targetDir, $overwrite);
+        } catch (ImagesException $ex) {
+            return false;
+        } catch (ExtrasException $ex) {
+            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
+            try {
+                $this->libThumb->move($fileName, $origDir, $targetDir, $overwrite);
+            } catch (ImagesException $ex) {
+                $this->libImage->move($fileName, $targetDir, $origDir);
+                return false;
+            } catch (ExtrasException $ex) {
+                $this->libImage->move($fileName, $targetDir, $origDir);
+                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
+        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libDesc->getPath($currentPath))) {
+            try {
+                $this->libDesc->move($fileName, $origDir, $targetDir, $overwrite);
+            } catch (ImagesException $ex) {
+                $this->libThumb->move($fileName, $targetDir, $origDir);
+                $this->libImage->move($fileName, $targetDir, $origDir);
+                return false;
+            } catch (ExtrasException $ex) {
+                $this->libThumb->move($fileName, $targetDir, $origDir);
+                $this->libImage->move($fileName, $targetDir, $origDir);
+                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
         return true;
     }
 
     /**
-     * @param string $path
-     * @param string $targetDir
-     * @param bool $overwrite
-     * @return bool
-     * @throws ExtrasException
-     * @throws ImagesException
-     */
-    public function move(string $path, string $targetDir, bool $overwrite = false): bool
-    {
-        $this->libImage->move($path, $targetDir, $overwrite);
-        $this->libThumb->move($path, $targetDir, $overwrite);
-        $this->libDesc->move($path, $targetDir, $overwrite);
-        return true;
-    }
-
-    /**
-     * @param string $path
+     * @param string $currentPath
      * @param string $targetName
      * @param bool $overwrite
      * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function rename(string $path, string $targetName, bool $overwrite = false): bool
+    public function rename(string $currentPath, string $targetName, bool $overwrite = false): bool
     {
-        $this->libImage->rename($path, $targetName, $overwrite);
-        $this->libThumb->rename($path, $targetName, $overwrite);
-        $this->libDesc->rename($path, $targetName, $overwrite);
+        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
+        $fileName = Stuff::filename($currentPath);
+        try {
+            $this->libImage->rename($origDir, $fileName, $targetName, $overwrite);
+        } catch (ImagesException $ex) {
+            return false;
+        } catch (ExtrasException $ex) {
+            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
+            try {
+                $this->libThumb->rename($origDir, $fileName, $targetName, $overwrite);
+            } catch (ImagesException $ex) {
+                $this->libImage->rename($origDir, $targetName, $fileName);
+                return false;
+            } catch (ExtrasException $ex) {
+                $this->libImage->rename($origDir, $targetName, $fileName);
+                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
+        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libDesc->getPath($currentPath))) {
+            try {
+                $this->libDesc->rename($origDir, $fileName, $targetName, $overwrite);
+            } catch (ImagesException $ex) {
+                $this->libThumb->rename($origDir, $targetName, $fileName);
+                $this->libImage->rename($origDir, $targetName, $fileName);
+                return false;
+            } catch (ExtrasException $ex) {
+                $this->libThumb->rename($origDir, $targetName, $fileName);
+                $this->libImage->rename($origDir, $targetName, $fileName);
+                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
         return true;
     }
 
@@ -106,9 +201,12 @@ class Files
      */
     public function delete(string $path): bool
     {
-        $this->libDesc->delete($path);
-        $this->libThumb->delete($path);
-        $this->libImage->delete($path);
+        $origDir = Stuff::removeEndingSlash(Stuff::directory($path));
+        $fileName = Stuff::filename($path);
+
+        $this->libDesc->delete($origDir, $fileName);
+        $this->libThumb->delete($origDir, $fileName);
+        $this->libImage->delete($origDir, $fileName);
         return true;
     }
 
@@ -130,5 +228,10 @@ class Files
     public function getLibDirDesc(): Files\DirDesc
     {
         return $this->libDirDesc;
+    }
+
+    protected function targetExists(string $path): bool
+    {
+        return file_exists($path);
     }
 }

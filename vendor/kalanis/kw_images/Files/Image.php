@@ -7,7 +7,6 @@ use kalanis\kw_extras\ExtendDir;
 use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
-use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -35,11 +34,6 @@ class Image extends AFiles
     {
         $created = filemtime($this->libExtendDir->getWebRootDir() . $path);
         return (false === $created) ? null : date($format, $created);
-    }
-
-    public function getPath(string $path): string
-    {
-        return $path; // no modifications need
     }
 
     /**
@@ -72,20 +66,17 @@ class Image extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $fileName
+     * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function copy(string $path, string $targetDir, bool $overwrite = false): bool
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath;
-        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir);
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir;
+        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir;
 
         $this->checkWritable($targetPath);
         $this->dataCopy(
@@ -97,24 +88,20 @@ class Image extends AFiles
             'Cannot remove old image.',
             'Cannot copy base image.'
         );
-
-        return true;
     }
 
     /**
-     * @param string $path
+     * @param string $fileName
+     * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function move(string $path, string $targetDir, bool $overwrite = false): void
+    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath;
-        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir);
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir;
+        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir;
 
         $this->checkWritable($targetPath);
         $this->dataRename(
@@ -131,20 +118,18 @@ class Image extends AFiles
     /**
      * @param string $path
      * @param string $targetName
+     * @param string $sourceName
      * @param bool $overwrite
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function rename(string $path, string $targetName, bool $overwrite = false): void
+    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $whatPath = $this->libExtendDir->getWebRootDir() . $filePath;
+        $whatPath = $this->libExtendDir->getWebRootDir() . $path;
 
         $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $fileName,
+            $whatPath . DIRECTORY_SEPARATOR . $sourceName,
             $whatPath . DIRECTORY_SEPARATOR . $targetName,
             $overwrite,
             'Cannot find that image.',
@@ -155,11 +140,17 @@ class Image extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $sourceDir
+     * @param string $fileName
      * @throws ImagesException
      */
-    public function delete(string $path): void
+    public function delete(string $sourceDir, string $fileName): void
     {
-        $this->deleteFile($this->getPath($path), 'Cannot remove image!');
+        $this->deleteFile($this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName), 'Cannot remove image!');
+    }
+
+    public function getPath(string $path): string
+    {
+        return $path; // no modifications need
     }
 }

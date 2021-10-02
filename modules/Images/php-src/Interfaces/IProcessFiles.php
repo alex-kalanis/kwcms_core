@@ -18,54 +18,54 @@ interface IProcessFiles
 
     /**
      * @param IFileEntry $file
-     * @param string $desc
+     * @param string $description
      * @return bool
      * @throws ImagesException
      */
-    public function uploadFile(IFileEntry $file, string $desc): bool;
+    public function uploadFile(IFileEntry $file, string $description): bool;
 
     /**
-     * @param string $entry
+     * @param string $path
      * @return string
      * @throws ImagesException
      */
-    public function readDesc(string $entry): string;
+    public function readDesc(string $path): string;
 
     /**
-     * @param string $entry
+     * @param string $path
      * @param string $content
      * @throws ImagesException
      */
-    public function updateDesc(string $entry, string $content): void;
+    public function updateDesc(string $path, string $content): void;
 
     /**
-     * @param string $entry
-     * @param string $to
+     * @param string $currentPath
+     * @param string $toPath full path to target
      * @return bool
      * @throws ImagesException
      */
-    public function copyFile(string $entry, string $to): bool;
+    public function copyFile(string $currentPath, string $toPath): bool;
 
     /**
-     * @param string $entry
-     * @param string $to
+     * @param string $currentPath
+     * @param string $toPath full path to target
      * @return bool
      * @throws ImagesException
      */
-    public function moveFile(string $entry, string $to): bool;
+    public function moveFile(string $currentPath, string $toPath): bool;
 
     /**
-     * @param string $entry
-     * @param string $to
+     * @param string $currentPath
+     * @param string $toFileName
      * @return bool
      * @throws ImagesException
      */
-    public function renameFile(string $entry, string $to): bool;
+    public function renameFile(string $currentPath, string $toFileName): bool;
 
     /**
-     * @param string $entry
+     * @param string $path
      * @return bool
      * @throws ImagesException
      */
-    public function deleteFile(string $entry): bool;
+    public function deleteFile(string $path): bool;
 }

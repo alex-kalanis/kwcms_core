@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use Error;
+use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_extras\TNameFinder;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
@@ -15,6 +16,7 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  * Class ProcessFile
  * @package KWCMS\modules\Images\Lib
  * Process files in many ways
+ * @todo: vrazit jako motor KW_STORAGE - pak patricne zmizi cast chlivu souvisejici s obsluhou disku
  */
 class ProcessFile implements IProcessFiles
 {
@@ -29,7 +31,7 @@ class ProcessFile implements IProcessFiles
         $this->sourcePath = $sourcePath;
     }
 
-    public function uploadFile(IFileEntry $file, string $desc): bool
+    public function uploadFile(IFileEntry $file, string $description): bool
     {
         $useName = $this->findFreeName($file->getValue());
         try {
@@ -42,8 +44,8 @@ class ProcessFile implements IProcessFiles
         }
         $this->libFiles->getLibImage()->processUploaded($this->sourcePath . $useName);
         $this->libFiles->getLibThumb()->create($this->sourcePath . $useName);
-        if (!empty($desc)) {
-            $this->libFiles->getLibDesc()->set($this->sourcePath . $useName, $desc);
+        if (!empty($description)) {
+            $this->libFiles->getLibDesc()->set($this->sourcePath . $useName, $description);
         }
         return true;
     }
@@ -63,49 +65,37 @@ class ProcessFile implements IProcessFiles
         return file_exists($path);
     }
 
-    public function readDesc(string $entry): string
+    public function readDesc(string $path): string
     {
-        return $this->libFiles->getLibDesc()->get($entry);
+        return $this->libFiles->getLibDesc()->get($path);
     }
 
-    public function updateDesc(string $entry, string $content): void
+    public function updateDesc(string $path, string $content): void
     {
         if (empty($content)) {
-            $this->libFiles->getLibDesc()->delete($entry);
+            $this->libFiles->getLibDesc()->delete($path, '');
         } else {
-            $this->libFiles->getLibDesc()->set($entry, $content);
+            $this->libFiles->getLibDesc()->set($path, $content);
         }
     }
 
-    public function copyFile(string $entry, string $to, bool $overwrite = false): bool
+    public function copyFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
-        $this->libFiles->getLibImage()->copy($entry, $to, $overwrite);
-        $this->libFiles->getLibThumb()->copy($entry, $to, $overwrite);
-        $this->libFiles->getLibDesc()->copy($entry, $to, $overwrite);
-        return true;
+        return $this->libFiles->copy($currentPath, $toPath, $overwrite);
     }
 
-    public function moveFile(string $entry, string $to, bool $overwrite = false): bool
+    public function moveFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
-        $this->libFiles->getLibImage()->move($entry, $to, $overwrite);
-        $this->libFiles->getLibThumb()->move($entry, $to, $overwrite);
-        $this->libFiles->getLibDesc()->move($entry, $to, $overwrite);
-        return true;
+        return $this->libFiles->move($currentPath, $toPath, $overwrite);
     }
 
-    public function renameFile(string $entry, string $to, bool $overwrite = false): bool
+    public function renameFile(string $currentPath, string $toFileName, bool $overwrite = false): bool
     {
-        $this->libFiles->getLibImage()->rename($entry, $to, $overwrite);
-        $this->libFiles->getLibThumb()->rename($entry, $to, $overwrite);
-        $this->libFiles->getLibDesc()->rename($entry, $to, $overwrite);
-        return true;
+        return $this->libFiles->rename($currentPath, $toFileName, $overwrite);
     }
 
-    public function deleteFile(string $entry): bool
+    public function deleteFile(string $path): bool
     {
-        $this->libFiles->getLibDesc()->delete($entry);
-        $this->libFiles->getLibThumb()->delete($entry);
-        $this->libFiles->getLibImage()->delete($entry);
-        return true;
+        return $this->libFiles->delete($path);
     }
 }

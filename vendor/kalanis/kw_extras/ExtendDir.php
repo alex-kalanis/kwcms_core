@@ -205,6 +205,16 @@ class ExtendDir
         throw new ExtrasException('Cannot write into that directory!');
     }
 
+    public function isFile(string $path): bool
+    {
+        return is_file($path);
+    }
+
+    public function isDir(string $path): bool
+    {
+        return is_dir($path);
+    }
+
     /**
      * @param string $path
      * @param string $file

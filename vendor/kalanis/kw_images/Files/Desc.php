@@ -48,20 +48,18 @@ class Desc extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $fileName
+     * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
      * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function copy(string $path, string $targetDir, bool $overwrite = false): bool
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
-        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
 
         $this->checkWritable($targetPath);
         $this->dataCopy(
@@ -78,19 +76,17 @@ class Desc extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $fileName
+     * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function move(string $path, string $targetDir, bool $overwrite = false): void
+    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
-        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
 
         $this->checkWritable($targetPath);
         $this->dataRename(
@@ -106,21 +102,19 @@ class Desc extends AFiles
 
     /**
      * @param string $path
+     * @param string $sourceName
      * @param string $targetName
      * @param bool $overwrite
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function rename(string $path, string $targetName, bool $overwrite = false): void
+    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $whatPath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $whatPath = $this->libExtendDir->getWebRootDir() . $path. DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
 
         $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $fileName,
+            $whatPath . DIRECTORY_SEPARATOR . $sourceName,
             $whatPath . DIRECTORY_SEPARATOR . $targetName,
             $overwrite,
             'Cannot find that description.',
@@ -131,12 +125,13 @@ class Desc extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $sourceDir
+     * @param string $fileName
      * @throws ImagesException
      */
-    public function delete(string $path): void
+    public function delete(string $sourceDir, string $fileName): void
     {
-        $this->deleteFile($this->getPath($path), 'Cannot remove description!');
+        $this->deleteFile($this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName), 'Cannot remove description!');
     }
 
     public function getPath(string $path): string

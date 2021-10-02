@@ -39,11 +39,11 @@ abstract class AFiles
         $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath;
         $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir);
 
-        if (!is_file($sourcePath . DIRECTORY_SEPARATOR . $fileName)) {
+        if (!$this->libExtendDir->isFile($sourcePath . DIRECTORY_SEPARATOR . $fileName)) {
             throw new ImagesException('Cannot find that file.');
         }
 
-        if (is_file($targetPath . DIRECTORY_SEPARATOR . $fileName) && !$overwrite) {
+        if ($this->libExtendDir->isFile($targetPath . DIRECTORY_SEPARATOR . $fileName) && !$overwrite) {
             throw new ImagesException('File with the same name already exists here.');
         }
 
@@ -69,11 +69,11 @@ abstract class AFiles
         $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath;
         $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir);
 
-        if (!is_file($sourcePath . DIRECTORY_SEPARATOR . $fileName)) {
+        if (!$this->libExtendDir->isFile($sourcePath . DIRECTORY_SEPARATOR . $fileName)) {
             throw new ImagesException('Cannot find that file.');
         }
 
-        if (is_file($targetPath . DIRECTORY_SEPARATOR . $fileName) && !$overwrite) {
+        if ($this->libExtendDir->isFile($targetPath . DIRECTORY_SEPARATOR . $fileName) && !$overwrite) {
             throw new ImagesException('File with the same name already exists here.');
         }
 
@@ -98,11 +98,11 @@ abstract class AFiles
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $filePath;
 
-        if (!is_file($whatPath . DIRECTORY_SEPARATOR . $fileName)) {
+        if (!$this->libExtendDir->isFile($whatPath . DIRECTORY_SEPARATOR . $fileName)) {
             throw new ImagesException('Cannot find that file.');
         }
 
-        if (is_file($whatPath . DIRECTORY_SEPARATOR . $targetName) && !$overwrite) {
+        if ($this->libExtendDir->isFile($whatPath . DIRECTORY_SEPARATOR . $targetName) && !$overwrite) {
             throw new ImagesException('File with the same name already exists here.');
         }
 
@@ -123,9 +123,9 @@ abstract class AFiles
      */
     protected function deleteFile(string $path, string $unlinkErrDesc): bool
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
+        $whatPath = $this->libExtendDir->getWebRootDir() . $path;
 
-        if (!is_file($whatPath)) {
+        if (!$this->libExtendDir->isFile($whatPath)) {
             return true;
         }
         $this->dataRemove($whatPath, $unlinkErrDesc);
@@ -168,11 +168,11 @@ abstract class AFiles
         string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
     ): void
     {
-        if (!is_file($source)) {
+        if (!$this->libExtendDir->isFile($source)) {
             throw new ImagesException($sourceFileNotExistsErr);
         }
 
-        if (is_file($target) && !$overwrite) {
+        if ($this->libExtendDir->isFile($target) && !$overwrite) {
             throw new ImagesException($targetFileExistsErr);
         }
 
@@ -188,10 +188,10 @@ abstract class AFiles
      */
     protected function dataOverwriteCopy(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if (is_file($target) && !unlink($target)) {
+        if ($this->libExtendDir->isFile($target) && !unlink($target)) {
             throw new ImagesException($unlinkErrDesc);
         }
-        if (is_file($source) && !copy($source, $target)) {
+        if ($this->libExtendDir->isFile($source) && !copy($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
     }
@@ -210,11 +210,11 @@ abstract class AFiles
         string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
     ): void
     {
-        if (!is_file($source)) {
+        if (!$this->libExtendDir->isFile($source)) {
             throw new ImagesException($sourceFileNotExistsErr);
         }
 
-        if (is_file($target) && !$overwrite) {
+        if ($this->libExtendDir->isFile($target) && !$overwrite) {
             throw new ImagesException($targetFileExistsErr);
         }
 
@@ -230,10 +230,10 @@ abstract class AFiles
      */
     protected function dataOverwriteRename(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if (is_file($target) && !unlink($target)) {
+        if ($this->libExtendDir->isFile($target) && !unlink($target)) {
             throw new ImagesException($unlinkErrDesc);
         }
-        if (is_file($source) && !rename($source, $target)) {
+        if ($this->libExtendDir->isFile($source) && !rename($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
     }
@@ -245,7 +245,7 @@ abstract class AFiles
      */
     protected function dataRemove(string $source, string $unlinkErrDesc): void
     {
-        if (is_file($source) && !unlink($source)) {
+        if ($this->libExtendDir->isFile($source) && !unlink($source)) {
             throw new ImagesException($unlinkErrDesc);
         }
     }

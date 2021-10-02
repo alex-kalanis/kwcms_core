@@ -61,20 +61,18 @@ class Thumb extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $fileName
+     * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
      * @return bool
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function copy(string $path, string $targetDir, bool $overwrite = false): bool
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
-        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
 
         $this->checkWritable($targetPath);
         $this->dataCopy(
@@ -91,19 +89,17 @@ class Thumb extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $fileName
+     * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function move(string $path, string $targetDir, bool $overwrite = false): void
+    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
-        $targetPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
 
         $this->checkWritable($targetPath);
         $this->dataRename(
@@ -119,21 +115,19 @@ class Thumb extends AFiles
 
     /**
      * @param string $path
+     * @param string $sourceName
      * @param string $targetName
      * @param bool $overwrite
      * @throws ExtrasException
      * @throws ImagesException
      */
-    public function rename(string $path, string $targetName, bool $overwrite = false): void
+    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
-
-        $whatPath = $this->libExtendDir->getWebRootDir() . $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        $whatPath = $this->libExtendDir->getWebRootDir() . $path . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
 
         $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $fileName,
+            $whatPath . DIRECTORY_SEPARATOR . $sourceName,
             $whatPath . DIRECTORY_SEPARATOR . $targetName,
             $overwrite,
             'Cannot find that thumb.',
@@ -144,12 +138,13 @@ class Thumb extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string $sourceDir
+     * @param string $fileName
      * @throws ImagesException
      */
-    public function delete(string $path): void
+    public function delete(string $sourceDir, string $fileName): void
     {
-        $this->deleteFile($this->getPath($path), 'Cannot remove thumb!');
+        $this->deleteFile($this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName), 'Cannot remove thumb!');
     }
 
     public function getPath(string $path): string
