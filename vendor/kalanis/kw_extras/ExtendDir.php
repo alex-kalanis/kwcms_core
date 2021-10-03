@@ -94,72 +94,6 @@ class ExtendDir
     }
 
     /**
-     * @param string $path
-     * @param string $content
-     * @return bool
-     * @throws ExtrasException
-     */
-    public function setDirDescription(string $path, string $content): bool
-    {
-        $current = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
-        $descDir = $this->webRootDir . $current . $this->descDir;
-        $descFile = $this->descFile . $this->descExt;
-
-        $descPath = null;
-        if (!is_null($this->isUsable($descDir, $descFile))) {
-            $descPath = $descDir . DIRECTORY_SEPARATOR . $descFile;
-        }
-
-        if (!is_null($descPath))  {
-            if (false === file_put_contents($descPath, $content)) {
-                throw new ExtrasException('Cannot write dir desc!');
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     * @throws ExtrasException
-     */
-    public function getDirDescription(string $path): string
-    {
-        $current = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
-        $descDir = $this->webRootDir . $current . $this->descDir;
-        $descFile = $this->descFile . $this->descExt;
-
-        if (is_null($this->isUsable($descDir, $descFile))) {
-            return '';
-        }
-        $content = file_get_contents($descDir . DIRECTORY_SEPARATOR . $descFile);
-        if (false === $content) {
-            throw new ExtrasException('Cannot read dir desc!');
-        }
-        return $content;
-    }
-
-    /**
-     * @param string $path
-     * @return bool
-     * @throws ExtrasException
-     */
-    public function removeDirDescription(string $path): bool
-    {
-        $current = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
-        $descDir = $this->webRootDir . $current . $this->descDir;
-        $descFile = $this->descFile . $this->descExt;
-
-        $descPath = $descDir . DIRECTORY_SEPARATOR . $descFile;
-        if (is_file($descPath) && !unlink($descPath)) {
-            throw new ExtrasException('Cannot remove dir desc!');
-        }
-        return true;
-    }
-
-    /**
      * Remove sub dirs and their content recursively
      * SHALL NOT BE SEPARATED INTO EXTRA CLASS
      * @param $dirPath
@@ -213,22 +147,5 @@ class ExtendDir
     public function isDir(string $path): bool
     {
         return is_dir($path);
-    }
-
-    /**
-     * @param string $path
-     * @param string $file
-     * @return bool|null
-     * @throws ExtrasException
-     */
-    protected function isUsable(string $path, string $file): ?bool
-    {
-        if (is_readable($path . DIRECTORY_SEPARATOR . $file) && is_writable($path . DIRECTORY_SEPARATOR . $file)) {
-            return true;
-        }
-        if (!file_exists($path . DIRECTORY_SEPARATOR . $file) && is_readable($path) && is_writable($path)) {
-            return null;
-        }
-        throw new ExtrasException('Cannot access that file!');
     }
 }

@@ -28,6 +28,17 @@ trait TLibAction
         );
     }
 
+    protected function getLibDirAction(): Interfaces\IProcessDirs
+    {
+        $userDir = new UserDir(Config::getPath());
+        $userDir->setUserPath($this->getUserDir());
+        $userDir->process();
+        return new ProcessDir(
+            FilesHelper::get($userDir->getWebRootDir() . $userDir->getHomeDir()),
+            Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
+        );
+    }
+
     abstract protected function getUserDir(): string;
 
     abstract protected function getWhereDir(): string;

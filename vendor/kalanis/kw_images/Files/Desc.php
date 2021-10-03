@@ -131,7 +131,8 @@ class Desc extends AFiles
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $this->deleteFile($this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName), 'Cannot remove description!');
+        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $this->dataRemove($whatPath, 'Cannot remove description!');
     }
 
     public function getPath(string $path): string

@@ -16,5 +16,6 @@ $config = [
     "thumb_dir"=>'.tmb', //STRING;help=dirs with thumbnails#
     "desc_dir"=>'.txt', //STRING;help=dirs with descriptions#
     "desc_suff"=>'.dsc', //STRING;help=file with descripton suffix#
+    "desc_format"=>'d.m.Y \@ H:i:s', //STRING;help=format of time#
     "desc_maxlen"=>25, //INT;help=max length of desc before cutting#
 ];

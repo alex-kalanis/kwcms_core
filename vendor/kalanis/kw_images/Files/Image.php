@@ -16,6 +16,8 @@ use kalanis\kw_images\ImagesException;
  */
 class Image extends AFiles
 {
+    use TSizes;
+
     protected $maxWidth = 1024;
     protected $maxHeight = 1024;
     protected $maxFileSize = 1024;
@@ -30,9 +32,9 @@ class Image extends AFiles
         $this->maxFileSize = !empty($params["max_size"]) ? strval($params["max_size"]) : $this->maxFileSize;
     }
 
-    public function getCreated(string $path, string $format = 'd.m.Y \@ H:i:s'): ?string
+    public function getCreated(string $path, string $format = 'Y-m-d H:i:s'): ?string
     {
-        $created = filemtime($this->libExtendDir->getWebRootDir() . $path);
+        $created = filemtime($this->libExtendDir->getWebRootDir() . $this->getPath($path));
         return (false === $created) ? null : date($format, $created);
     }
 
@@ -42,7 +44,7 @@ class Image extends AFiles
      */
     public function check(string $path): void
     {
-        $size = filesize($path);
+        $size = filesize($this->libExtendDir->getWebRootDir() . $path);
         if (false === $size) {
             throw new ImagesException('Cannot read file size. Exists?');
         }
@@ -58,10 +60,10 @@ class Image extends AFiles
      */
     public function processUploaded(string $path): bool
     {
-        $this->libGraphics->load($path);
+        $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
         $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
-        $this->libGraphics->save($path);
+        $this->libGraphics->save($this->libExtendDir->getWebRootDir() . $path);
         return true;
     }
 
@@ -146,7 +148,8 @@ class Image extends AFiles
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $this->deleteFile($this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName), 'Cannot remove image!');
+        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $this->dataRemove($whatPath, 'Cannot remove image!');
     }
 
     public function getPath(string $path): string

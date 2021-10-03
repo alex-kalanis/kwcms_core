@@ -16,7 +16,7 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  * Class ProcessFile
  * @package KWCMS\modules\Images\Lib
  * Process files in many ways
- * @todo: vrazit jako motor KW_STORAGE - pak patricne zmizi cast chlivu souvisejici s obsluhou disku
+ * @todo: use KW_STORAGE as data source - that will remove that part with volume service
  */
 class ProcessFile implements IProcessFiles
 {
@@ -33,21 +33,16 @@ class ProcessFile implements IProcessFiles
 
     public function uploadFile(IFileEntry $file, string $description): bool
     {
-        $useName = $this->findFreeName($file->getValue());
+        $targetPath = $this->sourcePath . $this->findFreeName($file->getValue());
         try {
-            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibDirDesc()->getExtendDir()->getWebRootDir() . $this->sourcePath . $useName);
+            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibThumb()->getExtendDir()->getWebRootDir() . $targetPath);
             if (!$status) {
                 throw new ImagesException('Cannot move uploaded file');
             }
         } catch (Error $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        $this->libFiles->getLibImage()->processUploaded($this->sourcePath . $useName);
-        $this->libFiles->getLibThumb()->create($this->sourcePath . $useName);
-        if (!empty($description)) {
-            $this->libFiles->getLibDesc()->set($this->sourcePath . $useName, $description);
-        }
-        return true;
+        return $this->libFiles->add($targetPath, $description);
     }
 
     protected function getSeparator(): string
@@ -63,6 +58,11 @@ class ProcessFile implements IProcessFiles
     protected function targetExists(string $path): bool
     {
         return file_exists($path);
+    }
+
+    public function readCreated(string $path, string $format = 'Y-m-d H:i:s'): string
+    {
+        return $this->libFiles->getLibImage()->getCreated($path, $format) ?: '';
     }
 
     public function readDesc(string $path): string
@@ -84,11 +84,27 @@ class ProcessFile implements IProcessFiles
         return $this->libFiles->copy($currentPath, $toPath, $overwrite);
     }
 
+    /**
+     * @param string $currentPath
+     * @param string $toPath
+     * @param bool $overwrite
+     * @return bool
+     * @throws ImagesException
+     * @throws ExtrasException
+     */
     public function moveFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
         return $this->libFiles->move($currentPath, $toPath, $overwrite);
     }
 
+    /**
+     * @param string $currentPath
+     * @param string $toFileName
+     * @param bool $overwrite
+     * @return bool
+     * @throws ExtrasException
+     * @throws ImagesException
+     */
     public function renameFile(string $currentPath, string $toFileName, bool $overwrite = false): bool
     {
         return $this->libFiles->rename($currentPath, $toFileName, $overwrite);

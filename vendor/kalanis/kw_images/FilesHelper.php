@@ -24,6 +24,12 @@ class FilesHelper
     {
         $libExtDir = new ExtendDir($webRootDir);
         $libGraphics = new Graphics(new Graphics\Format\Factory(), new MimeType());
-        return new Files(new Files\Image($libExtDir, $libGraphics, $params), new Files\Thumb($libExtDir, $libGraphics, $params), new Files\Desc($libExtDir), new Files\DirDesc($libExtDir));
+        return new Files(
+            new Files\Image($libExtDir, $libGraphics, $params),
+            new Files\Thumb($libExtDir, $libGraphics, $params),
+            new Files\Desc($libExtDir),
+            new Files\DirDesc($libExtDir),
+            new Files\DirThumb($libExtDir, $libGraphics, $params)
+        );
     }
 }

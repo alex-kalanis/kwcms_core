@@ -18,36 +18,39 @@ class Files
     protected $libThumb = null;
     protected $libDesc = null;
     protected $libDirDesc = null;
+    protected $libDirThumb = null;
 
-    public function __construct(Files\Image $image, Files\Thumb $thumb, Files\Desc $desc, Files\DirDesc $dirDesc)
+    public function __construct(Files\Image $image, Files\Thumb $thumb, Files\Desc $desc, Files\DirDesc $dirDesc, Files\DirThumb $dirThumb)
     {
         $this->libImage = $image;
         $this->libThumb = $thumb;
         $this->libDesc = $desc;
         $this->libDirDesc = $dirDesc;
+        $this->libDirThumb = $dirThumb;
     }
 
     /**
      * @param string $currentPath
-     * @param string $desc
+     * @param string $description
      * @param bool $hasThumb
      * @return bool
      * @throws ImagesException
      */
-    public function add(string $currentPath, string $desc = '', bool $hasThumb = true): bool
+    public function add(string $currentPath, string $description = '', bool $hasThumb = true): bool
     {
         $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
         $fileName = Stuff::filename($currentPath);
 
         $this->libImage->check($currentPath);
+        $this->libImage->processUploaded($currentPath);
 
         $this->libThumb->delete($origDir, $fileName);
         if ($hasThumb) {
             $this->libThumb->create($currentPath);
         }
 
-        if (!empty($desc)) {
-            $this->libDesc->set($currentPath, $desc);
+        if (!empty($description)) {
+            $this->libDesc->set($currentPath, $description);
         } else {
             $this->libDesc->delete($origDir, $fileName);
         }
@@ -228,6 +231,11 @@ class Files
     public function getLibDirDesc(): Files\DirDesc
     {
         return $this->libDirDesc;
+    }
+
+    public function getLibDirThumb(): Files\DirThumb
+    {
+        return $this->libDirThumb;
     }
 
     protected function targetExists(string $path): bool

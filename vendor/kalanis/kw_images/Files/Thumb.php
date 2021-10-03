@@ -17,6 +17,8 @@ use kalanis\kw_paths\Stuff;
  */
 class Thumb extends AFiles
 {
+    use TSizes;
+
     const FILE_TEMP = '.tmp';
 
     protected $maxWidth = 180;
@@ -37,7 +39,7 @@ class Thumb extends AFiles
      */
     public function create(string $path): void
     {
-        $thumb = $this->getPath($path);
+        $thumb = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
         $tempThumb = $thumb . static::FILE_TEMP;
         if (is_file($thumb)) {
             if (!rename($thumb, $tempThumb)) {
@@ -144,7 +146,8 @@ class Thumb extends AFiles
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $this->deleteFile($this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName), 'Cannot remove thumb!');
+        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $this->dataRemove($whatPath, 'Cannot remove thumb!');
     }
 
     public function getPath(string $path): string

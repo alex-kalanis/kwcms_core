@@ -26,6 +26,13 @@ interface IProcessFiles
 
     /**
      * @param string $path
+     * @param string $format
+     * @return string
+     */
+    public function readCreated(string $path, string $format = 'Y-m-d H:i:s'): string;
+
+    /**
+     * @param string $path
      * @return string
      * @throws ImagesException
      */

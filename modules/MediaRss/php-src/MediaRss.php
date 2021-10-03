@@ -4,7 +4,6 @@ namespace KWCMS\modules\MediaRss;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_extras\UserDir;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\FilesHelper;
@@ -76,7 +75,7 @@ class MediaRss extends AModule
                 implode('', $this->getItems($libTree, $libFiles))
             )->render()
             );
-        } catch (ImagesException | ExtrasException $ex) {
+        } catch (ImagesException $ex) {
             $error = $ex;
         }
         if (isset($error)) {
@@ -127,7 +126,7 @@ class MediaRss extends AModule
     /**
      * @param Files $libFiles
      * @return string
-     * @throws ExtrasException
+     * @throws ImagesException
      */
     protected function getDesc(Files $libFiles): string
     {
