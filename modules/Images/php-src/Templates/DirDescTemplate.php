@@ -5,7 +5,7 @@ namespace KWCMS\modules\Images\Templates;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\ATemplate;
-use KWCMS\modules\Images\Forms\DirDescForm;
+use KWCMS\modules\Images\Forms\DescForm;
 
 
 /**
@@ -29,11 +29,11 @@ class DirDescTemplate extends ATemplate
     }
 
     /**
-     * @param DirDescForm $form
+     * @param DescForm $form
      * @return $this
      * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
-    public function setData(DirDescForm $form): self
+    public function setData(DescForm $form): self
     {
         $this->updateItem('{FORM_START}', $form->renderStart());
         $this->updateItem('{DESC_LABEL}', $form->getControl('name')->renderLabel());

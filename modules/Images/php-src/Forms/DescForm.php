@@ -10,14 +10,14 @@ use kalanis\kw_langs\Lang;
 
 
 /**
- * Class DirDescForm
+ * Class DescForm
  * @package KWCMS\modules\Images\Forms
- * Edit description of dir
+ * Edit description of dir/file
  * @property Controls\Text description
  * @property Controls\Submit saveDesc
  * @property Controls\Reset resetDesc
  */
-class DirDescForm extends Form
+class DescForm extends Form
 {
     public function composeForm(string $currentDesc): self
     {
