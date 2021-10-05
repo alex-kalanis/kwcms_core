@@ -17,9 +17,10 @@ use kalanis\kw_langs\Lang;
  */
 class DirExtraForm extends Form
 {
-    public function composeForm(): self
+    public function composeForm(string $targetLink): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
+        $this->setAttribute('action', $targetLink);
         $this->addSubmit('saveDir', Lang::get('dashboard.button_set'));
         return $this;
     }

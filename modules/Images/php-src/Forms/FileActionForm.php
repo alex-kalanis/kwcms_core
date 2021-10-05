@@ -21,9 +21,10 @@ use kalanis\kw_tree\FileNode;
  */
 class FileActionForm extends Form
 {
-    public function composeForm(FileNode $targetTree): self
+    public function composeForm(FileNode $targetTree, string $targetLink): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
+        $this->setAttribute('action', $targetLink);
         $select = new DirSelect();
         $select->set('where', '', Lang::get('files.dir.select'), $targetTree);
         $this->addControl($select);

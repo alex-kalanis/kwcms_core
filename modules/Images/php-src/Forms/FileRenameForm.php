@@ -14,8 +14,8 @@ use kalanis\kw_langs\Lang;
  * @package KWCMS\modules\Images\Forms
  * Rename file
  * @property Controls\Text newName
- * @property Controls\Submit saveDir
- * @property Controls\Reset resetDir
+ * @property Controls\Submit saveFile
+ * @property Controls\Reset resetFile
  */
 class FileRenameForm extends Form
 {
@@ -23,8 +23,8 @@ class FileRenameForm extends Form
     {
         $this->setMethod(IEntry::SOURCE_POST);
         $this->addText('newName', Lang::get('menu.current_dir'));
-        $this->addSubmit('saveDir', Lang::get('dashboard.button_set'));
-        $this->addReset('resetDir', Lang::get('dashboard.button_reset'));
+        $this->addSubmit('saveFile', Lang::get('dashboard.button_set'));
+        $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;
     }
 }

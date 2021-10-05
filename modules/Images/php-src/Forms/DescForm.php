@@ -19,9 +19,10 @@ use kalanis\kw_langs\Lang;
  */
 class DescForm extends Form
 {
-    public function composeForm(string $currentDesc): self
+    public function composeForm(string $currentDesc, string $targetLink): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
+        $this->setAttribute('action', $targetLink);
         $this->addText('description', Lang::get('menu.current_dir'), $currentDesc);
         $this->addSubmit('saveDesc', Lang::get('dashboard.button_set'));
         $this->addReset('resetDesc', Lang::get('dashboard.button_reset'));
