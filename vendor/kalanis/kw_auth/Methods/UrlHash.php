@@ -54,9 +54,9 @@ class UrlHash extends AMethods
 
     public function process(\ArrayAccess $credentials): void
     {
-        $name = $credentials->offsetExists(static::INPUT_NAME) ? $credentials->offsetGet(static::INPUT_NAME) : '' ;
-        $name = $credentials->offsetExists(static::INPUT_NAME2) ? $credentials->offsetGet(static::INPUT_NAME2) : $name ;
-        $stamp = $credentials->offsetExists(static::INPUT_STAMP) ? (int)$credentials->offsetGet(static::INPUT_STAMP) : 0 ;
+        $name = $credentials->offsetExists(static::INPUT_NAME) ? strval($credentials->offsetGet(static::INPUT_NAME)) : '' ;
+        $name = $credentials->offsetExists(static::INPUT_NAME2) ? strval($credentials->offsetGet(static::INPUT_NAME2) ): $name ;
+        $stamp = $credentials->offsetExists(static::INPUT_STAMP) ? intval(strval($credentials->offsetGet(static::INPUT_STAMP))) : 0 ;
 
         $wantedUser = $this->authenticator->getCertData((string)$name);
         if ($wantedUser && !empty($stamp)) { // @todo: check timestamp for range
