@@ -20,13 +20,10 @@ class AuthTree implements IAuthTree
 
     public function setTree(Methods\AMethods $authTree): void
     {
+        $this->usedMethod = null;
         $this->authTree = $authTree;
     }
 
-    /**
-     * @param \ArrayAccess $credentials
-     * @throws AuthException
-     */
     public function findMethod(\ArrayAccess $credentials): void
     {
         $currentMethod = $this->authTree;

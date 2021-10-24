@@ -11,8 +11,6 @@ use kalanis\kw_auth\Interfaces\IAuthCert;
  * Class UrlCerts
  * @package kalanis\kw_auth\AuthMethods
  * Authenticate via certificates
- * @codeCoverageIgnore because access openssl library
- * - public on server, private on client whom manage the site
  *
  * query:
  * //dummy/u:whoami/?pass=asdf123ghjk456&timestamp=123456&digest=poiuztrewq
@@ -24,6 +22,8 @@ use kalanis\kw_auth\Interfaces\IAuthCert;
  */
 class UrlCerts extends AMethods
 {
+    use TStamp;
+
     const INPUT_NAME = 'name';
     const INPUT_NAME2 = 'user';
     const INPUT_STAMP = 'timestamp';
@@ -48,7 +48,7 @@ class UrlCerts extends AMethods
         $stamp = $credentials->offsetExists(static::INPUT_STAMP) ? intval(strval($credentials->offsetGet(static::INPUT_STAMP))) : 0 ;
 
         $wantedUser = $this->authenticator->getCertData((string)$name);
-        if ($wantedUser && !empty($stamp)) { // @todo: check timestamp for range
+        if ($wantedUser && !empty($stamp) && $this->checkStamp($stamp)) {
             // now we have public key and salt from our storage, so it's time to check it
 
             // digest out, salt in
@@ -58,8 +58,7 @@ class UrlCerts extends AMethods
             $data = $this->uriHandler->getAddress();
 
             // verify
-            $pkey = openssl_get_publickey(base64_decode($wantedUser->getPubKey()));
-            $result = @openssl_verify((string)$data, (string)$digest, $pkey);
+            $result = openssl_verify((string)$data, base64_decode(rawurldecode($digest)), $wantedUser->getPubKey(), OPENSSL_ALGO_SHA256);
             if (1 === $result) {
                 // OK
                 $this->loggedUser = $wantedUser;

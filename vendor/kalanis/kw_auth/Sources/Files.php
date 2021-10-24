@@ -5,28 +5,26 @@ namespace kalanis\kw_auth\Sources;
 
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Data\FileCertUser;
-use kalanis\kw_auth\Data\FileGroup;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IAuthCert;
-use kalanis\kw_auth\Interfaces\IExpiry;
 use kalanis\kw_auth\Interfaces\IFile;
-use kalanis\kw_auth\Interfaces\IGroup;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Interfaces\IUserCert;
 use kalanis\kw_locks\Interfaces\ILock;
+use kalanis\kw_locks\LockException;
 
 
 /**
  * Class Files
- * @package kalanis\kw_auth\AuthMethods
+ * @package kalanis\kw_auth\Sources
  * Authenticate via files
- * @codeCoverageIgnore because access external content
  */
-class Files implements IAuthCert, IAccessGroups, IAccessClasses
+class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
 {
-    use TFiles;
-    use TLines;
+    use TClasses;
+    use TExpiration;
+    use TGroups;
 
     const PW_NAME = 0;
     const PW_ID = 1;
@@ -34,6 +32,7 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
     const PW_CLASS = 3;
     const PW_DISPLAY = 4;
     const PW_DIR = 5;
+    const PW_FEED = 6;
 
     const SH_NAME = 0;
     const SH_PASS = 1;
@@ -41,27 +40,13 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
     const SH_CHANGE_NEXT = 3;
     const SH_CERT_SALT = 4;
     const SH_CERT_KEY = 5;
+    const SH_FEED = 6;
 
-    const GRP_ID = 0;
-    const GRP_NAME = 1;
-    const GRP_AUTHOR = 2;
-    const GRP_DESC = 3;
-
-    protected $lock = null;
-    protected $path = '';
     protected $salt = '';
-    protected $changeInterval = 31536000; // 60×60×24×365 - one year
-    protected $changeNotice = 2592000; // 60×60×24×30 - one month
 
-    /**
-     * @param ILock $lock
-     * @param string $dir
-     * @param string $salt
-     * @throws AuthException
-     */
     public function __construct(ILock $lock, string $dir, string $salt)
     {
-        $this->lock = $lock;
+        $this->initAuthLock($lock);
         $this->path = $dir;
         $this->salt = $salt;
     }
@@ -74,21 +59,16 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         $time = time();
         $name = $this->stripChars($userName);
         $pass = $this->hashPassword($params['password']);
-//var_dump([$userName, $params]);
-//var_dump([$name, $pass]);
 
         // load from shadow
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
+
         $shadowLines = $this->openShadow();
         foreach ($shadowLines as &$line) {
             if (($line[static::SH_NAME] == $name) && ($line[static::SH_PASS] == $pass) && ($time < $line[static::SH_CHANGE_NEXT])) {
                 $class = $this->getDataOnly($userName);
                 if ($class) {
-                    if ($class instanceof IExpiry) {
-                        $class->setExpiry( $time + $this->changeNotice > $line[static::SH_CHANGE_NEXT] );
-                    }
+                    $this->setExpirationNotice($class, intval($line[static::SH_CHANGE_NEXT]));
                     return $class;
                 }
             }
@@ -100,10 +80,9 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
     {
         $name = $this->stripChars($userName);
 
-        // load from passwd
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        // load from password
+        $this->checkLock();
+
         $passwordLines = $this->openPassword();
         foreach ($passwordLines as &$line) {
             if ($line[static::PW_NAME] == $name) {
@@ -132,15 +111,17 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         $name = $this->stripChars($userName);
 
         // load from shadow
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
+
         $shadowLines = $this->openShadow();
         foreach ($shadowLines as &$line) {
             if ($line[static::SH_NAME] == $name) {
                 $class = $this->getDataOnly($userName);
                 if ($class && ($class instanceof IUserCert)) {
-                    $class->addCertInfo((string)$line[static::SH_CERT_KEY], (string)$line[static::SH_CERT_SALT]);
+                    $class->addCertInfo(
+                        (string)base64_decode($line[static::SH_CERT_KEY]),
+                        (string)$line[static::SH_CERT_SALT]
+                    );
                     return $class;
                 }
             }
@@ -148,18 +129,11 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         return null;
     }
 
-    /**
-     * @param string $userName
-     * @param string $passWord
-     * @throws AuthException
-     */
     public function updatePassword(string $userName, string $passWord): void
     {
         $name = $this->stripChars($userName);
         // load from shadow
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
 
         $changed = false;
         $this->lock->create();
@@ -168,7 +142,7 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
             if ($line[static::SH_NAME] == $name) {
                 $changed = true;
                 $line[static::SH_PASS] = $this->hashPassword($passWord);
-                $line[static::SH_CHANGE_NEXT] = time() + $this->changeInterval;
+                $line[static::SH_CHANGE_NEXT] = $this->whenItExpire();
             }
         }
         if ($changed) {
@@ -181,16 +155,15 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
     {
         $name = $this->stripChars($userName);
         // load from shadow
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
+
         $changed = false;
         $this->lock->create();
         $lines = $this->openShadow();
         foreach ($lines as &$line) {
             if ($line[static::SH_NAME] == $name) {
                 $changed = true;
-                $line[static::SH_CERT_KEY] = $certKey ?: $line[static::SH_CERT_KEY];
+                $line[static::SH_CERT_KEY] = $certKey ? base64_encode($certKey) : $line[static::SH_CERT_KEY];
                 $line[static::SH_CERT_SALT] = $certSalt ?: $line[static::SH_CERT_SALT];
             }
         }
@@ -210,16 +183,14 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
 
         if ($user instanceof IUserCert) {
             $certSalt = $this->stripChars($user->getPubSalt());
-            $certKey = $this->stripChars($user->getPubKey());
+            $certKey = $user->getPubKey();
         }
 
         # no everything need is set
         if (empty($userName) || empty($directory) || empty($password)) {
             throw new AuthException('MISSING_NECESSARY_PARAMS');
         }
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
 
         $uid = IUser::LOWEST_USER_ID;
         $this->lock->create();
@@ -238,6 +209,7 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
             static::PW_CLASS => empty($user->getClass()) ? IAccessClasses::CLASS_USER : $user->getClass() ,
             static::PW_DISPLAY => empty($displayName) ? $userName : $displayName,
             static::PW_DIR => $directory,
+            static::PW_FEED => '',
         ];
         ksort($newUserPass);
         $passLines[] = $newUserPass;
@@ -249,9 +221,10 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
             static::SH_NAME => $userName,
             static::SH_PASS => $this->hashPassword($password),
             static::SH_CHANGE_LAST => time(),
-            static::SH_CHANGE_NEXT => time() + $this->changeInterval,
+            static::SH_CHANGE_NEXT => $this->whenItExpire(),
             static::SH_CERT_SALT => $certSalt,
-            static::SH_CERT_KEY => $certKey,
+            static::SH_CERT_KEY => $certKey ? base64_encode($certKey) : '',
+            static::SH_FEED => '',
         ];
         ksort($newUserShade);
         $shadeLines[] = $newUserShade;
@@ -263,11 +236,14 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         $this->lock->delete();
     }
 
+    /**
+     * @return IUser[]
+     * @throws AuthException
+     * @throws LockException
+     */
     public function readAccounts(): array
     {
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
 
         $passLines = $this->openPassword();
         $result = [];
@@ -293,9 +269,7 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         $directory = $this->stripChars($user->getDir());
         $displayName = $this->stripChars($user->getDisplayName());
 
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
 
         $this->lock->create();
         $passwordLines = $this->openPassword();
@@ -316,9 +290,7 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
     public function deleteAccount(string $userName): void
     {
         $name = $this->stripChars($userName);
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
+        $this->checkLock();
 
         $changed = false;
         $this->lock->create();
@@ -349,136 +321,14 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         $this->lock->delete();
     }
 
-    public function createGroup(IGroup $group): void
+    protected function checkRest(int $groupId): void
     {
-        $userId = $group->getGroupAuthorId();
-        $groupName = $this->stripChars($group->getGroupName());
-        $groupDesc = $this->stripChars($group->getGroupDesc());
-
-        # no everything need is set
-        if (empty($userId) || empty($groupName)) {
-            throw new AuthException('MISSING_NECESSARY_PARAMS');
-        }
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
-
-        $gid = 0;
-        $this->lock->create();
-
-        # read groups
-        $groupLines = $this->openGroups();
-        foreach ($groupLines as &$line) {
-            $gid = max($gid, $line[static::GRP_ID]);
-        }
-        $gid++;
-
-        $newGroup = [
-            static::GRP_ID => $gid,
-            static::GRP_NAME => $groupName,
-            static::GRP_AUTHOR => $userId,
-            static::GRP_DESC => !empty($groupDesc) ? $groupDesc : $groupName,
-        ];
-        ksort($newGroup);
-        $groupLines[] = $newGroup;
-
-        # now save it
-        $this->saveGroups($groupLines);
-
-        $this->lock->delete();
-    }
-
-    /**
-     * @return IGroup[]
-     * @throws AuthException
-     */
-    public function readGroup(): array
-    {
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
-
-        $groupLines = $this->openGroups();
-        $result = [];
-        foreach ($groupLines as &$line) {
-            $record = new FileGroup();
-            $record->setData(
-                intval($line[static::GRP_ID]),
-                strval($line[static::GRP_NAME]),
-                intval($line[static::GRP_AUTHOR]),
-                strval($line[static::GRP_DESC])
-            );
-            $result[] = $record;
-        }
-
-        return $result;
-    }
-
-    public function updateGroup(IGroup $group): void
-    {
-        $groupName = $this->stripChars($group->getGroupName());
-        $groupDesc = $this->stripChars($group->getGroupDesc());
-
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
-
-        $this->lock->create();
-        $groupLines = $this->openGroups();
-        foreach ($groupLines as &$line) {
-            if ($line[static::GRP_ID] == $group->getGroupId()) {
-                // REFILL
-                $line[static::GRP_NAME] = !empty($groupName) ? $groupName : $line[static::GRP_NAME] ;
-                $line[static::GRP_DESC] = !empty($groupDesc) ? $groupDesc : $line[static::GRP_DESC] ;
-            }
-        }
-
-        $this->saveGroups($groupLines);
-        $this->lock->delete();
-    }
-
-    public function deleteGroup(int $groupId): void
-    {
-        if ($this->lock->has()) {
-            throw new AuthException('Someone works with authentication. Please try again a bit later.');
-        }
-
         $passLines = $this->openPassword();
         foreach ($passLines as &$line) {
             if ($line[static::PW_GROUP] == $groupId) {
                 throw new AuthException('Group to removal still has members. Remove them first.');
             }
         }
-
-        $changed = false;
-        $this->lock->create();
-
-        # update groups
-        $openGroups = $this->openGroups();
-        foreach ($openGroups as $index => &$line) {
-            if ($line[static::GRP_ID] == $groupId) {
-                unset($openGroups[$index]);
-                $changed = true;
-            }
-        }
-
-        # now save it
-        if ($changed) {
-            $this->saveGroups($openGroups);
-        }
-        $this->lock->delete();
-    }
-
-    /**
-     * @return string[]
-     */
-    public function readClasses(): array
-    {
-        return [
-            IAccessClasses::CLASS_MAINTAINER => 'Maintainer',
-            IAccessClasses::CLASS_ADMIN => 'Admin',
-            IAccessClasses::CLASS_USER => 'User',
-        ];
     }
 
     /**
@@ -570,9 +420,11 @@ class Files implements IAuthCert, IAccessGroups, IAccessClasses
         if (function_exists('mhash')) {
             return mhash(MHASH_SHA256, $word);
         }
+        // @codeCoverageIgnoreStart
         if (function_exists('hash')) {
             return hash('sha256', $word);
         }
         throw new AuthException('Cannot find function for making hashes!');
+        // @codeCoverageIgnoreEnd
     }
 }
