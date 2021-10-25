@@ -16,7 +16,7 @@ use kalanis\kw_rules\Rules\ProcessCallback;
  * How it works:
  * Insert this one into the form and call it:
  *
- *    new AuthForm('digest2', new Methods\ImplodeHash($currentUserCertLib), $this, ['first', 'next', 'last'], $cookies)
+ *    AuthForm::tokenAndDigest('digest2', new Methods\ImplodeHash($currentUserCertLib), $this, ['first', 'next', 'last'], $cookies)
  *
  * It adds hidden input which will be checked for token value or digest code
  * Then when the form will be processed this hidden input allow/deny processing further because it checks for code in added input
@@ -25,13 +25,38 @@ class AuthForm
 {
     /**
      * @param string $inputAlias
-     * @param Interfaces\IMethod $digestMethod
+     * @param Rules\ARule $digest
      * @param Form $boundForm
      * @param array $whichInputs
      * @param ArrayAccess $cookies
      * @throws RuleException
      */
-    public function __construct(string $inputAlias, Interfaces\IMethod $digestMethod, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
+    public static function digest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
+    {
+        // init input
+        $csrf = new Inputs\AuthCsrf();
+        $csrf->setHidden($inputAlias, $cookies);
+
+        // check content for digested value
+        $digest->setForm($boundForm);
+        $digest->setAgainstValue($whichInputs);
+        $digest->setErrorText('Digest fails');
+
+        // add rule to input
+        $csrf->removeRules();
+        $csrf->addRules([$digest]);
+        $boundForm->addControl($csrf);
+    }
+
+    /**
+     * @param string $inputAlias
+     * @param Rules\ARule $digest
+     * @param Form $boundForm
+     * @param array $whichInputs
+     * @param ArrayAccess $cookies
+     * @throws RuleException
+     */
+    public static function tokenAndDigest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
     {
         // init input
         $csrf = new Inputs\AuthCsrf();
@@ -43,8 +68,8 @@ class AuthForm
         $check->setErrorText('Token fails');
 
         // check content for digested value
-        $digest = new Rules\CalcDigest($digestMethod);
-        $digest->setAgainstValue($this->sentInputs($boundForm, $whichInputs));
+        $digest->setForm($boundForm);
+        $digest->setAgainstValue($whichInputs);
         $digest->setErrorText('Digest fails');
 
         // match any rule
@@ -56,21 +81,5 @@ class AuthForm
         $csrf->removeRules();
         $csrf->addRules([$match]);
         $boundForm->addControl($csrf);
-    }
-
-    protected function sentInputs(Form $sourceForm, array $whichInputs)
-    {
-        // we want only predefined ones
-        $data = array_filter($sourceForm->getValues(), function ($k) use ($whichInputs) {
-            return in_array($k, $whichInputs);
-        }, ARRAY_FILTER_USE_KEY);
-
-        // now set it in predefined order
-        $flippedInputs = array_flip($whichInputs);
-        uksort($data, function ($a, $b) use ($flippedInputs) {
-            return strval($flippedInputs[$a]) > strval($flippedInputs[$b]) ? -1 : 1;
-        });
-
-        return $data;
     }
 }
