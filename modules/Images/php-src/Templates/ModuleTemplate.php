@@ -24,10 +24,10 @@ class ModuleTemplate extends ATemplate
         $this->addInput('{LINK_MAKE_DIR}', '#');
         $this->addInput('{LINK_UPLOAD}', '#');
         $this->addInput('{LINK_CHDIR}', '#');
-        $this->addInput('{TEXT_DASHBOARD}', Lang::get('short.add_record'));
-        $this->addInput('{TEXT_PROPERTIES}', Lang::get('short.update_texts'));
-        $this->addInput('{TEXT_MAKE_DIR}', Lang::get('short.add_record'));
-        $this->addInput('{TEXT_UPLOAD}', Lang::get('short.update_texts'));
+        $this->addInput('{TEXT_DASHBOARD}', Lang::get('images.list_dir'));
+        $this->addInput('{TEXT_PROPERTIES}', Lang::get('images.dir_props'));
+        $this->addInput('{TEXT_MAKE_DIR}', Lang::get('images.create_dir'));
+        $this->addInput('{TEXT_UPLOAD}', Lang::get('images.upload_image'));
         $this->addInput('{TEXT_CHANGE_DIRECTORY}', Lang::get('dashboard.dir_select'));
     }
 

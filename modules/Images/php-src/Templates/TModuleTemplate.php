@@ -29,11 +29,11 @@ trait TModuleTemplate
         $tmpl = new ModuleTemplate();
         return $tmpl->setData(
             $content,
-            $this->links->linkVariant('short/dashboard'),
-            $this->links->linkVariant('short/properties'),
-            $this->links->linkVariant('short/make-dir'),
-            $this->links->linkVariant('short/upload'),
-            $this->links->linkVariant('short/ch-dir')
+            $this->links->linkVariant('images/dashboard'),
+            $this->links->linkVariant('images/properties'),
+            $this->links->linkVariant('images/make-dir'),
+            $this->links->linkVariant('images/upload'),
+            $this->links->linkVariant('images/ch-dir')
         )->render();
     }
 }
