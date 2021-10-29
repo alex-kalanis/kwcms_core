@@ -14,7 +14,7 @@ use kalanis\kw_table\Interfaces\Table\IRow;
  */
 class SourceItem extends Mapper
 {
-    protected function getTranslated($data): IRow
+    public function getTranslated($data): IRow
     {
         return new ConnectItem($data);
     }

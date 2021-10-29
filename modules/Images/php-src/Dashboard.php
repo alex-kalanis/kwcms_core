@@ -86,7 +86,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $table = new Lib\ListTable($this->inputs, $this->links, $this->getWhereDir());
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
         } catch ( FormsException | TableException | MapperException $ex) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
+            return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
 

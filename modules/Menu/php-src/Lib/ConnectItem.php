@@ -26,4 +26,9 @@ class ConnectItem implements IRow
     {
         return $this->array[$property];
     }
+
+    public function __isset($property)
+    {
+        return isset($this->array[$property]);
+    }
 }

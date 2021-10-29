@@ -29,14 +29,4 @@ class ConnectItem implements IRow
     {
         return isset($this->array[$name]);
     }
-
-    public function __get($name)
-    {
-        return $this->getValue($name);
-    }
-
-    public function __toString()
-    {
-        return strval($this->getValue('name'));
-    }
 }
