@@ -6,7 +6,7 @@ namespace KWCMS\modules\Images\Lib;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_forms\Adapters;
-use kalanis\kw_images\FilesHelper;
+use kalanis\kw_images\Files;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -40,12 +40,12 @@ class ListTable
     /** @var string */
     protected $libGallery = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, string $whereDir)
+    public function __construct(IVariables $inputs, ExternalLink $link, Files $libGallery, string $whereDir)
     {
         $this->variables = $inputs;
         $this->link = $link;
         $this->whereDir = $whereDir;
-        $this->libGallery = FilesHelper::get($whereDir);
+        $this->libGallery = $libGallery;
     }
 
     /**
@@ -86,6 +86,9 @@ class ListTable
         $table->addSortedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Form\KwField\TextContains());
         $table->addSortedColumn(Lang::get('images.size'), new Columns\Basic('size'));
 
+        $columnDescLink = new Columns\Func('name', [$this, 'imageDesc']);
+        $table->addColumn(Lang::get('images.desc'), $columnDescLink );
+
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'name');
         $columnActions->addColumn(new Columns\Func('name', [$this, 'editLink']));
         $columnActions->style('width:100px', new Rules\Always());
@@ -104,6 +107,11 @@ class ListTable
             $this->link->linkVariant($this->libGallery->getLibThumb()->getPath($this->whereDir . DIRECTORY_SEPARATOR . $name), 'image', true, false),
             strval($name)
         );
+    }
+
+    public function imageDesc($name)
+    {
+        return $this->libGallery->getLibDesc()->get($this->whereDir . DIRECTORY_SEPARATOR . $name);
     }
 
     public function editLink($name)

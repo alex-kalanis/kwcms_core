@@ -7,6 +7,8 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_images\FilesHelper;
+use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
@@ -54,11 +56,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
         // get list of files to display
         // depends on current dir and passed dir
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        $userDir = new UserDir(Config::getPath());
-        $userDir->setUserPath($this->user->getDir());
-        $userDir->process();
+        $this->userDir->setUserPath($this->user->getDir());
+        $this->userDir->process();
         $this->tree->canRecursive(false);
-        $this->tree->startFromPath($userDir->getHomeDir() . $this->getWhereDir());
+        $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
         $this->tree->setFilterCallback([$this, 'filterFiles']);
         $this->tree->process();
     }
@@ -83,9 +84,14 @@ class Dashboard extends AAuthModule implements IModuleTitle
         }
         Styles::want('Images', 'dashboard.css');
         try {
-            $table = new Lib\ListTable($this->inputs, $this->links, $this->getWhereDir());
+            $table = new Lib\ListTable(
+                $this->inputs,
+                $this->links,
+                FilesHelper::get($this->userDir->getWebRootDir() . $this->userDir->getWorkDir()),
+                $this->getWhereDir()
+            );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
-        } catch ( FormsException | TableException | MapperException $ex) {
+        } catch ( FormsException | TableException | MapperException | ImagesException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

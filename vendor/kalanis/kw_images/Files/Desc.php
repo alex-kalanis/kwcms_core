@@ -23,7 +23,8 @@ class Desc extends AFiles
     public function get(string $path): string
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
-        if (!is_file($whatPath) || !is_readable($whatPath)) {
+        $realOne = realpath($whatPath);
+        if ((false === $realOne) || !is_readable($whatPath)) {
             return '';
         }
         $content = file_get_contents($whatPath);
