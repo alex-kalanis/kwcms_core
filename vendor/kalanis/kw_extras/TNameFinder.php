@@ -14,7 +14,7 @@ use kalanis\kw_paths\Stuff;
  */
 trait TNameFinder
 {
-    protected function findFreeName(string $name): string
+    public function findFreeName(string $name): string
     {
         $name = Stuff::canonize($name);
         $ext = Stuff::fileExt($name);

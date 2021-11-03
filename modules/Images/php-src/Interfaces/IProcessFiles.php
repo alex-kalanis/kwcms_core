@@ -17,12 +17,20 @@ interface IProcessFiles
     const FREE_NAME_SEPARATOR = '_';
 
     /**
+     * @param string $name
+     * @return string
+     * @throws ImagesException
+     */
+    public function findFreeName(string $name): string;
+
+    /**
      * @param IFileEntry $file
+     * @param string $targetName
      * @param string $description
      * @return bool
      * @throws ImagesException
      */
-    public function uploadFile(IFileEntry $file, string $description): bool;
+    public function uploadFile(IFileEntry $file, string $targetName, string $description): bool;
 
     /**
      * @param string $path

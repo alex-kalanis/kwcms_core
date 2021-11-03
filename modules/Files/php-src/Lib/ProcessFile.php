@@ -30,10 +30,10 @@ class ProcessFile implements IProcessFiles
         $this->currentDir = $currentDir;
     }
 
-    public function uploadFile(IFileEntry $file): bool
+    public function uploadFile(IFileEntry $file, string $targetName): bool
     {
         try {
-            return move_uploaded_file($file->getTempName(), $this->sourcePath . $this->currentDir . $this->findFreeName($file->getValue()));
+            return move_uploaded_file($file->getTempName(), $this->sourcePath . $this->currentDir . $targetName);
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }

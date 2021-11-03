@@ -20,7 +20,7 @@ class Image extends AFiles
 
     protected $maxWidth = 1024;
     protected $maxHeight = 1024;
-    protected $maxFileSize = 1024;
+    protected $maxFileSize = 10485760;
     protected $libGraphics = null;
 
     public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [])

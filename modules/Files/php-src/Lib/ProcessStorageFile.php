@@ -30,11 +30,11 @@ class ProcessStorageFile implements IProcessFiles
         $this->sourcePath = $sourcePath;
     }
 
-    public function uploadFile(IFileEntry $file): bool
+    public function uploadFile(IFileEntry $file, string $targetName): bool
     {
         try {
             return $this->storage->save(
-                $this->sourcePath . DIRECTORY_SEPARATOR . $this->findFreeName($file->getValue()),
+                $this->sourcePath . DIRECTORY_SEPARATOR . $targetName,
                 file_get_contents($file->getTempName())
             );
         } catch (StorageException $ex) {

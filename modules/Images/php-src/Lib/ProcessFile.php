@@ -31,11 +31,11 @@ class ProcessFile implements IProcessFiles
         $this->sourcePath = $sourcePath;
     }
 
-    public function uploadFile(IFileEntry $file, string $description): bool
+    public function uploadFile(IFileEntry $file, string $targetName, string $description): bool
     {
-        $targetPath = $this->sourcePath . $this->findFreeName($file->getValue());
+        $targetPath = $this->sourcePath . $targetName;
         try {
-            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibThumb()->getExtendDir()->getWebRootDir() . $targetPath);
+            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibImage()->getExtendDir()->getWebRootDir() . $targetPath);
             if (!$status) {
                 throw new ImagesException('Cannot move uploaded file');
             }
@@ -52,7 +52,7 @@ class ProcessFile implements IProcessFiles
 
     protected function getTargetDir(): string
     {
-        return $this->sourcePath;
+        return $this->libFiles->getLibImage()->getExtendDir()->getWebRootDir() . $this->sourcePath;
     }
 
     protected function targetExists(string $path): bool

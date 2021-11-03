@@ -15,6 +15,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
@@ -55,18 +56,24 @@ class Upload extends AAuthModule implements IModuleTitle
             if ($this->fileForm->process()) {
                 $entry = $this->fileForm->getControl('uploadedFile');
                 if (!method_exists($entry, 'getFile')) {
-                    throw new ImagesException(Lang::get('files.error.must_contain_file'));
+                    throw new ImagesException(Lang::get('images.error.must_contain_file'));
                 }
                 $file = $entry->getFile();
                 if (!$file instanceof IFileEntry) {
-                    throw new ImagesException(Lang::get('files.error.must_contain_file'));
+                    throw new ImagesException(Lang::get('images.error.must_contain_file'));
                 }
-                $this->processed = $this->getLibFileAction()->uploadFile(
+                $libAction = $this->getLibFileAction();
+                $usedName = $libAction->findFreeName($file->getValue());
+                $this->processed = $libAction->uploadFile(
                     $file,
+                    $usedName,
                     $this->fileForm->getControl('description')->getValue()
                 );
             }
         } catch (ImagesException | FormsException $ex) {
+            if (isset($usedName)) {
+                $libAction->deleteFile(Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR . $usedName);
+            }
             $this->error = $ex;
         }
     }

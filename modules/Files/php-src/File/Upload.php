@@ -62,7 +62,9 @@ class Upload extends AAuthModule implements IModuleTitle
                 if (!$file instanceof IFileEntry) {
                     throw new FilesException(Lang::get('files.error.must_contain_file'));
                 }
-                $this->processed = $this->getLibFileAction()->uploadFile($file);
+                $libAction = $this->getLibFileAction();
+                $usedName = $libAction->findFreeName($file->getValue());
+                $this->processed = $libAction->uploadFile($file, $usedName);
             }
         } catch (FilesException | FormsException $ex) {
             $this->error = $ex;

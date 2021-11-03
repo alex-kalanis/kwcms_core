@@ -46,12 +46,7 @@ class Graphics
      */
     public function load(string $path): self
     {
-        $mime = $this->libMime->mimeByPath($path);
-        list($type, $app) = explode('/', $mime);
-        if ('image' != $type) {
-            throw new ImagesException(sprintf('Wrong file *%s* mime type - got *%s*', $path, $mime));
-        }
-        $processor = $this->factory->getByType($app);
+        $processor = $this->factory->getByType($this->getType($path));
         $this->resource = $processor->load($path);
         return $this;
     }
@@ -64,9 +59,24 @@ class Graphics
     public function save(string $path): self
     {
         $this->checkResource();
-        $processor = $this->factory->getByType($this->libMime->mimeByExt(Stuff::fileExt($path)));
+        $processor = $this->factory->getByType($this->getType($path));
         $processor->save($path, $this->resource);
         return $this;
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     * @throws ImagesException
+     */
+    protected function getType(string $path): string
+    {
+        $mime = $this->libMime->mimeByExt(Stuff::fileExt($path));
+        list($type, $app) = explode('/', $mime);
+        if ('image' != $type) {
+            throw new ImagesException(sprintf('Wrong file mime type - got *%s*', $mime));
+        }
+        return $app;
     }
 
     /**
