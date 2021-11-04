@@ -14,25 +14,35 @@ use kalanis\kw_images\ImagesException;
 interface IProcessDirs
 {
     /**
-     * @param string $dirPath
+     * @return bool
+     * @throws ImagesException
+     */
+    public function canUse(): bool;
+
+    /**
+     * @return bool
+     * @throws ImagesException
+     */
+    public function createExtra(): bool;
+
+    /**
      * @return string
      * @throws ImagesException
      */
-    public function getDesc(string $dirPath): string;
+    public function getDesc(): string;
 
     /**
-     * @param string $dirPath
      * @param string $content
+     * @return bool
      * @throws ImagesException
      */
-    public function updateDesc(string $dirPath, string $content): void;
+    public function updateDesc(string $content): bool;
 
     /**
-     * @param string $dirPath
      * @return string
      * @throws ImagesException
      */
-    public function getThumb(string $dirPath): string;
+    public function getThumb(): string;
 
     /**
      * @param string $filePath

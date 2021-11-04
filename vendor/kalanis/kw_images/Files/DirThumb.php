@@ -42,10 +42,10 @@ class DirThumb extends AFiles
             }
         }
         try {
-            $this->libGraphics->load($path);
+            $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
             $this->libGraphics->save($thumb);
         } catch (ImagesException $ex) {
-            if (!rename($tempThumb, $thumb)) {
+            if (is_file($tempThumb) && !rename($tempThumb, $thumb)) {
                 throw new ImagesException('Cannot remove current thumb back!');
             }
             throw $ex;
@@ -63,6 +63,12 @@ class DirThumb extends AFiles
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($whichDir);
         $this->dataRemove($whatPath, 'Cannot remove dir thumb!');
+    }
+
+    public function canUse(string $path): bool
+    {
+        $thumbDir = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
+        return is_dir($thumbDir) && is_readable($thumbDir) && is_writable($thumbDir);
     }
 
     public function getPath(string $path): string

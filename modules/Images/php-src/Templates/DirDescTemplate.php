@@ -19,7 +19,7 @@ class DirDescTemplate extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{DIR_PROPS}', Lang::get('Dir props'));
+        $this->addInput('{DIR_PROPS}', Lang::get('images.dir_props'));
         $this->addInput('{FORM_START}');
         $this->addInput('{FORM_END}');
         $this->addInput('{DESC_LABEL}');
@@ -36,10 +36,10 @@ class DirDescTemplate extends ATemplate
     public function setData(DescForm $form): self
     {
         $this->updateItem('{FORM_START}', $form->renderStart());
-        $this->updateItem('{DESC_LABEL}', $form->getControl('name')->renderLabel());
-        $this->updateItem('{DESC_INPUT}', $form->getControl('name')->renderInput());
-        $this->updateItem('{INPUT_SUBMIT}', $form->getControl('saveDir')->renderInput());
-        $this->updateItem('{INPUT_RESET}', $form->getControl('resetDir')->renderInput());
+        $this->updateItem('{DESC_LABEL}', $form->getControl('description')->renderLabel());
+        $this->updateItem('{DESC_INPUT}', $form->getControl('description')->renderInput());
+        $this->updateItem('{INPUT_SUBMIT}', $form->getControl('saveDesc')->renderInput());
+        $this->updateItem('{INPUT_RESET}', $form->getControl('resetDesc')->renderInput());
         $this->updateItem('{FORM_END}', $form->renderEnd());
         return $this;
     }

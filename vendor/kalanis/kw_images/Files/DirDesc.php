@@ -41,9 +41,7 @@ class DirDesc extends AFiles
     public function set(string $path, string $content): bool
     {
         $descPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
-        if (is_null($this->isUsable($descPath))) {
-            return false;
-        }
+        $this->isUsable($descPath);
 
         if (false === file_put_contents($descPath, $content)) {
             throw new ImagesException('Cannot write dir desc!');
@@ -63,6 +61,12 @@ class DirDesc extends AFiles
             throw new ImagesException('Cannot remove dir desc!');
         }
         return true;
+    }
+
+    public function canUse(string $path): bool
+    {
+        $descPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        return is_dir($descPath) && is_readable($descPath) && is_writable($descPath);
     }
 
     /**

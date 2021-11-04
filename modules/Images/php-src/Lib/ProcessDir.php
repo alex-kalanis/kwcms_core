@@ -3,7 +3,9 @@
 namespace KWCMS\modules\Images\Lib;
 
 
+use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_images\Files;
+use kalanis\kw_images\ImagesException;
 use KWCMS\modules\Images\Interfaces\IProcessDirs;
 
 
@@ -25,23 +27,36 @@ class ProcessDir implements IProcessDirs
         $this->sourcePath = $sourcePath;
     }
 
-    public function getDesc(string $dirPath): string
+    public function canUse(): bool
     {
-        return $this->libFiles->getLibDirDesc()->get($dirPath);
+        return $this->libFiles->getLibDirDesc()->canUse($this->sourcePath);
     }
 
-    public function updateDesc(string $dirPath, string $content): void
+    public function createExtra(): bool
     {
-        if (empty($content)) {
-            $this->libFiles->getLibDirDesc()->remove($dirPath);
-        } else {
-            $this->libFiles->getLibDirDesc()->set($dirPath, $content);
+        try {
+            return $this->libFiles->getLibDirDesc()->getExtendDir()->makeExtended($this->sourcePath);
+        } catch (ExtrasException $ex) {
+            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function getThumb(string $dirPath): string
+    public function getDesc(): string
     {
-        return $this->libFiles->getLibDirThumb()->getPath($dirPath);
+        return $this->libFiles->getLibDirDesc()->get($this->sourcePath);
+    }
+
+    public function updateDesc(string $content): bool
+    {
+        return empty($content)
+            ? $this->libFiles->getLibDirDesc()->remove($this->sourcePath)
+            : $this->libFiles->getLibDirDesc()->set($this->sourcePath, $content)
+        ;
+    }
+
+    public function getThumb(): string
+    {
+        return $this->libFiles->getLibDirThumb()->getPath($this->sourcePath);
     }
 
     public function updateThumb(string $filePath): bool

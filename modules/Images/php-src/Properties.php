@@ -4,42 +4,44 @@ namespace KWCMS\modules\Images;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
-use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
 
 
 /**
- * Class Upload
+ * Class Properties
  * @package KWCMS\modules\Images
- * Upload image
+ * Directory properties - description, thumb
  */
-class Upload extends AAuthModule implements IModuleTitle
+class Properties extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
     use Templates\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Forms\FileUploadForm|null */
-    protected $fileForm = null;
+    /** @var Forms\DescForm|null */
+    protected $descForm = null;
+    /** @var Forms\DirExtraForm|null */
+    protected $extraForm = null;
+    /** @var bool */
+    protected $hasExtra = false;
     /** @var bool */
     protected $processed = false;
 
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->fileForm = new Forms\FileUploadForm('uploadImageForm');
+        $this->descForm = new Forms\DescForm('dirPropsForm');
+        $this->extraForm = new Forms\DirExtraForm('dirPropsForm');
     }
 
     public function allowedAccessClasses(): array
@@ -51,29 +53,22 @@ class Upload extends AAuthModule implements IModuleTitle
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         try {
-            $this->fileForm->composeForm();
-            $this->fileForm->setInputs(new InputVarsAdapter($this->inputs), new InputFilesAdapter($this->inputs));
-            if ($this->fileForm->process()) {
-                $entry = $this->fileForm->getControl('uploadedFile');
-                if (!method_exists($entry, 'getFile')) {
-                    throw new ImagesException(Lang::get('images.error.must_contain_file'));
+            $libAction = $this->getLibDirAction();
+            $this->hasExtra = $libAction->canUse();
+            if ($this->hasExtra) {
+                $this->descForm->composeForm($libAction->getDesc(),'#');
+                $this->descForm->setInputs(new InputVarsAdapter($this->inputs));
+                if ($this->descForm->process()) {
+                    $this->processed = $libAction->updateDesc(strval($this->descForm->getControl('description')->getValue()));
                 }
-                $file = $entry->getFile();
-                if (!$file instanceof IFileEntry) {
-                    throw new ImagesException(Lang::get('images.error.must_contain_file'));
+            } else {
+                $this->extraForm->composeForm('#');
+                $this->extraForm->setInputs(new InputVarsAdapter($this->inputs));
+                if ($this->extraForm->process()) {
+                    $this->processed = $libAction->createExtra();
                 }
-                $libAction = $this->getLibFileAction();
-                $usedName = $libAction->findFreeName($file->getValue());
-                $this->processed = $libAction->uploadFile(
-                    $file,
-                    $usedName,
-                    strval($this->fileForm->getControl('description')->getValue())
-                );
             }
         } catch (ImagesException | FormsException $ex) {
-            if (isset($usedName)) {
-                $libAction->deleteFile(Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR . $usedName);
-            }
             $this->error = $ex;
         }
     }
@@ -93,15 +88,24 @@ class Upload extends AAuthModule implements IModuleTitle
     public function outHtml(): Output\AOutput
     {
         $out = new Shared\FillHtml($this->user);
-        $page = new Templates\UploadTemplate();
+        $extraPage = new Templates\DirExtraTemplate();
+        $descPage = new Templates\DirDescTemplate();
         if ($this->error) {
             Notification::addError($this->error->getMessage());
         }
         try {
             if ($this->processed) {
-                Notification::addSuccess(Lang::get('images.uploaded', $this->fileForm->getControl('uploadedFile')->getValue()));
+                if ($this->hasExtra) {
+                    Notification::addSuccess(Lang::get('images.props_updated'));
+                } else {
+                    Notification::addSuccess(Lang::get('images.dirs_created'));
+                }
             }
-            return $out->setContent($this->outModuleTemplate($page->setData($this->fileForm)->render()));
+            return $out->setContent($this->outModuleTemplate(
+                $this->hasExtra
+                    ? $descPage->setData($this->descForm)->render()
+                    : $extraPage->setData($this->extraForm)->render()
+            ));
         } catch (FormsException $ex) {
             $this->error = $ex;
         }
@@ -116,8 +120,9 @@ class Upload extends AAuthModule implements IModuleTitle
         } else {
             $out = new Output\Json();
             $out->setContent([
+                'has_extra' => intval($this->hasExtra),
                 'form_result' => intval($this->processed),
-                'form_errors' => $this->fileForm->renderErrorsArray(),
+                'form_errors' => $this->hasExtra ? $this->descForm->renderErrorsArray() : $this->extraForm->renderErrorsArray(),
             ]);
             return $out;
         }
@@ -125,6 +130,6 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('images.page') . ' - ' . Lang::get('images.upload.short');
+        return Lang::get('images.page') . ' - ' . Lang::get('images.dir_props.short');
     }
 }

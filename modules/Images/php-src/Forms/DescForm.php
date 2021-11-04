@@ -23,7 +23,7 @@ class DescForm extends Form
     {
         $this->setMethod(IEntry::SOURCE_POST);
         $this->setAttribute('action', $targetLink);
-        $this->addText('description', Lang::get('menu.current_dir'), $currentDesc);
+        $this->addText('description', Lang::get('images.current_dir_desc'), $currentDesc);
         $this->addSubmit('saveDesc', Lang::get('dashboard.button_set'));
         $this->addReset('resetDesc', Lang::get('dashboard.button_reset'));
         return $this;

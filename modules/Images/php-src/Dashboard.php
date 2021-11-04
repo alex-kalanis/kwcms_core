@@ -112,6 +112,6 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('files.page');
+        return Lang::get('images.page');
     }
 }
