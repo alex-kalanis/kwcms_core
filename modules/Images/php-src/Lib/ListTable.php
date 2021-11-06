@@ -79,15 +79,14 @@ class ListTable
         $table->setDefaultSorting('name', IQueryBuilder::ORDER_DESC);
         $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
-        $columnThumbLink = new Columns\Func('name', [$this, 'imageLink']);
+        $columnThumbLink = new Columns\MultiColumnLink('thumb', [new Columns\Basic('name')], [$this, 'imageLink']);
         $columnThumbLink->style('width:140px', new Rules\Always());
         $table->addColumn(Lang::get('images.thumb'), $columnThumbLink );
 
         $table->addSortedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Form\KwField\TextContains());
         $table->addSortedColumn(Lang::get('images.size'), new Columns\Basic('size'));
 
-        $columnDescLink = new Columns\Func('name', [$this, 'imageDesc']);
-        $table->addColumn(Lang::get('images.desc'), $columnDescLink );
+        $table->addSortedColumn(Lang::get('images.desc'), new Columns\Basic('desc'), new Form\KwField\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'name');
         $columnActions->addColumn(new Columns\Func('name', [$this, 'editLink']));
@@ -96,22 +95,17 @@ class ListTable
         $table->addColumn(Lang::get('images.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSource(new SourceItem($tree->getTree()->getSubNodes()));
+        $table->addDataSource(new SourceItem($tree->getTree()->getSubNodes(), $this->whereDir, $this->libGallery));
         return $table;
     }
 
-    public function imageLink($name)
+    public function imageLink($data)
     {
         return sprintf('<a href="%s" class="button"><img src="%s" title="%s"></a>',
-            $this->link->linkVariant('images/edit/?name=' . $name),
-            $this->link->linkVariant($this->libGallery->getLibThumb()->getPath($this->whereDir . DIRECTORY_SEPARATOR . $name), 'image', true, false),
-            strval($name)
+            $this->link->linkVariant('images/edit/?name=' . $data[1]),
+            $this->link->linkVariant($data[0], 'image', true, false),
+            strval($data[1])
         );
-    }
-
-    public function imageDesc($name)
-    {
-        return $this->libGallery->getLibDesc()->get($this->whereDir . DIRECTORY_SEPARATOR . $name);
     }
 
     public function editLink($name)

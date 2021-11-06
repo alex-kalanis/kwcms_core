@@ -20,6 +20,14 @@ interface IProcessDirs
     public function canUse(): bool;
 
     /**
+     * @param string $target
+     * @param string $name
+     * @return bool
+     * @throws ImagesException
+     */
+    public function createDir(string $target, string $name): bool;
+
+    /**
      * @return bool
      * @throws ImagesException
      */

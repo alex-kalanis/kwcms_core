@@ -28,10 +28,10 @@ class DirNewForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
         $this->setAttribute('action', $targetLink);
         $select = new DirSelect();
-        $select->set('where', '', Lang::get('files.dir.select'), $tree);
+        $select->set('where', '', Lang::get('images.dir.select'), $tree);
         $this->addControl($select);
-        $this->addText('name', Lang::get('menu.current_dir'));
-        $this->addCheckbox('into', Lang::get('menu.current_dir'));
+        $this->addText('name', Lang::get('images.dir.name'));
+        $this->addCheckbox('into', Lang::get('images.dir.move_into'));
         $this->addSubmit('saveDir', Lang::get('dashboard.button_set'));
         $this->addReset('resetDir', Lang::get('dashboard.button_reset'));
         return $this;

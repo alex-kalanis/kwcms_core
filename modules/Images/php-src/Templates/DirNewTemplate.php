@@ -19,7 +19,7 @@ class DirNewTemplate extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{DIR_NEW}', Lang::get('New dir'));
+        $this->addInput('{DIR_NEW}', Lang::get('images.dir.new'));
         $this->addInput('{FORM_START}');
         $this->addInput('{FORM_END}');
         $this->addInput('{DIR_LABEL}');
@@ -42,6 +42,8 @@ class DirNewTemplate extends ATemplate
         $this->updateItem('{FORM_START}', $form->renderStart());
         $this->updateItem('{DIR_LABEL}', $form->getControl('name')->renderLabel());
         $this->updateItem('{DIR_INPUT}', $form->getControl('name')->renderInput());
+        $this->updateItem('{TARGET_LABEL}', $form->getControl('where')->renderLabel());
+        $this->updateItem('{TARGET_INPUT}', $form->getControl('where')->renderInput());
         $this->updateItem('{INTO_LABEL}', $form->getControl('into')->renderLabel());
         $this->updateItem('{INTO_INPUT}', $form->getControl('into')->renderInput());
         $this->updateItem('{INPUT_SUBMIT}', $form->getControl('saveDir')->renderInput());

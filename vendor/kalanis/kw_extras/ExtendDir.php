@@ -3,6 +3,7 @@
 namespace kalanis\kw_extras;
 
 
+use Error;
 use kalanis\kw_paths\Stuff;
 
 
@@ -50,6 +51,27 @@ class ExtendDir
     public function getThumbDir(): string
     {
         return $this->thumbDir;
+    }
+
+    /**
+     * @param string $sourcePath
+     * @param string $targetDir
+     * @param string $name
+     * @param bool $makeExtra
+     * @return bool
+     * @throws ExtrasException
+     */
+    public function createDir(string $sourcePath, string $targetDir, string $name, bool $makeExtra = false): bool
+    {
+        try {
+            $targetPath = Stuff::removeEndingSlash($sourcePath) . DIRECTORY_SEPARATOR
+                . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR
+                . $name ;
+            return mkdir($this->webRootDir . $targetPath)
+                && ( $makeExtra ? $this->makeExtended($targetPath) : true );
+        } catch (Error $ex) {
+            throw new ExtrasException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     /**

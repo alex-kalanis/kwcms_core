@@ -19,7 +19,7 @@ class DirExtraTemplate extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{DIR_PROPS}', Lang::get('images.allow_extra_data'));
+        $this->addInput('{DIR_PROPS}', Lang::get('images.dir.allow_extra_data'));
         $this->addInput('{FORM_START}');
         $this->addInput('{FORM_END}');
         $this->addInput('{INPUT_SUBMIT}');

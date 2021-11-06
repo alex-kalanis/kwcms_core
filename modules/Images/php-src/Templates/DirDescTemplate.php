@@ -19,7 +19,7 @@ class DirDescTemplate extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{DIR_PROPS}', Lang::get('images.dir_props'));
+        $this->addInput('{DIR_PROPS}', Lang::get('images.dir.props'));
         $this->addInput('{FORM_START}');
         $this->addInput('{FORM_END}');
         $this->addInput('{DESC_LABEL}');

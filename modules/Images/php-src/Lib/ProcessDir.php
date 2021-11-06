@@ -32,6 +32,15 @@ class ProcessDir implements IProcessDirs
         return $this->libFiles->getLibDirDesc()->canUse($this->sourcePath);
     }
 
+    public function createDir(string $target, string $name): bool
+    {
+        try {
+            return $this->libFiles->getLibDirDesc()->getExtendDir()->createDir($this->sourcePath, $target, $name, true);
+        } catch (ExtrasException $ex) {
+            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+    }
+
     public function createExtra(): bool
     {
         try {
