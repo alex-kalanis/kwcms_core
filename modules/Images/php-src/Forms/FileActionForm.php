@@ -26,7 +26,7 @@ class FileActionForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
         $this->setAttribute('action', $targetLink);
         $select = new DirSelect();
-        $select->set('where', '', Lang::get('files.dir.select'), $targetTree);
+        $select->set('where', '', Lang::get('images.file.target'), $targetTree);
         $this->addControl($select);
         $this->addSubmit('saveFile', Lang::get('dashboard.button_set'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));

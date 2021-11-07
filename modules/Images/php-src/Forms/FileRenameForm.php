@@ -19,10 +19,10 @@ use kalanis\kw_langs\Lang;
  */
 class FileRenameForm extends Form
 {
-    public function composeForm(): self
+    public function composeForm(string $currentName): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
-        $this->addText('newName', Lang::get('menu.current_dir'));
+        $this->addText('newName', Lang::get('images.file.current_name'), $currentName);
         $this->addSubmit('saveFile', Lang::get('dashboard.button_set'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;

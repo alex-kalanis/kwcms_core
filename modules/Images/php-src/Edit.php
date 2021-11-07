@@ -6,7 +6,6 @@ namespace KWCMS\modules\Images;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_extras\UserDir;
-use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -21,30 +20,46 @@ use KWCMS\modules\Admin\Shared;
 
 
 /**
- * Class MakeDir
+ * Class Edit
  * @package KWCMS\modules\Images
- * Directory creation in another path
+ * File edit - that page
  */
-class MakeDir extends AAuthModule implements IModuleTitle
+class Edit extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
     use Lib\TLibFilters;
     use Templates\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Forms\DirNewForm|null */
-    protected $createForm = null;
+    /** @var Forms\FileRenameForm|null */
+    protected $renameForm = null;
+    /** @var Forms\DescForm|null */
+    protected $descForm = null;
+    /** @var Forms\FileThumbForm|null */
+    protected $thumbForm = null;
+    /** @var Forms\FileActionForm|null */
+    protected $moveForm = null;
+    /** @var Forms\FileActionForm|null */
+    protected $copyForm = null;
+    /** @var Forms\FileThumbForm|null */
+    protected $primaryForm = null;
+    /** @var Forms\FileDeleteForm|null */
+    protected $deleteForm = null;
     /** @var UserDir|null */
     protected $userDir = null;
     /** @var Tree|null */
     protected $tree = null;
-    /** @var bool */
-    protected $processed = false;
 
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->createForm = new Forms\DirNewForm('dirNewForm');
+        $this->renameForm = new Forms\FileRenameForm('fileNameForm');
+        $this->descForm = new Forms\DescForm('fileDescForm');
+        $this->thumbForm = new Forms\FileThumbForm('fileThumbForm');
+        $this->moveForm = new Forms\FileActionForm('fileMoveForm');
+        $this->copyForm = new Forms\FileActionForm('fileCopyForm');
+        $this->primaryForm = new Forms\FileThumbForm('filePrimaryForm');
+        $this->deleteForm = new Forms\FileDeleteForm('fileDeleteForm');
         $this->tree = new Tree(Config::getPath());
         $this->userDir = new UserDir(Config::getPath());
     }
@@ -58,29 +73,30 @@ class MakeDir extends AAuthModule implements IModuleTitle
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         try {
+            $fileName = strval($this->getFromParam('name'));
+            // no name or invalid file name -> redirect!
+            $libAction = $this->getLibFileAction();
+
             $this->userDir->setUserPath($this->user->getDir());
             $this->userDir->process();
             $this->tree->canRecursive(true);
             $this->tree->startFromPath($this->userDir->getHomeDir());
             $this->tree->setFilterCallback([$this, 'filterDirs']);
             $this->tree->process();
-            $this->createForm->composeForm($this->tree->getTree(),'#');
-            $this->createForm->setInputs(new InputVarsAdapter($this->inputs));
-            if ($this->createForm->process()) {
-                $libAction = $this->getLibDirAction();
-                $this->processed = $libAction->createDir(
-                    strval($this->createForm->getControl('where')->getValue()),
-                    strval($this->createForm->getControl('name')->getValue())
-                );
-                if (!empty($this->createForm->getControl('into')->getValue())) {
-                    $this->updateWhereDir(
-                        strval($this->createForm->getControl('where')->getValue())
-                        . DIRECTORY_SEPARATOR
-                        . strval($this->createForm->getControl('name')->getValue())
-                    );
-                }
-            }
-        } catch (ImagesException | FormsException $ex) {
+
+            // target links are redirects - action outside and then response somewhere (not necessary here)
+            $this->renameForm->composeForm($fileName);
+            $this->descForm->composeForm($libAction->readDesc($fileName), '#');
+            $this->thumbForm->composeForm('#');
+            $this->moveForm->composeForm($this->tree->getTree(),'#');
+            $this->copyForm->composeForm($this->tree->getTree(),'#');
+            $this->primaryForm->composeForm('#');
+            $this->deleteForm->composeForm('#');
+
+//            $this->thumbPath = $libAction->;
+//            'thumb' => $libGallery->getLibThumb()->getPath($whereDir . DIRECTORY_SEPARATOR . $fileName),
+
+        } catch (ImagesException $ex) {
             $this->error = $ex;
         }
     }
@@ -100,15 +116,22 @@ class MakeDir extends AAuthModule implements IModuleTitle
     public function outHtml(): Output\AOutput
     {
         $out = new Shared\FillHtml($this->user);
-        $page = new Templates\DirNewTemplate();
+        $page = new Templates\SingleTemplate();
         if ($this->error) {
             Notification::addError($this->error->getMessage());
         }
         try {
-            if ($this->processed) {
-                Notification::addSuccess(Lang::get('images.dir_created'));
-            }
-            return $out->setContent($this->outModuleTemplate($page->setData($this->createForm)->render()));
+            return $out->setContent($this->outModuleTemplate($page->setData(
+                '#',
+                '#',
+                $this->thumbForm,
+                $this->descForm,
+                $this->renameForm,
+                $this->copyForm,
+                $this->moveForm,
+                $this->primaryForm,
+                $this->deleteForm
+            )->render()));
         } catch (FormsException $ex) {
             $this->error = $ex;
         }
@@ -123,8 +146,6 @@ class MakeDir extends AAuthModule implements IModuleTitle
         } else {
             $out = new Output\Json();
             $out->setContent([
-                'form_result' => intval($this->processed),
-                'form_errors' => $this->createForm->renderErrorsArray(),
             ]);
             return $out;
         }
@@ -132,6 +153,6 @@ class MakeDir extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('images.page') . ' - ' . Lang::get('images.dir_create.short');
+        return Lang::get('images.page') . ' - ' . Lang::get('images.files_props.short');
     }
 }
