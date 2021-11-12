@@ -3,9 +3,9 @@
 namespace kalanis\kw_table\Table;
 
 
-use kalanis\kw_table\Interfaces\Connector\IFilterType;
+use kalanis\kw_table\Interfaces\Form\IFilterType;
 use kalanis\kw_table\Interfaces\Table\IColumn;
-use kalanis\kw_table\Interfaces\Connector\IForm;
+use kalanis\kw_table\Interfaces\Form\IFilterForm;
 use kalanis\kw_table\Interfaces\Table\IFilterRender;
 use kalanis\kw_table\TableException;
 
@@ -16,7 +16,7 @@ use kalanis\kw_table\TableException;
  */
 class Filter
 {
-    /** @var IForm */
+    /** @var IFilterForm */
     protected $formConnector;
     /** @var string[]|int[] */
     protected $columnsValues = [];
@@ -27,7 +27,7 @@ class Filter
     /** @var string */
     protected $footerPrefix = 'foot_';
 
-    public function __construct(IForm $connector)
+    public function __construct(IFilterForm $connector)
     {
         $this->formConnector = $connector;
     }
@@ -141,7 +141,7 @@ class Filter
         return $this;
     }
 
-    public function getConnector(): IForm
+    public function getConnector(): IFilterForm
     {
         return $this->formConnector;
     }

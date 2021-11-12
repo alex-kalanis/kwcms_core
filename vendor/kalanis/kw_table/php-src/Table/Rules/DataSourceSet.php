@@ -3,9 +3,9 @@
 namespace kalanis\kw_table\Table\Rules;
 
 
-use kalanis\kw_mapper\MapperException;
-use kalanis\kw_table\Interfaces\Connector\IConnector;
-use kalanis\kw_table\Interfaces\Table\IRow;
+use kalanis\kw_connect\ConnectException;
+use kalanis\kw_connect\Interfaces\IConnector;
+use kalanis\kw_connect\Interfaces\IRow;
 use kalanis\kw_table\Interfaces\Table\IRule;
 use kalanis\kw_table\TableException;
 
@@ -46,7 +46,7 @@ class DataSourceSet implements IRule
      * @param string $value key to get data object in source
      * @return bool
      * @throws TableException
-     * @throws MapperException
+     * @throws ConnectException
      *
      * It is not defined what came from datasource, so for that it has check
      */

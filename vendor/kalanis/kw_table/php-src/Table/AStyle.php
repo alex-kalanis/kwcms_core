@@ -3,8 +3,8 @@
 namespace kalanis\kw_table\Table;
 
 
-use kalanis\kw_table\AIterator;
-use kalanis\kw_table\Interfaces\Table\IRow;
+use kalanis\kw_connect\AIterator;
+use kalanis\kw_connect\Interfaces\IRow;
 use kalanis\kw_table\Interfaces\Table\IRule;
 
 

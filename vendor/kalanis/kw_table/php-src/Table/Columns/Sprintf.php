@@ -3,7 +3,7 @@
 namespace kalanis\kw_table\Table\Columns;
 
 
-use kalanis\kw_table\Interfaces\Table\IRow;
+use kalanis\kw_connect\Interfaces\IRow;
 
 
 /**

@@ -3,7 +3,8 @@
 namespace kalanis\kw_table\Interfaces\Table;
 
 
-use kalanis\kw_table\Interfaces\Connector\IField;
+use kalanis\kw_connect\Interfaces\IRow;
+use kalanis\kw_table\Interfaces\Form\IField;
 
 
 /**

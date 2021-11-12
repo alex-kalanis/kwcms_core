@@ -3,14 +3,13 @@
 namespace kalanis\kw_table;
 
 
-use kalanis\kw_mapper\MapperException;
+use kalanis\kw_connect\ConnectException;
+use kalanis\kw_connect\Interfaces\IConnector;
 use kalanis\kw_paging\Interfaces\IOutput;
-use kalanis\kw_table\Interfaces\Connector\IConnector;
-use kalanis\kw_table\Interfaces\Connector\IField;
-use kalanis\kw_table\Interfaces\Connector\IForm;
+use kalanis\kw_table\Interfaces\Form\IField;
+use kalanis\kw_table\Interfaces\Form\IFilterForm;
 use kalanis\kw_table\Interfaces\Table\IColumn;
 use kalanis\kw_table\Interfaces\Table\IRule;
-use kalanis\kw_table\Table\Output\AOutput;
 
 
 /**
@@ -26,7 +25,7 @@ class Table
     protected $colCount = 0;
 
     /** @var IConnector|null */
-    protected $dataSource = null;
+    protected $dataSetConnector = null;
 
     /** @var IColumn[] */
     protected $columns = [];
@@ -49,7 +48,7 @@ class Table
     /** @var Table\Filter|null */
     protected $footerFilter = null;
 
-    /** @var Table\Output\AOutput */
+    /** @var Table\AOutput */
     protected $output = null;
 
     /** @var Table\Internal\Row[]|Table[] */
@@ -68,15 +67,13 @@ class Table
     protected $showPagerOnFoot = true;
 
     /**
-     * @param IConnector|null $source
-     * @throws MapperException
+     * @param IConnector|null $dataSetConnector
+     * @throws ConnectException
      */
-    public function __construct(IConnector $source = null)
+    public function __construct(IConnector $dataSetConnector = null)
     {
-        $this->output = new Table\Output\HtmlTemplates($this);
-
-        if (!is_null($source)) {
-            $this->addDataSource($source);
+        if (!is_null($dataSetConnector)) {
+            $this->addDataSetConnector($dataSetConnector);
         }
     }
 
@@ -109,13 +106,13 @@ class Table
         return $this;
     }
 
-    public function addHeaderFilter(IForm $formConnector): self
+    public function addHeaderFilter(IFilterForm $formConnector): self
     {
         $this->headerFilter = new Table\Filter($formConnector);
         return $this;
     }
 
-    public function addFooterFilter(IForm $formConnector): self
+    public function addFooterFilter(IFilterForm $formConnector): self
     {
         $this->footerFilter = new Table\Filter($formConnector);
         return $this;
@@ -143,12 +140,12 @@ class Table
      * @param string $columnName
      * @param string $order
      * @return $this
-     * @throws MapperException
+     * @throws ConnectException
      */
     public function setDefaultSorting(string $columnName, string $order = Table\Sorter::ORDER_ASC): self
     {
         if (empty($this->sorter)) {
-            throw new MapperException('Need to ser sorter first!');
+            throw new ConnectException('Need to ser sorter first!');
         }
         $this->sorter->addPrimaryOrdering($columnName, $order);
 
@@ -187,25 +184,25 @@ class Table
         return $this->footerFilter;
     }
 
-    public function setOutput(AOutput $output)
+    public function setOutput(Table\AOutput $output)
     {
         $this->output = $output;
     }
 
-    public function getOutput(): AOutput
+    public function getOutput(): Table\AOutput
     {
         return $this->output;
     }
 
     /**
      * Change data source
-     * @param IConnector $source
+     * @param IConnector $dataSetConnector
      * @return $this
-     * @throws MapperException
+     * @throws ConnectException
      */
-    public function addDataSource(IConnector $source): self
+    public function addDataSetConnector(IConnector $dataSetConnector): self
     {
-        $this->dataSource = $source;
+        $this->dataSetConnector = $dataSetConnector;
 
         if (!empty($this->headerFilter)) {
             $this->applyFilter();
@@ -219,18 +216,18 @@ class Table
             $this->applyPager();
         }
 
-        $this->dataSource->fetchData();
+        $this->dataSetConnector->fetchData();
         return $this;
     }
 
-    public function getDataSource(): ?IConnector
+    public function getDataSetConnector(): ?IConnector
     {
-        return $this->dataSource;
+        return $this->dataSetConnector;
     }
 
     /**
      * @return $this
-     * @throws MapperException
+     * @throws ConnectException
      */
     public function applyFilter(): self
     {
@@ -241,8 +238,8 @@ class Table
 
                 $filterField = $column->getHeaderFilterField();
                 if ($filterField) {
-                    $filterField->setDataSource($this->dataSource);
-                    $this->dataSource->setFiltering($column->getSourceName(), $this->headerFilter->getValue($column), $filterField->getFilterType());
+                    $filterField->setDataSourceConnector($this->dataSetConnector);
+                    $this->dataSetConnector->setFiltering($column->getSourceName(), $this->headerFilter->getValue($column), $filterField->getFilterType());
                 }
             }
         }
@@ -251,7 +248,7 @@ class Table
 
     /**
      * @return $this
-     * @throws MapperException
+     * @throws ConnectException
      */
     public function applySorter(): self
     {
@@ -259,7 +256,7 @@ class Table
         $orderings = $this->sorter->getOrderings();
         if (!empty($orderings)) {
             foreach ($orderings AS $ordering) {
-                $this->dataSource->setSorting($ordering[0], $ordering[1]);
+                $this->dataSetConnector->setSorting($ordering[0], $ordering[1]);
             }
         }
         return $this;
@@ -267,14 +264,14 @@ class Table
 
     /**
      * @return $this
-     * @throws MapperException
+     * @throws ConnectException
      */
     public function applyPager(): self
     {
         if (empty($this->outputPager->getPager()->getMaxResults())) {
-            $this->outputPager->getPager()->setMaxResults($this->dataSource->getTotalCount());
+            $this->outputPager->getPager()->setMaxResults($this->dataSetConnector->getTotalCount());
         }
-        $this->dataSource->setPagination($this->outputPager->getPager()->getOffset(), $this->outputPager->getPager()->getLimit());
+        $this->dataSetConnector->setPagination($this->outputPager->getPager()->getOffset(), $this->outputPager->getPager()->getLimit());
         return $this;
     }
 
@@ -365,13 +362,13 @@ class Table
      * @param IField|null $headerFilterField
      * @param IField|null $footerFilterField
      * @return $this
-     * @throws MapperException
+     * @throws ConnectException
      */
     public function addSortedColumn(string $headerText, IColumn $column, ?IField $headerFilterField = null, ?IField $footerFilterField = null): self
     {
         if ($column->isSortable()) {
             if (empty($this->sorter)) {
-                throw new MapperException('Need to set sorter first!!!');
+                throw new ConnectException('Need to set sorter first!!!');
             }
             $this->sorter->addColumn($column);
         }
@@ -407,7 +404,7 @@ class Table
      */
     public function translateData(): void
     {
-        if (is_null($this->dataSource)) {
+        if (is_null($this->dataSetConnector)) {
             throw new TableException('Cant create table from empty dataset');
         }
 
@@ -415,7 +412,7 @@ class Table
             throw new TableException('You need to define at least one column');
         }
 
-        foreach ($this->dataSource as $source) {
+        foreach ($this->dataSetConnector as $source) {
             $rowData = new Table\Internal\Row();
             $rowData->setSource($source);
 
