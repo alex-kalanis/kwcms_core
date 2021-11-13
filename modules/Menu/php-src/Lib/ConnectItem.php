@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Menu\Lib;
 
 
+use kalanis\kw_connect\Interfaces\IRow;
 use kalanis\kw_menu\Menu\Item;
-use kalanis\kw_table\Interfaces\Table\IRow;
 
 
 class ConnectItem implements IRow

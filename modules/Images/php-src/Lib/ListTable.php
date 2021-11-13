@@ -5,22 +5,24 @@ namespace KWCMS\modules\Images\Lib;
 
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
+use kalanis\kw_connect\ConnectException;
 use kalanis\kw_forms\Adapters;
+use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Form;
 use kalanis\kw_images\Files;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
-use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
-use kalanis\kw_table\Connector\Form;
-use kalanis\kw_table\Connector\Form\KwForm;
 use kalanis\kw_table\Connector\PageLink;
 use kalanis\kw_table\Table;
 use kalanis\kw_table\Table\Columns;
 use kalanis\kw_table\Table\Rules;
 use kalanis\kw_table\Table\Sorter;
+use kalanis\kw_table_form_kw\Fields;
+use kalanis\kw_table_form_kw\KwFilter;
 use kalanis\kw_tree\Tree;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
@@ -51,9 +53,8 @@ class ListTable
     /**
      * @param Tree $tree
      * @return Table
-     * @throws MapperException
-     * @throws \kalanis\kw_forms\Exceptions\FormsException
-     * @throws \kalanis\kw_table\TableException
+     * @throws FormsException
+     * @throws ConnectException
      */
     public function getTable(Tree $tree): Table
     {
@@ -61,8 +62,8 @@ class ListTable
         $table = new Table();
         $inputVariables = new Adapters\InputVarsAdapter($this->variables);
         $inputFiles = new Adapters\InputFilesAdapter($this->variables);
-        $form = new \kalanis\kw_forms\Form('imagesForm');
-        $table->addHeaderFilter(new KwForm($form));
+        $form = new Form('imagesForm');
+        $table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
         // sorter links
@@ -83,10 +84,10 @@ class ListTable
         $columnThumbLink->style('width:140px', new Rules\Always());
         $table->addColumn(Lang::get('images.thumb'), $columnThumbLink );
 
-        $table->addSortedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Form\KwField\TextContains());
+        $table->addSortedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Fields\TextContains());
         $table->addSortedColumn(Lang::get('images.size'), new Columns\Basic('size'));
 
-        $table->addSortedColumn(Lang::get('images.desc'), new Columns\Basic('desc'), new Form\KwField\TextContains());
+        $table->addSortedColumn(Lang::get('images.desc'), new Columns\Basic('desc'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'name');
         $columnActions->addColumn(new Columns\Func('name', [$this, 'editLink']));
@@ -95,7 +96,7 @@ class ListTable
         $table->addColumn(Lang::get('images.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSource(new SourceItem($tree->getTree()->getSubNodes(), $this->whereDir, $this->libGallery));
+        $table->addDataSetConnector(new ConnectArray($tree->getTree()->getSubNodes(), $this->whereDir, $this->libGallery));
         return $table;
     }
 

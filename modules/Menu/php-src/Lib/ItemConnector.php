@@ -3,16 +3,16 @@
 namespace KWCMS\modules\Menu\Lib;
 
 
-use kalanis\kw_table\Connector\Sources\Mapper;
-use kalanis\kw_table\Interfaces\Table\IRow;
+use kalanis\kw_connect\Interfaces\IRow;
+use kalanis\kw_connect_record\Connector;
 
 
 /**
- * Class SourceItem
+ * Class ItemConnector
  * @package KWCMS\modules\Menu\Lib
  * Mapper is array of connecting items.
  */
-class SourceItem extends Mapper
+class ItemConnector extends Connector
 {
     public function getTranslated($data): IRow
     {

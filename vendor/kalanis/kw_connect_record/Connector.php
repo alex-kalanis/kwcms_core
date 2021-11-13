@@ -14,7 +14,7 @@ use kalanis\kw_connect\Interfaces\IRow;
 
 
 /**
- * Class Mapper
+ * Class Connector
  * @package kalanis\kw_connect_record
  * Datasource is kw_mapper/Record
  */

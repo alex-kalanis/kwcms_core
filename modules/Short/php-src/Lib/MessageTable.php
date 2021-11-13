@@ -6,22 +6,27 @@ namespace KWCMS\modules\Short\Lib;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
+use kalanis\kw_connect\ConnectException;
+use kalanis\kw_connect_search\Connector;
 use kalanis\kw_forms\Adapters;
+use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
-use kalanis\kw_table\Connector\Form;
-use kalanis\kw_table\Connector\Form\KwForm;
 use kalanis\kw_table\Connector\PageLink;
-use kalanis\kw_table\Helper;
 use kalanis\kw_table\Table;
 use kalanis\kw_table\Table\Columns;
 use kalanis\kw_table\Table\Rules;
 use kalanis\kw_table\Table\Sorter;
+use kalanis\kw_table\TableException;
+use kalanis\kw_table_form_kw\Fields;
+use kalanis\kw_table_form_kw\KwFilter;
+use kalanis\kw_table_kw\Helper;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
 
@@ -48,9 +53,9 @@ class MessageTable
     /**
      * @param Search $search
      * @return string
-     * @throws MapperException
-     * @throws \kalanis\kw_forms\Exceptions\FormsException
-     * @throws \kalanis\kw_table\TableException
+     * @throws ConnectException
+     * @throws FormsException
+     * @throws TableException
      */
     public function prepareHtml(Search $search)
     {
@@ -58,8 +63,8 @@ class MessageTable
         $table = new Table();
         $inputVariables = new Adapters\InputVarsAdapter($this->variables);
         $inputFiles = new Adapters\InputFilesAdapter($this->variables);
-        $form = new \kalanis\kw_forms\Form('messagesForm');
-        $table->addHeaderFilter(new KwForm($form));
+        $form = new Form('messagesForm');
+        $table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
         // sorter links
@@ -73,7 +78,7 @@ class MessageTable
         $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         // now normal code - columns
-        $table->setDefaultSorting('id', \kalanis\kw_mapper\Interfaces\IQueryBuilder::ORDER_DESC);
+        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
 
         $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
@@ -85,8 +90,8 @@ class MessageTable
         $columnAdded->style('width:150px', new Rules\Always());
         $table->addSortedColumn(Lang::get('short.date'), $columnAdded);
 
-        $table->addSortedColumn(Lang::get('short.title'), new Columns\Bold('title'), new Form\KwField\TextContains());
-        $table->addSortedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Form\KwField\TextContains());
+        $table->addSortedColumn(Lang::get('short.title'), new Columns\Bold('title'), new Fields\TextContains());
+        $table->addSortedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
@@ -103,16 +108,16 @@ class MessageTable
 //        $table->addColumn('', $columnCheckbox, null, new Form\KwField\MultiSelect( '0', ['id' => 'multiselectAll']) );
 
         $pager->setLimit(10);
-        $table->addDataSource(new \kalanis\kw_table\Connector\Sources\Search($search));
+        $table->addDataSetConnector(new Connector($search));
         return $table->render();
     }
 
     /**
      * @param Search $search
      * @return mixed
-     * @throws MapperException
-     * @throws \kalanis\kw_forms\Exceptions\FormsException
-     * @throws \kalanis\kw_table\TableException
+     * @throws ConnectException
+     * @throws FormsException
+     * @throws TableException
      */
     public function prepareJson(Search $search)
     {
@@ -125,8 +130,8 @@ class MessageTable
         $table->addColumn(Lang::get('short.message'), new Columns\Basic('content'));
 
         $table->getOutputPager()->getPager()->setLimit(5);
-        $table->setDefaultSorting('id', \kalanis\kw_mapper\Interfaces\IQueryBuilder::ORDER_DESC);
-        $table->addDataSource(new \kalanis\kw_table\Connector\Sources\Search($search));
+        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $table->addDataSetConnector(new Connector($search));
         $table->translateData();
         return $table->getOutput()->renderData();
     }

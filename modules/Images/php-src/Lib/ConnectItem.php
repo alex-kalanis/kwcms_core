@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Images\Lib;
 
 
+use kalanis\kw_connect\Interfaces\IRow;
 use kalanis\kw_images\Files;
-use kalanis\kw_table\Interfaces\Table\IRow;
 use kalanis\kw_tree\FileNode;
 
 

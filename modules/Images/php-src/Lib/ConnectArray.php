@@ -4,16 +4,16 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use kalanis\kw_images\Files;
-use kalanis\kw_table\Connector\Sources\Arrays;
-use kalanis\kw_table\Interfaces\Table\IRow;
+use kalanis\kw_connect\Connectors\Arrays;
+use kalanis\kw_connect\Interfaces\IRow;
 
 
 /**
- * Class SourceItem
+ * Class ConnectArray
  * @package KWCMS\modules\Images\Lib
  * Mapper is array of connecting items.
  */
-class SourceItem extends Arrays
+class ConnectArray extends Arrays
 {
     protected $whereDir = '';
     protected $libGallery = null;

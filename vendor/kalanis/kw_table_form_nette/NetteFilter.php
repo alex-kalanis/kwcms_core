@@ -5,18 +5,18 @@ namespace kalanis\kw_table_form_nette;
 
 use kalanis\kw_connect\ConnectException;
 use kalanis\kw_table\Interfaces\Form\IField;
-use kalanis\kw_table\Interfaces\Form\IForm;
+use kalanis\kw_table\Interfaces\Form\IFilterForm;
 use Nette\Application\UI\Form as BaseForm;
 use Nette\Bridges\FormsLatte\Runtime;
 use Nette\Forms\Controls\BaseControl;
 
 
 /**
- * Class Form
+ * Class NetteFilter
  * @package kalanis\kw_table_form_nette
  * Connect with Nette forms
  */
-class NetteForm implements IForm
+class NetteFilter implements IFilterForm
 {
     /** @var BaseForm */
     protected $form;
@@ -87,8 +87,8 @@ class NetteForm implements IForm
             return $this->formProcess;
         }
         $formData = [];
-        /** @var BaseControl $controls */
         foreach ($this->form->getControls() AS $controls) {
+            /** @var BaseControl $controls */
             $name = $controls->getName();
             $value = null;
 

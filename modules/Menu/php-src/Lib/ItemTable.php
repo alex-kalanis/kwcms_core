@@ -4,15 +4,16 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_connect\ConnectException;
+use kalanis\kw_forms\Form;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_mapper\MapperException;
 use kalanis\kw_menu\DataProcessor;
 use kalanis\kw_modules\ExternalLink;
-use kalanis\kw_table\Connector\Form\KwForm;
 use kalanis\kw_table\Table;
 use kalanis\kw_table\Table\Columns;
 use kalanis\kw_table\Table\Rules;
 use kalanis\kw_table\TableException;
+use kalanis\kw_table_form_kw\KwFilter;
 
 
 /**
@@ -35,7 +36,7 @@ class ItemTable
     /**
      * @param DataProcessor $data
      * @return string
-     * @throws MapperException
+     * @throws ConnectException
      * @throws TableException
      */
     public function prepareHtml(DataProcessor $data)
@@ -44,8 +45,8 @@ class ItemTable
         $table = new Table();
 
         // just for styles...
-        $form = new \kalanis\kw_forms\Form('messagesForm');
-        $table->addHeaderFilter(new KwForm($form));
+        $form = new Form('messagesForm');
+        $table->addHeaderFilter(new KwFilter($form));
 
         $table->addColumn(Lang::get('menu.entry_name'), new Columns\Func('file', [$this, 'idLink']));
         $table->addColumn(Lang::get('menu.name_in_menu'), new Columns\Basic('name'));
@@ -61,14 +62,14 @@ class ItemTable
 
         $table->addColumn(Lang::get('menu.actions'), $columnActions);
 
-        $table->addDataSource(new SourceItem($data->getWorking()));
+        $table->addDataSetConnector(new ItemConnector($data->getWorking()));
         return $table->render();
     }
 
     /**
      * @param DataProcessor $data
      * @return mixed
-     * @throws MapperException
+     * @throws ConnectException
      * @throws TableException
      */
     public function prepareJson(DataProcessor $data)
@@ -81,7 +82,7 @@ class ItemTable
         $table->addColumn(Lang::get('menu.position'), new Columns\Basic('pos'));
         $table->addColumn(Lang::get('menu.submenu'), new Columns\Basic('sub'));
 
-        $table->addDataSource(new SourceItem($data->getWorking()));
+        $table->addDataSetConnector(new ItemConnector($data->getWorking()));
         $table->translateData();
         return $table->getOutput()->renderData();
     }

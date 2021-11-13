@@ -3,9 +3,9 @@
 namespace kalanis\kw_connect\Filters;
 
 
+use kalanis\kw_connect\ConnectException;
 use kalanis\kw_connect\Interfaces\IFilterFactory;
 use kalanis\kw_connect\Interfaces\IFilterType;
-use kalanis\kw_mapper\MapperException;
 
 
 /**
@@ -38,12 +38,12 @@ abstract class AFilterFactory implements IFilterFactory
     /**
      * @param string $action
      * @return IFilterType
-     * @throws MapperException
+     * @throws ConnectException
      */
     public function getFilter(string $action): IFilterType
     {
         if (!isset(static::$map[$action])) {
-            throw new MapperException(sprintf('Unknown filter action *%s*!', $action));
+            throw new ConnectException(sprintf('Unknown filter action *%s*!', $action));
         }
         $class = static::$map[$action];
         return new $class();
