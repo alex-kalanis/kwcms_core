@@ -3,7 +3,7 @@
 namespace kalanis\kw_connect_inputs\Interfaces;
 
 
-use kalanis\kw_connect\Interfaces\IConnector;
+use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_input\Interfaces\IVariables;
 
 

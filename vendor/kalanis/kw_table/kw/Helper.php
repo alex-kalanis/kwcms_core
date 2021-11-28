@@ -17,8 +17,8 @@ use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Sorter;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_cli\CliRenderer;
-use kalanis\kw_table\output_html\KwRenderer;
 use kalanis\kw_table\output_json\JsonRenderer;
+use kalanis\kw_table\output_kw\KwRenderer;
 
 
 /**
