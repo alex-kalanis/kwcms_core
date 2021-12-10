@@ -16,7 +16,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_styles\Styles;
-use kalanis\kw_table\TableException;
+use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Admin\Shared;
