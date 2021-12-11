@@ -4,16 +4,16 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_address_handler\Forward;
-use kalanis\kw_connect\ConnectException;
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\DataProcessor;
 use kalanis\kw_modules\ExternalLink;
-use kalanis\kw_table\Table;
-use kalanis\kw_table\Table\Columns;
-use kalanis\kw_table\Table\Rules;
-use kalanis\kw_table\TableException;
-use kalanis\kw_table_form_kw\KwFilter;
+use kalanis\kw_table\core\Table;
+use kalanis\kw_table\core\Table\Columns;
+use kalanis\kw_table\core\Table\Rules;
+use kalanis\kw_table\core\TableException;
+use kalanis\kw_table\form_kw\KwFilter;
 
 
 /**

@@ -25,9 +25,9 @@ use KWCMS\modules\Admin\Shared;
 class Positions extends AAuthModule implements IModuleTitle
 {
     use Lib\TMenu;
-    use Lib\TModuleTemplate;
+    use Templates\TModuleTemplate;
 
-    /** @var Lib\EditPosForm|null */
+    /** @var Forms\EditPosForm|null */
     protected $editPosForm = null;
     /** @var bool */
     protected $isProcessed = false;
@@ -36,7 +36,7 @@ class Positions extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate(Config::getPath());
         $this->initTMenu(Config::getPath());
-        $this->editPosForm = new Lib\EditPosForm('editPosForm');
+        $this->editPosForm = new Forms\EditPosForm('editPosForm');
     }
 
     public function allowedAccessClasses(): array
@@ -55,7 +55,7 @@ class Positions extends AAuthModule implements IModuleTitle
                 $this->libMenu->getData()->save();
                 $this->libSemaphore->want();
                 // AGAIN! - re-create form
-                $this->editPosForm = new Lib\EditPosForm('editPosForm');
+                $this->editPosForm = new Forms\EditPosForm('editPosForm');
                 $this->editPosForm->composeForm($this->libMenu->getData()->getWorking(), $this->libMenu->getData()->getMenu()->getDisplayCount());
                 $this->isProcessed = true;
             }
@@ -79,8 +79,8 @@ class Positions extends AAuthModule implements IModuleTitle
         }
         Styles::want('Menu', 'menu.css');
         Scripts::want('Menu', 'positions.js');
-        $page = new Lib\PositionsTemplate();
-        $item = new Lib\PositionItemTemplate();
+        $page = new Templates\PositionsTemplate();
+        $item = new Templates\PositionItemTemplate();
         $entries = [];
         foreach ($this->editPosForm->getInputs() as $input) {
             $entries[] = $item->reset()->setData($input)->render();

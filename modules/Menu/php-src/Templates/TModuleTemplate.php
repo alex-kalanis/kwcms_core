@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Templates;
 
 
 use kalanis\kw_langs\Lang;
@@ -10,7 +10,7 @@ use kalanis\kw_paths\Path;
 
 /**
  * Trait TModuleTemplate
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Templates
  */
 trait TModuleTemplate
 {

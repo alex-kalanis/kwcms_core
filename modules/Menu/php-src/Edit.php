@@ -30,9 +30,9 @@ use KWCMS\modules\Menu\Lib;
 class Edit extends AAuthModule implements IModuleTitle
 {
     use Lib\TMenu;
-    use Lib\TModuleTemplate;
+    use Templates\TModuleTemplate;
 
-    /** @var Lib\EditNamesForm|null */
+    /** @var Forms\EditNamesForm|null */
     protected $form = null;
     /** @var MapperException|null */
     protected $error = null;
@@ -45,7 +45,7 @@ class Edit extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate(Config::getPath());
         $this->initTMenu(Config::getPath());
-        $this->form = new Lib\EditNamesForm('editName');
+        $this->form = new Forms\EditNamesForm('editName');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }

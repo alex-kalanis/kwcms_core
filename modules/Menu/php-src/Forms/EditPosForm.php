@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Forms;
 
 
 use kalanis\kw_forms\Adapters\AAdapter;
@@ -13,7 +13,7 @@ use kalanis\kw_menu\Menu\Item;
 
 /**
  * Class EditPosForm
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Forms
  * Edit positions in menu
  * @property Controls\Submit saveFile
  * @property Controls\Reset resetFile

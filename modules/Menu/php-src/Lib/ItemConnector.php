@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Menu\Lib;
 
 
-use kalanis\kw_connect\Interfaces\IRow;
-use kalanis\kw_connect_record\Connector;
+use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_connect\record\Connector;
 
 
 /**

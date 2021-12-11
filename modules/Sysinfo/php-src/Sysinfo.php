@@ -17,12 +17,12 @@ use KWCMS\modules\Admin\Shared;
  */
 class Sysinfo extends AAuthModule implements IModuleTitle
 {
-    public function allowedAccessClasses(): array
+    final public function allowedAccessClasses(): array
     {
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, ];
     }
 
-    public function run(): void
+    final public function run(): void
     {
     }
 

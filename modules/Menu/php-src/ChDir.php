@@ -17,7 +17,7 @@ use KWCMS\modules\Admin\Shared;
  */
 class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
 {
-    use Lib\TModuleTemplate;
+    use Templates\TModuleTemplate;
 
     public function __construct()
     {

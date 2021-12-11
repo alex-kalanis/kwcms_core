@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Templates;
 
 
 use kalanis\kw_langs\Lang;
@@ -9,7 +9,7 @@ use kalanis\kw_modules\ATemplate;
 
 /**
  * Class ModuleTemplate
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Templates
  */
 class ModuleTemplate extends ATemplate
 {

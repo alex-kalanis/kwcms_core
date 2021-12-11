@@ -25,7 +25,7 @@ use KWCMS\modules\Admin\Shared;
 class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Lib\TMenu;
-    use Lib\TModuleTemplate;
+    use Templates\TModuleTemplate;
 
     /** @var Lib\EditPropsForm|null */
     protected $editPropsForm = null;
@@ -94,7 +94,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         }
         Styles::want('Menu', 'menu.css');
         Scripts::want('Menu', 'counter.js');
-        $page = new Lib\DashboardTemplate();
+        $page = new Templates\DashboardTemplate();
         return $out->setContent($this->outModuleTemplate($page->setData($this->editPropsForm)->render()));
     }
 

@@ -15,7 +15,7 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
-use kalanis\kw_table\TableException;
+use kalanis\kw_table\core\TableException;
 use KWCMS\modules\Admin\Shared;
 
 

@@ -12,7 +12,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_styles\Styles;
-use kalanis\kw_table\TableException;
+use kalanis\kw_table\core\TableException;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -24,7 +24,7 @@ use KWCMS\modules\Admin\Shared;
 class Names extends AAuthModule implements IModuleTitle
 {
     use Lib\TMenu;
-    use Lib\TModuleTemplate;
+    use Templates\TModuleTemplate;
 
     /** @var MenuException|null */
     protected $error = null;

@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Forms;
 
 
 use kalanis\kw_forms\Controls\Text;
@@ -9,7 +9,7 @@ use kalanis\kw_forms\Interfaces\IOriginalValue;
 
 /**
  * Class InputPosition
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Forms
  * Form element for positions
  */
 class InputPosition extends Text implements IOriginalValue

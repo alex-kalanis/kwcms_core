@@ -4,8 +4,8 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use kalanis\kw_images\Files;
-use kalanis\kw_connect\Connectors\Arrays;
-use kalanis\kw_connect\Interfaces\IRow;
+use kalanis\kw_connect\core\Connectors\Arrays;
+use kalanis\kw_connect\core\Interfaces\IRow;
 
 
 /**

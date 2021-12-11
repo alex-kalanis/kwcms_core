@@ -1,15 +1,16 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Templates;
 
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\ATemplate;
+use KWCMS\modules\Menu\Forms\EditPosForm;
 
 
 /**
  * Class PositionsTemplate
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Templates
  */
 class PositionsTemplate extends ATemplate
 {
