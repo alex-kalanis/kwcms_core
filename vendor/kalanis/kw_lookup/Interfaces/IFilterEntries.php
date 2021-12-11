@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Interfaces;
+namespace kalanis\kw_lookup\Interfaces;
 
 
 /**
  * Interface IFilterEntries
- * @package kalanis\kw_connect_inputs\Interfaces
+ * @package kalanis\kw_lookup\Interfaces
  * Config filter entry - it has multiple inputs
  */
 interface IFilterEntries extends IEntries

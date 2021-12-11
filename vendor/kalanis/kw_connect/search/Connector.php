@@ -16,7 +16,7 @@ use kalanis\kw_mapper\Search\Search as MapperSearch;
 /**
  * Class Connector
  * @package kalanis\kw_table\Connector\Sources
- * Datasource is kw_mapper/Search
+ * Data source is kw_mapper/Search
  */
 class Connector extends AConnector implements IConnector
 {

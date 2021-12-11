@@ -9,7 +9,7 @@ use kalanis\kw_connect\core\ConnectException;
 /**
  * Interface IConnector
  * @package kalanis\kw_connect\Interfaces
- * Connect datasource to table representation and work with it
+ * Connect data source to table representation and work with it
  */
 interface IConnector
 {

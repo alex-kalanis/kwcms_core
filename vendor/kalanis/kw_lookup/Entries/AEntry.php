@@ -1,14 +1,14 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Entries;
+namespace kalanis\kw_lookup\Entries;
 
 
-use kalanis\kw_connect_inputs\Interfaces\IEntry;
+use kalanis\kw_lookup\Interfaces\IEntry;
 
 
 /**
  * Class AEntry
- * @package kalanis\kw_connect_inputs\Entries
+ * @package kalanis\kw_lookup\Entries
  * Simple entry of config
  */
 abstract class AEntry implements IEntry

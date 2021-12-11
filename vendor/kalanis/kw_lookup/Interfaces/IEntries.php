@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Interfaces;
+namespace kalanis\kw_lookup\Interfaces;
 
 
 use Traversable;
@@ -8,7 +8,7 @@ use Traversable;
 
 /**
  * Interface IEntries
- * @package kalanis\kw_connect_inputs\Interfaces
+ * @package kalanis\kw_lookup\Interfaces
  * Shared interface fo entries
  */
 interface IEntries

@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Interfaces;
+namespace kalanis\kw_lookup\Interfaces;
 
 
 /**
  * Interface IEntry
- * @package kalanis\kw_connect_inputs\Interfaces
+ * @package kalanis\kw_lookup\Interfaces
  * Config entry
  */
 interface IEntry

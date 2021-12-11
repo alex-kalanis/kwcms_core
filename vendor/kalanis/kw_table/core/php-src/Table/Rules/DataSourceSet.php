@@ -3,9 +3,9 @@
 namespace kalanis\kw_table\core\Table\Rules;
 
 
-use kalanis\kw_connect\ConnectException;
-use kalanis\kw_connect\Interfaces\IConnector;
-use kalanis\kw_connect\Interfaces\IRow;
+use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_connect\core\Interfaces\IConnector;
+use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_table\core\Interfaces\Table\IRule;
 use kalanis\kw_table\core\TableException;
 
@@ -48,7 +48,7 @@ class DataSourceSet implements IRule
      * @throws TableException
      * @throws ConnectException
      *
-     * It is not defined what came from datasource, so for that it has check
+     * It is not defined what came from the datasource, so for that it has check
      */
     public function validate($value = 'id'): bool
     {

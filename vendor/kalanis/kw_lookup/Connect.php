@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_connect_inputs;
+namespace kalanis\kw_lookup;
 
 
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_connect\core\Interfaces\IConnector;
-use kalanis\kw_connect_inputs\Interfaces;
+use kalanis\kw_lookup\Interfaces;
 use kalanis\kw_filter\Interfaces\IFilter;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_pager\Interfaces\IPager;
@@ -15,7 +15,7 @@ use Traversable;
 
 /**
  * Class Connect
- * @package kalanis\kw_connect_inputs
+ * @package kalanis\kw_lookup
  * Connections between inputs and params for queries
  * @todo: It should behave like Table - define columns and if it's possible to filter them and sort them
  */

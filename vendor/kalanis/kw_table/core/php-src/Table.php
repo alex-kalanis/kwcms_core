@@ -3,8 +3,8 @@
 namespace kalanis\kw_table\core;
 
 
-use kalanis\kw_connect\ConnectException;
-use kalanis\kw_connect\Interfaces\IConnector;
+use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_paging\Interfaces\IOutput;
 use kalanis\kw_table\core\Interfaces\Form\IField;
 use kalanis\kw_table\core\Interfaces\Form\IFilterForm;

@@ -1,16 +1,16 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Configs;
+namespace kalanis\kw_lookup\Configs;
 
 
-use kalanis\kw_connect_inputs\Interfaces;
+use kalanis\kw_lookup\Interfaces;
 use kalanis\kw_input\Interfaces\IEntry as Input;
 use Traversable;
 
 
 /**
  * Class AEntries
- * @package kalanis\kw_connect_inputs\Configs
+ * @package kalanis\kw_lookup\Configs
  * Simple entry of configuration
  */
 abstract class AEntries implements Interfaces\IEntries

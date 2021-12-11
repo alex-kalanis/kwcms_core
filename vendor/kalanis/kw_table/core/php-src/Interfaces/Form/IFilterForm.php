@@ -3,7 +3,7 @@
 namespace kalanis\kw_table\core\Interfaces\Form;
 
 
-use kalanis\kw_connect\ConnectException;
+use kalanis\kw_connect\core\ConnectException;
 
 
 /**

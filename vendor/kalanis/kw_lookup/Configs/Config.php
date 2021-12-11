@@ -3,12 +3,12 @@
 namespace kalanis\kw_connect\Configs;
 
 
-use kalanis\kw_connect_inputs\Interfaces;
+use kalanis\kw_lookup\Interfaces;
 
 
 /**
  * Class Config
- * @package kalanis\kw_connect_inputs\Configs
+ * @package kalanis\kw_lookup\Configs
  * Whole configuration package
  */
 class Config implements Interfaces\IConfig

@@ -3,7 +3,7 @@
 namespace kalanis\kw_table\core\Table\Columns;
 
 
-use kalanis\kw_connect\Interfaces\IRow;
+use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_table\core\Interfaces\Form\IField;
 use kalanis\kw_table\core\Interfaces\Table\IColumn;
 use kalanis\kw_table\core\Table\AStyle;

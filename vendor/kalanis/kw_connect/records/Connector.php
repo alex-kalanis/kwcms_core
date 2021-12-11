@@ -11,16 +11,17 @@ use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_mapper\Records\ARecord;
 
 
 /**
  * Class Connector
  * @package kalanis\kw_connect\record
- * Datasource is kw_mapper/Record
+ * Data source is kw_mapper/Record
  */
 class Connector extends AConnector implements IConnector
 {
-    /** @var array */
+    /** @var ARecord[] */
     protected $dataSource;
     /** @var array */
     protected $filteredData = [];

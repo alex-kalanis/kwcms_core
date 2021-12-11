@@ -1,16 +1,16 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Entries;
+namespace kalanis\kw_lookup\Entries;
 
 
-use kalanis\kw_connect_inputs\Interfaces;
+use kalanis\kw_lookup\Interfaces;
 use kalanis\kw_input\Interfaces\IEntry as Input;
 use Traversable;
 
 
 /**
  * Class PagerEntry
- * @package kalanis\kw_connect_inputs\Entries
+ * @package kalanis\kw_lookup\Entries
  * Simple entry of pager config - just what entry is important for pager
  */
 class PagerEntry extends AEntry implements Interfaces\IPagerEntry

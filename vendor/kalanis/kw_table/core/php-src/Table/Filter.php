@@ -3,7 +3,7 @@
 namespace kalanis\kw_table\core\Table;
 
 
-use kalanis\kw_connect\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_table\core\Interfaces\Form\IFilterForm;
 use kalanis\kw_table\core\Interfaces\Table\IColumn;
 use kalanis\kw_table\core\Interfaces\Table\IFilterRender;

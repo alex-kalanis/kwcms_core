@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Interfaces;
+namespace kalanis\kw_lookup\Interfaces;
 
 
 use kalanis\kw_connect\core\Interfaces\IConnector;
@@ -9,7 +9,7 @@ use kalanis\kw_input\Interfaces\IVariables;
 
 /**
  * Interface IConnect
- * @package kalanis\kw_connect_inputs\Interfaces
+ * @package kalanis\kw_lookup\Interfaces
  * How to connect data from inputs to filter, sorter and pager
  */
 interface IConnect

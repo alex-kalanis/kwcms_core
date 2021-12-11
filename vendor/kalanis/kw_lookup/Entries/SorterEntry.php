@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Entries;
+namespace kalanis\kw_lookup\Entries;
 
 
 use kalanis\kw_sorter\Interfaces\ISortEntry;
@@ -8,7 +8,7 @@ use kalanis\kw_sorter\Interfaces\ISortEntry;
 
 /**
  * Class SorterEntry
- * @package kalanis\kw_connect_inputs\Entries
+ * @package kalanis\kw_lookup\Entries
  * Simple entry of sorter config - just what entry is important for sorting
  */
 class SorterEntry extends AEntry

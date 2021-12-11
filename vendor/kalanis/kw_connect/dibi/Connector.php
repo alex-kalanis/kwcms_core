@@ -15,7 +15,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
 /**
  * Class Connector
  * @package kalanis\kw_connect\dibi
- * Datasource is Dibi\Fluent
+ * Data source is Dibi\Fluent
  */
 class Connector extends AConnector implements IConnector
 {
@@ -67,7 +67,7 @@ class Connector extends AConnector implements IConnector
     public function fetchData(): void
     {
         foreach (array_reverse($this->sorters) as list($colName, $direction)) {
-            $this->dibiFluent->orderBy("%n", $colName, $direction);
+            $this->dibiFluent->orderBy($colName, $direction);
         }
         $this->rawData = $this->dibiFluent->fetchAll($this->offset, $this->limit);
         $this->parseData();

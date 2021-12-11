@@ -12,7 +12,7 @@ class From extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->dibiFluent->where('%n > ?', $colName, $value);
+            $this->dibiFluent->where($colName . ' > ?', $value);
         }
         return $this;
     }

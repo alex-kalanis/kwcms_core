@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect_inputs\Entries;
+namespace kalanis\kw_lookup\Entries;
 
 
 use kalanis\kw_filter\Interfaces\IFilterEntry;
@@ -8,7 +8,7 @@ use kalanis\kw_filter\Interfaces\IFilterEntry;
 
 /**
  * Class FilterEntry
- * @package kalanis\kw_connect_inputs\Entries
+ * @package kalanis\kw_lookup\Entries
  * Simple entry of filter config - just what entry is important for filtering
  */
 class FilterEntry extends AEntry

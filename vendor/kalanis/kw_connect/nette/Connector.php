@@ -15,7 +15,7 @@ use Nette\Database\Table\Selection;
 /**
  * Class Connector
  * @package kalanis\kw_connect\nette
- * Datasource is Nette\Database
+ * Data source is Nette\Database
  */
 class Connector extends AConnector implements IConnector
 {

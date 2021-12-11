@@ -96,6 +96,7 @@ class KwRenderer extends Table\AOutput
         foreach ($this->table->getTableData() as $row) {
             $this->templateRow->reset()->setData($row->getCellStyle($row->getSource()));
             foreach ($row as $column) {
+                /** @var Table\Columns\AColumn $column */
                 $this->templateRow->addCell($this->templateCell->reset()->setData(
                     $column->translate($row->getSource()),
                     $column->getCellStyle($row->getSource())

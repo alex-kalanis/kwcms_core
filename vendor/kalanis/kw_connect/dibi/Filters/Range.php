@@ -19,10 +19,10 @@ class Range extends AType
         }
 
         if (!empty($value[0])) {
-            $this->dibiFluent->where('%n > ?', $colName, $value[0]);
+            $this->dibiFluent->where($colName . ' > ?', $value[0]);
         }
         if (!empty($value[1])) {
-            $this->dibiFluent->where('%n < ?', $colName, $value[1]);
+            $this->dibiFluent->where($colName . ' < ?', $value[1]);
         }
 
         return $this;

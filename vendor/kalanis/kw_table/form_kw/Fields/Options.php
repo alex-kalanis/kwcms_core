@@ -3,8 +3,8 @@
 namespace kalanis\kw_table\form_kw\Fields;
 
 
-use kalanis\kw_connect\Interfaces\IFilterFactory;
-use kalanis\kw_connect\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IFilterFactory;
+use kalanis\kw_connect\core\Interfaces\IFilterType;
 
 
 /**
