@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect\doctrine\Filters;
+namespace kalanis\kw_connect\doctrine_dbal\Filters;
 
 
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -10,7 +10,7 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
 
 /**
  * Class AType
- * @package kalanis\kw_connect\doctrine\Filters
+ * @package kalanis\kw_connect\doctrine_dbal\Filters
  */
 abstract class AType implements IFilterType
 {

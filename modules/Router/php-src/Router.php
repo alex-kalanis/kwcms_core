@@ -61,33 +61,69 @@ class Router extends AModule
         $wantModuleName = Config::getPath()->getPath() ?: $defaultModuleName;
         $wantArray = Stuff::pathToArray($wantModuleName);
 
-        if (0 == count($wantArray)) {
-            $wantArray = ['Admin', $defaultModuleName];
-        } elseif (1 == count($wantArray)) {
-            array_unshift($wantArray, 'Admin');
-        }
-
         try {
-            $this->module = $this->subModules->initModule(
-                Support::normalizeNamespacedName(array_shift($wantArray)),
-                $this->inputs, [], array_merge(
-                    $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_ROUTED]
-                ),
-                Support::normalizeNamespacedName(Stuff::arrayToPath($wantArray))
+            $wantModulesController = $wantArray;
+            $this->module = $this->moduleInit(
+                Support::normalizeNamespacedName(array_shift($wantModulesController)),
+                Support::normalizeNamespacedName(Stuff::arrayToPath($wantModulesController))
             );
-
-        } catch (\Throwable $ex) { // Fatal error: Class not found -> output on Dashboard
-
-            Notification::addError($ex->getMessage());
-            $this->module = $this->subModules->initModule(
-                'Admin',
-                $this->inputs, [], array_merge(
-                    $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_ROUTED]
-                ),
-                Support::normalizeNamespacedName($defaultModuleName)
-            );
+        } catch (\Throwable $ex) {
+            try {
+                // Fatal error: Class not found -> lookup for another form - module class is Dashboard
+                $wantModulesMainController = $wantArray;
+                $sameName = array_shift($wantModulesMainController);
+                $this->module = $this->moduleInit(
+                    Support::normalizeNamespacedName($sameName),
+                    Support::normalizeNamespacedName($defaultModuleName)
+                );
+            } catch (\Throwable $ex) {
+                try {
+                    // Fatal error: Class not found -> lookup for another form - module name and class are the same
+                    $wantModulesBackupController = $wantArray;
+                    $sameName = array_shift($wantModulesBackupController);
+                    $this->module = $this->moduleInit(
+                        Support::normalizeNamespacedName($sameName),
+                        null
+                    );
+                } catch (\Throwable $ex) {
+                    try {
+                        // Fatal error: Class not found -> lookup for modules in admin
+                        $this->module = $this->moduleInit(
+                            'Admin',
+                            Support::normalizeNamespacedName(Stuff::arrayToPath($wantArray))
+                        );
+                    } catch (\Throwable $ex) {
+                        // Fatal error: Class not found -> output on system Dashboard
+                        Notification::addError($ex->getMessage());
+                        $this->module = $this->moduleInit(
+                            'Admin',
+                            Support::normalizeNamespacedName($defaultModuleName)
+                        );
+                    }
+                }
+            }
         }
+
         $this->module->process();
+    }
+
+    /**
+     * @param string $name
+     * @param string|null $pathToController
+     * @return IModule
+     * @throws ModuleException
+     */
+    protected function moduleInit(string $name, ?string $pathToController): IModule
+    {
+        return $this->subModules->initModule(
+            $name,
+            $this->inputs,
+            [],
+            array_merge(
+                $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_ROUTED]
+            ),
+            $pathToController
+        );
     }
 
     public function output(): AOutput

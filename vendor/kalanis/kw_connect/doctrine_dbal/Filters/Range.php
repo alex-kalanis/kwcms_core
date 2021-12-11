@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect\doctrine\Filters;
+namespace kalanis\kw_connect\doctrine_dbal\Filters;
 
 
 use kalanis\kw_connect\core\ConnectException;
@@ -8,7 +8,7 @@ use kalanis\kw_connect\core\ConnectException;
 
 /**
  * Class Range
- * @package kalanis\kw_connect\doctrine\Filters
+ * @package kalanis\kw_connect\doctrine_dbal\Filters
  */
 class Range extends AType
 {
@@ -19,10 +19,16 @@ class Range extends AType
         }
 
         if (!empty($value[0])) {
-            $this->queryBuilder->where($colName . ' > ', $this->queryBuilder->createNamedParameter($value));
+            $this->queryBuilder->where($this->queryBuilder->expr()->gt(
+                $colName,
+                $this->queryBuilder->createNamedParameter($value[0])
+            ));
         }
         if (!empty($value[1])) {
-            $this->queryBuilder->where($colName . ' < ', $this->queryBuilder->createNamedParameter($value));
+            $this->queryBuilder->where($this->queryBuilder->expr()->lt(
+                $colName,
+                $this->queryBuilder->createNamedParameter($value[1])
+            ));
         }
 
         return $this;

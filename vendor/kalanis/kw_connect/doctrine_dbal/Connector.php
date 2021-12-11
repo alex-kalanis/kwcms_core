@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect\doctrine;
+namespace kalanis\kw_connect\doctrine_dbal;
 
 
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -9,13 +9,13 @@ use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_connect\core\Rows\Arrays;
 
 
 /**
  * Class Connector
- * @package kalanis\kw_connect\doctrine
- * Datasource is Doctrine
- * @todo WIP - select itself and count over data
+ * @package kalanis\kw_connect\doctrine_dbal
+ * Data source is Doctrine DBAL
  */
 class Connector extends AConnector implements IConnector
 {
@@ -57,7 +57,8 @@ class Connector extends AConnector implements IConnector
 
     public function getTotalCount(): int
     {
-        return $this->queryBuilder->count('*');
+        $this->queryBuilder->select('count(' . $this->primaryKey. ')');
+        return intval($this->queryBuilder->fetchOne());
     }
 
     public function fetchData(): void
@@ -76,19 +77,25 @@ class Connector extends AConnector implements IConnector
 
     protected function parseData(): void
     {
-        foreach ($this->queryBuilder->fetchAllAssociative() as $mapper) {
-            $this->translatedData[$this->getPrimaryKey($mapper)] = $this->getTranslated($mapper);
+        foreach (
+            $this->queryBuilder->getConnection()->iterateNumeric(
+                $this->queryBuilder->getSQL(),
+                $this->queryBuilder->getParameters(),
+                $this->queryBuilder->getParameterTypes()
+            ) as $value
+        ) {
+            $this->translatedData[$this->getPrimaryKey($value)] = $this->getTranslated($value);
         }
     }
 
-    protected function getTranslated(NetteRow $data): IRow
+    protected function getTranslated($data): IRow
     {
-        return new Row($data);
+        return new Arrays($data);
     }
 
-    protected function getPrimaryKey(NetteRow $record): string
+    protected function getPrimaryKey($data): string
     {
-        return $record->offsetGet($this->primaryKey);
+        return $data[$this->primaryKey];
     }
 
     public function getFilterFactory(): IFilterFactory
