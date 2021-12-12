@@ -5,13 +5,13 @@ namespace KWCMS\modules\Images;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -91,7 +91,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->getWhereDir()
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
-        } catch ( FormsException | TableException | MapperException | ImagesException $ex) {
+        } catch ( FormsException | TableException | ConnectException | ImagesException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

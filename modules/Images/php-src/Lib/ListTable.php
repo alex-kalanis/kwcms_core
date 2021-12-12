@@ -23,6 +23,7 @@ use kalanis\kw_table\core\Table\Rules;
 use kalanis\kw_table\core\Table\Sorter;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
+use kalanis\kw_table\output_kw\KwRenderer;
 use kalanis\kw_tree\Tree;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
@@ -97,6 +98,7 @@ class ListTable
 
         $pager->setLimit(10);
         $table->addDataSetConnector(new ConnectArray($tree->getTree()->getSubNodes(), $this->whereDir, $this->libGallery));
+        $table->setOutput(new KwRenderer($table));
         return $table;
     }
 

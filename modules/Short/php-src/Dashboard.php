@@ -5,6 +5,7 @@ namespace KWCMS\modules\Short;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -34,7 +35,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     protected $search = null;
     /** @var UserDir|null */
     protected $userDir = null;
-    /** @var MapperException|null */
+    /** @var MapperException|ConnectException|null */
     protected $error = null;
 
     public function __construct()
@@ -76,7 +77,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         if ($this->search) {
             try {
                 return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->search)));
-            } catch (MapperException | TableException | FormsException $ex) {
+            } catch (ConnectException | TableException | FormsException $ex) {
                 $this->error = $ex;
             }
         }
@@ -97,7 +98,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 return $out->setContent($table->prepareJson($this->search));
             }
             $this->error = new ModuleException('No table found in current directory');
-        } catch (MapperException | TableException | FormsException $ex) {
+        } catch (ConnectException | TableException | FormsException $ex) {
             $this->error = $ex;
         }
 

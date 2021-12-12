@@ -27,6 +27,7 @@ use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\kw\Helper;
+use kalanis\kw_table\output_kw\KwRenderer;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
 
@@ -109,6 +110,7 @@ class MessageTable
 
         $pager->setLimit(10);
         $table->addDataSetConnector(new Connector($search));
+        $table->setOutput(new KwRenderer($table));
         return $table->render();
     }
 

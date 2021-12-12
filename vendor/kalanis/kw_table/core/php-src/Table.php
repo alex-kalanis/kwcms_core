@@ -430,7 +430,7 @@ class Table
     }
 
     /**
-     * Render complete table
+     * Render complete table - just helper method
      * @return string
      * @throws TableException
      */

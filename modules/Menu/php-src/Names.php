@@ -5,8 +5,8 @@ namespace KWCMS\modules\Menu;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_mapper\MapperException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
@@ -66,7 +66,7 @@ class Names extends AAuthModule implements IModuleTitle
             try {
                 Styles::want('Menu', 'menu.css');
                 return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->libMenu->getData())));
-            } catch (MapperException | TableException $ex) {
+            } catch (ConnectException | TableException $ex) {
                 $this->error = $ex;
             }
         }
@@ -84,7 +84,7 @@ class Names extends AAuthModule implements IModuleTitle
         $table = new Lib\ItemTable($this->links);
         try {
             return $out->setContent($table->prepareJson($this->libMenu->load()->getData()));
-        } catch (MapperException | TableException | MenuException $ex) {
+        } catch (ConnectException | TableException | MenuException $ex) {
             $this->error = $ex;
         }
 

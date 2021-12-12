@@ -14,6 +14,8 @@ use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\KwFilter;
+use kalanis\kw_table\output_json\JsonRenderer;
+use kalanis\kw_table\output_kw\KwRenderer;
 
 
 /**
@@ -63,7 +65,9 @@ class ItemTable
         $table->addColumn(Lang::get('menu.actions'), $columnActions);
 
         $table->addDataSetConnector(new ItemConnector($data->getWorking()));
-        return $table->render();
+        $output = new KwRenderer($table);
+        $table->translateData();
+        return $output->render();
     }
 
     /**
@@ -84,7 +88,8 @@ class ItemTable
 
         $table->addDataSetConnector(new ItemConnector($data->getWorking()));
         $table->translateData();
-        return $table->getOutput()->renderData();
+        $output = new JsonRenderer($table);
+        return $output->renderData();
     }
 
     public function idLink($name)

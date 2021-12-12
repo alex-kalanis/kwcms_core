@@ -29,6 +29,7 @@ use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\kw\Helper;
+use kalanis\kw_table\output_kw\KwRenderer;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 
 
@@ -114,6 +115,7 @@ class PedigreeTable
 
         $pager->setLimit(10);
         $this->table->addDataSetConnector(new Connector(new Search($this->entries->getRecord())));
+        $this->table->setOutput(new KwRenderer($this->table));
         return $this->table->render();
     }
 

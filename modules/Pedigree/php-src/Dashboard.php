@@ -5,6 +5,7 @@ namespace KWCMS\modules\Pedigree;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
@@ -30,7 +31,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     /** @var GetEntries|null */
     protected $entries = null;
-    /** @var MapperException|null */
+    /** @var MapperException|ConnectException|null */
     protected $error = null;
 
     public function __construct()
@@ -72,7 +73,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $table = new Lib\PedigreeTable($this->inputs, $this->links, $this->entries);
         try {
             return $out->setContent($this->outModuleTemplate($table->prepareHtml()));
-        } catch (MapperException | TableException | FormsException | \PDOException $ex) {
+        } catch (MapperException | ConnectException | TableException | FormsException | \PDOException $ex) {
             $this->error = $ex;
         }
 
@@ -89,7 +90,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $table = new Lib\PedigreeTable($this->inputs, $this->links, $this->entries);
         try {
             return $out->setContent($table->prepareJson());
-        } catch (MapperException | TableException | FormsException $ex) {
+        } catch (MapperException | ConnectException | TableException | FormsException $ex) {
             $this->error = $ex;
         }
 
