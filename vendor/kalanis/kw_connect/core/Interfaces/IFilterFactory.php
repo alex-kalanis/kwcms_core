@@ -21,6 +21,7 @@ interface IFilterFactory
     const ACTION_TO = 'to';
     const ACTION_TO_WITH = 'toWith';
     const ACTION_RANGE = 'range';
+    const ACTION_MULTIPLE = 'multiple';
 
     /**
      * @param string $action

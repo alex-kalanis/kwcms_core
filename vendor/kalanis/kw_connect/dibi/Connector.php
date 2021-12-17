@@ -40,7 +40,7 @@ class Connector extends AConnector implements IConnector
         $this->primaryKey = $primaryKey;
     }
 
-    public function setFiltering(string $colName, string $value, IFilterType $type): void
+    public function setFiltering(string $colName, $value, IFilterType $type): void
     {
         $type->setDataSource($this->dibiFluent);
         $type->setFiltering($colName, $value);

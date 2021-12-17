@@ -22,7 +22,7 @@ abstract class AField implements IField
     /** @var string[]|int[] */
     protected $attributes = [];
     /** @var IConnector */
-    protected $dataSource = null;
+    protected $connector = null;
 
     /**
      * @param string[] $attributes
@@ -37,14 +37,24 @@ abstract class AField implements IField
         $this->form = $form;
     }
 
+    public function getForm(): Form
+    {
+        return $this->form;
+    }
+
     public function setAlias(string $alias): void
     {
         $this->alias = $alias;
     }
 
+    public function getAlias(): string
+    {
+        return $this->alias;
+    }
+
     public function setDataSourceConnector(IConnector $dataSource): void
     {
-        $this->dataSource = $dataSource;
+        $this->connector = $dataSource;
     }
 
     public function addAttribute(string $name, string $value): void
@@ -59,7 +69,7 @@ abstract class AField implements IField
 
     public function getFilterType(): IFilterType
     {
-        return $this->dataSource->getFilterFactory()->getFilter($this->getFilterAction());
+        return $this->connector->getFilterFactory()->getFilter($this->getFilterAction());
     }
 
     abstract protected function getFilterAction(): string;

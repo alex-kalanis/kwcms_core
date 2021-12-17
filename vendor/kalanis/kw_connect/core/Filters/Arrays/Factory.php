@@ -21,5 +21,6 @@ class Factory extends AFilterFactory
         self::ACTION_TO => '\kalanis\kw_connect\core\Filters\Arrays\To',
         self::ACTION_TO_WITH => '\kalanis\kw_connect\core\Filters\Arrays\ToWith',
         self::ACTION_RANGE => '\kalanis\kw_connect\core\Filters\Arrays\Range',
+        self::ACTION_MULTIPLE => '\kalanis\kw_connect\core\Filters\Arrays\Multiple',
     ];
 }

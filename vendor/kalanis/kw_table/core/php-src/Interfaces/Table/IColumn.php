@@ -24,10 +24,16 @@ interface IColumn
     public function translate(IRow $source): string;
 
     /**
-     * Source key which is used in filters and search
+     * Source key which is used in search
      * @return string
      */
     public function getSourceName(): string;
+
+    /**
+     * Filter key which is used in filters
+     * @return string
+     */
+    public function getFilterName(): string;
 
     /**
      * Can be results sorted by this column?

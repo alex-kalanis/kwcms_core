@@ -4,6 +4,7 @@ namespace kalanis\kw_table\output_json;
 
 
 use kalanis\kw_paging\Positions;
+use kalanis\kw_table\core\Interfaces\Table\IFilterMulti;
 use kalanis\kw_table\core\Table;
 
 
@@ -79,7 +80,11 @@ class JsonRenderer extends Table\AOutput
         $line = [];
         foreach ($this->table->getColumns() as $column) {
             if ($column->hasHeaderFilterField()) {
-                $line[$column->getSourceName()] = $form->getValue($column->getSourceName());
+                if ($column->getHeaderFilterField() instanceof IFilterMulti) {
+                    // skip for now, there is no form with that name
+                } else {
+                    $line[$column->getSourceName()] = $form->getValue($column->getFilterName());
+                }
             }
         }
         return $line;

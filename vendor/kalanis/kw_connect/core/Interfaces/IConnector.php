@@ -15,11 +15,11 @@ interface IConnector
 {
     /**
      * @param string $colName
-     * @param string $value
+     * @param string|string[] $value
      * @param IFilterType $type
      * @throws ConnectException
      */
-    public function setFiltering(string $colName, string $value, IFilterType $type): void;
+    public function setFiltering(string $colName, $value, IFilterType $type): void;
 
     /**
      * @param string $colName

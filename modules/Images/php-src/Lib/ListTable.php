@@ -21,6 +21,7 @@ use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
 use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
@@ -56,6 +57,7 @@ class ListTable
      * @return Table
      * @throws FormsException
      * @throws ConnectException
+     * @throws TableException
      */
     public function getTable(Tree $tree): Table
     {
@@ -86,7 +88,10 @@ class ListTable
         $table->addColumn(Lang::get('images.thumb'), $columnThumbLink );
 
         $table->addSortedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Fields\TextContains());
-        $table->addSortedColumn(Lang::get('images.size'), new Columns\Basic('size'));
+        $table->addSortedColumn(Lang::get('images.size'), new Columns\Basic('size'), new Fields\Multiple([
+            new Fields\MultipleValue(new Fields\NumFrom(), Lang::get('images.filter.from')),
+            new Fields\MultipleValue(new Fields\NumToWith(), Lang::get('images.filter.to'))
+        ]));
 
         $table->addSortedColumn(Lang::get('images.desc'), new Columns\Basic('desc'), new Fields\TextContains());
 

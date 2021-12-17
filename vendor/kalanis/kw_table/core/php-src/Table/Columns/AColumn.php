@@ -19,13 +19,15 @@ abstract class AColumn extends AStyle implements IColumn
 
     /** @var string */
     protected $sourceName = '';
+    /** @var string */
+    protected $filterName = '';
     /** @var bool */
     protected $sortable = false;
     /** @var IField|null */
     protected $headerFilterField = null;
     /** @var IField|null */
     protected $footerFilterField = null;
-    /** @var string */
+    /** @var string|null */
     protected $headerText = '';
 
     /**
@@ -43,11 +45,7 @@ abstract class AColumn extends AStyle implements IColumn
      */
     public function getHeaderText(): string
     {
-        if ($this->headerText === null) {
-            return $this->sourceName;
-        }
-
-        return $this->headerText;
+        return is_null($this->headerText) ? $this->getFilterName() : $this->headerText ;
     }
 
     public function translate(IRow $source): string
@@ -58,6 +56,11 @@ abstract class AColumn extends AStyle implements IColumn
     public function getSourceName(): string
     {
         return $this->sourceName;
+    }
+
+    public function getFilterName(): string
+    {
+        return empty($this->filterName) ? $this->sourceName : $this->filterName ;
     }
 
     /**

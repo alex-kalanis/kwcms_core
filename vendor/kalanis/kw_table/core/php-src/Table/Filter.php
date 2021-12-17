@@ -4,8 +4,10 @@ namespace kalanis\kw_table\core\Table;
 
 
 use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_table\core\Interfaces\Form\IField;
 use kalanis\kw_table\core\Interfaces\Form\IFilterForm;
 use kalanis\kw_table\core\Interfaces\Table\IColumn;
+use kalanis\kw_table\core\Interfaces\Table\IFilterMulti;
 use kalanis\kw_table\core\Interfaces\Table\IFilterRender;
 use kalanis\kw_table\core\TableException;
 
@@ -24,6 +26,8 @@ class Filter
     protected $headerColumns = [];
     /** @var IColumn[] */
     protected $footerColumns = [];
+    /** @var string */
+    protected $headerPrefix = '';
     /** @var string */
     protected $footerPrefix = 'foot_';
 
@@ -58,27 +62,18 @@ class Filter
     public function addHeaderColumn(IColumn $column): self
     {
         $filterField = $column->getHeaderFilterField();
-        $filterField->setAlias($column->getSourceName());
+        $filterField->setAlias($this->headerPrefix . $column->getFilterName());
         $this->formConnector->addField($filterField);
-
-        $name = $column->getSourceName();
-        $this->headerColumns[$name] = $column;
-        $this->columnsValues[$name] = '';
-
+        $this->headerColumns[$this->headerPrefix . $column->getSourceName()] = $column;
         return $this;
     }
 
     public function addFooterColumn(IColumn $column): self
     {
-        $name = $this->footerPrefix . $column->getSourceName();
-
         $filterField = $column->getFooterFilterField();
-        $filterField->setAlias($name);
+        $filterField->setAlias($this->footerPrefix . $column->getFilterName());
         $this->formConnector->addField($filterField);
-
-        $this->footerColumns[$name] = $column;
-        $this->columnsValues[$name] = '';
-
+        $this->footerColumns[$this->footerPrefix . $column->getSourceName()] = $column;
         return $this;
     }
 
@@ -99,7 +94,7 @@ class Filter
      */
     public function renderHeaderInput(IColumn $column): string
     {
-        $name = $column->getSourceName();
+        $name = $this->headerPrefix . $column->getSourceName();
         if (!array_key_exists($name, $this->headerColumns)) {
             throw new TableException('Column not filtered: ' . $name);
         }
@@ -108,7 +103,7 @@ class Filter
         if ($field instanceof IFilterRender) { // not every time it's form
             return $field->renderContent();
         } else {
-            return $this->formConnector->renderField($name);
+            return $this->formConnector->renderField($this->headerPrefix . $column->getFilterName());
         }
     }
 
@@ -128,17 +123,85 @@ class Filter
         if ($field instanceof IFilterRender) { // not every time it's form
             return $field->renderContent();
         } else {
-            return $this->formConnector->renderField($name);
+            return $this->formConnector->renderField($this->footerPrefix . $column->getFilterName());
         }
     }
 
     public function fetch(): self
     {
-        foreach ($this->columnsValues as $name => &$value) {
-            $value = $this->formConnector->getValue($name);
+        $formValues = $this->formConnector->getValues();
+        $original = [];
+        foreach ($this->headerColumns as &$column) {
+            /** @var IColumn $column */
+            $this->addValuesToArray(
+                $original,
+                $column->getSourceName(),
+                $this->getValuesFromFilters(
+                    $formValues,
+                    $column->getFilterName(),
+                    $column->getHeaderFilterField()
+                )
+            );
         }
-
+        foreach ($this->footerColumns as &$column) {
+            /** @var IColumn $column */
+            $this->addValuesToArray(
+                $original,
+                $column->getSourceName(),
+                $this->getValuesFromFilters(
+                    $formValues,
+                    $column->getFilterName(),
+                    $column->getFooterFilterField()
+                )
+            );
+        }
+        $this->columnsValues = $original;
         return $this;
+    }
+
+    protected function getValuesFromFilters(array $formValues, string $filterName, ?IField $filterField)
+    {
+        if ($filterField instanceof IFilterMulti) {
+            return $filterField->getPairs();
+        } elseif (isset($formValues[$filterName])) {
+            return isset($formValues[$filterName]) ? $formValues[$filterName] : '' ;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param string[]|string[][] $original
+     * @param string $sourceName
+     * @param string|string[] $values
+     * @todo: idea - probably make it array in full, then problems with detection will disappear
+     */
+    protected function addValuesToArray(array &$original, string $sourceName, $values): void
+    {
+        if (!isset($original[$sourceName])) {
+            // no target, flush it directly
+            $original[$sourceName] = $values;
+        } elseif (is_array($original[$sourceName])) {
+            // target is array
+            if (is_array($values)) {
+                // source is array too
+                $original[$sourceName] += $values;
+            } else {
+                // source is primitive
+                $original[$sourceName][] = $values;
+            }
+        } else {
+            // target is primitive, came next entry -> make array
+            $current = $original[$sourceName];
+            $original[$sourceName] = [];
+            $original[$sourceName][] = $current;
+            // now target is array
+            if (is_array($values)) {
+                $original[$sourceName] += $values;
+            } else {
+                $original[$sourceName][] = $values;
+            }
+        }
     }
 
     public function getConnector(): IFilterForm

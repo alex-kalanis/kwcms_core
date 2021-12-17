@@ -41,7 +41,7 @@ class Arrays extends AConnector implements IConnector
         $this->dataSource = $source;
     }
 
-    public function setFiltering(string $colName, string $value, IFilterType $type): void
+    public function setFiltering(string $colName, $value, IFilterType $type): void
     {
         $this->filtering[] = [$type, $colName, $value];
     }

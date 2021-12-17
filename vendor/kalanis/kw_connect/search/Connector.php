@@ -61,7 +61,7 @@ class Connector extends AConnector implements IConnector
         return implode('_', $values);
     }
 
-    public function setFiltering(string $colName, string $value, IFilterType $type): void
+    public function setFiltering(string $colName, $value, IFilterType $type): void
     {
         $type->setDataSource($this->dataSource);
         $type->setFiltering($colName, $value);
