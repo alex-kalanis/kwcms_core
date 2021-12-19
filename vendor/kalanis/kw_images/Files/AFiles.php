@@ -37,8 +37,6 @@ abstract class AFiles
     protected function checkWritable(string $path): void
     {
         $this->libExtendDir->isWritable($path);
-        $this->libExtendDir->isWritable($path . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir());
-        $this->libExtendDir->isWritable($path . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir());
     }
 
     /**

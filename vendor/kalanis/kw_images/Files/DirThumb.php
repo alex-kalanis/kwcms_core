@@ -18,7 +18,7 @@ class DirThumb extends AFiles
 {
     const FILE_TEMP = '.tmp';
 
-    protected $thumbExt = 'png';
+    protected $thumbExt = '.png';
     protected $libGraphics = null;
 
     public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [])

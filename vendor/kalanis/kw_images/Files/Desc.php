@@ -64,8 +64,8 @@ class Desc extends AFiles
 
         $this->checkWritable($targetPath);
         $this->dataCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
+            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
             $overwrite,
             'Cannot find that description.',
             'Description with the same name already exists here.',
@@ -91,8 +91,8 @@ class Desc extends AFiles
 
         $this->checkWritable($targetPath);
         $this->dataRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
+            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
             $overwrite,
             'Cannot find that description.',
             'Description with the same name already exists here.',
@@ -115,8 +115,8 @@ class Desc extends AFiles
 
         $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $sourceName,
-            $whatPath . DIRECTORY_SEPARATOR . $targetName,
+            $whatPath . DIRECTORY_SEPARATOR . $sourceName . $this->libExtendDir->getDescExt(),
+            $whatPath . DIRECTORY_SEPARATOR . $targetName . $this->libExtendDir->getDescExt(),
             $overwrite,
             'Cannot find that description.',
             'Description the same name already exists here.',

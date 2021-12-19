@@ -9,6 +9,8 @@ use kalanis\kw_extras\TNameFinder;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
+use kalanis\kw_langs\Lang;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
 
@@ -37,7 +39,7 @@ class ProcessFile implements IProcessFiles
         try {
             $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibImage()->getExtendDir()->getWebRootDir() . $targetPath);
             if (!$status) {
-                throw new ImagesException('Cannot move uploaded file');
+                throw new ImagesException(Lang::get('images.umplad.cannot_move'));
             }
         } catch (Error $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -57,31 +59,34 @@ class ProcessFile implements IProcessFiles
 
     protected function targetExists(string $path): bool
     {
-        return file_exists($path);
+        return file_exists(Stuff::sanitize($path));
     }
 
     public function readCreated(string $path, string $format = 'Y-m-d H:i:s'): string
     {
-        return $this->libFiles->getLibImage()->getCreated($path, $format) ?: '';
+        return $this->libFiles->getLibImage()->getCreated(Stuff::sanitize($path), $format) ?: '';
     }
 
     public function readDesc(string $path): string
     {
-        return $this->libFiles->getLibDesc()->get($path);
+        return $this->libFiles->getLibDesc()->get(Stuff::sanitize($path));
     }
 
     public function updateDesc(string $path, string $content): void
     {
         if (empty($content)) {
-            $this->libFiles->getLibDesc()->delete($path, '');
+            $path = Stuff::sanitize($path);
+            $origDir = Stuff::removeEndingSlash(Stuff::directory($path));
+            $fileName = Stuff::filename($path);
+            $this->libFiles->getLibDesc()->delete($origDir, $fileName);
         } else {
-            $this->libFiles->getLibDesc()->set($path, $content);
+            $this->libFiles->getLibDesc()->set(Stuff::sanitize($path), $content);
         }
     }
 
     public function copyFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
-        return $this->libFiles->copy($currentPath, $toPath, $overwrite);
+        return $this->libFiles->copy(Stuff::sanitize($currentPath), Stuff::sanitize($toPath), $overwrite);
     }
 
     /**
@@ -94,7 +99,7 @@ class ProcessFile implements IProcessFiles
      */
     public function moveFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
-        return $this->libFiles->move($currentPath, $toPath, $overwrite);
+        return $this->libFiles->move(Stuff::sanitize($currentPath), Stuff::sanitize($toPath), $overwrite);
     }
 
     /**
@@ -107,11 +112,16 @@ class ProcessFile implements IProcessFiles
      */
     public function renameFile(string $currentPath, string $toFileName, bool $overwrite = false): bool
     {
-        return $this->libFiles->rename($currentPath, $toFileName, $overwrite);
+        return $this->libFiles->rename(Stuff::sanitize($currentPath), $toFileName, $overwrite);
     }
 
     public function deleteFile(string $path): bool
     {
-        return $this->libFiles->delete($path);
+        return $this->libFiles->delete(Stuff::sanitize($path));
+    }
+
+    public function getLibFiles(): Files
+    {
+        return $this->libFiles;
     }
 }

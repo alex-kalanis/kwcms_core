@@ -3,6 +3,8 @@
 namespace KWCMS\modules\Images;
 
 
+use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_extras\UserDir;
@@ -27,10 +29,13 @@ use KWCMS\modules\Admin\Shared;
 class Edit extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
+    use Lib\TLibExistence;
     use Lib\TLibFilters;
     use Templates\TModuleTemplate;
     use TWhereDir;
 
+    /** @var string */
+    protected $fileName = '';
     /** @var Forms\FileRenameForm|null */
     protected $renameForm = null;
     /** @var Forms\DescForm|null */
@@ -45,10 +50,16 @@ class Edit extends AAuthModule implements IModuleTitle
     protected $primaryForm = null;
     /** @var Forms\FileDeleteForm|null */
     protected $deleteForm = null;
+    /** @var Lib\ProcessFile|null */
+    protected $libAction = null;
     /** @var UserDir|null */
     protected $userDir = null;
     /** @var Tree|null */
     protected $tree = null;
+    /** @var Forward */
+    protected $forward = null;
+    /** @var bool */
+    protected $redirect = false;
 
     public function __construct()
     {
@@ -62,6 +73,7 @@ class Edit extends AAuthModule implements IModuleTitle
         $this->deleteForm = new Forms\FileDeleteForm('fileDeleteForm');
         $this->tree = new Tree(Config::getPath());
         $this->userDir = new UserDir(Config::getPath());
+        $this->forward = new Forward();
     }
 
     public function allowedAccessClasses(): array
@@ -73,9 +85,10 @@ class Edit extends AAuthModule implements IModuleTitle
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         try {
-            $fileName = strval($this->getFromParam('name'));
+            $this->fileName = strval($this->getFromParam('name'));
             // no name or invalid file name -> redirect!
-            $libAction = $this->getLibFileAction();
+            $this->libAction = $this->getLibFileAction();
+            $this->checkExistence($this->libAction->getLibFiles(), $this->getWhereDir(), $this->fileName);
 
             $this->userDir->setUserPath($this->user->getDir());
             $this->userDir->process();
@@ -85,18 +98,38 @@ class Edit extends AAuthModule implements IModuleTitle
             $this->tree->process();
 
             // target links are redirects - action outside and then response somewhere (not necessary here)
-            $this->renameForm->composeForm($fileName);
-            $this->descForm->composeForm($libAction->readDesc($fileName), '#');
-            $this->thumbForm->composeForm('#');
-            $this->moveForm->composeForm($this->tree->getTree(),'#');
-            $this->copyForm->composeForm($this->tree->getTree(),'#');
-            $this->primaryForm->composeForm('#');
-            $this->deleteForm->composeForm('#');
+            $this->forward->setLink($this->links->linkVariant('images/edit/thumb?name='. $this->fileName))
+                ->setForward($this->links->linkVariant('images/edit?name='. $this->fileName));
+            $this->thumbForm->composeForm($this->forward->getLink());
 
-//            $this->thumbPath = $libAction->;
-//            'thumb' => $libGallery->getLibThumb()->getPath($whereDir . DIRECTORY_SEPARATOR . $fileName),
+            $this->forward->setLink($this->links->linkVariant('images/edit/desc?name='. $this->fileName))
+                ->setForward($this->links->linkVariant('images/edit?name='. $this->fileName));
+            $this->descForm->composeForm($this->libAction->readDesc(
+                $this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName
+            ), $this->forward->getLink());
+
+            $this->forward->setLink($this->links->linkVariant('images/edit/rename?name='. $this->fileName))
+                ->setForward('');
+            $this->renameForm->composeForm($this->fileName, $this->forward->getLink());
+
+            $this->forward->setLink($this->links->linkVariant('images/edit/move?name='. $this->fileName))
+                ->setForward('');
+            $this->moveForm->composeForm($this->tree->getTree(), $this->forward->getLink());
+
+            $this->forward->setLink($this->links->linkVariant('images/edit/copy?name='. $this->fileName))
+                ->setForward('');
+            $this->copyForm->composeForm($this->tree->getTree(), $this->forward->getLink());
+
+            $this->forward->setLink($this->links->linkVariant('images/edit/delete?name='. $this->fileName))
+                ->setForward($this->links->linkVariant('images/dashboard'));
+            $this->deleteForm->composeForm($this->forward->getLink());
+
+            $this->forward->setLink($this->links->linkVariant('images/edit/primary?name='. $this->fileName))
+                ->setForward($this->links->linkVariant('images/edit?name='. $this->fileName));
+            $this->primaryForm->composeForm($this->forward->getLink());
 
         } catch (ImagesException $ex) {
+            $this->redirect = true;
             $this->error = $ex;
         }
     }
@@ -120,10 +153,19 @@ class Edit extends AAuthModule implements IModuleTitle
         if ($this->error) {
             Notification::addError($this->error->getMessage());
         }
+        if ($this->redirect) {
+            $this->forward->setSource(new ServerRequest());
+            $this->forward->setForward($this->links->linkVariant('images/dashboard'));
+            $this->forward->forward();
+        }
         try {
             return $out->setContent($this->outModuleTemplate($page->setData(
-                '#',
-                '#',
+                $this->links->linkVariant($this->libAction->getLibFiles()->getLibImage()->getPath(
+                    $this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName
+                ), 'image', true, false),
+                $this->links->linkVariant($this->libAction->getLibFiles()->getLibThumb()->getPath(
+                    $this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName
+                ), 'image', true, false),
                 $this->thumbForm,
                 $this->descForm,
                 $this->renameForm,
@@ -135,7 +177,9 @@ class Edit extends AAuthModule implements IModuleTitle
         } catch (FormsException $ex) {
             $this->error = $ex;
         }
-        return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
+        return $out->setContent($this->outModuleTemplate(
+            $this->error->getMessage() . nl2br($this->error->getTraceAsString())
+        ));
     }
 
     public function outJson(): Output\AOutput

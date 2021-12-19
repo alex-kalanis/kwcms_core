@@ -6,6 +6,7 @@ namespace KWCMS\modules\Images\Lib;
 use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces\IProcessDirs;
 
 
@@ -70,7 +71,7 @@ class ProcessDir implements IProcessDirs
 
     public function updateThumb(string $filePath): bool
     {
-        $this->libFiles->getLibDirThumb()->create($filePath);
+        $this->libFiles->getLibDirThumb()->create(Stuff::sanitize($filePath));
         return true;
     }
 }

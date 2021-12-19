@@ -44,7 +44,7 @@ class Image extends AFiles
      */
     public function check(string $path): void
     {
-        $size = filesize($this->libExtendDir->getWebRootDir() . $path);
+        $size = @filesize($this->libExtendDir->getWebRootDir() . $path);
         if (false === $size) {
             throw new ImagesException('Cannot read file size. Exists?');
         }
