@@ -1,0 +1,26 @@
+/***********************************************************************
+*       ADMIN/MODULE/UPLOAD/STYLE/MODULE.CSS                           *
+*       Style of module UPLOAD                                         *
+*       used CSS 3                                                     *
+*       from Kalanys@2014                                              *
+*       license GNU/GPLv2 and above                                    *
+***********************************************************************/
+
+@media screen {
+    
+    #last_oper, #disk_info {
+        font-size: 1em; font-style: normal; background-color: #d8d8d8;
+        display: block; padding: 0.2em 0.4em; border-style: solid; border-color: #6e6e6e; border-width: 4px;
+        -moz-border-radius: 32px;
+        -webkit-border-radius: 32px;
+    }
+    #upload #open, #files #new { margin: 0.2em 0px 0px 0px; }
+    #upload .selection img { border: 1px dotted #c0c0c0; border-radius: 1em; }
+    #upload .selection img:hover { box-shadow: inset 0px 0px 1em #c0c0c0; }
+    #uparea { background-color: #C0C0C0; width: 450px; height: 50px; }
+    #base_progress { visibility: hidden; }
+    .progress { width: 550px; border: 1px solid #C0C0C0; margin: 0px; padding: 0px; }
+    .progress .progressbar { text-align: left; width: 500px; border: 1px solid #000; margin: 0px 25px; padding: 0px; }
+    .progress .single { background-color: #a6ff80; width: 1%; }
+    
+} /* media screen */
