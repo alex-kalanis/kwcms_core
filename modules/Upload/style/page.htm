@@ -1,21 +1,112 @@
 <div><div id="uparea"><noscript><hr><p>{SCRIPTING_DISABLED_CANNOT_USE}</p><hr></noscript> &nbsp; &nbsp; &nbsp; </div></div>
 <p style="text-align: left;"><input type="file" id="upfile" multiple>
-<button onclick="uploaderProcessor.getHandler().startRead();">Start read</button>
-<button onclick="uploaderProcessor.getHandler().abortRead();">Abort read</button>
-<button onclick="uploaderProcessor.getHandler().clearList();">Clear list</button><br>
-</p><div id="list"></div>
-<div class="progress" id="base_progress">
-<div>File: <span class="filename"></span></div>
-<div class="progressbar"><div class="single">&nbsp;</div></div>
-<div class="errorlog">&nbsp;</div>
-<button onclick="uploaderProcessor.getHandler().resumeRead(this.getAttribute('data-key'));" disabled>Resume read</button>
-<button onclick="uploaderProcessor.getHandler().retryRead(this.getAttribute('data-key'));" disabled>Retry from beginning</button>
-<button onclick="uploaderProcessor.getHandler().stopRead(this.getAttribute('data-key'));">Stop read</button><br>
+<button class="button_start">{BUTTON_START}</button>
+<button class="button_abort">{BUTTON_ABORT}</button>
+<button class="button_clear">{BUTTON_CLEAR}</button><br>
+</p><div id="progress_list"></div>
+<div class="upload-progress-box" id="base_progress">
+    <div>{FILE_NAME}: <span class="filename"></span></div>
+    <div class="upload-progress-time">
+        <div class="pull-left">
+            {LANG_ELAPSED_TIME}: <span class="elapsed_time">{VALUE_ELAPSED_TIME}</span>
+        </div>
+        <div class="pull-right">
+            {LANG_ESTIMATED_TIME}: <span class="est_time_left">{VALUE_ESTIMATED_TIME}</span>
+        </div>
+    </div>
+    <div class="clearfix" ></div>
+    <div class="progressbar-wrapper" >
+        <div class="progress_bar"><div class="checked">&nbsp;</div><div class="uploaded">&nbsp;</div></div>
+    </div>
+    <div class="upload-progress-size">
+        <div class="pull-left">
+            <span class="percent_complete">0%</span> (<span class="current_position">{VALUE_CURRENT_POSITION}</span> / <span class="total_kbytes">{VALUE_TOTAL_LENGTH}</span>)
+        </div>
+        <div class="pull-right">
+            {LANG_ESTIMATED_SPEED}: <span class="est_speed">{VALUE_ESTIMATED_SPEED}</span>
+        </div>
+    </div>
+    <div class="clearfix" ></div>
+    <div>
+        <button class="button_retry" title="{BUTTON_RETRY}" disabled> &#x23EE; </button>
+        <button class="button_resume" title="{BUTTON_RESUME}" disabled> &#x23EF; </button>
+        <div class="error_log">&nbsp;</div>
+        <button class="button_stop" title="{BUTTON_STOP}"> &#x23F9; </button><br>
+    </div>
+    <div class="clearfix" ></div>
 </div>
 <script type="text/javascript">
+	/** rewrite renderer */
+	uploaderRenderer.renderFileItem = function(uploadedFile) {
+		let progressBasicBox = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.baseProgress);
+		let progressBox = progressBasicBox.clone(true);
+		progressBox.attr(uploaderRenderer.upIdent.localId, uploadedFile.localId);
+		progressBox.removeAttr(uploaderRenderer.upIdent.baseProgress);
+		let list = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.knownBulk);
+		list.append(progressBox);
+		let fileName = progressBox.find(".filename").first();
+		fileName.append(uploadedFile.fileName);
+		let buttons_retry = progressBox.find("button.button_retry").first();
+		buttons_retry[0].onclick = function() {
+			uploaderProcessor.getHandler().retryRead(uploadedFile.localId);
+		};
+		let buttons_resume = progressBox.find("button.button_resume").first();
+		buttons_resume[0].onclick = function() {
+			uploaderProcessor.getHandler().resumeRead(uploadedFile.localId);
+		};
+		let buttons_stop = progressBox.find("button.button_stop").first();
+		buttons_stop[0].onclick = function() {
+			uploaderProcessor.getHandler().stopRead(uploadedFile.localId);
+		};
+	};
+	uploaderRenderer.renderReaded = function(uploadedFile) {
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let button = node.find("button.button_retry").first();
+		button[0].removeAttribute("disabled");
+	};
+	uploaderRenderer.startRead = function(uploadedFile) {
+		uploaderRenderer.startTime = uploaderRenderer.getCurrentTime();
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let button = node.find("button.button_resume").first();
+		button[0].removeAttribute("disabled");
+	};
+	uploaderRenderer.stopRead = function(uploadedFile) {
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let button = node.find("button.button_resume").first();
+		button[0].setAttribute("disabled", "disabled");
+	};
+	uploaderRenderer.resumeRead = function(uploadedFile) {
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let button = node.find("button.button_resume").first();
+		button[0].removeAttribute("disabled");
+	};
+	uploaderRenderer.updateBar = function(uploadedFile) {
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let checkedPercent = uploaderRenderer.calculateCheckedPercent(uploadedFile);
+		let uploadPercent = uploaderRenderer.calculatePercent(uploadedFile);
+
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .elapsed_time", uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime()));
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .est_time_left", uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, uploadPercent));
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .current_position", uploaderRenderer.calculateSize(uploadedFile.lastKnownPart * uploadedFile.partSize));
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .total_kbytes", uploaderRenderer.calculateSize(uploadedFile.fileSize));
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .est_speed", uploaderRenderer.calculateSize(uploaderRenderer.calculateSpeed(uploadedFile)));
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .percent_complete", uploadPercent.toString() + "%");
+
+		let percentDone = node.find(".progressbar-wrapper .uploaded").first();
+		percentDone[0].style.width = (uploadPercent - checkedPercent).toString() + "%";
+
+		let percentChecked = node.find(".progressbar-wrapper .checked").first();
+		percentChecked[0].style.width = checkedPercent.toString() + "%";
+	};
+	uploaderRenderer.updateStatus = function(uploadedFile, status) {
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let errLog = node.find(".upload-progress-box ." + uploaderRenderer.upIdent.errorLog).eq(1);
+		errLog.append(status);
+	};
+
 	document.addEventListener('DOMContentLoaded', function () {
 		// configs
-		if (jQuery && uploaderReader.canRead(window)) {
+		if ($ && uploaderReader.canRead(window)) {
 			var langs = new UploadTranslations();
 			var targetConfig = new UploadTargetConfig();
 			targetConfig.targetInitPath = "{INIT_PATH}";
@@ -24,18 +115,31 @@
 			targetConfig.targetTrimPath = "{TRIM_PATH}";
 			targetConfig.targetFilePath = "{FILE_PATH}";
 			targetConfig.targetDonePath = "{DONE_PATH}";
-			uploaderProcessor.init(uploaderQuery.init(jQuery), langs, targetConfig, checkSumMD5);
+			uploaderProcessor.init(uploaderQuery.init($), langs, targetConfig, checkSumMD5);
 		}
 
 		// runner
-		if (jQuery && uploaderReader.canRead(window)) {
+		if ($ && uploaderReader.canRead(window)) {
 			// Great success! All the File APIs are supported.
 			var dropZone = document.getElementById("uparea");
 			dropZone.style.backgroundColor = '#a6ff80';
 			// Setup the dnd listeners.
 			// dropZone.addEventListener('dragover', uploadedProcessor.getHandler().handleDragOver, false);
 			dropZone.addEventListener('drop', uploaderProcessor.getHandler().handleFileSelect, false);
-			jQuery("#upfile").on('change', {}, uploaderProcessor.getHandler().handleFileInput);
+			$("#upfile").on('change', {}, uploaderProcessor.getHandler().handleFileInput);
+
+			let buttons_start = $("button.button_start").first();
+			buttons_start[0].onclick = function() {
+				uploaderProcessor.getHandler().startRead();
+			};
+			let buttons_abort = $("button.button_abort").first();
+			buttons_abort[0].onclick = function() {
+				uploaderProcessor.getHandler().abortRead();
+			};
+			let buttons_clear = $("button.button_clear").first();
+			buttons_clear[0].onclick = function() {
+				uploaderProcessor.getHandler().clearList();
+			};
 		}
 	});
 </script>

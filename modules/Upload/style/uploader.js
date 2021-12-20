@@ -1,7 +1,7 @@
 /**
  * Targets paths on actual site
  */
-var UploadTargetConfig = function () {
+let UploadTargetConfig = function () {
     this.targetInitPath = "//upload-file/init/";
     this.targetCheckPath = "//upload-file/check/";
     this.targetCancelPath = "//upload-file/cancel/";
@@ -13,7 +13,7 @@ var UploadTargetConfig = function () {
 /**
  * Translations for uploader
  */
-var UploadTranslations = function () {
+let UploadTranslations = function () {
     this.readFileCannotSlice = "Cannot slice file";
     this.initReturnsFollowingError = "Init returns following error: ";
     this.initReturnsSomethingFailed = "Init does not return a JSON data. More at console.";
@@ -26,9 +26,9 @@ var UploadTranslations = function () {
  * Identify any target in selection box
  * Overwrite with values in your own selection box
  */
-var UploadIdentification = function () {
+let UploadIdentification = function () {
     this.baseProgress = 'base_progress';
-    this.knownBulk = 'list';
+    this.knownBulk = 'progress_list';
     this.elapsedTime = 'elapsed_time'; // time passed
     this.estimatedTimeLeft = 'est_time_left'; // time left
     this.currentPosition = 'current_position'; // last position
@@ -38,13 +38,13 @@ var UploadIdentification = function () {
     this.progressCounter = 'single';
     this.localId = 'id';
     this.dataKey = 'data-key'; // attribute to pass key between displayed and stored data
-    this.errorLog = 'errorlog';
+    this.errorLog = 'error_log';
 };
 
 /**
  * Client-side info about file to upload
  */
-var UploadedFile = function () {
+let UploadedFile = function () {
     // constants
     this.STATUS_STOP = 0;
     this.STATUS_INIT = 1;
@@ -107,7 +107,7 @@ var UploadedFile = function () {
      * @return {string}
      */
     this.parseBase = function(fileName) {
-        var lastIndex = fileName.lastIndexOf('.');
+        let lastIndex = fileName.lastIndexOf('.');
         return (0 > lastIndex) ? fileName : fileName.substr(0, lastIndex);
     };
 
@@ -179,7 +179,7 @@ var UploadedFile = function () {
  * Main processing class
  * Used for passing info between steps, so they do not need to know about each other
  */
-var UploaderProcessor = function () {
+let UploaderProcessor = function () {
 
     /** @var {UploaderInit} */
     this.upInit = null;
@@ -202,9 +202,9 @@ var UploaderProcessor = function () {
         if (checksum === undefined) {
             checksum = null;
         }
-        var remoteQuery = uploaderRemoteQuery.init(upQuery, targetConfig);
-        var upRenderer = uploaderRenderer.init(upQuery, uploadIdentification);
-        var upReader = uploaderReader.init(translations);
+        let remoteQuery = uploaderRemoteQuery.init(upQuery, targetConfig);
+        let upRenderer = uploaderRenderer.init(upQuery, uploadIdentification);
+        let upReader = uploaderReader.init(translations);
         uploaderProcessor.upInit = uploadInit.init(uploaderProcessor, upRenderer, remoteQuery, translations);
         uploaderProcessor.upCheck = uploaderChecker.init(uploaderProcessor, uploaderChecksum.init(checksum), upReader, upRenderer, remoteQuery, translations);
         uploaderProcessor.upRunner = uploaderRunner.init(uploaderProcessor, upReader, uploaderEncoder, upRenderer, remoteQuery, translations);
@@ -280,7 +280,7 @@ var UploaderProcessor = function () {
 /**
  * Initial step - prepare file object, ask server about upload details and let him to prepare himself
  */
-var UploadInit = function () {
+let UploadInit = function () {
     /** @var {UploaderProcessor} */
     this.upProcessor = null;
     /** @var {UploaderRenderer} */
@@ -343,7 +343,7 @@ var UploadInit = function () {
 /**
  * Check already uploaded parts, trim failed ones
  */
-var UploaderChecker = function () {
+let UploaderChecker = function () {
     /** @var {UploaderProcessor} */
     this.upProcessor = null;
     /** @var {UploaderChecksum} */
@@ -507,7 +507,7 @@ var UploaderChecker = function () {
 /**
  * Uploading file from client and ask for processing on server side
  */
-var UploaderRunner = function () {
+let UploaderRunner = function () {
     /** @var {UploaderProcessor} */
     this.upProcessor = null;
     /** @var {UploaderReader} */
@@ -636,7 +636,7 @@ var UploaderRunner = function () {
 /**
  * When upload fails then it's necessary to have user-specific action. So here call that.
  */
-var UploaderFailure = function () {
+let UploaderFailure = function () {
     /** @var {UploaderProcessor} */
     this.upProcessor = null;
     /** @var {UploaderRenderer} */
@@ -740,7 +740,7 @@ var UploaderFailure = function () {
 /**
  * Class for reading selected file on client's storage
  */
-var UploaderReader = function () {
+let UploaderReader = function () {
     /** @var {UploadTranslations} */
     this.upLang = null;
 
@@ -760,7 +760,7 @@ var UploaderReader = function () {
      * @param {*} onFailure
      */
     this.processFileRead = function(uploadedFile, segment, onSuccess, onFailure) {
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.onload = function(event) {
             if (event.target.readyState === reader.DONE) {
                 onSuccess(event.target.result);
@@ -772,7 +772,7 @@ var UploaderReader = function () {
         reader.onerror = function(event) {
             onFailure(event);
         };
-        var blob = uploaderReader.fileSlice(
+        let blob = uploaderReader.fileSlice(
             uploadedFile,
             uploadedFile.partSize * segment,
             (segment + 1 === uploadedFile.totalParts) ? uploadedFile.fileSize : uploadedFile.partSize * (segment + 1)
@@ -813,7 +813,7 @@ var UploaderReader = function () {
 /**
  * Encode binary file chunk into base64 to prevent problems with text-based transportation
  */
-var UploaderEncoder = function () {
+let UploaderEncoder = function () {
 
     /**
      * Encode data into Base64
@@ -827,8 +827,8 @@ var UploaderEncoder = function () {
         // *     returns 1: 'S2V2aW4gdmFuIFpvbm5ldmVsZA=='
         // mozilla has this native
         // - but breaks in 2.0.0.12!
-        var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        var o1,
+        let b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        let o1,
             o2,
             o3,
             h1,
@@ -855,8 +855,8 @@ var UploaderEncoder = function () {
             // use hexets to index into b64, and append result to encoded string
             tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
         } while (i < data.length);
-        var enc = tmp_arr.join("");
-        var r = data.length % 3;
+        let enc = tmp_arr.join("");
+        let r = data.length % 3;
         return (r ? enc.slice(0, r - 3) : enc) + "===".slice(r || 3);
     }
 };
@@ -864,7 +864,7 @@ var UploaderEncoder = function () {
 /**
  * Class for making checksum of segments, usually use MD5
  */
-var UploaderChecksum = function () {
+let UploaderChecksum = function () {
     /** @var {CheckSumMD5} */
     this.checksum = null;
 
@@ -896,7 +896,7 @@ var UploaderChecksum = function () {
 /**
  * Abstract class for enabling different engines for Ajax call and content selectors, not just jQuery
  */
-var UploaderQuery = function () {
+let UploaderQuery = function () {
     /** @var {jQuery} */
     this.queryEngine = null;
 
@@ -940,7 +940,7 @@ var UploaderQuery = function () {
  * Queries to remote machine
  * Should be extended in tests for mocking the querying to behave likewise with the remote machine
  */
-var UploaderRemoteQuery = function () {
+let UploaderRemoteQuery = function () {
     /** @var {UploaderQuery} */
     this.queryLib = null;
     /** @var {UploadTargetConfig} */
@@ -1044,7 +1044,7 @@ var UploaderRemoteQuery = function () {
 /**
  * Handle input from browser
  */
-var UploaderHandler = function () {
+let UploaderHandler = function () {
     /** @type {UploadedFile[]} */
     this.uploadingFiles = []; // All uploaded files in JS
     /** @var {UploaderProcessor} */
@@ -1075,8 +1075,8 @@ var UploaderHandler = function () {
      * @param {FileList} files
      */
     this.addFileInput = function(files) {
-        for (var i = 0, f; (f = files[i]); i++) {
-            var dataSource = uploadedFile;
+        for (let i = 0, f; (f = files[i]); i++) {
+            let dataSource = uploadedFile;
             dataSource.setInitialData(f);
             uploaderHandler.uploadingFiles.push(dataSource);
             uploaderHandler.upRenderer.renderFileItem(dataSource);
@@ -1087,14 +1087,14 @@ var UploaderHandler = function () {
      * @param {string} fileId
      */
     this.startRead = function(fileId) {
-        var file = uploaderHandler.searchFile(fileId);
+        let file = uploaderHandler.searchFile(fileId);
         if (null != file) {
             // one
             file.readStatus = file.STATUS_INIT;
             uploaderHandler.upProcessor.initRead(file);
         } else {
             // all
-            for (var i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
+            for (let i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
                 uploaderHandler.startRead(uploaderHandler.uploadingFiles[i].localId);
             }
         }
@@ -1104,14 +1104,14 @@ var UploaderHandler = function () {
      * @param {string} fileId
      */
     this.stopRead = function(fileId) {
-        var file = uploaderHandler.searchFile(fileId);
+        let file = uploaderHandler.searchFile(fileId);
         if (null != file) {
             // one
             file.readStatus = file.STATUS_STOP;
             // it stops with next tick
         } else {
             // all recursive
-            for (var i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
+            for (let i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
                 uploaderHandler.stopRead(uploaderHandler.uploadingFiles[i].localId);
             }
         }
@@ -1121,14 +1121,14 @@ var UploaderHandler = function () {
      * @param {string} fileId
      */
     this.resumeRead = function(fileId) {
-        var file = uploaderHandler.searchFile(fileId);
+        let file = uploaderHandler.searchFile(fileId);
         if (file != null) {
             // one
             file.readStatus = file.STATUS_RETRY;
             uploaderHandler.upProcessor.failContinue(file);
         } else {
             // all recursive
-            for (var i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
+            for (let i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
                 uploaderHandler.resumeRead(uploaderHandler.uploadingFiles[i].localId);
             }
         }
@@ -1138,14 +1138,14 @@ var UploaderHandler = function () {
      * @param {string} fileId
      */
     this.retryRead = function(fileId) {
-        var file = uploaderHandler.searchFile(fileId);
+        let file = uploaderHandler.searchFile(fileId);
         if (file != null) {
             // one
             file.readStatus = file.STATUS_INIT;
             uploaderHandler.upProcessor.failContinue(file);
         } else {
             // all recursive
-            for (var i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
+            for (let i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
                 uploaderHandler.retryRead(uploaderHandler.uploadingFiles[i].localId);
             }
         }
@@ -1155,14 +1155,14 @@ var UploaderHandler = function () {
      * @param {string} fileId
      */
     this.abortRead = function(fileId) {
-        var file = uploaderHandler.searchFile(fileId);
+        let file = uploaderHandler.searchFile(fileId);
         if (file != null) {
             // one
             file.readStatus = file.STATUS_DESTROY;
             uploaderHandler.upProcessor.failContinue(file);
         } else {
             // all recursive
-            for (var i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
+            for (let i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
                 uploaderHandler.abortRead(uploaderHandler.uploadingFiles[i].localId);
             }
         }
@@ -1173,8 +1173,8 @@ var UploaderHandler = function () {
      * @returns {null|UploadedFile}
      */
     this.searchFile = function(localId) {
-        var file = null;
-        for (var i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
+        let file = null;
+        for (let i = 0; i < uploaderHandler.uploadingFiles.length; i++) {
             if (uploaderHandler.uploadingFiles[i].localId === localId) {
                 file = uploaderHandler.uploadingFiles[i];
             }
@@ -1183,7 +1183,7 @@ var UploaderHandler = function () {
     };
 
     this.clearList = function() {
-        for (var i = uploaderHandler.uploadingFiles.length; i > 0; i--) {
+        for (let i = uploaderHandler.uploadingFiles.length; i > 0; i--) {
             uploaderHandler.uploadingFiles.pop();
         }
         uploaderHandler.upRenderer.clearFileSelection();
@@ -1194,7 +1194,7 @@ var UploaderHandler = function () {
  * Render output to browser
  * Usually main candidate to customization
  */
-var UploaderRenderer  = function () {
+let UploaderRenderer = function () {
     /** @var {numeric} */
     this.startTime = 0;
     /** @var {UploadIdentification} */
@@ -1216,23 +1216,23 @@ var UploaderRenderer  = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.renderFileItem = function(uploadedFile) {
-        var progress = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.baseProgress);
-        var progress_bar = progress.clone(true);
-        progress_bar.attr(uploaderRenderer.upIdent.localId, uploadedFile.localId);
-        var list = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.knownBulk);
-        list.append(progress_bar);
-        var fileName = progress_bar.find(".filename").eq(1);
+        let progressBasicBox = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.baseProgress);
+        let progressBox = progressBasicBox.clone(true);
+        progressBox.attr(uploaderRenderer.upIdent.localId, uploadedFile.localId);
+        let list = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.knownBulk);
+        list.append(progressBox);
+        let fileName = progressBox.find(".filename").eq(1);
         fileName.append(uploadedFile.fileName);
-        var button1 = progress_bar.find("button").eq(1);
+        let button1 = progressBox.find("button").eq(1);
         button1.attr(uploaderRenderer.upIdent.dataKey, uploadedFile.localId);
-        var button2 = progress_bar.find("button").eq(2);
+        let button2 = progressBox.find("button").eq(2);
         button2.attr(uploaderRenderer.upIdent.dataKey, uploadedFile.localId);
-        var button3 = progress_bar.find("button").eq(3);
+        let button3 = progressBox.find("button").eq(3);
         button3.attr(uploaderRenderer.upIdent.dataKey, uploadedFile.localId);
     };
 
     this.clearFileSelection = function() {
-        var list = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.knownBulk);
+        let list = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.knownBulk);
         list.children().remove();
     };
 
@@ -1240,8 +1240,8 @@ var UploaderRenderer  = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.renderReaded = function(uploadedFile) {
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var button = node.find("button").eq(1);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let button = node.find("button").eq(1);
         button.removeAttr("disabled");
         node.attr(uploaderRenderer.upIdent.localId, uploadedFile.sharedKey);
     };
@@ -1257,8 +1257,8 @@ var UploaderRenderer  = function () {
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedSpeed, uploaderRenderer.calculateSize(uploadedFile.fileSize));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.percentsComplete, "100%"); // percents
 
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var button = node.find("button").eq(1);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let button = node.find("button").eq(1);
         button.attr("disabled", "disabled");
     };
 
@@ -1276,8 +1276,8 @@ var UploaderRenderer  = function () {
      */
     this.startRead = function(uploadedFile) {
         uploaderRenderer.startTime = uploaderRenderer.getCurrentTime();
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var button = node.find("button").eq(2);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let button = node.find("button").eq(2);
         button.removeAttr("disabled");
     };
 
@@ -1285,8 +1285,8 @@ var UploaderRenderer  = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.stopRead = function(uploadedFile) {
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var button = node.find("button").eq(2);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let button = node.find("button").eq(2);
         button.attr("disabled", "disabled");
     };
 
@@ -1294,8 +1294,8 @@ var UploaderRenderer  = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.resumeRead = function(uploadedFile) {
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var button = node.find("button").eq(2);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let button = node.find("button").eq(2);
         button.removeAttr("disabled");
     };
 
@@ -1303,8 +1303,8 @@ var UploaderRenderer  = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.updateBar = function(uploadedFile) {
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var percent = uploaderRenderer.calculatePercent(uploadedFile);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let percent = uploaderRenderer.calculatePercent(uploadedFile);
 
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime()));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, percent));
@@ -1313,7 +1313,7 @@ var UploaderRenderer  = function () {
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedSpeed, uploaderRenderer.calculateSize(uploaderRenderer.calculateSpeed(uploadedFile)));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.percentsComplete, percent.toString() + "%");
 
-        var button = node.find("." + uploaderRenderer.upIdent.progressCounter).eq(1);
+        let button = node.find("." + uploaderRenderer.upIdent.progressCounter).eq(1);
         button.append(percent.toString() + "%");
         button.css('width', percent.toString() + "%");
     };
@@ -1323,8 +1323,8 @@ var UploaderRenderer  = function () {
      * @param {string} status
      */
     this.updateStatus = function(uploadedFile, status) {
-        var node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
-        var errLog = node.find("." + uploaderRenderer.upIdent.errorLog).eq(1);
+        let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+        let errLog = node.find("." + uploaderRenderer.upIdent.errorLog).eq(1);
         errLog.append(status);
     };
 
@@ -1335,9 +1335,9 @@ var UploaderRenderer  = function () {
      * @return {string}
      */
     this.calculateEstimatedTimeLeft = function(uploadedFile, percentDone) {
-        var spend = uploaderRenderer.getElapsedTime();
+        let spend = uploaderRenderer.getElapsedTime();
         if (percentDone > 0) {
-            var fullTime = 100 * (spend / percentDone);
+            let fullTime = 100 * (spend / percentDone);
             return uploaderRenderer.formatTime(Math.abs(fullTime - spend));
         } else {
             return "N/A";
@@ -1350,19 +1350,19 @@ var UploaderRenderer  = function () {
      * @return {string}
      */
     this.formatTime = function(value) {
-        var hrs = Math.floor(value / 3600);
-        var min = Math.floor(value / 60) - hrs * 60;
-        var sec = Math.floor(value % 60);
+        let hrs = Math.floor(value / 3600);
+        let min = Math.floor(value / 60) - hrs * 60;
+        let sec = Math.floor(value % 60);
         return uploaderRenderer.pad(hrs, 2) + ":" + uploaderRenderer.pad(min, 2) + ":" + uploaderRenderer.pad(sec, 2);
     };
 
     /**
-     * @param {numeric} number
+     * @param {number} number
      * @param {numeric} length
      * @return {string}
      */
     this.pad = function(number, length) {
-        var str = "" + number.toString();
+        let str = "" + number.toString();
         while (str.length < length) {
             str = "0" + str;
         }
@@ -1372,43 +1372,54 @@ var UploaderRenderer  = function () {
     /**
      * calculate percents
      * @param {UploadedFile} uploadedFile
-     * @return {numeric}
+     * @return {number}
      */
     this.calculatePercent = function(uploadedFile) {
-        var percent = Math.round((uploadedFile.lastKnownPart) / uploadedFile.totalParts);
-        return !percent ? 0 : percent * 100;
+        let percent = uploadedFile.lastKnownPart / uploadedFile.totalParts;
+        return Math.round(percent * 100);
+    };
+
+    /**
+     * calculate percents of checked part
+     * @param {UploadedFile} uploadedFile
+     * @return {number}
+     */
+    this.calculateCheckedPercent = function(uploadedFile) {
+        let percent = uploadedFile.lastCheckedPart / uploadedFile.totalParts;
+        return Math.round(percent * 100);
     };
 
     /**
      * calculate processing speed
-     * @param {numeric} bytesProcessed int
+     * @param {UploadedFile} uploadedFile
      * @return {numeric}
      */
-    this.calculateSpeed = function(bytesProcessed) {
-        var elapsedTime = uploaderRenderer.getElapsedTime();
+    this.calculateSpeed = function(uploadedFile) {
+        let elapsedTime = uploaderRenderer.getElapsedTime();
 
         if (elapsedTime < 1) {
             return 0;
         }
-        if (bytesProcessed == 0) {
+        let partsProcessed = uploadedFile.totalParts - uploadedFile.lastKnownPart;
+        if (partsProcessed == 0) {
             return 0;
         }
-        return bytesProcessed / elapsedTime;
+        return partsProcessed / elapsedTime;
     };
 
     /**
      * calculate sizes
-     * @param bytesProcessed int
-     * @return string
+     * @param {numeric} bytesProcessed
+     * @return {string}
      */
     this.calculateSize = function(bytesProcessed) {
-        var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        let sizes = ["Bytes", "KB", "MB", "GB", "TB"];
 
         if (0 == bytesProcessed){
             return "0 Byte";
         }
 
-        var i = Math.floor(Math.log(bytesProcessed) / Math.log(1024));
+        let i = Math.floor(Math.log(bytesProcessed) / Math.log(1024));
         return (Math.round((bytesProcessed / Math.pow(1024, i)) * 100) / 100).toFixed(2) + " " + sizes[i];
     };
 
@@ -1429,20 +1440,20 @@ var UploaderRenderer  = function () {
     }
 };
 
-var uploadTranslations = new UploadTranslations();
-var uploadIdentification = new UploadIdentification();
-var uploadedFile = new UploadedFile();
-var uploaderProcessor = new UploaderProcessor();
-var uploadInit = new UploadInit();
-var uploaderChecker = new UploaderChecker();
-var uploaderRunner = new UploaderRunner();
-var uploaderFailure = new UploaderFailure();
-var uploaderReader = new UploaderReader();
-var uploaderEncoder = new UploaderEncoder();
-var uploaderChecksum = new UploaderChecksum();
-var uploaderQuery = new UploaderQuery();
-var uploaderRemoteQuery = new UploaderRemoteQuery();
-var uploaderHandler = new UploaderHandler();
-var uploaderRenderer = new UploaderRenderer();
+let uploadTranslations = new UploadTranslations();
+let uploadIdentification = new UploadIdentification();
+let uploadedFile = new UploadedFile();
+let uploaderProcessor = new UploaderProcessor();
+let uploadInit = new UploadInit();
+let uploaderChecker = new UploaderChecker();
+let uploaderRunner = new UploaderRunner();
+let uploaderFailure = new UploaderFailure();
+let uploaderReader = new UploaderReader();
+let uploaderEncoder = new UploaderEncoder();
+let uploaderChecksum = new UploaderChecksum();
+let uploaderQuery = new UploaderQuery();
+let uploaderRemoteQuery = new UploaderRemoteQuery();
+let uploaderHandler = new UploaderHandler();
+let uploaderRenderer = new UploaderRenderer();
 
 

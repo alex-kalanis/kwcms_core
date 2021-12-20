@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Upload;
 
 
+use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\ATemplate;
 
 
@@ -23,6 +24,24 @@ class UploadTemplate extends ATemplate
         $this->addInput('{TRIM_PATH}', "//upload-file/trim/");
         $this->addInput('{FILE_PATH}', "//upload-file/file/");
         $this->addInput('{DONE_PATH}', "//upload-file/done/");
+
+        $this->addInput('{BUTTON_START}', Lang::get('upload.button.start'));
+        $this->addInput('{BUTTON_ABORT}', Lang::get('upload.button.abort'));
+        $this->addInput('{BUTTON_CLEAR}', Lang::get('upload.button.clear'));
+        $this->addInput('{BUTTON_RETRY}', Lang::get('upload.button.retry'));
+        $this->addInput('{BUTTON_RESUME}', Lang::get('upload.button.resume'));
+        $this->addInput('{BUTTON_STOP}', Lang::get('upload.button.stop'));
+
+        $this->addInput('{FILE_NAME}', Lang::get('upload.form.file_name'));
+        $this->addInput('{LANG_ELAPSED_TIME}', Lang::get('upload.form.elapsed_time'));
+        $this->addInput('{LANG_ESTIMATED_TIME}', Lang::get('upload.form.estimated_time'));
+        $this->addInput('{LANG_ESTIMATED_SPEED}', Lang::get('upload.form.estimated_speed'));
+
+        $this->addInput('{VALUE_ELAPSED_TIME}', '');
+        $this->addInput('{VALUE_ESTIMATED_TIME}', '');
+        $this->addInput('{VALUE_CURRENT_POSITION}', '');
+        $this->addInput('{VALUE_TOTAL_LENGTH}', '');
+        $this->addInput('{VALUE_ESTIMATED_SPEED}', '');
     }
 
     public function setData(string $initPath, string $checkPath, string $cancelPath, string $trimPath, string $filePath, string $donePath): self
