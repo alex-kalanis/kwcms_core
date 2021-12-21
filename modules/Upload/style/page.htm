@@ -36,6 +36,13 @@
     <div class="clearfix" ></div>
 </div>
 <script type="text/javascript">
+	/** rewrite translations */
+	uploadTranslations.readFileCannotSlice = "{SCRIPT_READ_FILE_CANNOT_SLICE}";
+	uploadTranslations.initReturnsFollowingError = "{SCRIPT_INIT_RETURNS_ERROR}";
+	uploadTranslations.initReturnsSomethingFailed = "{SCRIPT_INIT_RETURNS_FAIL}";
+	uploadTranslations.checkerReturnsSomethingFailed = "{SCRIPT_CHECK_RETURNS_FAIL}";
+	uploadTranslations.dataUploadReturnsSomethingFailed = "{SCRIPT_DATA_RETURNS_FAIL}";
+	uploadTranslations.doneReturnsSomethingFailed = "{SCRIPT_DONE_RETURNS_FAIL}";
 	/** rewrite renderer */
 	uploaderRenderer.renderFileItem = function(uploadedFile) {
 		let progressBasicBox = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.baseProgress);
@@ -64,6 +71,18 @@
 		let button = node.find("button.button_retry").first();
 		button[0].removeAttribute("disabled");
 	};
+	uploaderRenderer.renderFinished = function(uploadedFile) {
+		uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime(uploadedFile)));
+		uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, 100));
+		uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.currentPosition, uploaderRenderer.calculateSize(uploadedFile.fileSize));
+		uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.totalSize, uploaderRenderer.calculateSize(uploadedFile.fileSize));
+		uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedSpeed, uploaderRenderer.calculateSize(0));
+		uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.percentsComplete, "100%");
+
+		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
+		let button = node.find("button").first();
+		button[0].setAttribute("disabled", "disabled");
+	};
 	uploaderRenderer.startRead = function(uploadedFile) {
 		uploaderRenderer.startTime = uploaderRenderer.getCurrentTime();
 		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
@@ -85,7 +104,7 @@
 		let checkedPercent = uploaderRenderer.calculateCheckedPercent(uploadedFile);
 		let uploadPercent = uploaderRenderer.calculatePercent(uploadedFile);
 
-		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .elapsed_time", uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime()));
+		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .elapsed_time", uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime(uploadedFile)));
 		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .est_time_left", uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, uploadPercent));
 		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .current_position", uploaderRenderer.calculateSize(uploadedFile.lastKnownPart * uploadedFile.partSize));
 		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .total_kbytes", uploaderRenderer.calculateSize(uploadedFile.fileSize));
@@ -93,10 +112,10 @@
 		uploaderRenderer.upQuery.setObjectContent(uploadedFile.localId + " .percent_complete", uploadPercent.toString() + "%");
 
 		let percentDone = node.find(".progressbar-wrapper .uploaded").first();
-		percentDone[0].style.width = (uploadPercent - checkedPercent).toString() + "%";
+		percentDone[0].style.paddingLeft = (uploadPercent - checkedPercent).toString() + "%";
 
 		let percentChecked = node.find(".progressbar-wrapper .checked").first();
-		percentChecked[0].style.width = checkedPercent.toString() + "%";
+		percentChecked[0].style.paddingLeft = checkedPercent.toString() + "%";
 	};
 	uploaderRenderer.updateStatus = function(uploadedFile, status) {
 		let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);

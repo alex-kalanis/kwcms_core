@@ -37,6 +37,13 @@ class UploadTemplate extends ATemplate
         $this->addInput('{LANG_ESTIMATED_TIME}', Lang::get('upload.form.estimated_time'));
         $this->addInput('{LANG_ESTIMATED_SPEED}', Lang::get('upload.form.estimated_speed'));
 
+        $this->addInput('{SCRIPT_READ_FILE_CANNOT_SLICE}', Lang::get('upload.script.read_file_cannot_slice'));
+        $this->addInput('{SCRIPT_INIT_RETURNS_ERROR}', Lang::get('upload.script.init_returns_following_error'));
+        $this->addInput('{SCRIPT_INIT_RETURNS_FAIL}', Lang::get('upload.script.init_returns_something_failed'));
+        $this->addInput('{SCRIPT_CHECK_RETURNS_FAIL}', Lang::get('upload.script.checker_returns_something_failed'));
+        $this->addInput('{SCRIPT_DATA_RETURNS_FAIL}', Lang::get('upload.script.data_upload_returns_something_failed'));
+        $this->addInput('{SCRIPT_DONE_RETURNS_FAIL}', Lang::get('upload.script.done_returns_something_failed'));
+
         $this->addInput('{VALUE_ELAPSED_TIME}', '');
         $this->addInput('{VALUE_ESTIMATED_TIME}', '');
         $this->addInput('{VALUE_CURRENT_POSITION}', '');

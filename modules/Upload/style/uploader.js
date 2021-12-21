@@ -81,6 +81,8 @@ let UploadedFile = function () {
     this.partSize = 0;
     /** @var {string} when it dies... */
     this.errorMessage = "";
+    /** @var {number} when the upload starts */
+    this.startTime = 0;
 
     // setters
     /**
@@ -309,6 +311,7 @@ let UploadInit = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.process = function(uploadedFile) {
+        uploadedFile.startTime = uploadInit.upRenderer.getCurrentTime();
         uploadInit.upRenderer.updateBar(uploadedFile);
         uploadInit.upQuery.begin(
             {
@@ -1195,8 +1198,6 @@ let UploaderHandler = function () {
  * Usually main candidate to customization
  */
 let UploaderRenderer = function () {
-    /** @var {numeric} */
-    this.startTime = 0;
     /** @var {UploadIdentification} */
     this.upIdent = null;
     /** @var {UploaderQuery} */
@@ -1250,11 +1251,11 @@ let UploaderRenderer = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.renderFinished = function(uploadedFile) {
-        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime()));
-        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile,100));
+        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime(uploadedFile)));
+        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, 100));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.currentPosition, uploaderRenderer.calculateSize(uploadedFile.fileSize));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.totalSize, uploaderRenderer.calculateSize(uploadedFile.fileSize));
-        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedSpeed, uploaderRenderer.calculateSize(uploadedFile.fileSize));
+        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedSpeed, uploaderRenderer.calculateSize(0));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.percentsComplete, "100%"); // percents
 
         let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
@@ -1275,7 +1276,6 @@ let UploaderRenderer = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.startRead = function(uploadedFile) {
-        uploaderRenderer.startTime = uploaderRenderer.getCurrentTime();
         let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
         let button = node.find("button").eq(2);
         button.removeAttr("disabled");
@@ -1306,7 +1306,7 @@ let UploaderRenderer = function () {
         let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
         let percent = uploaderRenderer.calculatePercent(uploadedFile);
 
-        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime()));
+        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime(uploadedFile)));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, percent));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.currentPosition, uploaderRenderer.calculateSize(uploadedFile.lastKnownPart * uploadedFile.partSize));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.totalSize, uploaderRenderer.calculateSize(uploadedFile.fileSize));
@@ -1335,7 +1335,7 @@ let UploaderRenderer = function () {
      * @return {string}
      */
     this.calculateEstimatedTimeLeft = function(uploadedFile, percentDone) {
-        let spend = uploaderRenderer.getElapsedTime();
+        let spend = uploaderRenderer.getElapsedTime(uploadedFile);
         if (percentDone > 0) {
             let fullTime = 100 * (spend / percentDone);
             return uploaderRenderer.formatTime(Math.abs(fullTime - spend));
@@ -1358,7 +1358,7 @@ let UploaderRenderer = function () {
 
     /**
      * @param {number} number
-     * @param {numeric} length
+     * @param {number} length
      * @return {string}
      */
     this.pad = function(number, length) {
@@ -1390,26 +1390,25 @@ let UploaderRenderer = function () {
     };
 
     /**
-     * calculate processing speed
+     * calculate processing speed - bytes/second
      * @param {UploadedFile} uploadedFile
-     * @return {numeric}
+     * @return {number}
      */
     this.calculateSpeed = function(uploadedFile) {
-        let elapsedTime = uploaderRenderer.getElapsedTime();
+        let elapsedTime = uploaderRenderer.getElapsedTime(uploadedFile);
 
         if (elapsedTime < 1) {
             return 0;
         }
-        let partsProcessed = uploadedFile.totalParts - uploadedFile.lastKnownPart;
-        if (partsProcessed == 0) {
+        if (0 == uploadedFile.lastKnownPart) {
             return 0;
         }
-        return partsProcessed / elapsedTime;
+        return (uploadedFile.totalParts * elapsedTime * 100) / uploadedFile.lastKnownPart;
     };
 
     /**
      * calculate sizes
-     * @param {numeric} bytesProcessed
+     * @param {number} bytesProcessed
      * @return {string}
      */
     this.calculateSize = function(bytesProcessed) {
@@ -1425,18 +1424,19 @@ let UploaderRenderer = function () {
 
     /**
      * amount of passed seconds
-     * @return int
+     * @param {UploadedFile} uploadedFile
+     * @return {number}
      */
-    this.getElapsedTime = function() {
-        return uploaderRenderer.getCurrentTime() - uploaderRenderer.startTime;
+    this.getElapsedTime = function(uploadedFile) {
+        return uploaderRenderer.getCurrentTime() - uploadedFile.startTime;
     };
 
     /**
      * current time for init and calculations
-     * @return int
+     * @return {number}
      */
     this.getCurrentTime = function() {
-        return new Date().getTime() / 1000;
+        return Math.round(new Date().getTime() / 1000);
     }
 };
 

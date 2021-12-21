@@ -7,6 +7,7 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
+use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -14,7 +15,6 @@ use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree\TWhereDir;
-use kalanis\UploadPerPartes;
 use kalanis\UploadPerPartes\Response;
 use KWCMS\modules\Admin\Shared;
 use KWCMS\modules\Files\Lib as FileLib;
@@ -32,14 +32,14 @@ class Upload extends AAuthModule implements IModuleTitle
     use TWhereDir;
 
     protected $inSteps = '';
-    /** @var UploadPerPartes\Uploader */
+    /** @var Lib\Uploader */
     protected $lib = null;
 
     public function __construct()
     {
         $this->initTModuleTemplate();
         Config::load('Upload');
-        $this->lib = new UploadPerPartes\Uploader();
+        $this->lib = new Lib\Uploader();
     }
 
     final public function allowedAccessClasses(): array
@@ -161,6 +161,6 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return 'Upload files';
+        return Lang::get('upload.page');
     }
 }
