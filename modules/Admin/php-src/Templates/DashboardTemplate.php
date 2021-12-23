@@ -28,6 +28,7 @@ class DashboardTemplate extends ATemplate
         $this->addInput('{TO_DOWN}', Lang::get('system.to_down'));
         $this->addInput('{LOGOUT}', Lang::get('menu.logout'));
         $this->addInput('{CHSETT}', Lang::get('menu.chsett'));
+        $this->addInput('{PERSONAL}', Lang::get('menu.personal'));
     }
 
     public function setData(IUser $user, string $content, string $menu = ''): self

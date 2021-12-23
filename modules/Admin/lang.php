@@ -54,6 +54,7 @@ $lang = [
         "dashboard.button_yes"=>"Yes",
         "dashboard.button_no"=>"No",
 
+        "menu.personal" => "Personal info",
         "menu.chsett" => "Change settings",
         "menu.logout" => "Logout",
 
@@ -186,6 +187,7 @@ $lang = [
         "dashboard.button_yes"=>"Ano",
         "dashboard.button_no"=>"Ne",
 
+        "menu.personal" => "Osobn&#x00ED;",
         "menu.chsett" => "Zm&#x011B;na nastaven&#x00ED;",
         "menu.logout" => "Odhl&#x00E1;&#x0161;en&#x00ED;",
 

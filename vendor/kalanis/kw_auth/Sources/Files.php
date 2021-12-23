@@ -272,10 +272,19 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $this->checkLock();
 
         $this->lock->create();
+        $oldName = null;
         $passwordLines = $this->openPassword();
         foreach ($passwordLines as &$line) {
-            if ($line[static::PW_NAME] == $userName) {
+            if (($line[static::PW_NAME] == $userName) && ($line[static::PW_ID] != $user->getAuthId())) {
+                $this->lock->delete();
+                throw new AuthException('Login name already exists!');
+            }
+            if ($line[static::PW_ID] == $user->getAuthId()) {
                 // REFILL
+                if (!empty($userName) && $userName != $line[static::PW_NAME]) {
+                    $oldName = $line[static::PW_NAME];
+                    $line[static::PW_NAME] = $userName;
+                }
                 $line[static::PW_GROUP] = !empty($user->getGroup()) ? $user->getGroup() : $line[static::PW_GROUP] ;
                 $line[static::PW_CLASS] = !empty($user->getClass()) ? $user->getClass() : $line[static::PW_CLASS] ;
                 $line[static::PW_DISPLAY] = !empty($displayName) ? $displayName : $line[static::PW_DISPLAY] ;
@@ -284,6 +293,16 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         }
 
         $this->savePassword($passwordLines);
+
+        if (!is_null($oldName)) {
+            $lines = $this->openShadow();
+            foreach ($lines as &$line) {
+                if ($line[static::SH_NAME] == $oldName) {
+                    $line[static::SH_NAME] = $userName;
+                }
+            }
+            $this->saveShadow($lines);
+        }
         $this->lock->delete();
     }
 
