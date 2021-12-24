@@ -23,10 +23,10 @@ class ModuleTemplate extends ATemplate
         $this->addInput('{LINK_ADD_USER}', '#');
         $this->addInput('{LINK_GROUPS}', '#');
         $this->addInput('{LINK_ADD_GROUP}', '#');
-        $this->addInput('{TEXT_DASHBOARD}', Lang::get('chsett.users'));
-        $this->addInput('{TEXT_ADD_USER}', Lang::get('chsett.add_user'));
-        $this->addInput('{TEXT_GROUPS}', Lang::get('chsett.groups'));
-        $this->addInput('{TEXT_ADD_GROUP}', Lang::get('chsett.add_group'));
+        $this->addInput('{TEXT_DASHBOARD}', Lang::get('chsett.module.users'));
+        $this->addInput('{TEXT_ADD_USER}', Lang::get('chsett.module.add_user'));
+        $this->addInput('{TEXT_GROUPS}', Lang::get('chsett.module.groups'));
+        $this->addInput('{TEXT_ADD_GROUP}', Lang::get('chsett.module.add_group'));
     }
 
     public function setData(string $content, string $linkDashboard, string $linkAddUser, string $linkGroups, string $linkAddGroup): self

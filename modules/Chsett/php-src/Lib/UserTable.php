@@ -46,6 +46,8 @@ class UserTable
     protected $currentUser = null;
     /** @var Forward|null */
     protected $forward = null;
+    /** @var Table|null */
+    protected $table = null;
 
     public function __construct(IVariables $inputs, ExternalLink $link, Files $libAuth, IUser $currentUser)
     {
@@ -64,51 +66,51 @@ class UserTable
     public function getTable()
     {
         // full table init
-        $table = new Table();
+        $this->table = new Table();
         $inputVariables = new Adapters\InputVarsAdapter($this->variables);
         $form = new Form('filterForm');
-        $table->addHeaderFilter(new KwFilter($form));
+        $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables);
 
         // sorter links
         $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $table->addSorter($sorter);
+        $this->table->addSorter($sorter);
 
         // pager
         $pager = new BasicPager();
         $pageLink = new PageLink(new Handler(new Sources\Inputs($this->variables)), $pager);
         $pager->setActualPage($pageLink->getPageNumber());
-        $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
+        $this->table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         // now normal code - columns
-        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $this->table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
 
-        $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
+        $this->table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('chsett.id'), $columnUserId );
+        $this->table->addSortedColumn(Lang::get('chsett.table.id'), $columnUserId );
 
-        $table->addSortedColumn(Lang::get('chsett.login'), new Columns\Basic('login'), new Fields\TextContains());
-        $table->addSortedColumn(Lang::get('chsett.dir'), new Columns\Basic('dir'), new Fields\TextContains());
+        $this->table->addSortedColumn(Lang::get('chsett.table.login'), new Columns\Basic('login'), new Fields\TextContains());
+        $this->table->addSortedColumn(Lang::get('chsett.table.dir'), new Columns\Basic('dir'), new Fields\TextContains());
 
         $groups = $this->getGroups();
-        $table->addSortedColumn(Lang::get('chsett.group'), new Columns\Map('group', $groups), new Fields\Options($groups));
+        $this->table->addSortedColumn(Lang::get('chsett.table.group'), new Columns\Map('group', $groups), new Fields\Options($groups));
         $classes = $this->libAuth->readClasses();
-        $table->addSortedColumn(Lang::get('chsett.class'), new Columns\Map('class', $classes), new Fields\Options($classes));
-        $table->addSortedColumn(Lang::get('chsett.name'), new Columns\Bold('name'), new Fields\TextContains());
+        $this->table->addSortedColumn(Lang::get('chsett.table.class'), new Columns\Map('class', $classes), new Fields\Options($classes));
+        $this->table->addSortedColumn(Lang::get('chsett.table.name'), new Columns\Bold('name'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
         $columnActions->addColumn(new Columns\Func('id', [$this, 'deleteLink']));
         $columnActions->style('width:100px', new Rules\Always());
 
-        $table->addColumn(Lang::get('chsett.actions'), $columnActions);
+        $this->table->addColumn(Lang::get('chsett.table.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSetConnector(new ConnectUserArray($this->libAuth->readAccounts()));
-        $table->setOutput(new KwRenderer($table));
-        return $table;
+        $this->table->addDataSetConnector(new ConnectUserArray($this->libAuth->readAccounts(), 'id'));
+        $this->table->setOutput(new KwRenderer($this->table));
+        return $this->table;
     }
 
     protected function getGroups(): array
@@ -129,7 +131,8 @@ class UserTable
 
     public function idLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('chsett/edit/?id=' . $id));
+        $user = $this->table->getDataSetConnector()->getByKey($id);
+        $this->forward->setLink($this->link->linkVariant('chsett/user/edit/?name=' . $user->getValue('login')));
         $this->forward->setForward($this->link->linkVariant('chsett'));
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
@@ -139,17 +142,19 @@ class UserTable
 
     public function editLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('chsett/edit/?id=' . $id));
+        $user = $this->table->getDataSetConnector()->getByKey($id);
+        $this->forward->setLink($this->link->linkVariant('chsett/user/edit/?name=' . $user->getValue('login')));
         $this->forward->setForward($this->link->linkVariant('chsett'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
             $this->forward->getLink(),
-            Lang::get('chsett.update_user')
+            Lang::get('chsett.edit_user')
         );
     }
 
     public function deleteLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('chsett/delete/?id=' . $id));
+        $user = $this->table->getDataSetConnector()->getByKey($id);
+        $this->forward->setLink($this->link->linkVariant('chsett/user/delete/?name=' . $user->getValue('login')));
         $this->forward->setForward($this->link->linkVariant('chsett'));
         return sprintf('<a href="%s" title="%s" class="button button-delete"> &#x1F7AE; </a>',
             $this->forward->getLink(),

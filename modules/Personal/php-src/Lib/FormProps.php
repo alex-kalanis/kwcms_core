@@ -9,13 +9,14 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
 /**
  * Class FormProps
  * @package KWCMS\modules\Personal\Lib
- * Edit description of dir/file
+ * Edit properties of single user
  * @property Controls\Text loginName
  * @property Controls\Text displayName
  * @property Controls\Textarea pubKey
@@ -25,6 +26,11 @@ use kalanis\kw_rules\Interfaces\IRules;
  */
 class FormProps extends Form
 {
+    /**
+     * @param IUser $user
+     * @return $this
+     * @throws RuleException
+     */
     public function composeForm(IUser $user): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
@@ -39,7 +45,7 @@ class FormProps extends Form
 
     public function addCerts(IUserCert $user): self
     {
-        $this->addTextarea('pubKey', Lang::get('personal.public_key'), $user->getPubKey(), ['rows' => 10, 'cols' => 40]);
+        $this->addTextarea('pubKey', Lang::get('personal.public_key'), $user->getPubKey(), ['rows' => 10, 'cols' => 70]);
         $this->addText('pubSalt', Lang::get('personal.public_salt'), $user->getPubSalt());
         return $this;
     }

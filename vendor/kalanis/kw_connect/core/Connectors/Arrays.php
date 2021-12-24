@@ -21,6 +21,8 @@ use kalanis\kw_connect\core\Rows\Arrays as RowArray;
  */
 class Arrays extends AConnector implements IConnector
 {
+    /** @var string */
+    protected $primaryKey = null;
     /** @var array */
     protected $dataSource = [];
     /** @var string[][] */
@@ -36,9 +38,10 @@ class Arrays extends AConnector implements IConnector
     /** @var int|null */
     protected $limit = null;
 
-    public function __construct(array $source)
+    public function __construct(array $source, ?string $primaryKey = null)
     {
         $this->dataSource = $source;
+        $this->primaryKey = $primaryKey;
     }
 
     public function setFiltering(string $colName, $value, IFilterType $type): void
@@ -109,6 +112,19 @@ class Arrays extends AConnector implements IConnector
 
         $this->filteredData = $filtered->getArray();
         $this->translatedData = array_slice($filtered->getArray(), intval($this->offset), $this->limit);
+        if (!empty($this->primaryKey)) {
+            $this->translatedData = array_combine(array_map([$this, 'rowsPk'], $this->translatedData), $this->translatedData);
+        }
+    }
+
+    /**
+     * @param IRow $row
+     * @return string
+     * @throws ConnectException
+     */
+    public function rowsPk(IRow $row): string
+    {
+        return strval($row->getValue($this->primaryKey));
     }
 
     /**

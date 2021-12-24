@@ -6,6 +6,7 @@ namespace KWCMS\modules\Chsett\Lib;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
+use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_connect\core\ConnectException;
@@ -14,6 +15,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_pager\BasicPager;
@@ -59,6 +61,8 @@ class GroupTable
      * @return Table
      * @throws ConnectException
      * @throws FormsException
+     * @throws AuthException
+     * @throws LockException
      */
     public function getTable()
     {
@@ -86,7 +90,7 @@ class GroupTable
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('chsett.id'), $columnUserId );
+        $table->addSortedColumn(Lang::get('chsett.group_id'), $columnUserId );
 
         $table->addSortedColumn(Lang::get('chsett.group_name'), new Columns\Basic('name'), new Fields\TextContains());
         $table->addSortedColumn(Lang::get('chsett.group_desc'), new Columns\Basic('desc'), new Fields\TextContains());
@@ -96,7 +100,7 @@ class GroupTable
         $columnActions->addColumn(new Columns\Func('id', [$this, 'deleteLink']));
         $columnActions->style('width:100px', new Rules\Always());
 
-        $table->addColumn(Lang::get('chsett.actions'), $columnActions);
+        $table->addColumn(Lang::get('chsett.table.actions'), $columnActions);
 
         $pager->setLimit(10);
         $table->addDataSetConnector(new ConnectGroupArray($this->libAuth->readGroup()));
@@ -120,7 +124,7 @@ class GroupTable
         $this->forward->setForward($this->link->linkVariant('chsett/groups'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
             $this->forward->getLink(),
-            Lang::get('chsett.update_group')
+            Lang::get('chsett.edit_group')
         );
     }
 

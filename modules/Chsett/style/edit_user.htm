@@ -1,0 +1,17 @@
+ <div id="update">
+  {FORM_START}
+   {FORM_ERRORS}
+   <fieldset><legend>{RECORD_ACTION}</legend><table>
+     <tbody>
+      <tr><td><label> {LABEL_LOGIN} : {INPUT_LOGIN}</label> {ERROR_LOGIN}</td></tr>
+      <tr><td><label> {LABEL_DISPLAY}: {INPUT_DISPLAY}</label> {ERROR_DISPLAY}</td></tr>
+     {PASS_TEMPLATE}
+      <tr><td><label> {LABEL_GROUP}: {INPUT_GROUP}</label> {ERROR_GROUP}</td></tr>
+      <tr><td><label> {LABEL_CLASS}: {INPUT_CLASS}</label> {ERROR_CLASS}</td></tr>
+      <tr><td><label> {LABEL_DIR}: {INPUT_DIR}</label> {ERROR_DIR}</td></tr>
+     {CERT_TEMPLATE}
+     </tbody></table>
+    {INPUT_SUBMIT} &nbsp; {INPUT_RESET}
+   </fieldset>
+  {FORM_END}
+ </div>

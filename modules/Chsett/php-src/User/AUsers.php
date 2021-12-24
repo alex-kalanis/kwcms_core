@@ -1,67 +1,59 @@
 <?php
 
-namespace KWCMS\modules\Personal;
+namespace KWCMS\modules\Chsett\User;
 
 
+use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Sources\Files;
-use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_rules\Exceptions\RuleException;
 use KWCMS\modules\Admin\Shared;
+use KWCMS\modules\Chsett\Lib;
+use KWCMS\modules\Chsett\Templates;
 
 
 /**
- * Class Pass
- * @package KWCMS\modules\Personal
- * Site's users - personal password
+ * Class AGroups
+ * @package KWCMS\modules\Chsett\User
+ * Site's groups - edit one
  */
-class Pass extends AAuthModule implements IModuleTitle
+abstract class AUsers extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
     /** @var Files|null */
     protected $libAuth = null;
-    /** @var Lib\FormPass|null */
+    /** @var IUser|null */
+    protected $editUser = null;
+    /** @var Lib\FormUsers|null */
     protected $form = null;
+    /** @var Forward */
+    protected $forward = null;
     /** @var bool */
     protected $isProcessed = false;
+    /** @var bool */
+    protected $redirect = false;
 
     public function __construct()
     {
         $this->initTModuleTemplate();
         $this->libAuth = Auth::getAuthenticator();
-        $this->form = new Lib\FormPass();
+        $this->form = new Lib\FormUsers();
+        $this->forward = new Forward();
+        $this->forward->setSource(new ServerRequest());
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
-    }
-
-    public function run(): void
-    {
-        try {
-            $this->form->composeForm();
-            $this->form->setInputs(new InputVarsAdapter($this->inputs));
-            if ($this->form->process()) {
-                $values = $this->form->getValues();
-                if ($this->libAuth->authenticate($this->user->getAuthName(), ['password' => $values['currentPass']])) {
-                    $this->libAuth->updatePassword($this->user->getAuthName(), $values['newPass']);
-                    $this->isProcessed = true;
-                }
-            }
-        } catch (AuthException | FormsException | LockException | RuleException $ex) {
-            $this->error = $ex;
-        }
+        return [IAccessClasses::CLASS_MAINTAINER ];
     }
 
     public function result(): Output\AOutput
@@ -79,14 +71,32 @@ class Pass extends AAuthModule implements IModuleTitle
                 Notification::addError($this->error->getMessage());
             }
             if ($this->isProcessed) {
-                Notification::addSuccess(Lang::get('personal.password_updated'));
+                Notification::addSuccess($this->getSuccessTitle($this->editUser->getDisplayName()));
+                if ($this->redirect) {
+                    $this->forward->forward();
+                    $this->forward->setForward($this->links->linkVariant('chsett/dashboard'));
+                    $this->forward->forward();
+                }
             }
-            $editTmpl = new Templates\PassTemplate();
-            return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form)->render()));
+            $editTmpl = new Templates\EditUserTemplate();
+            $editTmpl->setData($this->form, $this->getFormTitle());
+            if ($this->form->getControl('pass')) {
+                $passTmpl = new Templates\EditPassTemplate();
+                $editTmpl->addPass($passTmpl->setData($this->form)->render());
+            }
+            if ($this->form->getControl('pubKey')) {
+                $certTmpl = new Templates\EditCertTemplate();
+                $editTmpl->addCerts($certTmpl->setData($this->form)->render());
+            }
+            return $out->setContent($this->outModuleTemplate($editTmpl->render()));
         } catch ( FormsException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
+
+    abstract protected function getFormTitle(): string;
+
+    abstract protected function getSuccessTitle(string $name): string;
 
     public function outJson(): Output\AOutput
     {
@@ -104,6 +114,6 @@ class Pass extends AAuthModule implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('personal.page');
+        return Lang::get('chsett.page');
     }
 }

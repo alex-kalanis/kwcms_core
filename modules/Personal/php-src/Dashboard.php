@@ -6,6 +6,7 @@ namespace KWCMS\modules\Personal;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Interfaces\IUserCert;
 use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -16,6 +17,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_rules\Exceptions\RuleException;
 use KWCMS\modules\Admin\Shared;
 
 
@@ -30,6 +32,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     /** @var Files|null */
     protected $libAuth = null;
+    /** @var IUserCert|IUser|null */
+    protected $editUser = null;
     /** @var Lib\FormProps|null */
     protected $form = null;
     /** @var bool */
@@ -50,25 +54,29 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         try {
-            $this->form->composeForm($this->user);
-            if ($this->user instanceof IUserCert) {
-                $this->form->addCerts($this->user);
+            $this->editUser = $this->user instanceof IUserCert
+                ? $this->libAuth->getCertData($this->user->getAuthName())
+                : $this->user
+            ;
+            $this->form->composeForm($this->editUser);
+            if ($this->editUser instanceof IUserCert) {
+                $this->form->addCerts($this->editUser);
             }
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
                 $values = $this->form->getValues();
-                $this->user->setData(
-                    $this->user->getAuthId(),
+                $this->editUser->setData(
+                    $this->editUser->getAuthId(),
                     $values['loginName'],
-                    $this->user->getGroup(),
-                    $this->user->getClass(),
+                    $this->editUser->getGroup(),
+                    $this->editUser->getClass(),
                     $values['displayName'],
-                    $this->user->getDir()
+                    $this->editUser->getDir()
                 );
-                $this->libAuth->updateAccount($this->user);
-                if ($this->user instanceof IUserCert) {
+                $this->libAuth->updateAccount($this->editUser);
+                if ($this->editUser instanceof IUserCert) {
                     $this->libAuth->updateCertKeys(
-                        $this->user->getAuthName(),
+                        $this->editUser->getAuthName(),
                         $values['pubKey'],
                         $values['pubSalt']
                     );
@@ -76,7 +84,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->isProcessed = true;
             }
 
-        } catch (AuthException | FormsException | LockException $ex) {
+        } catch (AuthException | FormsException | LockException | RuleException $ex) {
             $this->error = $ex;
         }
     }
@@ -99,7 +107,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 Notification::addSuccess(Lang::get('personal.properties_updated'));
             }
             $editTmpl = new Templates\EditTemplate();
-            if ($this->user instanceof IUserCert) {
+            if ($this->editUser instanceof IUserCert) {
                 $certTmpl = new Templates\CertTemplate();
                 $editTmpl->addCerts($certTmpl->setData($this->form)->render());
             }

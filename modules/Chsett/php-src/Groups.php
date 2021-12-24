@@ -4,11 +4,13 @@ namespace KWCMS\modules\Chsett;
 
 
 use kalanis\kw_auth\Auth;
+use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -59,7 +61,7 @@ class Groups extends AAuthModule implements IModuleTitle
         try {
             $table = new Lib\GroupTable($this->inputs, $this->links, $this->libAuth, $this->user);
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
-        } catch ( FormsException | TableException | ConnectException $ex) {
+        } catch ( FormsException | TableException | ConnectException | AuthException | LockException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
