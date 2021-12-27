@@ -57,4 +57,13 @@ class Support
             return strtoupper($moduleName);
         }
     }
+
+    public static function linkModuleName(string $moduleName): string
+    {
+        if (false !== preg_match_all('#([A-Z][a-z0-9]*)#u', $moduleName, $matches)) {
+            return implode('-', array_map('strtolower', $matches[1]));
+        } else {
+            return strtoupper($moduleName);
+        }
+    }
 }

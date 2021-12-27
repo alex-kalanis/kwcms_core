@@ -45,8 +45,8 @@ class Core extends AModule
         $this->moduleProcessor->setLevel(ISitePart::SITE_RESPONSE);
         $defaultModuleName = Config::get('Core', 'site.default_display_module', 'Layout');
         $wantModuleName = Config::getPath()->getModule() ?: $defaultModuleName ;
-        $moduleRecord = $this->moduleProcessor->read($wantModuleName);
-        $moduleRecord = $moduleRecord ?: $this->moduleProcessor->read($defaultModuleName);
+        $moduleRecord = $this->moduleProcessor->readNormalized($wantModuleName);
+        $moduleRecord = $moduleRecord ?: $this->moduleProcessor->readNormalized($defaultModuleName);
 
         if (empty($moduleRecord)) {
             throw new ModuleException(sprintf('Module *%s* not found, not even *%s*!', $wantModuleName, $defaultModuleName));

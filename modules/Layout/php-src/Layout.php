@@ -52,8 +52,8 @@ class Layout extends AModule
         $this->moduleProcessor->setLevel(ISitePart::SITE_LAYOUT);
         $defaultModuleName = Config::get('Core', 'page.default_display_module', 'Page');
         $wantModuleName = Config::getPath()->getModule() ?: $defaultModuleName ;
-        $moduleRecord = $this->moduleProcessor->read($wantModuleName);
-        $moduleRecord = $moduleRecord ?? $this->moduleProcessor->read($defaultModuleName);
+        $moduleRecord = $this->moduleProcessor->readNormalized($wantModuleName);
+        $moduleRecord = $moduleRecord ?? $this->moduleProcessor->readNormalized($defaultModuleName);
 
         if (empty($moduleRecord)) {
             throw new ModuleException(sprintf('Module *%s* not found!', $wantModuleName));

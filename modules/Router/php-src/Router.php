@@ -49,7 +49,10 @@ class Router extends AModule
     {
         Config::load('Core', 'page');
         $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
+        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(
+            new ModuleRecord(),
+            Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot()
+        ));
         $this->subModules = new SubModules($this->loader, $this->moduleProcessor);
         $this->chainProcessor = new Lib\Chain\Processor();
         $this->orderLookup();

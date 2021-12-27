@@ -69,7 +69,7 @@ class SubModules
                     // do nothing
                 }
 
-                $configParams = Support::paramsIntoArray($this->moduleProcessor->read($module)->getParams());
+                $configParams = Support::paramsIntoArray($this->moduleProcessor->readNormalized($module)->getParams());
                 $moduleClass = $this->initModule($module, $inputs, [], array_merge(
                     $sharedParams, $configParams, $templateParams, [ISitePart::KEY_LEVEL => $level]
                 ));
