@@ -88,7 +88,7 @@ abstract class ChDir extends AAuthModule
 
     protected function htmlContent(string $content): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         return $out->setContent($content);
     }
 }

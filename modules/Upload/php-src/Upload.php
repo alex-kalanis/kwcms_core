@@ -16,7 +16,6 @@ use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree\TWhereDir;
 use kalanis\UploadPerPartes\Response;
-use KWCMS\modules\Admin\Shared;
 use KWCMS\modules\Files\Lib as FileLib;
 
 
@@ -68,7 +67,7 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function resultDefault(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $tmpl = new UploadTemplate();
         $tmpl->setData(
             $this->links->linkVariant('steps/init', 'upload', true),

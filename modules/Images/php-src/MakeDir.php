@@ -17,7 +17,6 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -99,7 +98,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $page = new Templates\DirNewTemplate();
         if ($this->error) {
             Notification::addError($this->error->getMessage());

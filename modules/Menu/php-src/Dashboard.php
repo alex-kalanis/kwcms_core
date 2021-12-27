@@ -14,7 +14,6 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -27,7 +26,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     use Lib\TMenu;
     use Templates\TModuleTemplate;
 
-    /** @var Lib\EditPropsForm|null */
+    /** @var Forms\EditPropsForm|null */
     protected $editPropsForm = null;
     /** @var bool */
     protected $isProcessed = false;
@@ -36,7 +35,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate(Config::getPath());
         $this->initTMenu(Config::getPath());
-        $this->editPropsForm = new Lib\EditPropsForm('editPropsForm');
+        $this->editPropsForm = new Forms\EditPropsForm('editPropsForm');
     }
 
     public function allowedAccessClasses(): array
@@ -88,7 +87,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         if (!empty($this->error)) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }

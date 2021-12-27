@@ -13,7 +13,6 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -60,7 +59,7 @@ class Names extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $table = new Lib\ItemTable($this->links);
         if (!$this->error) {
             try {

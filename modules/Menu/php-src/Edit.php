@@ -18,8 +18,6 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
-use KWCMS\modules\Menu\Lib;
 
 
 /**
@@ -115,7 +113,7 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());
@@ -124,7 +122,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 Notification::addSuccess(Lang::get('menu.updated'));
             }
             $this->forward->forward($this->isProcessed || !empty($this->error));
-            $editTmpl = new Lib\EditTemplate();
+            $editTmpl = new Templates\EditTemplate();
             Styles::want('Menu', 'menu.css');
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('menu.update_texts'))->render()));
         } catch (FormsException $ex) {

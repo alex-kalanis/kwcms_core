@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect\record;
+namespace kalanis\kw_connect\records;
 
 
 use kalanis\kw_connect\core\Connectors\AConnector;
@@ -16,7 +16,7 @@ use kalanis\kw_mapper\Records\ARecord;
 
 /**
  * Class Connector
- * @package kalanis\kw_connect\record
+ * @package kalanis\kw_connect\records
  * Data source is kw_mapper/Record
  */
 class Connector extends AConnector implements IConnector

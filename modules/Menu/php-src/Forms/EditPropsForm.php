@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Forms;
 
 
 use kalanis\kw_forms\Controls;
@@ -12,7 +12,7 @@ use kalanis\kw_menu\Menu\Menu;
 
 /**
  * Class EditPropsForm
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Forms
  * Edit properties of key in menu
  * @property Controls\Text current
  * @property Controls\Text menuName

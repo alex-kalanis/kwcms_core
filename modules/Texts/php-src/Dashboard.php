@@ -15,7 +15,6 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_tree\Adapters\ArrayAdapter;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -83,7 +82,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $page = new Lib\TextsTemplate();
         try {
             $page->setData($this->newFileForm, $this->openFileForm);

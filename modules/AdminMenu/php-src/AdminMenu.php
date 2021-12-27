@@ -165,12 +165,12 @@ class AdminMenu extends AModule
 
     protected function getTopName(): string
     {
-        return $this->getFromParam('topName', '{USERNAME}');
+        return $this->getFromParam('topName', '{MENU_USER_NAME}');
     }
 
     protected function getLinkPath(IModuleRecord $module): string
     {
-        return Support::linkModuleName($module->getModuleName());
+        return empty($module->parsedParams['link']) ? Support::linkModuleName($module->getModuleName()) : $module->parsedParams['link'] ;
     }
 
     protected function getName(IModuleRecord $module): string

@@ -9,6 +9,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
+use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -104,11 +105,18 @@ class AdminRouter extends AModule
         Styles::want('Styles', 'admin/admprint.css');
         Scripts::want('Scripts', 'admin/themes.js');
         $out = new Raw();
-        $template = new RouterTemplate();
+        $template = new Templates\RouterTemplate();
         $template->setData(
             $content->output(),
             ($this->module instanceof IModuleTitle) ? $this->module->getTitle() : ''
         );
+        if ($this->module instanceof IModuleUser && $this->module->getUser()) {
+            $tmplTop = new Templates\TopTemplate();
+            $tmplFoot = new Templates\FootTemplate();
+            $this->subModules->fill($tmplTop, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
+            $tmplTop = strtr($tmplTop->render(), ['{MENU_USER_NAME}' => $this->module->getUser()->getDisplayName()]);
+            $template->setTopRow($tmplTop)->setFootRow($tmplFoot->render());
+        }
         $this->subModules->fill($template, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
         return $out->setContent($template->render());
     }

@@ -101,7 +101,7 @@ class Login extends AAuthModule implements IModuleTitle
     protected function result(): Output\AOutput
     {
         // not used, just for api
-        return new Output\Html();
+        return new Output\Raw();
     }
 
     public function getTitle(): string

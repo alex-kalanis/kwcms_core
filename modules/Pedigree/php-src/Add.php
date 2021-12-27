@@ -22,7 +22,6 @@ use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use kalanis\kw_scripts\Scripts;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -105,7 +104,7 @@ class Add extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());

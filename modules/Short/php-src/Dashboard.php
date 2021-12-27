@@ -18,7 +18,6 @@ use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -72,7 +71,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $table = new Lib\MessageTable($this->inputs, $this->links);
         if ($this->search) {
             try {

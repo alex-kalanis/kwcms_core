@@ -10,7 +10,6 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
 use KWCMS\modules\Texts;
 
 
@@ -47,7 +46,7 @@ class Edit extends Texts\Edit
 //        Scripts::want('html-texts', 'wysiwyg-popup.js');
 //        Scripts::want('html-texts', 'wysiwyg-settings.js');
         Styles::want('html-texts', 'wysiwyg.css');
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $page = new Lib\EditTemplate();
         if ($this->isProcessed) {
             Notification::addSuccess(Lang::get('texts.file_saved'));

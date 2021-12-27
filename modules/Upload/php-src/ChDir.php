@@ -6,7 +6,6 @@ namespace KWCMS\modules\Upload;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -26,7 +25,7 @@ class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
 
     protected function htmlContent(string $content): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         return $out->setContent($this->outModuleTemplate($content));
     }
 

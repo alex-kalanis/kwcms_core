@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Menu\Lib;
+namespace KWCMS\modules\Menu\Templates;
 
 
 use kalanis\kw_modules\ATemplate;
@@ -9,7 +9,7 @@ use KWCMS\modules\Menu\Forms\EditNamesForm;
 
 /**
  * Class EditTemplate
- * @package KWCMS\modules\Menu\Lib
+ * @package KWCMS\modules\Menu\Templates
  */
 class EditTemplate extends ATemplate
 {

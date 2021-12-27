@@ -17,7 +17,6 @@ use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use kalanis\kw_table\core\TableException;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -69,7 +68,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $table = new Lib\PedigreeTable($this->inputs, $this->links, $this->entries);
         try {
             return $out->setContent($this->outModuleTemplate($table->prepareHtml()));

@@ -17,7 +17,6 @@ use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_storage\StorageException;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -108,7 +107,7 @@ class Edit extends AAuthModule implements IModuleTitle
         }
         Scripts::want('Texts', 'preview.js');
         Styles::want('Texts', 'preview.css');
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $page = new Lib\EditTemplate();
         if ($this->isProcessed) {
             Notification::addSuccess(Lang::get('texts.file_saved'));

@@ -9,7 +9,6 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -44,7 +43,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         if (!empty($this->error)) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }

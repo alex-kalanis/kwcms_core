@@ -195,9 +195,9 @@
     .menu li.separator hr {
         display: none;
     }
-    
+
     .menu ul a {
-        font-size: 0.7em; font-style: normal; font-weight: bold; /*background-color: #00ffff;*/ color: #000000;
+        font-size: 0.7em; font-style: normal; font-weight: bold; /*background-color: #00ffff;*/ /*color: #000000;*/
         display: block; height: 1.6em; padding: 0em 0em; /*border-style: solid; border-color: #006480; border-width: 3px;
         -moz-border-radius: 8px 0px;
         -webkit-border-radius: 8px 0px;
@@ -210,8 +210,8 @@
     .menu a:hover {
         text-decoration: none; font-style: italic;
     }
-    
-    .menu ul a:hover {
+
+    .menu ul ul a:hover, ul.submenu a:hover {
         /*border-style: solid; border-color: #408080; border-width: 3px; color: #000000;*/ background-color: rgba(0,128,256,0.5);/* text-decoration: none; font-style: italic;*/
     }
     
@@ -233,7 +233,7 @@
     
     .menu ul ul a {
         /* submenu style - links */
-        display: block; height: 1.6em; padding: 0em;/* border-style: solid; border-color: #006480; border-width: 3px;*/ padding-left: 10px;
+        display: block; height: 1.6em; padding: 0em;/* border-style: solid; border-color: #006480; border-width: 3px;*/ padding-left: 10px; color: #000000;
     }
     
     .menu ul li:hover>ul {
@@ -260,7 +260,7 @@
         background-color: #b40404;
     }
     
-    .icon {
+    .icon, .menu_icon {
         padding-left: 20px;
         background-repeat: no-repeat;
         background-position: 0px;
@@ -271,6 +271,8 @@
     }
     
     .menu_user {
+        color: #088a08;
+        background-color: #cef6ce;
 /*        padding-left: 0px;
         padding-right: 20px;
         background-image: url('/web/ms:sysimage/system/user.png');
@@ -281,7 +283,7 @@
         background-size: 20px 20px;
         text-transform: none;*/
     }
-    
+
     .rowmenu>ul {
         padding: 1em; margin: 0px; list-style-type: none;
     }
@@ -335,8 +337,9 @@
     .submenu ul a {
         /* submenu style - links */
         display: block; height: 1.6em; padding: 0em;/* border-style: solid; border-color: #006480; border-width: 3px;*/ padding-left: 10px;
+        color: #000000;
     }
-    
+
     .select_tree {
         text-align: left;
     }

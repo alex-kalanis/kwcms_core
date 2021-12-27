@@ -16,7 +16,6 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_rules\Exceptions\RuleException;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -73,7 +72,7 @@ class Pass extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());

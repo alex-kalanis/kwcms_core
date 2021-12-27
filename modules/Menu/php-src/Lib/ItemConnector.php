@@ -4,7 +4,7 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_connect\core\Interfaces\IRow;
-use kalanis\kw_connect\record\Connector;
+use kalanis\kw_connect\records\Connector;
 
 
 /**

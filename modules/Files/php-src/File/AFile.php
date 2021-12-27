@@ -14,7 +14,6 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 use KWCMS\modules\Files\FilesException;
 use KWCMS\modules\Files\Lib;
 
@@ -69,7 +68,7 @@ abstract class AFile extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $page = new Lib\OperationTemplate();
         if ($this->error) {
             Notification::addError($this->error->getMessage());

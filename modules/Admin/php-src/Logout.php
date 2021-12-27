@@ -3,7 +3,6 @@
 namespace KWCMS\modules\Admin;
 
 
-use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
@@ -28,12 +27,21 @@ class Logout extends AAuthModule implements IModuleTitle
 
     protected function run(): void
     {
-        $this->getAuthTree()->getMethod()->remove();
+        $method = $this->getAuthTree()->getMethod();
+        if ($method) {
+            $method->remove();
+        }
+        $this->user = null;
     }
 
     public function allowedAccessClasses(): array
     {
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+    }
+
+    public function output(): Output\AOutput
+    {
+        return $this->result();
     }
 
     protected function result(): Output\AOutput
