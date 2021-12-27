@@ -31,9 +31,9 @@ class DashboardTemplate extends ATemplate
         $this->addInput('{PERSONAL}', Lang::get('menu.personal'));
     }
 
-    public function setData(IUser $user, string $content, string $menu = ''): self
+    public function setData(?IUser $user, string $content, string $menu = ''): self
     {
-        $this->updateItem('{USERNAME}', $user->getDisplayName());
+        $this->updateItem('{USERNAME}', $user ? $user->getDisplayName() : '');
         $this->updateItem('{CONTENT}', $content);
         $this->updateItem('{MENU}', $menu);
         return $this;

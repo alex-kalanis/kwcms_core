@@ -44,9 +44,10 @@ class Core extends AModule
     {
         $this->moduleProcessor->setLevel(ISitePart::SITE_RESPONSE);
         $defaultModuleName = Config::get('Core', 'site.default_display_module', 'Layout');
-        $wantModuleName = Config::getPath()->getModule() ?: $defaultModuleName ;
-        $moduleRecord = $this->moduleProcessor->readNormalized($wantModuleName);
+        $wantModuleName = Config::getPath()->getModule() ;
+        $moduleRecord = $wantModuleName ? $this->moduleProcessor->readNormalized($wantModuleName) : $this->moduleProcessor->readDirect($defaultModuleName);
         $moduleRecord = $moduleRecord ?: $this->moduleProcessor->readNormalized($defaultModuleName);
+        $moduleRecord = $moduleRecord ?: $this->moduleProcessor->readDirect($defaultModuleName);
 
         if (empty($moduleRecord)) {
             throw new ModuleException(sprintf('Module *%s* not found, not even *%s*!', $wantModuleName, $defaultModuleName));
@@ -69,7 +70,7 @@ class Core extends AModule
      */
     protected function modulesWithPassingParams(): array
     {
-        return ['Layout', 'Router', 'SinglePage'];
+        return ['Layout', 'AdminRouter', 'SinglePage'];
     }
 
     public function output(): AOutput

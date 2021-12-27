@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Router\Lib\Chain;
+namespace KWCMS\modules\AdminRouter\Lib\Chain;
 
 
 use kalanis\kw_input\Entries\Entry;
@@ -14,7 +14,7 @@ use kalanis\kw_paths\Path;
 
 /**
  * Class AChain
- * @package KWCMS\modules\Router\Lib\Chain
+ * @package KWCMS\modules\AdminRouter\Lib\Chain
  * Chain of Responsibility for loading routes
  */
 abstract class AChain

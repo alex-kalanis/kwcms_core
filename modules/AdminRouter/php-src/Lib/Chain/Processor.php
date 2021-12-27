@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Router\Lib\Chain;
+namespace KWCMS\modules\AdminRouter\Lib\Chain;
 
 
 use kalanis\kw_input\Entries\Entry;
@@ -13,7 +13,7 @@ use Throwable;
 
 /**
  * Class Processor
- * @package KWCMS\modules\Router\Lib\Chain
+ * @package KWCMS\modules\AdminRouter\Lib\Chain
  * Chain of Responsibility for loading routes - main processor
  */
 class Processor

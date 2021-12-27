@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Router\Lib\Chain;
+namespace KWCMS\modules\AdminRouter\Lib\Chain;
 
 
 use kalanis\kw_confs\Config;
@@ -10,7 +10,7 @@ use kalanis\kw_modules\Processing\Support;
 
 /**
  * Class AdminDashboard
- * @package KWCMS\modules\Router\Lib\Chain
+ * @package KWCMS\modules\AdminRouter\Lib\Chain
  * Chain of Responsibility for loading routes - use main admin module for processing
  */
 class AdminDashboard extends AChain

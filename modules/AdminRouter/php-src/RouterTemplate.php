@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Router;
+namespace KWCMS\modules\AdminRouter;
 
 
 use kalanis\kw_confs\Config;
@@ -10,11 +10,11 @@ use kalanis\kw_modules\ATemplate;
 
 /**
  * Class RouterTemplate
- * @package KWCMS\modules\Router
+ * @package KWCMS\modules\AdminRouter
  */
 class RouterTemplate extends ATemplate
 {
-    protected $moduleName = 'Router';
+    protected $moduleName = 'AdminRouter';
     protected $templateName = 'template';
 
     protected function fillInputs(): void

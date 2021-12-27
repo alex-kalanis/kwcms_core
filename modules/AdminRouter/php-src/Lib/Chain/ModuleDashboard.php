@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Router\Lib\Chain;
+namespace KWCMS\modules\AdminRouter\Lib\Chain;
 
 
 use kalanis\kw_confs\Config;
@@ -10,21 +10,21 @@ use kalanis\kw_paths\Stuff;
 
 
 /**
- * Class ModuleClass
- * @package KWCMS\modules\Router\Lib\Chain
- * Chain of Responsibility for loading routes - module main class has the same name as module itself
+ * Class ModuleDashboard
+ * @package KWCMS\modules\AdminRouter\Lib\Chain
+ * Chain of Responsibility for loading routes - module main class is Dashboard
  */
-class ModuleClass extends AChain
+class ModuleDashboard extends AChain
 {
     public function getModule(): IModule
     {
         $defaultModuleName = strval(Config::get('Core', 'page.default_display_module', 'Dashboard'));
         $wantModuleName = $this->path->getPath() ?: $defaultModuleName;
-        $wantModulesBackupController = Stuff::pathToArray($wantModuleName);
-        $sameName = array_shift($wantModulesBackupController);
+        $wantModulesMainController = Stuff::pathToArray($wantModuleName);
+        $sameName = array_shift($wantModulesMainController);
         return $this->moduleInit(
             Support::normalizeNamespacedName($sameName),
-            null
+            Support::normalizeNamespacedName($defaultModuleName)
         );
     }
 }
