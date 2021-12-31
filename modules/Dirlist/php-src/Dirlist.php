@@ -59,14 +59,15 @@ class Dirlist extends AModule
 
     public function process(): void
     {
+        $this->path = $this->pathLookup();
+        $this->dir = $this->linkInternal->userContent($this->path);
         $this->dirList = new DirectoryListing($this->inputs);
         $this->dirList
-            ->setPath($this->linkInternal->userContent($this->pathLookup())) # use dir path
+            ->setPath($this->dir) # use dir path
             ->setOrderDesc('desc' == $this->getFromParam('order', ''))
             ->setUsableCallback([$this, 'isUsable'])
         ;
 
-        $this->dir = $this->linkInternal->userContent($this->path);
         if ($this->dir) {
             $this->preselectExt = $this->getFromParam('ext', '');
             $this->dirList->process();
@@ -82,7 +83,11 @@ class Dirlist extends AModule
 
     public function isUsable(string $file): bool
     {
-        if (($file[0] == ".") || (!is_file($this->dir . DIRECTORY_SEPARATOR . $file))) {
+        if ('.' == $file[0]) {
+            return false;
+        }
+
+        if (!is_file($this->dir . DIRECTORY_SEPARATOR . $file)) {
             return false;
         }
 
@@ -114,6 +119,11 @@ class Dirlist extends AModule
         }
 
         $filesChunks = $this->dirList->getFilesChunked($rows, $columns);
+        $out = new Html();
+
+        if (empty($filesChunks)) {
+            return $out;
+        }
 
         $lines = [];
         foreach ($filesChunks as $files) {
@@ -132,7 +142,6 @@ class Dirlist extends AModule
         }
 
         $this->templateMain->reset()->setData(implode('', $lines), $this->dirList->getPaging());
-        $out = new Html();
         return $out->setContent($this->templateMain->render());
     }
 
@@ -142,7 +151,7 @@ class Dirlist extends AModule
         if (in_array($ext, ['htm','html','xhtml','xhtm','htx','htt','php'])) { // create links for normally accessible pages
             return $this->linkExternal->linkVariant($this->path . IPaths::SPLITTER_SLASH . $file);
         } else { // rest of the world must pass as file passed through external link
-            return $this->linkExternal->linkVariant($this->path . IPaths::SPLITTER_SLASH . $file, 'File', true);
+            return $this->linkExternal->linkVariant($this->path . IPaths::SPLITTER_SLASH . $file, 'file', true);
         }
     }
 
@@ -157,11 +166,9 @@ class Dirlist extends AModule
     protected function getIcon(string $file): string
     {
         $ext = strtolower(Stuff::fileExt($file));
-        $pt = $this->linkExternal->linkModule('Sysimage','images/files/'.$ext.'.png');
-        if (!$pt) {
-            $pt = $this->linkExternal->linkModule('Sysimage','images/files/dummy.png');
-        }
-        return $pt;
+        return $this->linkExternal->linkModule('Sysimage','images/files/'.$ext.'.png')
+            ? $this->linkExternal->linkVariant('files/'.$ext.'.png', 'sysimage', true)
+            : $this->linkExternal->linkVariant('files/dummy.png', 'sysimage', true);
     }
 
     protected function getName(string $file): string

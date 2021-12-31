@@ -33,6 +33,7 @@ $paths->setPathToSystemRoot('/..');
 \kalanis\kw_confs\Config::init($paths);
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
+\kalanis\kw_confs\Config::set('Core', 'site.default_display_module', 'Layout');
 
 // load virtual parts - if exists
 $virtualDir = \kalanis\kw_confs\Config::get('Core', 'site.fake_dir', 'dir_from_config/');

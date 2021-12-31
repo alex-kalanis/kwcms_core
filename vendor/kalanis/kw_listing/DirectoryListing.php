@@ -53,7 +53,8 @@ class DirectoryListing
     public function process(): self
     {
         $preList = ($this->orderDesc) ? scandir($this->path, 1) : scandir($this->path, 0) ;
-        $this->files = array_filter($preList, $this->usableCallback);
+        $this->files = array_filter($preList);
+        $this->files = array_filter($this->files, $this->usableCallback);
         $this->paging = $this->pagerLookup();
         return $this;
     }
@@ -70,7 +71,7 @@ class DirectoryListing
         $actualPages = $this->inputs->getInArray(Linking::PAGE_KEY, [
             IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
         ]);
-        return !empty($actualPages) ? (int)reset($actualPages) : Positions::FIRST_PAGE ;
+        return !empty($actualPages) ? intval(strval(reset($actualPages))) : Positions::FIRST_PAGE ;
     }
 
     public function getPaging(): ?SimplifiedPager

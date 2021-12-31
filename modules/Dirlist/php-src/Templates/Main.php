@@ -32,7 +32,7 @@ class Main extends ATemplate
     {
         $this->updateItem('{CONTENT}', $content);
         $this->updateItem('{PAGER}', $pager->render());
-        $this->updateItem('{FROM}', $pager->getPager()->getOffset() ? $pager->getPager()->getOffset() + 1 : 0);
+        $this->updateItem('{FROM}', $pager->getPager()->getOffset() ? $pager->getPager()->getOffset() + 1 : 1);
         $this->updateItem('{TO}', strval(min($pager->getPager()->getOffset() + $pager->getPager()->getLimit(), $pager->getPager()->getMaxResults())));
         $this->updateItem('{COUNT}', strval($pager->getPager()->getMaxResults()));
         return $this;
