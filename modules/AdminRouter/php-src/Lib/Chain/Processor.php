@@ -61,7 +61,7 @@ class Processor
                 return $chain->getModule();
             } catch (Throwable $ex) {
                 if (!$chain->getNext()) {
-                    Notification::addError($ex->getMessage());
+                    throw new ModuleException('No available module set');
                 }
             }
             $chain = $chain->getNext();

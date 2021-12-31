@@ -1,0 +1,4 @@
+/* Styles for transcode buttons */
+.select-button { margin: 0.3em; padding: 0.2em; line-height: 1.8em; color: #000; }
+.add-button { background-color: #d0d0d0; }
+.remove-button { background-color: #ff8080; }
