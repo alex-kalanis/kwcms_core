@@ -19,12 +19,14 @@ class PhpLoader implements ILoader
     /** @var string[] */
     protected $pathMasks = [
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%8$s', # user dir, user module with conf name
-        '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s', # user dir, user module
-        '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s', # user dir, all user confs
-        '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s', # user dir, conf named by module
+        '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s%9$s', # user dir, user module
+        '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%9$s', # user dir, all user confs
+        '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%9$s', # user dir, conf named by module
         '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%8$s', # all modules, main script with name
-        '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s', # all modules, default main script
-        '%2$s%1$s%5$s%1$s%6$s%1$s%7$s', # all modules, scripts in root
+        '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s%9$s', # all modules, default main script
+        '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%9$s', # all modules, scripts in root
+        '%2$s%1$s%3$s%1$s%4$s%1$s%7$s%1$s%8$s', # user dir, no module, conf name
+        '%2$s%1$s%3$s%1$s%4$s%1$s%7$s%1$s%7$s%9$s', # user dir, no module, conf name
     ];
 
     /** @var null|Path */
@@ -58,7 +60,7 @@ class PhpLoader implements ILoader
                 DIRECTORY_SEPARATOR, $basicLookupDir,
                 IPaths::DIR_USER, $this->pathLib->getUser(),
                 IPaths::DIR_MODULE, $module,
-                IPaths::DIR_STYLE, $conf
+                IPaths::DIR_STYLE, $conf, '.js'
             );
             $path = realpath($unmasked);
             if ($path && is_file($path)) {

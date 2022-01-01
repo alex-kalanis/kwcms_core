@@ -8,6 +8,7 @@ use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_modules\Processing\Support;
 use kalanis\kw_paths\Stuff;
@@ -25,18 +26,28 @@ class Scripts extends AModule
     protected $mime = null;
     /** @var ScriptsTemplate */
     protected $template = null;
+    /** @var InternalLink */
+    protected $libIntLink = '';
     /** @var ExternalLink */
     protected $libExtLink = '';
+    /** @var string */
+    protected $extPath = '';
+    /** @var string */
+    protected $dirPath = '';
 
     public function __construct()
     {
         $this->mime = new MimeType(true);
         $this->template = new ScriptsTemplate();
+        $this->libIntLink = new InternalLink(Config::getPath());
         $this->libExtLink = new ExternalLink(Config::getPath(), false, false);
     }
 
     public function process(): void
     {
+        $extPath = $this->getFromParam('path');
+        $this->extPath = $extPath;
+        $this->dirPath = $this->libIntLink->userContent($extPath);
     }
 
     public function output(): Output\AOutput
@@ -47,6 +58,13 @@ class Scripts extends AModule
     public function outLayout(): Output\AOutput
     {
         $content = [];
+        if ($this->dirPath) {
+            foreach ($this->filesInPath() as $style) {
+                $content[] = $this->template->reset()->setData(
+                    $this->libExtLink->linkVariant($this->extPath . '/' . $style, 'styles', true)
+                )->render();
+            }
+        }
         foreach (ExScripts::getAll() as $module => $scripts) {
             foreach ($scripts as $script) {
                 $content[] = $this->template->reset()->setData(
@@ -70,5 +88,19 @@ class Scripts extends AModule
         $out = new Output\Raw();
         $out->setContent($content);
         return $out;
+    }
+
+    protected function filesInPath(): array
+    {
+        $preList = scandir($this->dirPath);
+        $files = array_filter($preList);
+        $files = array_filter($files, [$this, 'filterJs']);
+        return $files;
+    }
+
+    public function filterJs(string $file): bool
+    {
+        $ext = Stuff::fileExt($file);
+        return in_array($ext, ['js']);
     }
 }

@@ -46,6 +46,10 @@ $defaultLang = \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk')
 \kalanis\kw_langs\Lang::init($paths, $defaultLang);
 \kalanis\kw_langs\Lang::load('Core'); // autoload core lang
 
+// init styles and scripts
+\kalanis\kw_scripts\Scripts::init($paths);
+\kalanis\kw_styles\Styles::init($paths);
+
 // pass parsed params as external source
 $argv = isset($argv) ? $argv : [] ;
 $source = new \kalanis\kw_input\Sources\Basic();
