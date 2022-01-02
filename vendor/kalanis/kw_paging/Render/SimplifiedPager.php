@@ -43,7 +43,7 @@ class SimplifiedPager implements IOutput
         return $this->render();
     }
 
-    public function render(): string
+    public function render(bool $showPositions = true): string
     {
         if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
             return '';
@@ -70,7 +70,7 @@ class SimplifiedPager implements IOutput
 
         $this->pager->setData(
             implode('', $pages),
-            $this->positions
+            $showPositions ? $this->positions : null
         );
         return $this->pager->render();
     }

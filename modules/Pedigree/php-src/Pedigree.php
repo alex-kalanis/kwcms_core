@@ -9,13 +9,15 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output;
+use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use kalanis\kw_templates\HtmlElement;
-use KWCMS\modules\Pedigree\Lib\DescLinkTemplate;
+use KWCMS\modules\Layout\Layout;
 
 
 /**
@@ -35,11 +37,17 @@ class Pedigree extends AModule
     protected $entries = null;
     /** @var int */
     protected $depth = 0;
+    /** @var ILoader|null */
+    protected $loader = null;
+    /** @var Modules|null */
+    protected $processor = null;
 
-    public function __construct()
+    public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
         Config::load(static::getClassName(static::class));
         $this->externalLink = new ExternalLink(Config::getPath());
+        $this->loader = $loader;
+        $this->processor = $processor;
         Lang::load(static::getClassName(static::class));
     }
 
@@ -49,10 +57,13 @@ class Pedigree extends AModule
 
     public function output(): Output\AOutput
     {
-        return ($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_CONTENT) ? $this->outContent() : $this->outTemplate();
+        return ($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_CONTENT)
+            ? $this->outContent()
+            : $this->outLayout($this->outTemplate())
+        ;
     }
 
-    public function outContent(): Output\AOutput
+    protected function outContent(): Output\AOutput
     {
         $out = new Output\Html();
         $tmplLink = new Lib\ExtLinkTemplate();
@@ -63,7 +74,7 @@ class Pedigree extends AModule
         return $out->setContent($tmplLink->render());
     }
 
-    public function outTemplate(): Output\AOutput
+    protected function outTemplate(): Output\AOutput
     {
         try {
             $this->depth = $this->limitedDepth();
@@ -90,6 +101,13 @@ class Pedigree extends AModule
             $table->addChild($row1);
             return $out->setContent($table->render());
         }
+    }
+
+    protected function outLayout(Output\AOutput $output): Output\AOutput
+    {
+        $out = new Layout($this->loader, $this->processor);
+        $out->init($this->inputs, $this->params);
+        return $out->wrapped($output, false);
     }
 
     protected function limitedDepth(): int
@@ -220,7 +238,7 @@ class Pedigree extends AModule
 
     protected function printDescendants(array $descendants): string
     {
-        $tmpl = new DescLinkTemplate();
+        $tmpl = new Lib\DescLinkTemplate();
         $r = [];
         $storage = $this->entries->getStorage();
         foreach ($descendants as &$descendant) {

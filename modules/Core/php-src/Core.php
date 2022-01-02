@@ -70,7 +70,7 @@ class Core extends AModule
      */
     protected function modulesWithPassingParams(): array
     {
-        return ['Layout', 'AdminRouter', 'SinglePage'];
+        return ['Layout', 'AdminRouter', 'SinglePage', 'Image', 'Pedigree'];
     }
 
     public function output(): AOutput

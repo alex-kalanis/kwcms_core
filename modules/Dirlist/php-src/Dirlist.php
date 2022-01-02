@@ -21,6 +21,7 @@ use kalanis\kw_paths\Stuff;
  * Class Dirlist
  * @package KWCMS\modules\Dirlist
  * Listing the directory
+ * @link http://page.kwcms_core.lemp.test/
  */
 class Dirlist extends AModule
 {
@@ -46,7 +47,7 @@ class Dirlist extends AModule
 
     public function __construct()
     {
-        $this->module = static::getClassName(static::class);
+        $this->defineModule();
         Lang::load($this->module);
         Config::load($this->module);
         $this->templateMain = new Templates\Main();
@@ -57,26 +58,31 @@ class Dirlist extends AModule
         $this->libFiles = FilesHelper::get(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot());
     }
 
+    protected function defineModule(): void
+    {
+        $this->module = static::getClassName(static::class);
+    }
+
     public function process(): void
     {
         $this->path = $this->pathLookup();
         $this->dir = $this->linkInternal->userContent($this->path);
         $this->dirList = new DirectoryListing($this->inputs);
-        $this->dirList
-            ->setPath($this->dir) # use dir path
-            ->setOrderDesc('desc' == $this->getFromParam('order', ''))
-            ->setUsableCallback([$this, 'isUsable'])
-        ;
 
         if ($this->dir) {
             $this->preselectExt = $this->getFromParam('ext', '');
-            $this->dirList->process();
+            $this->dirList
+                ->setPath($this->dir) # use dir path
+                ->setOrderDesc('desc' == $this->getFromParam('order', ''))
+                ->setUsableCallback([$this, 'isUsable'])
+                ->process()
+            ;
         }
     }
 
     protected function pathLookup(): string
     {
-        return isset($this->params['path'])
+        return !empty($this->params['path'])
             ? Stuff::arrayToPath(Stuff::linkToArray($this->params['path']))
             : Config::getPath()->getPath() ; # use dir path
     }
@@ -110,6 +116,7 @@ class Dirlist extends AModule
         $renderStyle = $this->getFromParam('style', Config::get($this->module, 'style'));
         $rows = (int)$this->getFromParam('row', Config::get($this->module, 'rows'));
         $columns = (int)$this->getFromParam('col', Config::get($this->module, 'cols'));
+        $directPaging = (int)$this->getFromParam('paging', Config::get($this->module, 'direct_paging', true));
 
         $this->templateDisplay->setTemplateName($renderStyle);
         # re-count cols
@@ -141,7 +148,11 @@ class Dirlist extends AModule
             $lines[] = $this->templateRow->reset()->setData(implode('', $cols))->render();
         }
 
-        $this->templateMain->reset()->setData(implode('', $lines), $this->dirList->getPaging());
+        $this->templateMain->reset()->setData(
+            implode('', $lines),
+            $this->dirList->getPaging(),
+            $directPaging
+        );
         return $out->setContent($this->templateMain->render());
     }
 

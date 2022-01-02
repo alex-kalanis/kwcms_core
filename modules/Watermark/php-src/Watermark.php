@@ -56,7 +56,7 @@ class Watermark extends AModule
         return $out->setCallback([$this, 'createImage']);
     }
 
-    protected function createImage()
+    public function createImage()
     {
         $rWatermark = null;
         $rImage = null;

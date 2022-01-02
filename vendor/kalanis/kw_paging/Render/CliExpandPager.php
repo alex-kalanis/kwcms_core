@@ -10,7 +10,7 @@ namespace kalanis\kw_paging\Render;
  */
 class CliExpandPager extends CliPager
 {
-    public function render(): string
+    public function render(bool $showPositions = true): string
     {
         if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
             return $this->getFilledText($this->positions);
@@ -28,6 +28,6 @@ class CliExpandPager extends CliPager
         $pages[] = $this->positions->nextPageExists() ? $this->positions->getNextPage() . ' ' . static::NEXT_PAGE : static::NONE_PAGE ;
         $pages[] = $this->positions->nextPageExists() ? $this->positions->getLastPage() . ' ' . static::NEXT_PAGE . static::NEXT_PAGE : static::NONE_PAGE . static::NONE_PAGE ;
 
-        return implode(' | ', $pages) . PHP_EOL . $this->getFilledText($this->positions);
+        return implode(' | ', $pages) . ( $showPositions ? (PHP_EOL . $this->getFilledText($this->positions) ) : '');
     }
 }

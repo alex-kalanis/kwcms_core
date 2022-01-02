@@ -47,7 +47,7 @@ class DefaultPager implements IOutput
         return $this->render();
     }
 
-    public function render(): string
+    public function render(bool $showPositions = true): string
     {
         if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
             return '';
@@ -65,7 +65,7 @@ class DefaultPager implements IOutput
             $this->positions->prevPageExists() ? $this->prevPage->setData($this->link, $this->positions)->render() : $this->prevPageDis->render(),
             $this->positions->nextPageExists() ? $this->nextPage->setData($this->link, $this->positions)->render() : $this->nextPageDis->render(),
             implode('', $pages),
-            $this->positions
+            $showPositions ? $this->positions : null
         );
         return $this->pager->render();
     }

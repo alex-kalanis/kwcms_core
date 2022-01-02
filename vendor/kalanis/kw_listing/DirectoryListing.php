@@ -30,6 +30,13 @@ class DirectoryListing
     public function __construct(IVariables $inputs)
     {
         $this->inputs = $inputs;
+        $this->paging = $this->pagerLookup();
+    }
+
+    protected function pagerLookup(): SimplifiedPager
+    {
+        $paging = new SimplifiedPager(new Positions(new BasicPager()), new Linking($this->inputs));
+        return $paging;
     }
 
     public function setPath(string $path): self
@@ -55,15 +62,8 @@ class DirectoryListing
         $preList = ($this->orderDesc) ? scandir($this->path, 1) : scandir($this->path, 0) ;
         $this->files = array_filter($preList);
         $this->files = array_filter($this->files, $this->usableCallback);
-        $this->paging = $this->pagerLookup();
+        $this->paging->getPager()->setActualPage($this->actualPageLookup())->setMaxResults(count($this->files));
         return $this;
-    }
-
-    protected function pagerLookup(): SimplifiedPager
-    {
-        $paging = new SimplifiedPager(new Positions(new BasicPager()), new Linking($this->inputs));
-        $paging->getPager()->setActualPage($this->actualPageLookup())->setMaxResults(count($this->files));
-        return $paging;
     }
 
     protected function actualPageLookup(): int

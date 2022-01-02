@@ -83,16 +83,19 @@ class Layout extends AModule
 
     /**
      * @param AOutput $content
+     * @param bool $useBody
      * @return AOutput
      * @throws ModuleException
      */
-    protected function wrapped(AOutput $content): AOutput
+    public function wrapped(AOutput $content, bool $useBody = true): AOutput
     {
         $out = new Raw();
         $template = new LayoutTemplate();
+        $body = new BodyTemplate();
+        $this->subModules->fill($body, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
         $this->subModules->fill($template, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
         return $out->setContent($template->setData(
-            $content->output(),
+            $useBody ? $body->setData($content->output())->render() : $content->output(),
             ($this->module instanceof IModuleTitle) ? $this->module->getTitle() : ''
         )->render());
     }
