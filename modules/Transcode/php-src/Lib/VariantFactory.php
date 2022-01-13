@@ -3,12 +3,10 @@
 namespace KWCMS\modules\Transcode\Lib;
 
 
-class Selector
+class VariantFactory
 {
     protected $path = '';
     protected $available = [];
-    /** @var AVariant */
-    protected $used = null;
 
     public function __construct(?string $path = null)
     {
@@ -51,45 +49,10 @@ class Selector
         }
     }
 
-    public function useMode(string $name): void
+    public function getVariant(string $name): ?AVariant
     {
         $this->check($name);
         $className = __NAMESPACE__ . '\Variants\\' . $name;
-        $this->used = new $className();
-    }
-
-    public function getFrom()
-    {
-        return $this->used->getFrom();
-    }
-
-    public function getTo()
-    {
-        return $this->used->getTo();
-    }
-
-    public function getSeparator()
-    {
-        return $this->used->getSeparator();
-    }
-
-    public function getAllowed()
-    {
-        return $this->used->getAllowed();
-    }
-
-    public function getSpecials()
-    {
-        return $this->used->specials();
-    }
-
-    public function getLeftoversFrom()
-    {
-        return $this->used->leftOversFrom();
-    }
-
-    public function getLeftoversTo()
-    {
-        return $this->used->leftOversTo();
+        return new $className();
     }
 }

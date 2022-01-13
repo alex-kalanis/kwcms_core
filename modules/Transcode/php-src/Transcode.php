@@ -10,8 +10,10 @@ use kalanis\kw_modules\Output;
 
 class Transcode extends AModule
 {
-    /** @var Lib\Selector */
-    protected $libSelector = null;
+    /** @var Lib\VariantFactory */
+    protected $libFactory = null;
+    /** @var Lib\AVariant|null */
+    protected $libVariant = null;
     /** @var Lib\MessageForm */
     protected $form = [];
     /** @var string[] */
@@ -24,26 +26,26 @@ class Transcode extends AModule
             'site_name' => 'KWCMS3 Char Translator',
             'encoding' => 'utf-8',
         ];
-        $this->libSelector = new Lib\Selector();
+        $this->libFactory = new Lib\VariantFactory();
     }
 
     public function process(): void
     {
         $what = $this->inputs->getInArray('what');
-        if (!empty($what) && $this->libSelector->isAvailable(strval(reset($what)))) {
-            $this->libSelector->useMode(strval(reset($what)));
+        if (!empty($what) && $this->libFactory->isAvailable(strval(reset($what)))) {
+            $this->libVariant = $this->libFactory->getVariant(strval(reset($what)));
             $this->form->composeForm();
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
-            if ($this->form->process()) {
+            if ($this->form->process() && $this->libVariant) {
                 $response = $this->form->getValue('data');
 
                 if ('straight' == $this->form->getValue('direction')) {
                     $response = strtr($response, $this->getMappedFrom());
-                    $response = strtr($response, $this->libSelector->getLeftoversTo());
+                    $response = strtr($response, $this->libVariant->leftoversTo());
                 } else {
-                    $response = strtr($response, $this->libSelector->getSpecials());
+                    $response = strtr($response, $this->libVariant->specials());
                     $response = strtr($response, $this->getMappedTo());
-                    $response = strtr($response, $this->libSelector->getLeftoversFrom());
+                    $response = strtr($response, $this->libVariant->leftoversFrom());
                 }
                 $this->form->setValue('data', $response);
             }
@@ -64,7 +66,7 @@ class Transcode extends AModule
     protected function getContent(): string
     {
         $what = $this->inputs->getInArray('what');
-        return empty($what)
+        return empty($what) || empty($this->libVariant)
             ? $this->getSelector()
             : $this->getForm()
         ;
@@ -75,7 +77,7 @@ class Transcode extends AModule
         $r = "";
         $indexInfo = new Templates\IndexMenuTemplate();
         $linksInfo = new Templates\IndexLinkTemplate();
-        foreach ($this->libSelector->getList() as $name) {
+        foreach ($this->libFactory->getList() as $name) {
             $linksInfo->reset();
             $linksInfo->change('{ADDR}', '/?what=' . $name);
             $linksInfo->change('{NAME}', $name);
@@ -112,22 +114,22 @@ class Transcode extends AModule
     {
         $button = new Templates\RmButtonTemplate();
         $button->change('{LETTER}', '&lt--');
-        $button->change('{ALLOWED}', $this->libSelector->getAllowed());
+        $button->change('{ALLOWED}', $this->libVariant->getAllowed());
         return $button->render();
     }
 
     public function getMappedFrom(): array
     {
-        return array_map([$this, 'getMapped'], $this->libSelector->getFrom());
+        return array_map([$this, 'getMapped'], $this->libVariant->getFrom());
     }
 
     public function getMappedTo(): array
     {
-        return array_map([$this, 'getMapped'], $this->libSelector->getTo());
+        return array_map([$this, 'getMapped'], $this->libVariant->getTo());
     }
 
     public function getMapped($input): string
     {
-        return $input . $this->libSelector->getSeparator();
+        return $input . $this->libVariant->getSeparator();
     }
 }
