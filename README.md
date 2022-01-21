@@ -15,14 +15,14 @@ I already has too many problems with usual frameworks which did not acknowledged
 important parts of web life. Another thing is a hard way structured inputs and outputs.
 Usually you get only output in format which results plaintext and input in PHP vars. Not here.
 Here you get larger control over the input and output. Object way. This makes testing process
-more simple. For both modules and libraries. Most of libraries are in separated project where
-cou can run them extra and contains simple tests. But the basics is here, in this project.
+more simple. For both modules and libraries. Most of libraries are in separated projects where
+they can be accessed as extra and contains simple tests. But the basics is here, in this project.
 
 This is only example of work with KWCMS3, it should be treated that way.
 
 ### So what is that
 
-* vanilla php7.2 (my virtual machine limit now), possible php8
+* vanilla php7.3 (my virtual machine limit now), possible php8
 * Tiny core, most things outside in modules and libraries
 * Object-oriented code, precisely defined code tree ( \{author}{\project}\{module}\{paths\to\libraries} ) simplifying autoloading
 * Well-defined inputs and outputs

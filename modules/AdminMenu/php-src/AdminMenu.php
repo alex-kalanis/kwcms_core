@@ -23,17 +23,19 @@ use kalanis\kw_modules\Processing\Support;
  * Class AdminMenu
  * @package KWCMS\modules\AdminMenu
  *
- * - bere moduly pro admin a cpe je do menu
- * - pozaduje id menu; prazdny je default
- * - data taha jako ostatni modules - libka \kalanis\kw_modules\Processing\Modules
- * - z nich pak filtruje ty, ktera v danem pripade zobrazi
- * - navic potrebuje poradi, aby je mohl vykreslit po sobe; nezarazene abecedne nakonec
- * - ma jeste haldu pomocnych nastaveni (ikona, popisek, pro koho, stavy jako devel nebo test, zakazano)
+ * - got modules for admin and add them to the menu
+ * - need menu id; empty is into default
+ * - the data passed as from the other modules within templates - library \kalanis\kw_modules\Processing\Modules
+ * - from there it filter available to display
+ * - as plus it need order of entries, so it's possible to draw them correctly
+ *   - unsorted go in the end as they are in module config file
+ * - it have tons of support configs (icon, description, for what, statuses like disabled, devel, test)
  *
- * - pridavani a odebirani modulu probiha centralne s ostatnimi; zatim tedy rucne
- *   - tohle zavisi na zdrojich dat a cele parade s repozitari (jak to ma integrovane treba composer)
- *     - repa chteji stahovani dat ruznymi formaty jako je git repo, zip a gz baliky, samotne soubory, ...
- *     - v kazdem pripade kwcms repa maji extra konfigurak, ktery to musi obsahovat (a dost mych projektu ho uz ma)
+ * - adding and removing of modules is possible by central way; now by hand
+ *   - this depends on data sources and the whole fun with the repositories (like in composer)
+ *     - repos wants data dump via different formats like git repo, zip or gzip packages, files itself, ...
+ *     - in any case kwcms repos have extra configuration file which describes that package
+ *       - and most of my projects has it already in some way or another
  */
 class AdminMenu extends AModule
 {

@@ -12,7 +12,7 @@ use kalanis\kw_auth\Interfaces\IAuthCert;
  * Class HttpCerts
  * @package kalanis\kw_auth\AuthMethods
  * Authenticate via http certificates
- * - public on server, private on client whom manage the site
+ * - public on server, private on client who manage the site
  */
 class HttpCerts extends AMethods
 {

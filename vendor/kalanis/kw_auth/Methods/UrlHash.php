@@ -18,7 +18,7 @@ use kalanis\kw_auth\Interfaces\IAuthCert;
  * makes following call:
  * hash($algorithm = <md5 | sha256 | ...> , $key = 'mnbvcx987' . $data = '//dummy/u:whoami/?pass=asdf123ghjk456&timestamp=123456&salt=789' , $signature = 'poiuztrewq'
  *
- * - it removed digest value and added locally stored salt
+ * - it remove digest value and add locally stored salt
  */
 class UrlHash extends AMethods
 {
