@@ -5,8 +5,7 @@ namespace KWCMS\modules\Contact;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Output\AOutput;
-use kalanis\kw_modules\Output\Html;
+use kalanis\kw_modules\Output;
 
 
 /**
@@ -20,9 +19,9 @@ class Contact extends AModule
     {
     }
 
-    public function output(): AOutput
+    public function output(): Output\AOutput
     {
-        $out = new Html();
+        $out = new Output\Html();
         return $out->setContent(Config::get('Core', 'page.contact'));
     }
 }

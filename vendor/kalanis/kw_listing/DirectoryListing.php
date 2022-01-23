@@ -3,13 +3,6 @@
 namespace kalanis\kw_listing;
 
 
-use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_input\Interfaces\IVariables;
-use kalanis\kw_pager\BasicPager;
-use kalanis\kw_paging\Positions;
-use kalanis\kw_paging\Render\SimplifiedPager;
-
-
 /**
  * Class DirectoryListing
  * @package KWCMS\modules\Dirlist
@@ -17,27 +10,14 @@ use kalanis\kw_paging\Render\SimplifiedPager;
  */
 class DirectoryListing
 {
-    /** @var IVariables */
-    protected $inputs = null;
-    /** @var SimplifiedPager|null */
-    protected $paging = null;
-
+    /** @var string */
     protected $path = '';
+    /** @var bool */
     protected $orderDesc = false;
+    /** @var callable|null */
     protected $usableCallback = null;
+    /** @var string[] */
     protected $files = [];
-
-    public function __construct(IVariables $inputs)
-    {
-        $this->inputs = $inputs;
-        $this->paging = $this->pagerLookup();
-    }
-
-    protected function pagerLookup(): SimplifiedPager
-    {
-        $paging = new SimplifiedPager(new Positions(new BasicPager()), new Linking($this->inputs));
-        return $paging;
-    }
 
     public function setPath(string $path): self
     {
@@ -59,34 +39,22 @@ class DirectoryListing
 
     public function process(): self
     {
-        $preList = ($this->orderDesc) ? scandir($this->path, 1) : scandir($this->path, 0) ;
+        $preList = ($this->orderDesc)
+            ? (array)scandir($this->path, 1)
+            : (array)scandir($this->path, 0)
+        ;
         $this->files = array_filter($preList);
         $this->files = array_filter($this->files, $this->usableCallback);
-        $this->paging->getPager()->setActualPage($this->actualPageLookup())->setMaxResults(count($this->files));
         return $this;
     }
 
-    protected function actualPageLookup(): int
+    public function getFiles(): array
     {
-        $actualPages = $this->inputs->getInArray(Linking::PAGE_KEY, [
-            IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
-        ]);
-        return !empty($actualPages) ? intval(strval(reset($actualPages))) : Positions::FIRST_PAGE ;
+        return $this->files;
     }
 
-    public function getPaging(): ?SimplifiedPager
+    public function getFilesSliced(?int $offset, ?int $limit): array
     {
-        return $this->paging;
-    }
-
-    public function getFiles(int $limit): array
-    {
-        $this->paging->getPager()->setLimit($limit);
-        return array_slice($this->files, $this->paging->getPager()->getOffset(), $this->paging->getPager()->getLimit());
-    }
-
-    public function getFilesChunked(int $rows, int $columns): array
-    {
-        return array_chunk($this->getFiles(intval($columns * $rows)), $columns);
+        return array_slice($this->files, (int)$offset, $limit);
     }
 }

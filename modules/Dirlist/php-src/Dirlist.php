@@ -6,13 +6,18 @@ namespace KWCMS\modules\Dirlist;
 use kalanis\kw_confs\Config;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\FilesHelper;
+use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_listing\DirectoryListing;
+use kalanis\kw_listing\Linking;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
+use kalanis\kw_pager\BasicPager;
+use kalanis\kw_paging\Positions;
+use kalanis\kw_paging\Render\SimplifiedPager;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
 
@@ -40,6 +45,8 @@ class Dirlist extends AModule
     protected $dirList = null;
     /** @var Files|null */
     protected $libFiles = null;
+    /** @var SimplifiedPager|null */
+    protected $pager = null;
 
     protected $path = '';
     protected $dir = '';
@@ -56,6 +63,7 @@ class Dirlist extends AModule
         $this->linkInternal = new InternalLink(Config::getPath());
         $this->linkExternal = new ExternalLink(Config::getPath());
         $this->libFiles = FilesHelper::get(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot());
+        $this->dirList = new DirectoryListing();
     }
 
     protected function defineModule(): void
@@ -67,7 +75,7 @@ class Dirlist extends AModule
     {
         $this->path = $this->pathLookup();
         $this->dir = $this->linkInternal->userContent($this->path);
-        $this->dirList = new DirectoryListing($this->inputs);
+        $this->pager = new SimplifiedPager(new Positions(new BasicPager()), new Linking($this->inputs));
 
         if ($this->dir) {
             $this->preselectExt = $this->getFromParam('ext', '');
@@ -77,6 +85,9 @@ class Dirlist extends AModule
                 ->setUsableCallback([$this, 'isUsable'])
                 ->process()
             ;
+            $this->pager->getPager()
+                ->setActualPage($this->actualPageLookup())
+                ->setMaxResults(count($this->dirList->getFiles()));
         }
     }
 
@@ -85,6 +96,14 @@ class Dirlist extends AModule
         return !empty($this->params['path'])
             ? Stuff::arrayToPath(Stuff::linkToArray($this->params['path']))
             : Config::getPath()->getPath() ; # use dir path
+    }
+
+    protected function actualPageLookup(): int
+    {
+        $actualPages = $this->inputs->getInArray(Linking::PAGE_KEY, [
+            IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
+        ]);
+        return !empty($actualPages) ? intval(strval(reset($actualPages))) : Positions::FIRST_PAGE ;
     }
 
     public function isUsable(string $file): bool
@@ -125,7 +144,7 @@ class Dirlist extends AModule
             $columns = 1;
         }
 
-        $filesChunks = $this->dirList->getFilesChunked($rows, $columns);
+        $filesChunks = $this->getFilesChunked($rows, $columns);
         $out = new Html();
 
         if (empty($filesChunks)) {
@@ -150,10 +169,22 @@ class Dirlist extends AModule
 
         $this->templateMain->reset()->setData(
             implode('', $lines),
-            $this->dirList->getPaging(),
+            $this->pager,
             $directPaging
         );
         return $out->setContent($this->templateMain->render());
+    }
+
+    protected function getFilesChunked(int $chunkPos, int $filesPerChunk): array
+    {
+        $this->pager->getPager()->setLimit(intval($filesPerChunk * $chunkPos));
+        return array_chunk(
+            $this->dirList->getFilesSliced(
+                $this->pager->getPager()->getOffset(),
+                $this->pager->getPager()->getLimit()
+            ),
+            $filesPerChunk
+        );
     }
 
     protected function getLink(string $file): string

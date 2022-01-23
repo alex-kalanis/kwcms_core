@@ -49,7 +49,7 @@ class Video extends Dirlist
             if (!empty($videos)) {
                 $video = strval(reset($videos));
                 if (!empty($video)) {
-                    $filesAvailable = $this->dirList->getFiles($this->dirList->getPaging()->getPager()->getMaxResults());
+                    $filesAvailable = $this->dirList->getFiles();
                     if (in_array($video, $filesAvailable)) {
                         $this->fileToPlay = $video;
                     }
