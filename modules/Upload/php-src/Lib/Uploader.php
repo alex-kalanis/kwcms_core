@@ -12,7 +12,7 @@ use kalanis\UploadPerPartes;
  */
 class Uploader extends UploadPerPartes\Uploader
 {
-    protected function getTranslations(): UploadPerPartes\Uploader\Translations
+    protected function getTranslations(): UploadPerPartes\Interfaces\IUPPTranslations
     {
         return new Translations();
     }
