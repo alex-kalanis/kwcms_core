@@ -9,7 +9,7 @@ use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces;
 use kalanis\kw_rules\Rules;
 use kalanis\kw_rules\TRules;
-use kalanis\kw_templates\HtmlElement\IHtmlElement;
+use kalanis\kw_templates\Interfaces\IHtmlElement;
 use kalanis\kw_templates\HtmlElement\THtmlElement;
 
 

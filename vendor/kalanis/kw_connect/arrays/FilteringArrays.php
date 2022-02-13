@@ -1,24 +1,23 @@
 <?php
 
-namespace kalanis\kw_connect\core\Filters;
+namespace kalanis\kw_connect\arrays;
 
 
 use ArrayAccess;
 use Countable;
-use kalanis\kw_connect\core\Rows;
 
 
 /**
- * Class Arrays
- * @package kalanis\kw_connect\core\Filters
+ * Class FilteringArrays
+ * @package kalanis\kw_connect\arrays
  * Class for updating arrays via reference
  */
-class Arrays implements ArrayAccess, Countable
+class FilteringArrays implements ArrayAccess, Countable
 {
     protected $array;
 
     /**
-     * @param string[]|int[]|bool[]|Rows\Arrays[] $array
+     * @param string[]|int[]|bool[]|Row[] $array
      */
     public function __construct(array &$array)
     {
@@ -26,7 +25,7 @@ class Arrays implements ArrayAccess, Countable
     }
 
     /**
-     * @return string[]|int[]|bool[]|Rows\Arrays[]
+     * @return string[]|int[]|bool[]|Row[]
      */
     public function &getArray()
     {

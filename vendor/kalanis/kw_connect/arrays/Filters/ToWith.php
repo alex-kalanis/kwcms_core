@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect\core\Filters\Arrays;
+namespace kalanis\kw_connect\arrays\Filters;
 
 
 use kalanis\kw_connect\core\Interfaces\IRow;

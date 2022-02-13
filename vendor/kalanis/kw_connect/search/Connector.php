@@ -3,10 +3,10 @@
 namespace kalanis\kw_connect\search;
 
 
-use kalanis\kw_connect\core\Connectors\AConnector;
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IFilterSubs;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
@@ -61,8 +61,12 @@ class Connector extends AConnector implements IConnector
         return implode('_', $values);
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
+        $type = $this->getFilterFactory()->getFilter($filterType);
+        if ($type instanceof IFilterSubs) {
+            $type->addFilterFactory($this->getFilterFactory());
+        }
         $type->setDataSource($this->dataSource);
         $type->setFiltering($colName, $value);
     }

@@ -34,7 +34,7 @@ abstract class AIterator implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function offsetGet($offset)
     {
-        return $this->{$this->getIterableName()}[$offset];
+        return $this->offsetExists($offset) ? $this->{$this->getIterableName()}[$offset] : null ;
     }
 
     public function offsetSet($offset, $value)
@@ -44,7 +44,9 @@ abstract class AIterator implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function offsetUnset($offset)
     {
-        unset($this->{$this->getIterableName()}[$offset]);
+        if ($this->offsetExists($offset)) {
+            unset($this->{$this->getIterableName()}[$offset]);
+        }
     }
 
     public function count()

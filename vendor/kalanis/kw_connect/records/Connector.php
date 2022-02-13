@@ -3,12 +3,11 @@
 namespace kalanis\kw_connect\records;
 
 
-use kalanis\kw_connect\core\Connectors\AConnector;
+use kalanis\kw_connect\arrays\Filters;
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Filters\Arrays;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_mapper\Records\ARecord;
@@ -56,7 +55,7 @@ class Connector extends AConnector implements IConnector
         return new Row($data);
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
         $this->filterByColumn = $colName;
         $this->filterByNamePart = $value;
@@ -139,6 +138,6 @@ class Connector extends AConnector implements IConnector
 
     public function getFilterFactory(): IFilterFactory
     {
-        return Arrays\Factory::getInstance();
+        return Filters\Factory::getInstance();
     }
 }

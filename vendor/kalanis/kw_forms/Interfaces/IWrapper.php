@@ -3,7 +3,7 @@
 namespace kalanis\kw_forms\Interfaces;
 
 
-use kalanis\kw_templates\HtmlElement\IHtmlElement;
+use kalanis\kw_templates\Interfaces\IHtmlElement;
 
 
 /**

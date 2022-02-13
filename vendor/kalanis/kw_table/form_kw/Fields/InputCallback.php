@@ -27,7 +27,7 @@ class InputCallback extends AField implements IFilterRender
         $this->callback = $callback;
     }
 
-    protected function getFilterAction(): string
+    public function getFilterAction(): string
     {
         return IFilterFactory::ACTION_EXACT;
     }

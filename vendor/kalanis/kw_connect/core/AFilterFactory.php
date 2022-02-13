@@ -1,16 +1,15 @@
 <?php
 
-namespace kalanis\kw_connect\core\Filters;
+namespace kalanis\kw_connect\core;
 
 
-use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterType;
 
 
 /**
  * Class AFactory
- * @package kalanis\kw_connect\core\Filters
+ * @package kalanis\kw_connect\core
  * Factory Class for accessing filter types
  */
 abstract class AFilterFactory implements IFilterFactory
@@ -21,14 +20,9 @@ abstract class AFilterFactory implements IFilterFactory
      */
     protected static $map = [];
 
-    protected static $instance = null;
-
     public static function getInstance(): self
     {
-        if (empty(static::$instance)) {
-            static::$instance = new static();
-        }
-        return static::$instance;
+        return new static();
     }
 
     protected function __construct()

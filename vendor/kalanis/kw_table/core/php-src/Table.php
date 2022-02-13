@@ -239,7 +239,11 @@ class Table
                 $filterField = $column->getHeaderFilterField();
                 if ($filterField) {
                     $filterField->setDataSourceConnector($this->dataSetConnector);
-                    $this->dataSetConnector->setFiltering($column->getSourceName(), $this->headerFilter->getValue($column), $filterField->getFilterType());
+                    $this->dataSetConnector->setFiltering(
+                        $column->getSourceName(),
+                        $filterField->getFilterAction(),
+                        $this->headerFilter->getValue($column)
+                    );
                 }
             }
         }
@@ -271,7 +275,10 @@ class Table
         if (empty($this->outputPager->getPager()->getMaxResults())) {
             $this->outputPager->getPager()->setMaxResults($this->dataSetConnector->getTotalCount());
         }
-        $this->dataSetConnector->setPagination($this->outputPager->getPager()->getOffset(), $this->outputPager->getPager()->getLimit());
+        $this->dataSetConnector->setPagination(
+            $this->outputPager->getPager()->getOffset(),
+            $this->outputPager->getPager()->getLimit()
+        );
         return $this;
     }
 

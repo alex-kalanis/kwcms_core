@@ -1,25 +1,25 @@
 <?php
 
-namespace kalanis\kw_connect\core\Connectors;
+namespace kalanis\kw_connect\arrays;
 
 
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Filters\Arrays as FilterArrays;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
+use kalanis\kw_connect\core\Interfaces\IFilterSubs;
 use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
-use kalanis\kw_connect\core\Rows\Arrays as RowArray;
 
 
 /**
- * Class Arrays
- * @package kalanis\kw_connect\core\Connectors
+ * Class Connector
+ * @package kalanis\kw_connect\arrays
  * For likes there is a column finder in search mapper.
  * So it's possible to map children for sorting and filtering.
  */
-class Arrays extends AConnector implements IConnector
+class Connector extends AConnector implements IConnector
 {
     /** @var string */
     protected $primaryKey = null;
@@ -44,19 +44,19 @@ class Arrays extends AConnector implements IConnector
         $this->primaryKey = $primaryKey;
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
-        $this->filtering[] = [$type, $colName, $value];
+        $this->filtering[] = [$filterType, $colName, $value];
     }
 
     protected function getFiltered(&$data)
     {
-        return new FilterArrays($data);
+        return new FilteringArrays($data);
     }
 
     public function getTranslated($data): IRow
     {
-        return new RowArray($data);
+        return new Row($data);
     }
 
     public function setSorting(string $colName, string $direction): void
@@ -93,8 +93,11 @@ class Arrays extends AConnector implements IConnector
     {
         $translated = array_map([$this, 'getTranslated'], $this->dataSource);
         $filtered = $this->getFiltered($translated);
-        foreach (array_reverse($this->filtering) as list($type, $columnName, $value)) {
-            /** @var IFilterType $type */
+        foreach (array_reverse($this->filtering) as list($filterType, $columnName, $value)) {
+            $type = $this->getFilterFactory()->getFilter($filterType);
+            if ($type instanceof IFilterSubs) {
+                $type->addFilterFactory($this->getFilterFactory());
+            }
             $type->setDataSource($filtered);
             $type->setFiltering($columnName, $value);
             $filtered = $type->getDataSource();
@@ -128,12 +131,12 @@ class Arrays extends AConnector implements IConnector
     }
 
     /**
-     * @param FilterArrays $filtered
+     * @param FilteringArrays $filtered
      * @param string $columnName
      * @return array
      * @throws ConnectException
      */
-    protected function indexedArray(FilterArrays $filtered, string $columnName): array
+    protected function indexedArray(FilteringArrays $filtered, string $columnName): array
     {
         $result = [];
         foreach ($filtered->getArray() as $index => $item) {
@@ -142,7 +145,7 @@ class Arrays extends AConnector implements IConnector
         return $result;
     }
 
-    protected function putItBack(FilterArrays $filtered, array $sorted): void
+    protected function putItBack(FilteringArrays $filtered, array $sorted): void
     {
         $finalArray = [];
         foreach ($sorted as $key => $item) {
@@ -153,6 +156,6 @@ class Arrays extends AConnector implements IConnector
 
     public function getFilterFactory(): IFilterFactory
     {
-        return FilterArrays\Factory::getInstance();
+        return Filters\Factory::getInstance();
     }
 }

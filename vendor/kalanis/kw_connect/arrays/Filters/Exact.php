@@ -1,16 +1,16 @@
 <?php
 
-namespace kalanis\kw_connect\core\Filters\Arrays;
+namespace kalanis\kw_connect\arrays\Filters;
 
 
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 
 /**
- * Class Contains
+ * Class Exact
  * @package kalanis\kw_connect\core\Filters\Arrays
  */
-class Contains extends AType
+class Exact extends AType
 {
     /**
      * @param string           $colName
@@ -20,7 +20,7 @@ class Contains extends AType
     public function setFiltering($colName, $value)
     {
         $this->dataSource->setArray(array_filter($this->dataSource->getArray(), function (IRow $item) use ($colName, $value) {
-            return preg_match('#' . preg_quote($value, '#') . '#', $item->getValue($colName));
+            return $item->getValue($colName) == $value;
         }));
         return $this;
     }

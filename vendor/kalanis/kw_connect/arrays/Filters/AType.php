@@ -1,10 +1,10 @@
 <?php
 
-namespace kalanis\kw_connect\core\Filters\Arrays;
+namespace kalanis\kw_connect\arrays\Filters;
 
 
+use kalanis\kw_connect\arrays\FilteringArrays;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Filters\Arrays;
 use kalanis\kw_connect\core\Interfaces\IFilterType;
 
 
@@ -14,18 +14,18 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
  */
 abstract class AType implements IFilterType
 {
-    /** @var Arrays */
+    /** @var FilteringArrays */
     protected $dataSource;
 
     /**
-     * @param Arrays $dataSource
+     * @param FilteringArrays $dataSource
      * @return $this
      * @throws ConnectException
      */
     public function setDataSource($dataSource)
     {
-        if (!$dataSource instanceof Arrays) {
-            throw new ConnectException('Param $dataSource must be an instance of \kalanis\kw_table\core\Connector\Filter\Arrays.');
+        if (!$dataSource instanceof FilteringArrays) {
+            throw new ConnectException('Param $dataSource must be an instance of \kalanis\kw_table\arrays\FilteringArrays.');
         }
 
         $this->dataSource = $dataSource;

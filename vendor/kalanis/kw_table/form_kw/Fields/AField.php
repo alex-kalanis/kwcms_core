@@ -4,7 +4,6 @@ namespace kalanis\kw_table\form_kw\Fields;
 
 
 use kalanis\kw_connect\core\Interfaces\IConnector;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_forms\Form;
 use kalanis\kw_table\core\Interfaces\Form\IField;
 
@@ -66,11 +65,4 @@ abstract class AField implements IField
     {
         $this->attributes = $attributes + $this->attributes;
     }
-
-    public function getFilterType(): IFilterType
-    {
-        return $this->connector->getFilterFactory()->getFilter($this->getFilterAction());
-    }
-
-    abstract protected function getFilterAction(): string;
 }

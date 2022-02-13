@@ -40,8 +40,7 @@ interface IField
 
     /**
      * Get filter which will modify results
-     * @return IFilterType
-     * @throws ConnectException
+     * @return string
      */
-    public function getFilterType(): IFilterType;
+    public function getFilterAction(): string;
 }

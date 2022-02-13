@@ -1,20 +1,17 @@
 <?php
 
-namespace kalanis\kw_connect\core\Connectors;
+namespace kalanis\kw_connect\core;
 
 
-use kalanis\kw_connect\core\AIterator;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 
 /**
  * Class AConnector
- * @package kalanis\kw_connect\core\Connectors
+ * @package kalanis\kw_connect\core
  */
 abstract class AConnector extends AIterator
 {
-    protected $filterTypeDirectory = 'FilterType';
-
     /** @var IRow[] */
     protected $translatedData = [];
 
@@ -30,8 +27,8 @@ abstract class AConnector extends AIterator
      * @param $key
      * @return IRow
      */
-    public function getByKey($key): IRow
+    public function getByKey($key): ?IRow
     {
-        return $this->translatedData[$key];
+        return $this->offsetExists($key) ? $this->translatedData[$key] : null ;
     }
 }
