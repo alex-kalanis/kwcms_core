@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_templates\HtmlElement;
+namespace kalanis\kw_templates\Interfaces;
 
 
 use Traversable;
@@ -8,7 +8,7 @@ use Traversable;
 
 /**
  * Interface IHtmlElement
- * @package kalanis\kw_templates\HtmlElement
+ * @package kalanis\kw_templates\Interfaces
  * Base of each html element
  */
 interface IHtmlElement extends IAttributes

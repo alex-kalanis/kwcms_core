@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_templates\HtmlElement;
+namespace kalanis\kw_templates\Interfaces;
 
 
 /**
  * Interface IAttributes
- * @package kalanis\kw_templates\HtmlElement
+ * @package kalanis\kw_templates\Interfaces
  * Contains constants used across the project which cannot be defined in traits
  */
 interface IAttributes

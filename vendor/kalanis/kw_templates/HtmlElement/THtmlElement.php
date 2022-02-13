@@ -3,6 +3,7 @@
 namespace kalanis\kw_templates\HtmlElement;
 
 
+use kalanis\kw_templates\Interfaces\IHtmlElement;
 use Traversable;
 
 
@@ -72,7 +73,7 @@ trait THtmlElement
      * @param bool $merge merge with original element if already exists
      * @param bool $inherit inherit properties from current element
      */
-    public final function addChild($child, $alias = null, bool $merge = false, bool $inherit = false): void
+    public function addChild($child, $alias = null, bool $merge = false, bool $inherit = false): void
     {
         if ($child instanceof IHtmlElement) {
             if (!$this->checkAlias($alias)) {
@@ -93,7 +94,7 @@ trait THtmlElement
 
     }
 
-    protected final function checkAlias($alias): bool
+    protected function checkAlias($alias): bool
     {
         return !(is_null($alias) || ('' === $alias) || (is_object($alias)) || is_resource($alias) );
     }
@@ -125,7 +126,7 @@ trait THtmlElement
      * Remove child by key
      * @param string|int $childAlias
      */
-    public final function removeChild($childAlias): void
+    public function removeChild($childAlias): void
     {
         if (isset($this->children[$childAlias])) {
             unset($this->children[$childAlias]);
@@ -136,7 +137,7 @@ trait THtmlElement
      * Return last child
      * @return IHtmlElement|null
      */
-    public final function lastChild(): ?IHtmlElement
+    public function lastChild(): ?IHtmlElement
     {
         $last = end($this->children);
         return $last === false ? null : $last ;
@@ -146,7 +147,7 @@ trait THtmlElement
      * Set children of element
      * @param iterable|string[]|IHtmlElement[] $children
      */
-    public final function setChildren(iterable $children = []): void
+    public function setChildren(iterable $children = []): void
     {
         foreach ($children as $alias => $child) {
             $this->addChild(
@@ -160,7 +161,7 @@ trait THtmlElement
      * Return all children as iterator
      * @return Traversable IHtmlElement
      */
-    public final function getChildren(): Traversable
+    public function getChildren(): Traversable
     {
         yield from $this->children;
     }
@@ -170,7 +171,7 @@ trait THtmlElement
      * @param string|int $alias
      * @return IHtmlElement|null
      */
-    public final function __get($alias)
+    public function __get($alias)
     {
         return $this->__isset($alias) ? $this->children[$alias] : null ;
     }
@@ -180,7 +181,7 @@ trait THtmlElement
      * @param string|int $alias
      * @param mixed $value
      */
-    public final function __set($alias, $value)
+    public function __set($alias, $value)
     {
         $this->addChild($value, $alias);
     }
@@ -190,7 +191,7 @@ trait THtmlElement
      * @param string|int $alias
      * @return bool
      */
-    public final function __isset($alias)
+    public function __isset($alias)
     {
         return isset($this->children[$alias]);
     }
@@ -200,7 +201,7 @@ trait THtmlElement
      * @param string|int $alias
      * @return bool
      */
-    public final function __empty($alias)
+    public function __empty($alias)
     {
         return empty($this->children[$alias]);
     }
