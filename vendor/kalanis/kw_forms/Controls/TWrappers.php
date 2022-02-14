@@ -70,7 +70,7 @@ trait TWrappers
                 $this->addWrapperToStack($stack, $_wrapper);
             }
         } else {
-            if (!($wrapper instanceof HtmlElement\IHtmlElement)) {
+            if (!($wrapper instanceof IHtmlElement)) {
                 $wrapper = HtmlElement::init($wrapper, $attributes);
             } else if ($attributes !== null) {
                 $wrapper->setAttributes($attributes);

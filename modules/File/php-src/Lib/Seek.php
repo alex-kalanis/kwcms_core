@@ -1,11 +1,11 @@
 <?php
 
-namespace KWCMS\modules\File;
+namespace KWCMS\modules\File\Lib;
 
 
 /**
  * Class Seek
- * @package KWCMS\modules\File
+ * @package KWCMS\modules\File\Lib
  * Users files - seek through file
  */
 class Seek
@@ -77,10 +77,5 @@ class Seek
     public function getEnd(): int
     {
         return $this->end;
-    }
-
-    public function getUsableLength(): int
-    {
-        return ($this->end - $this->start + 1);
     }
 }

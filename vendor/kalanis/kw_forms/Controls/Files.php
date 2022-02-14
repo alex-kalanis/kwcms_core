@@ -70,7 +70,9 @@ class Files extends AControl implements IMultiValue
                 $shortKey = $this->shorterKey($child->getKey());
                 $child->setValue(
                     isset($array[$shortKey])
-                        ? $array[$shortKey]
+                        // @codeCoverageIgnoreStart
+                        ? $array[$shortKey] // should not happen - set prevents this
+                        // @codeCoverageIgnoreEnd
                         : (
                     isset($array[$child->getKey()])
                         ? $array[$child->getKey()]

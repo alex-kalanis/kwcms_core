@@ -69,6 +69,9 @@ class Layout extends AModule
     public function output(): AOutput
     {
         $result = $this->module->output();
+        if ($this->inputIsOnlyHead()) {
+            return new Raw(); // empty body for HEAD
+        }
         $isSolo = Config::getPath()->isSingle() || $this->inputWantBeSingle();
         return ($result->canWrap() && !$isSolo) ? $this->wrapped($result) : $result ;
     }
@@ -79,6 +82,12 @@ class Layout extends AModule
             IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
         ]);
         return !empty($inputsSingle);
+    }
+
+    protected function inputIsOnlyHead(): bool
+    {
+        $inputsRequest = $this->inputs->getInArray('REQUEST_METHOD', [IEntry::SOURCE_SERVER]);
+        return !empty($inputsRequest) && ('HEAD' == strtoupper(strval(reset($inputsRequest))));
     }
 
     /**
