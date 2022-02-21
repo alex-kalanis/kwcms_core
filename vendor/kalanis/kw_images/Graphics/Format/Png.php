@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Graphics\Format;
 
 
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
 
 
 /**
@@ -14,12 +15,14 @@ use kalanis\kw_images\ImagesException;
 class Png extends AFormat
 {
     /**
+     * @param IIMTranslations|null $lang
      * @throws ImagesException
      */
-    public function __construct()
+    public function __construct(?IIMTranslations $lang = null)
     {
+        $this->setLang($lang);
         if (!function_exists('imagecreatefrompng') || !function_exists('imagepng')) {
-            throw new ImagesException('ImageMagic not installed!');
+            throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
         }
     }
 
@@ -27,7 +30,7 @@ class Png extends AFormat
     {
         $result = imagecreatefrompng($path);
         if (false === $result) {
-            throw new ImagesException('Cannot create image from resource!');
+            throw new ImagesException($this->getLang()->imCannotCreateFromResource());
         }
         return $result;
     }
@@ -35,7 +38,7 @@ class Png extends AFormat
     public function save(string $path, $resource): void
     {
         if (!imagepng($resource, $path)) {
-            throw new ImagesException('Cannot save image resource!');
+            throw new ImagesException($this->getLang()->imCannotSaveResource());
         }
     }
 }

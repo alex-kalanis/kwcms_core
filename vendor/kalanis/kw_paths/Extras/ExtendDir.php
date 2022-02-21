@@ -1,10 +1,13 @@
 <?php
 
-namespace kalanis\kw_extras;
+namespace kalanis\kw_paths\Extras;
 
 
 use Error;
+use kalanis\kw_paths\Interfaces\IPATranslations;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_paths\Translations;
 
 
 /**
@@ -13,19 +16,24 @@ use kalanis\kw_paths\Stuff;
  */
 class ExtendDir
 {
+    use TRemoveCycle;
+
     protected $webRootDir = ''; # system path to web root dir
     protected $descDir = '.txt'; # description dir
     protected $descFile = 'index'; # description index filename
     protected $descExt = '.dsc'; # description file's extension - add to original name
     protected $thumbDir = '.tmb'; # thumbnail dir
+    /** @var IPATranslations */
+    protected $lang = null;
 
-    public function __construct(string $webRootDir, ?string $descDir = null, ?string $descFile = null, ?string $descExt = null, ?string $thumbDir = null)
+    public function __construct(string $webRootDir, ?string $descDir = null, ?string $descFile = null, ?string $descExt = null, ?string $thumbDir = null, ?IPATranslations $lang = null)
     {
         $this->webRootDir = $webRootDir;
         $this->descDir = $descDir ?: $this->descDir;
         $this->descFile = $descFile ?: $this->descFile;
         $this->descExt = $descExt ?: $this->descExt;
         $this->thumbDir = $thumbDir ?: $this->thumbDir;
+        $this->lang = $lang ?: new Translations();
     }
 
     public function getWebRootDir(): string
@@ -54,23 +62,23 @@ class ExtendDir
     }
 
     /**
-     * @param string $sourcePath
-     * @param string $targetDir
+     * @param string $path the path inside the web root dir
      * @param string $name
      * @param bool $makeExtra
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
-    public function createDir(string $sourcePath, string $targetDir, string $name, bool $makeExtra = false): bool
+    public function createDir(string $path, string $name, bool $makeExtra = false): bool
     {
         try {
-            $targetPath = Stuff::removeEndingSlash($sourcePath) . DIRECTORY_SEPARATOR
-                . Stuff::removeEndingSlash($targetDir) . DIRECTORY_SEPARATOR
-                . $name ;
+            $target = empty($path) ? '' : Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
+            $targetPath = $target . $name ;
             return mkdir($this->webRootDir . $targetPath)
                 && ( $makeExtra ? $this->makeExtended($targetPath) : true );
+            // @codeCoverageIgnoreStart
         } catch (Error $ex) {
-            throw new ExtrasException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new PathsException($ex->getMessage(), $ex->getCode(), $ex);
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -78,7 +86,7 @@ class ExtendDir
      * Make dir with extended properties
      * @param string $path
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function makeExtended(string $path): bool
     {
@@ -89,10 +97,10 @@ class ExtendDir
             return true;
         }
         if ((!@mkdir($descDir)) && (!is_dir($descDir))) {
-            throw new ExtrasException('Cannot create description dir');
+            throw new PathsException($this->lang->paCannotCreateDescDir());
         }
         if ((!@mkdir($thumbDir)) && (!is_dir($thumbDir))) {
-            throw new ExtrasException('Cannot create thumbnail dir');
+            throw new PathsException($this->lang->paCannotCreateThumbDir());
         }
         return true;
     }
@@ -100,7 +108,7 @@ class ExtendDir
     /**
      * @param string $path
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function removeExtended(string $path): bool
     {
@@ -116,49 +124,29 @@ class ExtendDir
     }
 
     /**
-     * Remove sub dirs and their content recursively
-     * SHALL NOT BE SEPARATED INTO EXTRA CLASS
-     * @param $dirPath
-     */
-    protected function removeCycle(string $dirPath): void
-    {
-        $path = Stuff::removeEndingSlash($dirPath);
-        foreach (scandir($path) as $fileName) {
-            if (is_dir($path . DIRECTORY_SEPARATOR . $fileName)) {
-                if (($fileName != '.') || ($fileName != '..')) {
-                    $this->removeCycle($path . DIRECTORY_SEPARATOR . $fileName);
-                    rmdir($path . DIRECTORY_SEPARATOR . $fileName);
-                }
-            } else {
-                unlink($path . DIRECTORY_SEPARATOR . $fileName);
-            }
-        }
-    }
-
-    /**
      * @param string $path
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function isReadable(string $path): bool
     {
         if (is_dir($path) && is_readable($path)) {
             return true;
         }
-        throw new ExtrasException('Cannot access wanted directory!');
+        throw new PathsException($this->lang->paCannotAccessWantedDir());
     }
 
     /**
      * @param string $path
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function isWritable(string $path): bool
     {
         if (is_dir($path) && is_writable($path)) {
             return true;
         }
-        throw new ExtrasException('Cannot write into that directory!');
+        throw new PathsException($this->lang->paCannotWriteIntoDir());
     }
 
     public function isFile(string $path): bool

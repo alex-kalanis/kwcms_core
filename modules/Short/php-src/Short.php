@@ -4,12 +4,12 @@ namespace KWCMS\modules\Short;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stuff;
 
 

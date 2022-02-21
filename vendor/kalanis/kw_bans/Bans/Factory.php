@@ -5,7 +5,9 @@ namespace kalanis\kw_bans\Bans;
 
 use kalanis\kw_bans\BanException;
 use kalanis\kw_bans\Interfaces\IIpTypes;
+use kalanis\kw_bans\Interfaces\IKBTranslations;
 use kalanis\kw_bans\Sources;
+use kalanis\kw_bans\Translations;
 
 
 /**
@@ -18,6 +20,13 @@ class Factory
     const PREG_IP6 = '#[0-9a-f:/\*]+#i';
     const PREG_NAME = '#[\*\?\:;\\//]#i';
 
+    protected $lang = null;
+
+    public function __construct(?IKBTranslations $lang = null)
+    {
+        $this->lang = $lang ?: new Translations();
+    }
+
     /**
      * @param int $type
      * @param Sources\ASources $sources
@@ -28,16 +37,16 @@ class Factory
     {
         switch ($type) {
             case IIpTypes::TYPE_NAME:
-                return new Clearing($sources);
+                return new Clearing($sources, $this->lang);
             case IIpTypes::TYPE_BASIC:
-                return new Basic($sources);
+                return new Basic($sources, $this->lang);
             case IIpTypes::TYPE_IP_4:
-                return new IP4($sources);
+                return new IP4($sources, $this->lang);
             case IIpTypes::TYPE_IP_6:
-                return new IP6($sources);
+                return new IP6($sources, $this->lang);
             case IIpTypes::TYPE_NONE:
             default:
-                throw new BanException('Unknown ban type');
+                throw new BanException($this->lang->ikbUnknownType());
         }
     }
 
@@ -79,7 +88,7 @@ class Factory
         if (is_string($source) && is_file($source)) {
             return new Sources\File($source);
         }
-        throw new BanException('Unknown datasource format');
+        throw new BanException($this->lang->ikbUnknownFormat());
     }
 
     protected function emptyContent(Sources\ASources $sources): bool

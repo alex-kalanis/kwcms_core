@@ -145,7 +145,7 @@ class Table
     public function setDefaultSorting(string $columnName, string $order = Table\Sorter::ORDER_ASC): self
     {
         if (empty($this->sorter)) {
-            throw new ConnectException('Need to ser sorter first!');
+            throw new ConnectException('Need to set sorter first!');
         }
         $this->sorter->addPrimaryOrdering($columnName, $order);
 
@@ -412,7 +412,7 @@ class Table
     public function translateData(): void
     {
         if (is_null($this->dataSetConnector)) {
-            throw new TableException('Cant create table from empty dataset');
+            throw new TableException('Cannot create table from empty dataset');
         }
 
         if (empty($this->columns)) {

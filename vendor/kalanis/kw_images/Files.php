@@ -3,8 +3,8 @@
 namespace kalanis\kw_images;
 
 
-use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -74,7 +74,7 @@ class Files
             $this->libImage->copy($fileName, $origDir, $targetDir, $overwrite);
         } catch (ImagesException $ex) {
             return false;
-        } catch (ExtrasException $ex) {
+        } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
@@ -83,7 +83,7 @@ class Files
             } catch (ImagesException $ex) {
                 $this->libImage->delete($targetDir, $fileName);
                 return false;
-            } catch (ExtrasException $ex) {
+            } catch (PathsException $ex) {
                 $this->libImage->delete($targetDir, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
@@ -95,7 +95,7 @@ class Files
                 $this->libThumb->delete($targetDir, $fileName);
                 $this->libImage->delete($targetDir, $fileName);
                 return false;
-            } catch (ExtrasException $ex) {
+            } catch (PathsException $ex) {
                 $this->libThumb->delete($targetDir, $fileName);
                 $this->libImage->delete($targetDir, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -109,8 +109,8 @@ class Files
      * @param string $targetDir
      * @param bool $overwrite
      * @return bool
-     * @throws ExtrasException
      * @throws ImagesException
+     * @throws PathsException
      */
     public function move(string $currentPath, string $targetDir, bool $overwrite = false): bool
     {
@@ -121,7 +121,7 @@ class Files
             $this->libImage->move($fileName, $origDir, $targetDir, $overwrite);
         } catch (ImagesException $ex) {
             return false;
-        } catch (ExtrasException $ex) {
+        } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
@@ -130,7 +130,7 @@ class Files
             } catch (ImagesException $ex) {
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 return false;
-            } catch (ExtrasException $ex) {
+            } catch (PathsException $ex) {
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
@@ -142,7 +142,7 @@ class Files
                 $this->libThumb->move($fileName, $targetDir, $origDir);
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 return false;
-            } catch (ExtrasException $ex) {
+            } catch (PathsException $ex) {
                 $this->libThumb->move($fileName, $targetDir, $origDir);
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -156,8 +156,8 @@ class Files
      * @param string $targetName
      * @param bool $overwrite
      * @return bool
-     * @throws ExtrasException
      * @throws ImagesException
+     * @throws PathsException
      */
     public function rename(string $currentPath, string $targetName, bool $overwrite = false): bool
     {
@@ -167,7 +167,7 @@ class Files
             $this->libImage->rename($origDir, $fileName, $targetName, $overwrite);
         } catch (ImagesException $ex) {
             return false;
-        } catch (ExtrasException $ex) {
+        } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
@@ -176,7 +176,7 @@ class Files
             } catch (ImagesException $ex) {
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 return false;
-            } catch (ExtrasException $ex) {
+            } catch (PathsException $ex) {
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
@@ -188,7 +188,7 @@ class Files
                 $this->libThumb->rename($origDir, $targetName, $fileName);
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 return false;
-            } catch (ExtrasException $ex) {
+            } catch (PathsException $ex) {
                 $this->libThumb->rename($origDir, $targetName, $fileName);
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);

@@ -4,7 +4,7 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Files\Interfaces;
 

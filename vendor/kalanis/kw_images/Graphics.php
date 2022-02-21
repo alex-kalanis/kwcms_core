@@ -3,6 +3,7 @@
 namespace kalanis\kw_images;
 
 
+use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_paths\Stuff;
 
@@ -13,6 +14,8 @@ use kalanis\kw_paths\Stuff;
  */
 class Graphics
 {
+    use TLang;
+
     protected $factory = null;
     protected $libMime = null;
     protected $resource = null;
@@ -20,10 +23,13 @@ class Graphics
     /**
      * @param Graphics\Format\Factory $factory
      * @param MimeType $libMime
+     * @param IIMTranslations|null $lang
      * @throws ImagesException
      */
-    public function __construct(Graphics\Format\Factory $factory, MimeType $libMime)
+    public function __construct(Graphics\Format\Factory $factory, MimeType $libMime, ?IIMTranslations $lang = null)
     {
+        $this->setLang($lang);
+
         if (!(function_exists('imagecreatetruecolor')
             && function_exists('imagecolorallocate')
             && function_exists('imagesetpixel')
@@ -32,7 +38,7 @@ class Graphics
             && function_exists('imagesx')
             && function_exists('imagesy')
         )) {
-            throw new ImagesException('GD2 library is not present!');
+            throw new ImagesException($this->getLang()->imGdLibNotPresent());
         }
 
         $this->factory = $factory;
@@ -46,7 +52,7 @@ class Graphics
      */
     public function load(string $path): self
     {
-        $processor = $this->factory->getByType($this->getType($path));
+        $processor = $this->factory->getByType($this->getType($path), $this->getLang());
         $this->resource = $processor->load($path);
         return $this;
     }
@@ -59,7 +65,7 @@ class Graphics
     public function save(string $path): self
     {
         $this->checkResource();
-        $processor = $this->factory->getByType($this->getType($path));
+        $processor = $this->factory->getByType($this->getType($path), $this->getLang());
         $processor->save($path, $this->resource);
         return $this;
     }
@@ -74,7 +80,7 @@ class Graphics
         $mime = $this->libMime->mimeByExt(Stuff::fileExt($path));
         list($type, $app) = explode('/', $mime);
         if ('image' != $type) {
-            throw new ImagesException(sprintf('Wrong file mime type - got *%s*', $mime));
+            throw new ImagesException($this->getLang()->imWrongMime($mime));
         }
         return $app;
     }
@@ -96,7 +102,7 @@ class Graphics
         $resource = $this->create($width, $height);
         if (false === imagecopyresized($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
             imagedestroy($resource);
-            throw new ImagesException('Image cannot be resized!');
+            throw new ImagesException($this->getLang()->imImageCannotResize());
         }
         imagedestroy($this->resource);
         $this->resource = $resource;
@@ -120,7 +126,7 @@ class Graphics
         $resource = $this->create($width, $height);
         if (false === imagecopyresampled($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
             imagedestroy($resource);
-            throw new ImagesException('Image cannot be resampled!');
+            throw new ImagesException($this->getLang()->imImageCannotResample());
         }
         imagedestroy($this->resource);
         $this->resource = $resource;
@@ -138,7 +144,7 @@ class Graphics
     {
         $resource = imagecreatetruecolor($width, $height);
         if (false === $resource)
-            throw new ImagesException('Cannot create empty image!');
+            throw new ImagesException($this->getLang()->imImageCannotCreateEmpty());
         return $resource;
     }
 
@@ -151,7 +157,7 @@ class Graphics
         $this->checkResource();
         $size = imagesx($this->resource);
         if (false === $size) {
-            throw new ImagesException('Cannot access image size!');
+            throw new ImagesException($this->getLang()->imImageCannotGetSize());
         }
         return intval($size);
     }
@@ -165,7 +171,7 @@ class Graphics
         $this->checkResource();
         $size = imagesy($this->resource);
         if (false === $size) {
-            throw new ImagesException('Cannot access image size!');
+            throw new ImagesException($this->getLang()->imImageCannotGetSize());
         }
         return intval($size);
     }
@@ -176,7 +182,7 @@ class Graphics
     protected function checkResource(): void
     {
         if (empty($this->resource)) {
-            throw new ImagesException('You must load image first!');
+            throw new ImagesException($this->getLang()->imImageLoadFirst());
         }
     }
 }

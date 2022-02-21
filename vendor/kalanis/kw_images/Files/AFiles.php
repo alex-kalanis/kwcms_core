@@ -3,9 +3,11 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_extras\ExtendDir;
-use kalanis\kw_extras\ExtrasException;
+use kalanis\kw_paths\Extras\ExtendDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
+use kalanis\kw_images\TLang;
 
 
 /**
@@ -15,11 +17,14 @@ use kalanis\kw_images\ImagesException;
  */
 abstract class AFiles
 {
+    use TLang;
+
     /** @var ExtendDir|null */
     protected $libExtendDir = null;
 
-    public function __construct(ExtendDir $libExtendDir)
+    public function __construct(ExtendDir $libExtendDir, ?IIMTranslations $lang = null)
     {
+        $this->setLang($lang);
         $this->libExtendDir = $libExtendDir;
     }
 
@@ -32,7 +37,7 @@ abstract class AFiles
 
     /**
      * @param string $path
-     * @throws ExtrasException
+     * @throws PathsException
      */
     protected function checkWritable(string $path): void
     {

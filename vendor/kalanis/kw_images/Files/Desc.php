@@ -3,9 +3,9 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -29,7 +29,7 @@ class Desc extends AFiles
         }
         $content = file_get_contents($whatPath);
         if (false === $content) {
-            throw new ImagesException('Cannot read description');
+            throw new ImagesException($this->getLang()->imDescCannotRead());
         }
         return $content;
     }
@@ -44,7 +44,7 @@ class Desc extends AFiles
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
 
         if (false === file_put_contents( $whatPath, $content )) {
-            throw new ImagesException('Cannot add description');
+            throw new ImagesException($this->getLang()->imDescCannotAdd());
         }
     }
 
@@ -54,8 +54,8 @@ class Desc extends AFiles
      * @param string $targetDir
      * @param bool $overwrite
      * @return bool
-     * @throws ExtrasException
      * @throws ImagesException
+     * @throws PathsException
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
@@ -67,10 +67,10 @@ class Desc extends AFiles
             $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
             $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
             $overwrite,
-            'Cannot find that description.',
-            'Description with the same name already exists here.',
-            'Cannot remove old description.',
-            'Cannot copy base description.'
+            $this->getLang()->imDescCannotFind(),
+            $this->getLang()->imDescAlreadyExistsHere(),
+            $this->getLang()->imDescCannotRemoveOld(),
+            $this->getLang()->imDescCannotCopyBase()
         );
 
         return true;
@@ -81,8 +81,8 @@ class Desc extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws ExtrasException
      * @throws ImagesException
+     * @throws PathsException
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
@@ -94,10 +94,10 @@ class Desc extends AFiles
             $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
             $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
             $overwrite,
-            'Cannot find that description.',
-            'Description with the same name already exists here.',
-            'Cannot remove old description.',
-            'Cannot move base description.'
+            $this->getLang()->imDescCannotFind(),
+            $this->getLang()->imDescAlreadyExistsHere(),
+            $this->getLang()->imDescCannotRemoveOld(),
+            $this->getLang()->imDescCannotMoveBase()
         );
     }
 
@@ -106,8 +106,8 @@ class Desc extends AFiles
      * @param string $sourceName
      * @param string $targetName
      * @param bool $overwrite
-     * @throws ExtrasException
      * @throws ImagesException
+     * @throws PathsException
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
@@ -118,10 +118,10 @@ class Desc extends AFiles
             $whatPath . DIRECTORY_SEPARATOR . $sourceName . $this->libExtendDir->getDescExt(),
             $whatPath . DIRECTORY_SEPARATOR . $targetName . $this->libExtendDir->getDescExt(),
             $overwrite,
-            'Cannot find that description.',
-            'Description the same name already exists here.',
-            'Cannot remove old description.',
-            'Cannot rename base description.'
+            $this->getLang()->imDescCannotFind(),
+            $this->getLang()->imDescAlreadyExistsHere(),
+            $this->getLang()->imDescCannotRemoveOld(),
+            $this->getLang()->imDescCannotRenameBase()
         );
     }
 
@@ -133,7 +133,7 @@ class Desc extends AFiles
     public function delete(string $sourceDir, string $fileName): void
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
-        $this->dataRemove($whatPath, 'Cannot remove description!');
+        $this->dataRemove($whatPath, $this->getLang()->imDescCannotRemove());
     }
 
     public function getPath(string $path): string

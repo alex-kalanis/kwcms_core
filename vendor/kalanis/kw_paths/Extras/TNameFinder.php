@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_extras;
+namespace kalanis\kw_paths\Extras;
 
 
 use kalanis\kw_paths\Interfaces\IPaths;
@@ -9,7 +9,7 @@ use kalanis\kw_paths\Stuff;
 
 /**
  * trait TNameFinder
- * @package kalanis\kw_extras
+ * @package kalanis\kw_paths\Extras
  * Find free name for file
  */
 trait TNameFinder

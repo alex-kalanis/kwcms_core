@@ -3,9 +3,10 @@
 namespace kalanis\kw_menu\Semaphore;
 
 
-use kalanis\kw_langs\Lang;
+use kalanis\kw_menu\Interfaces\IMNTranslations;
 use kalanis\kw_menu\Interfaces\ISemaphore;
 use kalanis\kw_menu\MenuException;
+use kalanis\kw_menu\Translations;
 use kalanis\kw_paths\Stuff;
 
 
@@ -18,16 +19,19 @@ class Volume implements ISemaphore
 {
     /** @var string path to menu dir */
     protected $rootPath = '';
+    /** @var IMNTranslations */
+    protected $lang = null;
 
-    public function __construct(string $rootPath)
+    public function __construct(string $rootPath, ?IMNTranslations $lang = null)
     {
         $this->rootPath = Stuff::removeEndingSlash($rootPath) . static::EXT_SEMAPHORE;
+        $this->lang = $lang ?: new Translations();
     }
 
     public function want(): bool
     {
         if (false === @file_put_contents($this->rootPath, 'RELOAD')) {
-            throw new MenuException(Lang::get('menu.error.cannot_save'));
+            throw new MenuException($this->lang->mnCannotSaveSemaphore());
         }
         return true;
     }

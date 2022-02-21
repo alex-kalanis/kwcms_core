@@ -4,6 +4,7 @@ namespace kalanis\kw_menu;
 
 
 use kalanis\kw_menu\Interfaces\IMenu;
+use kalanis\kw_menu\Interfaces\IMNTranslations;
 use kalanis\kw_paths\Stuff;
 
 
@@ -24,9 +25,9 @@ class MoreFiles
     /** @var Interfaces\IDataSource */
     protected $storage = null;
 
-    public function __construct(Interfaces\IDataSource $storage, string $metaFile = '')
+    public function __construct(Interfaces\IDataSource $storage, string $metaFile = '', ?IMNTranslations $lang = null)
     {
-        $this->data = new DataProcessor($storage);
+        $this->data = new DataProcessor($storage, $lang);
         $this->storage = $storage;
         $this->metaFile = !empty($metaFile) ? Stuff::filename($metaFile) : 'index' . IMenu::EXT_MENU ;
     }

@@ -3,9 +3,11 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_extras\ExtendDir;
+use kalanis\kw_paths\Extras\ExtendDir;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
+use kalanis\kw_images\TLang;
 use kalanis\kw_paths\Stuff;
 
 
@@ -16,14 +18,16 @@ use kalanis\kw_paths\Stuff;
  */
 class DirThumb extends AFiles
 {
+    use TLang;
+
     const FILE_TEMP = '.tmp';
 
     protected $thumbExt = '.png';
     protected $libGraphics = null;
 
-    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [])
+    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
     {
-        parent::__construct($libExtendDir);
+        parent::__construct($libExtendDir, $lang);
         $this->libGraphics = $libGraphics;
         $this->thumbExt = !empty($params["tmb_ext"]) ? strval($params["tmb_ext"]) : $this->thumbExt;
     }
@@ -38,7 +42,7 @@ class DirThumb extends AFiles
         $tempThumb = $thumb . static::FILE_TEMP;
         if (is_file($thumb)) {
             if (!rename($thumb, $tempThumb)) {
-                throw new ImagesException('Cannot remove current thumb!');
+                throw new ImagesException($this->getLang()->imDirThumbCannotRemoveCurrent());
             }
         }
         try {
@@ -46,12 +50,12 @@ class DirThumb extends AFiles
             $this->libGraphics->save($thumb);
         } catch (ImagesException $ex) {
             if (is_file($tempThumb) && !rename($tempThumb, $thumb)) {
-                throw new ImagesException('Cannot remove current thumb back!');
+                throw new ImagesException($this->getLang()->imDirThumbCannotRestore());
             }
             throw $ex;
         }
         if (is_file($tempThumb) && !unlink($tempThumb)) {
-            throw new ImagesException('Cannot remove old thumb!');
+            throw new ImagesException($this->getLang()->imDirThumbCannotRemoveOld());
         }
     }
 
@@ -62,7 +66,7 @@ class DirThumb extends AFiles
     public function delete(string $whichDir): void
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($whichDir);
-        $this->dataRemove($whatPath, 'Cannot remove dir thumb!');
+        $this->dataRemove($whatPath, $this->getLang()->imDirThumbCannotRemove());
     }
 
     public function canUse(string $path): bool

@@ -1,12 +1,15 @@
 <?php
 
-namespace kalanis\kw_extras;
+namespace kalanis\kw_paths\Extras;
 
 
 use InvalidArgumentException;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\Interfaces\IPATranslations;
 use kalanis\kw_paths\Path;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_paths\Translations;
 use UnexpectedValueException;
 
 
@@ -16,6 +19,8 @@ use UnexpectedValueException;
  */
 class UserDir
 {
+    use TRemoveCycle;
+
     protected $userName = ''; # obtained user's name (when need)
     protected $userPath = ''; # system path to user's home dir
     protected $webRootDir = ''; # system path to web root dir
@@ -24,9 +29,11 @@ class UserDir
     protected $realPath = ''; # real path as derived from user path - without added slashes
     protected $canUseHomeDir = true; # if use sub dirs or is it directly in user's home dir
     protected $canUseDataDir = true; # if use user dir or is it anywhere else directly from web root
+    protected $lang = null;
 
-    public function __construct(Path $path)
+    public function __construct(Path $path, ?IPATranslations $lang = null)
     {
+        $this->lang = $lang ?: new Translations();
         $this->webRootDir =
             Stuff::removeEndingSlash($path->getDocumentRoot()) . DIRECTORY_SEPARATOR
             . Stuff::removeEndingSlash($path->getPathToSystemRoot()) . DIRECTORY_SEPARATOR;
@@ -73,10 +80,10 @@ class UserDir
     public function setUserName(string $name): self
     {
         if (empty($name)) {
-            throw new InvalidArgumentException('USERNAME_IS_SHORT');
+            throw new InvalidArgumentException($this->lang->paUserNameIsShort());
         }
         if (false !== strpbrk($name, '.: /~')) {
-            throw new InvalidArgumentException('USERNAME_CONTAINS_UNSUPPORTED_CHARS');
+            throw new InvalidArgumentException($this->lang->paUserNameContainsChars());
         }
         $this->userName = $name;
         return $this;
@@ -163,7 +170,7 @@ class UserDir
     protected function makeFromUserName(): string
     {
         if (empty($this->userName)) {
-            throw new UnexpectedValueException('NO_USERPATH_PARAMS');
+            throw new UnexpectedValueException($this->lang->paUserNameNotDefined());
         }
         $userPath = $this->userName;
         if (!$this->canUseHomeDir) {
@@ -178,17 +185,17 @@ class UserDir
     /**
      * Create inner path tree
      * @return string with inner path
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function createTree(): string
     {
         if (empty($this->homeDir)) {
-            throw new ExtrasException('CANNOT_DETERMINE_USER_DIR');
+            throw new PathsException($this->lang->paCannotDetermineUserDir());
         }
         $userDir = Stuff::removeEndingSlash($this->homeDir);
-        if (!mkdir($this->webRootDir . $userDir)) {
+        if (!@mkdir($this->webRootDir . $userDir)) {
             if (!is_dir($this->webRootDir . $userDir)) {
-                throw new ExtrasException('CANNOT_CREATE_USER_DIR');
+                throw new PathsException($this->lang->paCannotCreateUserDir());
             }
         }
         if ($this->canUseDataDir) {
@@ -202,12 +209,12 @@ class UserDir
     /**
      * Remove data in user's work dir
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function wipeWorkDir(): bool
     {
         if (empty($this->workDir)) {
-            throw new ExtrasException('CANNOT_DETERMINE_USER_DIR');
+            throw new PathsException($this->lang->paCannotDetermineUserDir());
         }
         if (3 > strlen($this->workDir)) {
             return false; # urcite se najde i blbec, co bude chtit cistku roota
@@ -219,12 +226,12 @@ class UserDir
     /**
      * Remove everything in user's special sub dirs
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function wipeConfDirs(): bool
     {
         if (empty($this->homeDir)) {
-            throw new ExtrasException('CANNOT_DETERMINE_USER_DIR');
+            throw new PathsException($this->lang->paCannotDetermineUserDir());
         }
         if (!$this->canUseDataDir) {
             return false;
@@ -240,79 +247,63 @@ class UserDir
     /**
      * Remove everything in user's home dir and that home dir itself
      * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      */
     public function wipeHomeDir(): bool
     {
-        if (!is_string($this->homeDir)) {
-            throw new ExtrasException('CANNOT_DETERMINE_USER_DIR');
+        if (empty($this->homeDir)) {
+            throw new PathsException($this->lang->paCannotDetermineUserDir());
         }
         if (strlen($this->workDir) < 4) {
             return false; # urcite se najde i blbec, co bude chtit wipe roota (jeste blbejsi napad, nez jsme doufali) - tudy se odinstalace fakt nedela!
         }
         $this->removeCycle($this->webRootDir . $this->homeDir);
-        rmdir($this->webRootDir . Stuff::removeEndingSlash($this->homeDir));
+        $dirPath = $this->webRootDir . Stuff::removeEndingSlash($this->homeDir);
+        if (is_dir($dirPath)) {
+            rmdir($dirPath);
+        }
         $this->workDir = '';
         $this->homeDir = '';
         return true;
     }
-
-    /**
-     * Remove sub dirs and their content recursively
-     * SHALL NOT BE SEPARATED INTO EXTRA CLASS
-     * @param $dirPath
-     */
-    protected function removeCycle(string $dirPath): void
-    {
-        $path = Stuff::removeEndingSlash($dirPath);
-        foreach (scandir($path) as $fileName) {
-            if (is_dir($path . DIRECTORY_SEPARATOR . $fileName)) {
-                if (($fileName != '.') || ($fileName != '..')) {
-                    $this->removeCycle($path . DIRECTORY_SEPARATOR . $fileName);
-                    rmdir($path . DIRECTORY_SEPARATOR . $fileName);
-                }
-            } else {
-                unlink($path . DIRECTORY_SEPARATOR . $fileName);
-            }
-        }
-    }
 }
 
 /*
-postupy zpracovani
+//// how it works ////
 
-vyroba uzivatele a jeho slozky, podslozky to vyrabi automaticky
+// create user, its dir, subdirs will be made auto
 $u = new UserDir();
 $u->setUserName("nom");
 $u->process();
 $u->createTree();
 
-zakaz vyrabet podslozky, obcas potreba
+// when you do not need subdirs; sometimes necessary
 $u->wantDataDir(false);
 
-likvidace uzivatele
+// user removal
 $u = new UserDir();
 $u->setUserName("nom"); || $u->setUserPath("dat/dumb/dir");
 $u->process();
 $u->wipeWorkDir(); || $u->wipeConfDirs(); || $u->wipeHomeDir(); // dle pozadavku a nalady
 
-vyroba podslozek, pokud nejsou
+// create subdirs when they aren't
 $u = new UserDir();
 $u->setUserName("nom"); || $u->setUserPath("dat/dumb/dir");
 $u->wantDataDir(true);
 $u->process();
 $u->createTree();
-potom je jeste potreba zapsat zmenu (upravenou cestu) do passwd, jinak uzivatel uvidi blbosti
-$kde = $u->getUserPath();
 
-aktualni uzivatel a kde se flakaji jeho soubory
+// then it's good idea to write that updated form into password file - or the user will see strange things
+$where = $u->getUserPath();
+
+// current user and its files
 $u = new UserDir();
 $u->setUserName("nom"); || $u->setUserPath("dat/dumb/dir");
 $u->process();
-$kam = $u->getUserPath(); // paradoxne to takto je, nejdriv mu touhle funkci cestu nadirigujete a stejna fce vam vyklopi uz cestu spravnou
+$kam = $u->getUserPath();
 
-jak blbe na tom jsem s userroot (a.k.a. home/ nebo user/) a podslozkami?
-$homedir = $u->usedHomeDir(); // bacha, prileti boolean
-$subdirs = $u->usedDataDir(); // bacha, prileti boolean
+// did that user have home dir and/or subdirs?
+$homedir = $u->usedHomeDir(); // beware, returns bool
+$subdirs = $u->usedDataDir(); // beware, returns bool
 */
 

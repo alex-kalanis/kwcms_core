@@ -74,7 +74,7 @@ class Sorter implements IQueryBuilder
     protected function checkColumnName(string $columnName): bool
     {
         if (!array_key_exists($columnName, $this->columns)) {
-            throw new TableException(sprintf('Column *%s* doesn\'t exist', $columnName));
+            throw new TableException(sprintf('Column *%s* does not exist', $columnName));
         }
         return true;
     }

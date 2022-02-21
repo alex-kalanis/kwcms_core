@@ -6,6 +6,7 @@ namespace kalanis\kw_paging\Render;
 use kalanis\kw_pager\Interfaces\IPager;
 use kalanis\kw_paging\Interfaces\ILink;
 use kalanis\kw_paging\Interfaces\IOutput;
+use kalanis\kw_paging\Interfaces\IPGTranslations;
 use kalanis\kw_paging\Interfaces\IPositions;
 
 
@@ -28,12 +29,13 @@ class DefaultPager implements IOutput
     protected $nextPage = null;
     protected $nextPageDis = null;
 
-    public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT)
+    public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)
     {
         $this->positions = $positions;
         $this->link = $link;
         $this->displayPagesCount = $displayPages;
         $this->pager = new DefaultPager\Pager();
+        $this->pager->setLang($lang ?: new Translations());
         $this->prevPage = new DefaultPager\PrevPage();
         $this->prevPageDis = new DefaultPager\PrevPageDisabled();
         $this->currentPage = new DefaultPager\CurrentPage();

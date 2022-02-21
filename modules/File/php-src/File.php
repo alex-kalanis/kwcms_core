@@ -101,6 +101,8 @@ class File extends AModule
             return $result->setAdapter($this->sizeAdapter);
         }
 
+        // TODO: out - everything through Lib\Output
+        // left just headers for files larger than limit
         return $out->setContent(strval(@file_get_contents($filePath)));
     }
 
@@ -119,6 +121,7 @@ class File extends AModule
      * @link https://www.php.net/manual/en/function.fread.php#84115
      * @link http://tools.ietf.org/id/draft-ietf-http-range-retrieval-00.txt
      * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
+     * !! BEWARE !! Chrome want the whole file even if it's too large -> return only first segment with 206 header
      */
     protected function parseRanges(string $filePath): void
     {

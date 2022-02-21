@@ -9,7 +9,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
 /**
  * Class Sprintf
  * @package kalanis\kw_table\core\Table\Columns
- * Add value into preformatted content
+ * Add value into pre-formatted content
  */
 class Sprintf extends AColumn
 {

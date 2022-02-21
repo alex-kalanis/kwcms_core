@@ -26,7 +26,7 @@ class Tree
     public function __construct(InternalLink $link)
     {
         // set path from link is a bit aggressive, so do not set real volume path in advance
-        $this->processor = new MoreFiles(new DataSource\Volume(''), Config::get('Menu','meta'));
+        $this->processor = new MoreFiles(new DataSource\Volume(''), Config::get('Menu','meta'), new Translations() );
         $this->link = $link;
     }
 

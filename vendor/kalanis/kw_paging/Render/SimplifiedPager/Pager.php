@@ -22,17 +22,13 @@ class Pager extends ATemplate
     protected function fillInputs(): void
     {
         $this->addInput('{PAGES}');
-        $this->addInput('{HELPING_TEXT}', $this->getHelpingText());
+        $this->addInput('{HELPING_TEXT}');
     }
 
     public function setData(string $pages, ?IPositions $positions): self
     {
         $this->updateItem('{PAGES}', $pages);
-        if ($positions) {
-            $this->updateItem('{HELPING_TEXT}', $this->getFilledText($positions));
-        } else {
-            $this->updateItem('{HELPING_TEXT}', '');
-        }
+        $this->updateItem('{HELPING_TEXT}', $this->getFilledText($positions));
         return $this;
     }
 }

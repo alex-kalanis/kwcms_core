@@ -5,6 +5,7 @@ namespace kalanis\kw_bans\Bans;
 
 use kalanis\kw_bans\BanException;
 use kalanis\kw_bans\Interfaces\IIpTypes;
+use kalanis\kw_bans\Interfaces\IKBTranslations;
 use kalanis\kw_bans\Ip;
 
 
@@ -21,8 +22,6 @@ trait TExpandIp
      */
     public function expandIP(string $knownIp): Ip
     {
-        $ip = new Ip();
-
         $affectedBits = 0; // aka ignore last bits...
         $subnetMaskPosition = strpos($knownIp, IIpTypes::MASK_SEPARATOR);
         if (false !== $subnetMaskPosition) {
@@ -37,7 +36,7 @@ trait TExpandIp
             $endPart = strlen($knownIp) == $cutEnd ? [] : explode($this->delimiter, substr($knownIp, $cutEnd));
             $unfilledBlocks = $this->blocks - (count($beginPart) + count($endPart));
             if ($unfilledBlocks < 0) {
-                throw new BanException('Invalid IP, too much blocks - ' . $knownIp);
+                throw new BanException($this->getLang()->ikbInvalidNumOfBlocksTooMany($knownIp));
             }
             $ipInArray = array_merge($beginPart, array_fill(0, $unfilledBlocks, '0'), $endPart);
         } else {
@@ -45,10 +44,15 @@ trait TExpandIp
         }
 
         if ($this->blocks != count($ipInArray)) {
-            throw new BanException('Invalid IP, bad amount of blocks - ' . $knownIp);
+            throw new BanException($this->getLang()->ikbInvalidNumOfBlocksAmount($knownIp));
         }
 
+        $ip = clone $this->getBasicIp();
         $ip->setData($this->type, array_map('strval', $ipInArray), $affectedBits);
         return $ip;
     }
+
+    abstract protected function getBasicIp(): Ip;
+
+    abstract protected function getLang(): IKBTranslations;
 }
