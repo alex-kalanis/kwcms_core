@@ -3,7 +3,7 @@
 namespace kalanis\kw_connect\search\Filters;
 
 
-use kalanis\kw_connect\core\Filters\AFilterFactory;
+use kalanis\kw_connect\core\AFilterFactory;
 
 
 /**

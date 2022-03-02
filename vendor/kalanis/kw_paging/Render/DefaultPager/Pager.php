@@ -24,7 +24,7 @@ class Pager extends ATemplate
         $this->addInput('{PREV_PAGES}');
         $this->addInput('{PAGES}');
         $this->addInput('{NEXT_PAGES}');
-        $this->addInput('{HELPING_TEXT}', $this->getHelpingText());
+        $this->addInput('{HELPING_TEXT}');
     }
 
     public function setData(string $prevPages, string $nextPages, string $pages, ?IPositions $positions): self
@@ -32,11 +32,7 @@ class Pager extends ATemplate
         $this->updateItem('{PREV_PAGES}', $prevPages);
         $this->updateItem('{PAGES}', $pages);
         $this->updateItem('{NEXT_PAGES}', $nextPages);
-        if ($positions) {
-            $this->updateItem('{HELPING_TEXT}', $this->getFilledText($positions));
-        } else {
-            $this->updateItem('{HELPING_TEXT}', '');
-        }
+        $this->updateItem('{HELPING_TEXT}', $this->getFilledText($positions));
         return $this;
     }
 }

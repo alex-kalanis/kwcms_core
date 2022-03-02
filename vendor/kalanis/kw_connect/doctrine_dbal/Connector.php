@@ -4,12 +4,12 @@ namespace kalanis\kw_connect\doctrine_dbal;
 
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use kalanis\kw_connect\core\Connectors\AConnector;
+use kalanis\kw_connect\arrays\Row;
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IFilterSubs;
 use kalanis\kw_connect\core\Interfaces\IRow;
-use kalanis\kw_connect\core\Rows\Arrays;
 
 
 /**
@@ -38,8 +38,12 @@ class Connector extends AConnector implements IConnector
         $this->primaryKey = $primaryKey;
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
+        $type = $this->getFilterFactory()->getFilter($filterType);
+        if ($type instanceof IFilterSubs) {
+            $type->addFilterFactory($this->getFilterFactory());
+        }
         $type->setDataSource($this->queryBuilder);
         $type->setFiltering($colName, $value);
     }
@@ -90,7 +94,7 @@ class Connector extends AConnector implements IConnector
 
     protected function getTranslated($data): IRow
     {
-        return new Arrays($data);
+        return new Row($data);
     }
 
     protected function getPrimaryKey($data): string

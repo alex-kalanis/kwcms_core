@@ -43,14 +43,13 @@ class Filter
 
     /**
      * @param IColumn $column
-     * @return string|int
+     * @return string|int|array
      */
     public function getValue(IColumn $column)
     {
         if (!$this->isValue($column)) {
             return IFilterType::EMPTY_FILTER;
         }
-
         return $this->columnsValues[$column->getSourceName()];
     }
 

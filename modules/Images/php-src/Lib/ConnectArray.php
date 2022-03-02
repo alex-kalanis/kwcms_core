@@ -4,7 +4,7 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use kalanis\kw_images\Files;
-use kalanis\kw_connect\core\Connectors\Arrays;
+use kalanis\kw_connect\arrays\Connector;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 
@@ -13,7 +13,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  * @package KWCMS\modules\Images\Lib
  * Mapper is array of connecting items.
  */
-class ConnectArray extends Arrays
+class ConnectArray extends Connector
 {
     protected $whereDir = '';
     protected $libGallery = null;

@@ -4,7 +4,6 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_menu\DataSource;
@@ -12,6 +11,7 @@ use kalanis\kw_menu\Interfaces;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MoreFiles;
 use kalanis\kw_menu\Semaphore;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\TWhereDir;
@@ -37,7 +37,7 @@ trait TMenu
     {
         Config::load('Menu');
         $this->userDir = new UserDir($path);
-        $this->libMenu = new MoreFiles( $this->initMenuVolume(), $this->getMenuMeta() );
+        $this->libMenu = new MoreFiles( $this->initMenuVolume(), $this->getMenuMeta(), new Translations() );
         $this->libSemaphore = $this->initMenuSemaphore();
     }
 

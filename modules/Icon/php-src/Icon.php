@@ -4,13 +4,13 @@ namespace KWCMS\modules\Icon;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\InternalLink;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Extras\UserDir;
 
 
 /**

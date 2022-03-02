@@ -4,12 +4,11 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use Error;
-use kalanis\kw_extras\ExtrasException;
-use kalanis\kw_extras\TNameFinder;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_paths\Extras\TNameFinder;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
@@ -95,7 +94,6 @@ class ProcessFile implements IProcessFiles
      * @param bool $overwrite
      * @return bool
      * @throws ImagesException
-     * @throws ExtrasException
      */
     public function moveFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
@@ -107,7 +105,6 @@ class ProcessFile implements IProcessFiles
      * @param string $toFileName
      * @param bool $overwrite
      * @return bool
-     * @throws ExtrasException
      * @throws ImagesException
      */
     public function renameFile(string $currentPath, string $toFileName, bool $overwrite = false): bool

@@ -10,7 +10,7 @@ use kalanis\kw_forms\Controls\TWrappers;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Validate;
-use kalanis\kw_templates\HtmlElement\IHtmlElement;
+use kalanis\kw_templates\Interfaces\IHtmlElement;
 use kalanis\kw_templates\HtmlElement\THtmlElement;
 
 

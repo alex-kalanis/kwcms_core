@@ -18,6 +18,7 @@ use kalanis\kw_paths\Stuff;
  * Class File
  * @package KWCMS\modules\File
  * Users files - for access that which are not available the direct way
+ * @link https://stackoverflow.com/questions/3303029/http-range-header
  *
  * test$ curl -v -r 200- http://kwcms_core.lemp.test/web/ms:file/velke_soubory/calcline.txt
  */
@@ -26,14 +27,14 @@ class File extends AModule
     protected $mime = null;
     protected $extLink = null;
     protected $intLink = null;
-    protected $seek = null;
+    /** @var Lib\SizeAdapters\AAdapter|null */
+    protected $sizeAdapter = null;
 
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
         $this->mime = new MimeType(true);
         $this->intLink = new InternalLink(Config::getPath());
-        $this->seek = new Seek();
     }
 
     public function process(): void
@@ -49,14 +50,12 @@ class File extends AModule
             Headers::setCustomCode(strval(reset($protocol)), 404);
             return $out;
         }
-        $this->prepareSeeks($filePath);
-        $this->parseRanges();
-        if (!$this->inAllowedRange()) {
+
+        $wantOnlyHeaders = $this->onlyHeaders();
+
+        $this->parseRanges($filePath);
+        if (!$this->sizeAdapter->inAllowedRange()) {
             Headers::setCustomCode(strval(reset($protocol)), 416);
-            return $out;
-        }
-        if (!$this->checkMaxPassedSize()) {
-            Headers::setCustomCode(strval(reset($protocol)), 413);
             return $out;
         }
         if (!$this->isAccessible($filePath)) {
@@ -64,12 +63,24 @@ class File extends AModule
             return $out;
         }
 
+        // pass only part
+        $maxTransferSize = intval(strval(Config::get('File', 'max_size', 16777216)));
+        if ($maxTransferSize < $this->sizeAdapter->getUsableLength()) {
+            $this->sizeAdapter->onlyPart($maxTransferSize);
+        }
+
         // headers
         header('Content-Type: ' . $this->mime->mimeByPath($filePath));
         header('Cache-Control: public, must-revalidate, max-age=0');
         header('Pragma: no-cache');
-        header('Accept-Ranges: bytes');
+        header('Accept-Ranges: bytes, seek');
         header('Last-Modified: ' . date('r', filemtime($filePath)));
+
+        if ($wantOnlyHeaders) {
+            header('Content-Length: ' . $this->sizeAdapter->getMaxLength());
+            return $out;
+        }
+
         header('Content-Transfer-Encoding: binary');
 
         // pass name and download flag
@@ -81,43 +92,18 @@ class File extends AModule
             header('Content-Disposition: inline; filename="' . $name . '"');
         }
 
-        if ($this->seek->usedRange()) {
-            $result = new Output();
-            if ($this->seek->getStart() > 0 || $this->seek->getEnd() < $this->seek->getMax()) {
-                Headers::setCustomCode(strval(reset($protocol)), 206);
-                header(sprintf(
-                    'Content-Range: bytes %d-%d/%d',
-                    $this->seek->getStart(),
-                    $this->seek->getEnd(),
-                    $this->seek->getMax() + 1)
-                );
+        if ($this->sizeAdapter->usedRange()) {
+            $result = new Lib\Output();
+            Headers::setCustomCode(strval(reset($protocol)), 206);
+            if ($contentRange = $this->sizeAdapter->contentRange()) {
+                header($contentRange);
             }
-            return $result->setSeek($this->seek);
+            return $result->setAdapter($this->sizeAdapter);
         }
 
+        // TODO: out - everything through Lib\Output
+        // left just headers for files larger than limit
         return $out->setContent(strval(@file_get_contents($filePath)));
-    }
-
-    protected function prepareSeeks(string $filePath): void
-    {
-        $max = filesize($filePath) - 1;
-        $this->seek
-            ->setData($filePath, $max)
-            ->setLimits(0, $max)
-            ->setStepBy(intval(strval(Config::get('File', 'step_by', 16384))))
-        ;
-    }
-
-    protected function checkMaxPassedSize(): bool
-    {
-        $maxTransferSize = intval(strval(Config::get('File', 'max_size', 16777216)));
-        return ($maxTransferSize >= $this->seek->getUsableLength());
-    }
-
-    protected function inAllowedRange(): bool
-    {
-        return $this->seek->getStart() <= $this->seek->getMax()
-            && $this->seek->getEnd() <= $this->seek->getMax();
     }
 
     protected function isAccessible(string $filePath): bool
@@ -125,38 +111,40 @@ class File extends AModule
         return is_file($filePath) && is_readable($filePath);
     }
 
+    protected function onlyHeaders(): bool
+    {
+        $requestMethod = $this->inputs->getInArray('REQUEST_METHOD', [IEntry::SOURCE_SERVER]);
+        return !empty($requestMethod) && ('HEAD' == strtoupper(strval(reset($requestMethod))));
+    }
+
     /**
      * @link https://www.php.net/manual/en/function.fread.php#84115
      * @link http://tools.ietf.org/id/draft-ietf-http-range-retrieval-00.txt
      * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
+     * !! BEWARE !! Chrome want the whole file even if it's too large -> return only first segment with 206 header
      */
-    protected function parseRanges(): void
+    protected function parseRanges(string $filePath): void
     {
+        $fileSize = filesize($filePath);
         $range = $this->inputs->getInArray('HTTP_RANGE', [IEntry::SOURCE_SERVER]);
         if (!empty($range)) {
             $line = strval(reset($range));
             list($sizeUnit, $range) = explode('=', $line, 2);
-            if ('bytes' == $sizeUnit) {
-                if (false !== strpos($range, ',')) {
-                    // multiple ranges could be specified at the same time
-                    // but for the sake of sanity only serve the first range
-                    list($range, $extraRangesNotServed) = explode(',', $range, 2);
-                }
-
-                // figure out download piece from range (if set)
-                list($seekStart, $seekEnd) = explode('-', $range, 2);
-
-                // set start and end based on range (if set), else set defaults
-                // also check for invalid ranges.
-                $seekEnd = (empty($seekEnd))
-                    ? $this->seek->getMax()
-                    : min(abs(intval($seekEnd)), $this->seek->getMax());
-                $seekStart = (empty($seekStart) || abs(intval($seekStart))) > $seekEnd
-                    ? 0
-                    : max(abs(intval($seekStart)), 0);
-
-                $this->seek->setLimits($seekStart, $seekEnd)->useRange(true);
-            }
+            $this->sizeAdapter = Lib\SizeAdapters\Factory::getAdapter($sizeUnit);
+            $this->sizeAdapter->fillFileDetails(
+                $filePath,
+                $fileSize,
+                intval(strval(Config::get('File', 'step_by', 16384)))
+            );
+            $this->sizeAdapter->parseRanges($range);
+        } else {
+            $this->sizeAdapter = new Lib\SizeAdapters\Bytes();
+            $this->sizeAdapter->fillFileDetails(
+                $filePath,
+                $fileSize,
+                intval(strval(Config::get('File', 'step_by', 16384)))
+            );
         }
+
     }
 }

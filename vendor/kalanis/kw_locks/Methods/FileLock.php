@@ -3,6 +3,7 @@
 namespace kalanis\kw_locks\Methods;
 
 
+use kalanis\kw_locks\Interfaces\IKLTranslations;
 use kalanis\kw_locks\Interfaces\ILock;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_paths\Stuff;
@@ -16,19 +17,23 @@ use kalanis\kw_paths\Stuff;
  */
 class FileLock implements ILock
 {
+    /** @var IKLTranslations */
+    protected $lang = null;
     protected $lockFilename = '';
     protected $handle = null;
 
     /**
      * @param string $lockFilename
+     * @param IKLTranslations|null $lang
      * @throws LockException
      */
-    public function __construct(string $lockFilename)
+    public function __construct(string $lockFilename, ?IKLTranslations $lang = null)
     {
+        $this->lang = $lang ?: new Translations();
         $path = Stuff::directory($lockFilename);
         $this->accessDir($path);
         if ((!is_file($lockFilename) && !is_writable($path)) || (is_file($lockFilename) && !is_writable($lockFilename))) {
-            throw new LockException('Cannot use: ' . $lockFilename . ' as lock file. Path is not writable.');
+            throw new LockException($this->lang->iklCannotUseFile($lockFilename));
         }
         $this->lockFilename = $lockFilename;
     }
@@ -53,7 +58,7 @@ class FileLock implements ILock
             if (mkdir($path, 0777, true)) {
                 chmod($path, 0777);
             } else {
-                throw new LockException('Cannot use: ' . $path . ' to lock. Path not found and cannot be created.');
+                throw new LockException($this->lang->iklCannotUsePath($path));
             }
         }
     }
@@ -64,7 +69,7 @@ class FileLock implements ILock
             if (!empty($this->handle)) {
                 return true;
             }
-            throw new LockException('Locked by another!');
+            throw new LockException($this->lang->iklLockedByOther());
         }
         return false;
     }
@@ -77,7 +82,7 @@ class FileLock implements ILock
 
         $this->handle = @fopen($this->lockFilename, 'c');
         if (false === $this->handle) {
-            throw new LockException('Could not open lock file: '. $this->lockFilename);
+            throw new LockException($this->lang->iklCannotOpenFile($this->lockFilename));
         }
         $result = flock($this->handle, LOCK_EX | LOCK_NB);
         if (false === $result) {

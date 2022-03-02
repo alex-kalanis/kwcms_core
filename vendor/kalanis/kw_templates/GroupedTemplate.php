@@ -3,9 +3,6 @@
 namespace kalanis\kw_templates;
 
 
-use kalanis\kw_templates\TemplateException;
-
-
 /**
  * Class GroupedTemplate
  * @package kalanis\kw_templates
@@ -15,7 +12,7 @@ abstract class GroupedTemplate extends ATemplate
 {
     protected static $knownTemplates;
 
-    final protected function loadTemplate(): string
+    protected function loadTemplate(): string
     {
         if (empty(static::$knownTemplates)) {
             static::$knownTemplates = $this->defineAvailableTemplates();

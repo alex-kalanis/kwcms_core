@@ -3,8 +3,8 @@
 namespace kalanis\kw_menu;
 
 
-use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\Interfaces\IMenu;
+use kalanis\kw_menu\Interfaces\IMNTranslations;
 
 
 /**
@@ -18,6 +18,8 @@ class DataProcessor
     protected $path = '';
     /** @var Interfaces\IDataSource|null */
     protected $storage = null;
+    /** @var IMNTranslations */
+    protected $lang = null;
     /** @var Menu\Menu */
     protected $menu = null;
     /** @var Menu\Item */
@@ -27,11 +29,12 @@ class DataProcessor
     /** @var Menu\Item[] */
     protected $workList = [];
 
-    public function __construct(Interfaces\IDataSource $storage)
+    public function __construct(Interfaces\IDataSource $storage, ?IMNTranslations $lang = null)
     {
         $this->menu = new Menu\Menu();
         $this->item = new Menu\Item();
         $this->storage = $storage;
+        $this->lang = $lang ?: new Translations();
     }
 
     public function setPath(string $path): self
@@ -83,7 +86,7 @@ class DataProcessor
         if ($this->storage->exists($this->path)) {
             return explode("\r\n", $this->storage->load($this->path));
         }
-        throw new MenuException(Lang::get('menu.error.cannot_open'));
+        throw new MenuException($this->lang->mnCannotOpen());
     }
 
     protected function loadHeader(string $line): void
@@ -164,7 +167,7 @@ class DataProcessor
         # null sign means not free, just unchanged
         $item = $this->getItem($file);
         if (!$item) {
-            throw new MenuException(Lang::get('menu.error.item_not_found', $file));
+            throw new MenuException($this->lang->mnItemNotFound($file));
         }
 
         $item->setData(
@@ -192,15 +195,15 @@ class DataProcessor
         # get assoc array with new positioning of files
         # key is file name, value is new position
         if (empty($positions)) {
-            throw new MenuException(Lang::get('menu.error.problematic_data'));
+            throw new MenuException($this->lang->mnProblematicData());
         }
         $matrix = [];
         foreach ($positions as $file => &$position) {
             if (empty($this->workList[$file])) {
-                throw new MenuException(Lang::get('menu.error.item_not_found', $file));
+                throw new MenuException($this->lang->mnItemNotFound($file));
             }
             if (!is_numeric($position)) {
-                throw new MenuException(Lang::get('menu.error.problematic_data'));
+                throw new MenuException($this->lang->mnProblematicData());
             }
             $matrix[$this->workList[$file]->getPosition()] = intval($position);
         }

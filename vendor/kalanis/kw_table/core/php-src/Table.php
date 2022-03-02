@@ -145,7 +145,7 @@ class Table
     public function setDefaultSorting(string $columnName, string $order = Table\Sorter::ORDER_ASC): self
     {
         if (empty($this->sorter)) {
-            throw new ConnectException('Need to ser sorter first!');
+            throw new ConnectException('Need to set sorter first!');
         }
         $this->sorter->addPrimaryOrdering($columnName, $order);
 
@@ -239,7 +239,11 @@ class Table
                 $filterField = $column->getHeaderFilterField();
                 if ($filterField) {
                     $filterField->setDataSourceConnector($this->dataSetConnector);
-                    $this->dataSetConnector->setFiltering($column->getSourceName(), $this->headerFilter->getValue($column), $filterField->getFilterType());
+                    $this->dataSetConnector->setFiltering(
+                        $column->getSourceName(),
+                        $filterField->getFilterAction(),
+                        $this->headerFilter->getValue($column)
+                    );
                 }
             }
         }
@@ -271,7 +275,10 @@ class Table
         if (empty($this->outputPager->getPager()->getMaxResults())) {
             $this->outputPager->getPager()->setMaxResults($this->dataSetConnector->getTotalCount());
         }
-        $this->dataSetConnector->setPagination($this->outputPager->getPager()->getOffset(), $this->outputPager->getPager()->getLimit());
+        $this->dataSetConnector->setPagination(
+            $this->outputPager->getPager()->getOffset(),
+            $this->outputPager->getPager()->getLimit()
+        );
         return $this;
     }
 
@@ -405,7 +412,7 @@ class Table
     public function translateData(): void
     {
         if (is_null($this->dataSetConnector)) {
-            throw new TableException('Cant create table from empty dataset');
+            throw new TableException('Cannot create table from empty dataset');
         }
 
         if (empty($this->columns)) {

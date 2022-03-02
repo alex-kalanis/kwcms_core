@@ -28,7 +28,7 @@ class Options extends AField
         parent::__construct($attributes);
     }
 
-    protected function getFilterAction(): string
+    public function getFilterAction(): string
     {
         return IFilterFactory::ACTION_EXACT;
     }

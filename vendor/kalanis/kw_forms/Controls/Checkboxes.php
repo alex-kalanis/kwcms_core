@@ -109,7 +109,9 @@ class Checkboxes extends AControl implements IMultiValue
                     ? $array[$shortKey]
                     : (
                     isset($array[$child->getKey()])
-                        ? $array[$child->getKey()]
+                        // @codeCoverageIgnoreStart
+                        ? $array[$child->getKey()] // dunno how to test now, probably directly with "foo[bar]" variable
+                        // @codeCoverageIgnoreEnd
                         : ''
                     )
                 );

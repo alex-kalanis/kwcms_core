@@ -11,7 +11,7 @@ namespace kalanis\kw_table\core\Interfaces\Table;
 interface IFilterMulti
 {
     /**
-     * @return string[]
+     * @return array <string, string>
      */
     public function getPairs(): array;
 }

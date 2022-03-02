@@ -4,9 +4,9 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use Error;
-use kalanis\kw_extras\TNameFinder;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_paths\Extras\TNameFinder;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Files\FilesException;
 use KWCMS\modules\Files\Interfaces\IProcessFiles;

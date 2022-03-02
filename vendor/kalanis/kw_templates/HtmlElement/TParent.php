@@ -3,6 +3,9 @@
 namespace kalanis\kw_templates\HtmlElement;
 
 
+use kalanis\kw_templates\Interfaces\IHtmlElement;
+
+
 /**
  * Trait TParent
  * @package kalanis\kw_templates\Template
@@ -21,7 +24,7 @@ trait TParent
      * @param IHtmlElement|null $parent
      * @return $this
      */
-    public final function setParent(?IHtmlElement $parent = null): self
+    public function setParent(?IHtmlElement $parent = null): self
     {
         $this->parent = $parent;
         $this->afterParentSet();
@@ -32,7 +35,7 @@ trait TParent
      * Returns parent element
      * @return IHtmlElement|null
      */
-    public final function getParent(): ?IHtmlElement
+    public function getParent(): ?IHtmlElement
     {
         return $this->parent;
     }
@@ -50,7 +53,7 @@ trait TParent
      * @param string $alias
      * @return $this
      */
-    public final function append($element, ?string $alias = null): self
+    public function append($element, ?string $alias = null): self
     {
         if ($this->parent instanceof IHtmlElement) {
             $this->parent->addChild($element, $alias);

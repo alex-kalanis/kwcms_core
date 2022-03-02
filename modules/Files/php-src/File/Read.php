@@ -5,7 +5,6 @@ namespace KWCMS\modules\Files\File;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -15,6 +14,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;

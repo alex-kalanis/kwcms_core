@@ -3,6 +3,7 @@
 namespace kalanis\kw_locks\Methods;
 
 
+use kalanis\kw_locks\Interfaces\IKLTranslations;
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
 
@@ -14,20 +15,24 @@ use kalanis\kw_locks\LockException;
  */
 class PidLock implements IPassedKey
 {
+    /** @var IKLTranslations */
+    protected $lang = null;
     protected $tempPath = '';
     protected $specialKey = '';
 
     /**
      * @param string $tempPath
+     * @param IKLTranslations|null $lang
      * @throws LockException
      */
-    public function __construct(string $tempPath)
+    public function __construct(string $tempPath, ?IKLTranslations $lang = null)
     {
+        $this->lang = $lang ?: new Translations();
         if (\defined('PHP_OS_FAMILY') && in_array(PHP_OS_FAMILY, ['Windows', 'Unknown']) ) {
-            throw new LockException('Unusable OS. Cannot use external programs to determine process ID.');
+            throw new LockException($this->lang->iklCannotUseOS());
         }
         if (\DIRECTORY_SEPARATOR === '\\') {
-            throw new LockException('Unusable OS. Cannot use external programs to determine process ID.');
+            throw new LockException($this->lang->iklCannotUseOS());
         }
         $this->tempPath = $tempPath;
     }
@@ -55,7 +60,7 @@ class PidLock implements IPassedKey
             if (in_array($lockingPid, $otherOnes)) {
                 return true;
             }
-            throw new LockException('Locked by another!');
+            throw new LockException($this->lang->iklLockedByOther());
         }
         return false;
     }
