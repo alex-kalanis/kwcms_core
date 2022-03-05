@@ -5,13 +5,14 @@ namespace KWCMS\modules\Menu\Lib;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\Interfaces\IMNTranslations;
+use kalanis\kw_semaphore\Interfaces\ISMTranslations;
 
 
 /**
  * Class Translations
  * @package KWCMS\modules\Menu\Lib
  */
-class Translations implements IMNTranslations
+class Translations implements IMNTranslations, ISMTranslations
 {
     public function mnCannotOpen(): string
     {

@@ -14,10 +14,6 @@ interface IMNTranslations
 
     public function mnCannotSave(): string;
 
-    public function mnCannotOpenSemaphore(): string;
-
-    public function mnCannotSaveSemaphore(): string;
-
     public function mnItemNotFound(string $item): string;
 
     public function mnProblematicData(): string;

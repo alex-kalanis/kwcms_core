@@ -1,36 +1,40 @@
 <?php
 
-namespace kalanis\kw_menu\Interfaces;
+namespace kalanis\kw_semaphore\Interfaces;
 
 
-use kalanis\kw_menu\MenuException;
+use kalanis\kw_semaphore\SemaphoreException;
 
 
 /**
  * Interface ICaching
- * @package kalanis\kw_menu\Interfaces
+ * @package kalanis\kw_semaphore\Interfaces
  * Semaphore to tell when reload menu cache
  * Work with directories or other storage devices
  */
 interface ISemaphore
 {
+    const TEXT_SEMAPHORE = 'RELOAD';
     const EXT_SEMAPHORE = '.reload';
 
     /**
+     * We want/mark that thing
      * @return bool
-     * @throws MenuException
+     * @throws SemaphoreException
      */
     public function want(): bool;
 
     /**
+     * Is that thing wanted/marker
      * @return bool
-     * @throws MenuException
+     * @throws SemaphoreException
      */
     public function has(): bool;
 
     /**
+     * Remove want/mark
      * @return bool
-     * @throws MenuException
+     * @throws SemaphoreException
      */
     public function remove(): bool;
 }

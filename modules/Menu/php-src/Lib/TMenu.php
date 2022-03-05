@@ -10,7 +10,8 @@ use kalanis\kw_menu\DataSource;
 use kalanis\kw_menu\Interfaces;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MoreFiles;
-use kalanis\kw_menu\Semaphore;
+use kalanis\kw_semaphore\Interfaces\ISemaphore;
+use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
@@ -30,7 +31,7 @@ trait TMenu
     protected $userDir = null;
     /** @var MoreFiles|null */
     protected $libMenu = null;
-    /** @var Interfaces\ISemaphore|null */
+    /** @var ISemaphore|null */
     protected $libSemaphore = null;
 
     protected function initTMenu(Path $path)
@@ -46,9 +47,12 @@ trait TMenu
         return new DataSource\Volume($this->userDir->getWebRootDir());
     }
 
-    protected function initMenuSemaphore(): Interfaces\ISemaphore
+    protected function initMenuSemaphore(): ISemaphore
     {
-        return new Semaphore\Volume($this->userDir->getWebRootDir() . $this->userDir->getWorkDir() . Config::get('Menu', 'meta_regen'));
+        return new Semaphore\Volume(
+            $this->userDir->getWebRootDir() . $this->userDir->getWorkDir() . Config::get('Menu', 'meta_regen'),
+            new Translations()
+        );
     }
 
     protected function getMenuMeta(): string
