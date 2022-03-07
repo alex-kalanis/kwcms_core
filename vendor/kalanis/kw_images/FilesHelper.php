@@ -26,7 +26,14 @@ class FilesHelper
      */
     public static function get(string $webRootDir, array $params = [], ?IIMTranslations $langIm = null, ?IPATranslations $langPa = null): Files
     {
-        $libExtDir = new ExtendDir($webRootDir, $langPa);
+        $libExtDir = new ExtendDir(
+            $webRootDir,
+            isset($params['desc_dir']) ? $params['desc_dir'] : null,
+            isset($params['desc_file']) ? $params['desc_file'] : null,
+            isset($params['desc_ext']) ? $params['desc_ext'] : null,
+            isset($params['thumb_dir']) ? $params['thumb_dir'] : null,
+            $langPa
+        );
         $libGraphics = new Graphics(new Graphics\Format\Factory(), new MimeType(), $langIm);
         return new Files(
             new Files\Image($libExtDir, $libGraphics, $params, $langIm),

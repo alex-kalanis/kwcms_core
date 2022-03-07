@@ -7,7 +7,6 @@ use kalanis\kw_paths\Extras\ExtendDir;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
-use kalanis\kw_images\TLang;
 use kalanis\kw_paths\Stuff;
 
 
@@ -18,8 +17,6 @@ use kalanis\kw_paths\Stuff;
  */
 class DirThumb extends AFiles
 {
-    use TLang;
-
     const FILE_TEMP = '.tmp';
 
     protected $thumbExt = '.png';
@@ -40,23 +37,29 @@ class DirThumb extends AFiles
     {
         $thumb = $this->libExtendDir->getWebRootDir() . $this->getPath(Stuff::directory($path));
         $tempThumb = $thumb . static::FILE_TEMP;
-        if (is_file($thumb)) {
+        if ($this->libExtendDir->isFile($thumb)) {
             if (!rename($thumb, $tempThumb)) {
+                // @codeCoverageIgnoreStart
                 throw new ImagesException($this->getLang()->imDirThumbCannotRemoveCurrent());
             }
+            // @codeCoverageIgnoreEnd
         }
         try {
             $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
             $this->libGraphics->save($thumb);
         } catch (ImagesException $ex) {
-            if (is_file($tempThumb) && !rename($tempThumb, $thumb)) {
+            if ($this->libExtendDir->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
+                // @codeCoverageIgnoreStart
                 throw new ImagesException($this->getLang()->imDirThumbCannotRestore());
             }
+            // @codeCoverageIgnoreEnd
             throw $ex;
         }
-        if (is_file($tempThumb) && !unlink($tempThumb)) {
+        if ($this->libExtendDir->isFile($tempThumb) && !unlink($tempThumb)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imDirThumbCannotRemoveOld());
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -72,7 +75,7 @@ class DirThumb extends AFiles
     public function canUse(string $path): bool
     {
         $thumbDir = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
-        return is_dir($thumbDir) && is_readable($thumbDir) && is_writable($thumbDir);
+        return $this->libExtendDir->isDir($thumbDir) && is_readable($thumbDir) && is_writable($thumbDir);
     }
 
     public function getPath(string $path): string

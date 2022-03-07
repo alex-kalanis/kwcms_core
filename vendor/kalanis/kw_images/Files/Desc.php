@@ -29,8 +29,10 @@ class Desc extends AFiles
         }
         $content = file_get_contents($whatPath);
         if (false === $content) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imDescCannotRead());
         }
+        // @codeCoverageIgnoreEnd
         return $content;
     }
 
@@ -43,7 +45,7 @@ class Desc extends AFiles
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
 
-        if (false === file_put_contents( $whatPath, $content )) {
+        if (false === @file_put_contents( $whatPath, $content )) {
             throw new ImagesException($this->getLang()->imDescCannotAdd());
         }
     }
@@ -53,11 +55,10 @@ class Desc extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @return bool
      * @throws ImagesException
      * @throws PathsException
      */
-    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
         $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
         $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
@@ -72,8 +73,6 @@ class Desc extends AFiles
             $this->getLang()->imDescCannotRemoveOld(),
             $this->getLang()->imDescCannotCopyBase()
         );
-
-        return true;
     }
 
     /**

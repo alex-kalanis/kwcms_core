@@ -38,7 +38,7 @@ class ProcessFile implements IProcessFiles
         try {
             $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibImage()->getExtendDir()->getWebRootDir() . $targetPath);
             if (!$status) {
-                throw new ImagesException(Lang::get('images.umplad.cannot_move'));
+                throw new ImagesException(Lang::get('images.upload.cannot_move'));
             }
         } catch (Error $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);

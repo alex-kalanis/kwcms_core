@@ -77,7 +77,7 @@ class Files
         } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
+        if ($this->libThumb->isHere($currentPath)) {
             try {
                 $this->libThumb->copy($fileName, $origDir, $targetDir, $overwrite);
             } catch (ImagesException $ex) {
@@ -88,7 +88,7 @@ class Files
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
         }
-        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libDesc->getPath($currentPath))) {
+        if ($this->libDesc->isHere($currentPath)) {
             try {
                 $this->libDesc->copy($fileName, $origDir, $targetDir, $overwrite);
             } catch (ImagesException $ex) {
@@ -124,7 +124,7 @@ class Files
         } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
+        if ($this->libThumb->isHere($currentPath)) {
             try {
                 $this->libThumb->move($fileName, $origDir, $targetDir, $overwrite);
             } catch (ImagesException $ex) {
@@ -135,7 +135,7 @@ class Files
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
         }
-        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libDesc->getPath($currentPath))) {
+        if ($this->libDesc->isHere($currentPath)) {
             try {
                 $this->libDesc->move($fileName, $origDir, $targetDir, $overwrite);
             } catch (ImagesException $ex) {
@@ -170,7 +170,7 @@ class Files
         } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libThumb->getPath($currentPath))) {
+        if ($this->libThumb->isHere($currentPath)) {
             try {
                 $this->libThumb->rename($origDir, $fileName, $targetName, $overwrite);
             } catch (ImagesException $ex) {
@@ -181,7 +181,7 @@ class Files
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
         }
-        if ($this->targetExists($this->libDirDesc->getExtendDir()->getWebRootDir() . $this->libDesc->getPath($currentPath))) {
+        if ($this->libDesc->isHere($currentPath)) {
             try {
                 $this->libDesc->rename($origDir, $fileName, $targetName, $overwrite);
             } catch (ImagesException $ex) {
@@ -236,10 +236,5 @@ class Files
     public function getLibDirThumb(): Files\DirThumb
     {
         return $this->libDirThumb;
-    }
-
-    protected function targetExists(string $path): bool
-    {
-        return file_exists($path);
     }
 }

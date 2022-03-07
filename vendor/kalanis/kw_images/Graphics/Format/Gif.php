@@ -22,23 +22,29 @@ class Gif extends AFormat
     {
         $this->setLang($lang);
         if (!function_exists('imagecreatefromgif') || !function_exists('imagegif')) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function load(string $path)
     {
         $result = imagecreatefromgif($path);
         if (false === $result) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotCreateFromResource());
         }
+        // @codeCoverageIgnoreEnd
         return $result;
     }
 
     public function save(string $path, $resource): void
     {
         if (!imagegif($resource, $path)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotSaveResource());
         }
+        // @codeCoverageIgnoreEnd
     }
 }

@@ -12,21 +12,37 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
  */
 class Translations implements IIMTranslations
 {
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imGdLibNotPresent(): string
     {
         return 'GD2 library is not present!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imImageMagicLibNotPresent(): string
     {
         return 'ImageMagic not installed or too old!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imCannotCreateFromResource(): string
     {
         return 'Cannot create image from resource!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imCannotSaveResource(): string
     {
         return 'Cannot save image resource!';
@@ -42,21 +58,37 @@ class Translations implements IIMTranslations
         return sprintf('Wrong file mime type - got *%s*', $mime);
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imImageCannotResize(): string
     {
         return 'Image cannot be resized!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imImageCannotResample(): string
     {
         return 'Image cannot be resampled!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imImageCannotCreateEmpty(): string
     {
         return 'Cannot create empty image!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imImageCannotGetSize(): string
     {
         return 'Cannot get image size!';
@@ -67,6 +99,10 @@ class Translations implements IIMTranslations
         return 'You must load image first!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDescCannotRead(): string
     {
         return 'Cannot read description';
@@ -112,16 +148,28 @@ class Translations implements IIMTranslations
         return 'Cannot rename base description.';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDirDescCannotRead(): string
     {
         return 'Cannot read dir desc!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDirDescCannotAdd(): string
     {
         return 'Cannot write dir desc!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDirDescCannotRemove(): string
     {
         return 'Cannot remove dir desc!';
@@ -137,16 +185,28 @@ class Translations implements IIMTranslations
         return 'Cannot remove dir thumb!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDirThumbCannotRemoveCurrent(): string
     {
         return 'Cannot remove current thumb!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDirThumbCannotRemoveOld(): string
     {
         return 'Cannot remove old thumb!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imDirThumbCannotRestore(): string
     {
         return 'Cannot restore current thumb back!';
@@ -207,11 +267,19 @@ class Translations implements IIMTranslations
         return 'Cannot remove thumb!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imThumbCannotRemoveCurrent(): string
     {
         return 'Cannot remove current thumb!';
     }
 
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imThumbCannotRestore(): string
     {
         return 'Cannot remove current thumb back!';

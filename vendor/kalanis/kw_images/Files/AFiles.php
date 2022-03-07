@@ -33,6 +33,11 @@ abstract class AFiles
         return $this->libExtendDir;
     }
 
+    public function isHere(string $path): bool
+    {
+        return $this->libExtendDir->isFile($this->libExtendDir->getWebRootDir() . $this->getPath($path));
+    }
+
     abstract public function getPath(string $path): string;
 
     /**
@@ -78,10 +83,12 @@ abstract class AFiles
      */
     protected function dataOverwriteCopy(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if ($this->libExtendDir->isFile($target) && !unlink($target)) {
+        if ($this->libExtendDir->isFile($target) && !@unlink($target)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($unlinkErrDesc);
         }
-        if ($this->libExtendDir->isFile($source) && !copy($source, $target)) {
+        // @codeCoverageIgnoreEnd
+        if ($this->libExtendDir->isFile($source) && !@copy($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
     }
@@ -120,10 +127,12 @@ abstract class AFiles
      */
     protected function dataOverwriteRename(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if ($this->libExtendDir->isFile($target) && !unlink($target)) {
+        if ($this->libExtendDir->isFile($target) && !@unlink($target)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($unlinkErrDesc);
         }
-        if ($this->libExtendDir->isFile($source) && !rename($source, $target)) {
+        // @codeCoverageIgnoreEnd
+        if ($this->libExtendDir->isFile($source) && !@rename($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
     }
@@ -138,8 +147,10 @@ abstract class AFiles
         if (!$this->libExtendDir->isFile($source)) {
             return;
         }
-        if ($this->libExtendDir->isFile($source) && !unlink($source)) {
+        if ($this->libExtendDir->isFile($source) && !@unlink($source)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($unlinkErrDesc);
         }
+        // @codeCoverageIgnoreEnd
     }
 }
