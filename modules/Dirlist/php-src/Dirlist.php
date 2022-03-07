@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Dirlist;
 
 
+use kalanis\kw_address_handler\Sources\Inputs;
 use kalanis\kw_confs\Config;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\FilesHelper;
@@ -75,7 +76,7 @@ class Dirlist extends AModule
     {
         $this->path = $this->pathLookup();
         $this->dir = $this->linkInternal->userContent($this->path);
-        $this->pager = new SimplifiedPager(new Positions(new BasicPager()), new Linking($this->inputs));
+        $this->pager = new SimplifiedPager(new Positions(new BasicPager()), new Linking(new Inputs($this->inputs)));
 
         if ($this->dir) {
             $this->preselectExt = $this->getFromParam('ext', '');

@@ -6,7 +6,6 @@ namespace kalanis\kw_listing;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\SingleVariable;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_paging\Interfaces\ILink;
 
 
@@ -21,11 +20,11 @@ class Linking implements ILink
     protected $handler = null;
     protected $variable = null;
 
-    public function __construct(IVariables $inputs)
+    public function __construct(Sources\Sources $sources, string $key = self::PAGE_KEY)
     {
-        $this->handler = new Handler(new Sources\Inputs($inputs));
+        $this->handler = new Handler($sources);
         $this->variable = new SingleVariable($this->handler->getParams());
-        $this->variable->setVariableName(static::PAGE_KEY);
+        $this->variable->setVariableName($key);
     }
 
     public function setPageNumber(int $page): void
