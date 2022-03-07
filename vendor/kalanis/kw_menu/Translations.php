@@ -22,16 +22,6 @@ class Translations implements IMNTranslations
         return 'Cannot write menu metadata';
     }
 
-    public function mnCannotOpenSemaphore(): string
-    {
-        return 'Cannot open semaphore data';
-    }
-
-    public function mnCannotSaveSemaphore(): string
-    {
-        return 'Cannot save semaphore data';
-    }
-
     public function mnItemNotFound(string $item): string
     {
         return sprintf('Item for file *%s* not found', $item);

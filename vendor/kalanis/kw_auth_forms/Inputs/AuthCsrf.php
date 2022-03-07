@@ -7,6 +7,7 @@ use ArrayAccess;
 use kalanis\kw_forms\Controls\Hidden;
 use kalanis\kw_forms\Controls\Security\Csrf;
 use kalanis\kw_forms\Interfaces\ICsrf;
+use kalanis\kw_rules\Interfaces\IRules;
 
 
 /**
@@ -27,17 +28,18 @@ class AuthCsrf extends Hidden
         $this->csrf = $this->getCsrfLib();
     }
 
-    public function getCsrfLib(): ICsrf
+    protected function getCsrfLib(): ICsrf
     {
         return new Csrf\Simple();
     }
 
-    public function setHidden(string $alias, ArrayAccess &$cookie): parent
+    public function setHidden(string $alias, ArrayAccess &$cookie, string $errorMessage = ''): parent
     {
         $this->csrf->init($cookie);
         $this->setEntry($alias);
         $this->csrfTokenAlias = "{$alias}SubmitCheck";
         $this->setValue($this->csrf->getToken($this->csrfTokenAlias));
+        parent::addRule(IRules::SATISFIES_CALLBACK, $errorMessage, [$this, 'checkToken']);
         return $this;
     }
 

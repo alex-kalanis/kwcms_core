@@ -29,7 +29,7 @@ class ImplodeKeys extends ARule
     public function validate(IValidate $entry): void
     {
         $col = implode($this->glue, $this->sentInputs($this->againstValue) + [$this->keySource->getPubSalt()]);
-        if (1 !== openssl_verify($col, strval($entry->getValue()), $this->keySource->getPubKey())) {
+        if (1 !== openssl_verify($col, strval($entry->getValue()), $this->keySource->getPubKey(), OPENSSL_ALGO_SHA256)) {
             throw new RuleException($this->errorText);
         }
     }

@@ -13,6 +13,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_scripts\Scripts;
+use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
 
 
@@ -58,7 +59,7 @@ class Positions extends AAuthModule implements IModuleTitle
                 $this->editPosForm->composeForm($this->libMenu->getData()->getWorking(), $this->libMenu->getData()->getMenu()->getDisplayCount());
                 $this->isProcessed = true;
             }
-        } catch (FormsException | MenuException $ex) {
+        } catch (FormsException | MenuException | SemaphoreException $ex) {
             $this->error = $ex;
         }
     }

@@ -1,18 +1,18 @@
 <?php
 
-namespace kalanis\kw_menu\Semaphore;
+namespace kalanis\kw_semaphore\Semaphore;
 
 
-use kalanis\kw_menu\Interfaces\ISemaphore;
-use kalanis\kw_menu\MenuException;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_storage\Storage as XStorage;
+use kalanis\kw_semaphore\Interfaces\ISemaphore;
+use kalanis\kw_semaphore\SemaphoreException;
+use kalanis\kw_storage\Storage\Storage as XStorage;
 use kalanis\kw_storage\StorageException;
 
 
 /**
  * Class Storage
- * @package kalanis\kw_menu\Semaphore
+ * @package kalanis\kw_semaphore\Semaphore
  * Data source for semaphore is storage
  */
 class Storage implements ISemaphore
@@ -31,27 +31,23 @@ class Storage implements ISemaphore
     public function want(): bool
     {
         try {
-            return $this->storage->set($this->rootPath, 'RELOAD');
+            return $this->storage->write($this->rootPath, static::TEXT_SEMAPHORE);
         } catch (StorageException $ex) {
-            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new SemaphoreException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
     public function has(): bool
     {
-        try {
-            return $this->storage->exists($this->rootPath);
-        } catch (StorageException $ex) {
-            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        return $this->storage->exists($this->rootPath);
     }
 
     public function remove(): bool
     {
         try {
-            return $this->storage->delete($this->rootPath);
+            return $this->storage->remove($this->rootPath);
         } catch (StorageException $ex) {
-            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new SemaphoreException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 }
