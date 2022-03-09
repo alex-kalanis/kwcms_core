@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_listing;
+namespace kalanis\kw_paths\Extras;
 
 
 /**
  * Class DirectoryListing
- * @package KWCMS\modules\Dirlist
+ * @package kalanis\kw_paths\Extras
  * Listing through the directory
  */
 class DirectoryListing
