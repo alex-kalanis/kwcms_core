@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
@@ -8,7 +8,7 @@ use kalanis\kw_forms\Controls;
 
 /**
  * Trait TSimpleValue
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  */
 trait TSimpleValue
 {

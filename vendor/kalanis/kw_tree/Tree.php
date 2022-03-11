@@ -6,7 +6,6 @@ namespace kalanis\kw_tree;
 use CallbackFilterIterator;
 use FilesystemIterator;
 use kalanis\kw_paths\Path;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Interfaces\ITree;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -70,24 +69,26 @@ class Tree
         $nodes = [];
         foreach ($iter as $item) {
             $node = $this->nodeAdapter->process($item);
-            $nodes[$this->slashedPath($node->getPath())] = $node; // full path
+            $nodes[$node->getPath()] = $node; // full path
+        }
+        if (isset($nodes[''])) {
+            $nodes[DIRECTORY_SEPARATOR] = $nodes[''];
+            unset($nodes['']);
         }
         if (empty($nodes[DIRECTORY_SEPARATOR])) { // root dir has no upper path
             $item = new SplFileInfo($this->rootDir . $this->startFromPath);
             $node = $this->nodeAdapter->process($item);
             $nodes[DIRECTORY_SEPARATOR] = $node; // root node
         }
-        foreach ($nodes as &$node) {
-            if ($nodes[$node->getDir()] !== $node) { // beware of unintended recursion
-                $nodes[$node->getDir()]->addSubNode($node); // and now only to parent dir
+
+        foreach ($nodes as $index => &$node) {
+            if (DIRECTORY_SEPARATOR != $index) { // not parent for root
+                if ($nodes[$node->getDir()] !== $node) { // beware of unintended recursion
+                    $nodes[$node->getDir()]->addSubNode($node); // and now only to parent dir
+                }
             }
         }
         $this->loadedTree = $nodes[DIRECTORY_SEPARATOR];
-    }
-
-    protected function slashedPath(string $path): string
-    {
-        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
     }
 
     public function filterDoubleDot(SplFileInfo $info): bool

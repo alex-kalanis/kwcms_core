@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
@@ -8,7 +8,7 @@ use kalanis\kw_forms\Controls;
 
 /**
  * Trait TMultiValue
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  */
 trait TMultiValue
 {
@@ -47,7 +47,10 @@ trait TMultiValue
                     isset($array[$child->getKey()])
                     && is_array($array[$child->getKey()])
                     && in_array($child->getOriginalValue(), $array[$child->getKey()])
+                        // @codeCoverageIgnoreStart
+                        // must got custom key - not happened in usual cases
                         ? $child->getOriginalValue()
+                        // @codeCoverageIgnoreEnd
                         : ''
                 )
             );

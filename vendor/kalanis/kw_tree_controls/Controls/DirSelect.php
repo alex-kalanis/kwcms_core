@@ -1,22 +1,23 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
 use kalanis\kw_templates\HtmlElement;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\ControlNode;
 
 
 /**
  * Class DirSelect
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  */
 class DirSelect extends ATreeControl
 {
     use TSimpleValue;
 
-    protected function renderTree(?FileNode $baseNode): string
+    protected function renderTree(?ControlNode $baseNode): string
     {
         if (empty($baseNode)) {
             return '';
@@ -37,7 +38,7 @@ class DirSelect extends ATreeControl
         return implode('', $result);
     }
 
-    protected function getOption(FileNode $node): string
+    protected function getOption(ControlNode $node): string
     {
         return $node->getControl()->render();
     }

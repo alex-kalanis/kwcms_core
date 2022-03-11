@@ -1,23 +1,24 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls\AControl;
 use kalanis\kw_forms\Controls\SelectOption;
 use kalanis\kw_templates\HtmlElement;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\ControlNode;
 
 
 /**
  * Class FileSelect
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  */
 class FileSelect extends ATreeControl
 {
     use TSimpleValue;
 
-    protected function renderTree(?FileNode $baseNode): string
+    protected function renderTree(?ControlNode $baseNode): string
     {
         if (empty($baseNode)) {
             return '';
@@ -28,10 +29,10 @@ class FileSelect extends ATreeControl
         return $select->render();
     }
 
-    protected function getOptionGroup(FileNode $node): string
+    protected function getOptionGroup(ControlNode $node): string
     {
-        if ($node->isDir()) {
-            $group = HtmlElement::init('optgroup', ['label' => $node->getPath()]);
+        if ($node->getNode()->isDir()) {
+            $group = HtmlElement::init('optgroup', ['label' => $node->getNode()->getPath()]);
             foreach ($node->getSubNodes() as $subNode) {
                 $group->addChild($this->getOptionGroup($subNode));
             }
@@ -41,7 +42,7 @@ class FileSelect extends ATreeControl
         }
     }
 
-    protected function getOption(FileNode $node): string
+    protected function getOption(ControlNode $node): string
     {
         return $node->getControl()->render();
     }

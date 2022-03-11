@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 /**
  * Trait TRadio
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  * Trait for accessing grouped radio buttons as single element
  */
 trait TRadio

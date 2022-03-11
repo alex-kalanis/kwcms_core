@@ -23,7 +23,10 @@ class NodeAdapter
 
     public function cutDir(string $dir): self
     {
-        $this->cutDir = $dir;
+        $check = realpath($dir);
+        if (false !== $check) {
+            $this->cutDir = $check;
+        }
         return $this;
     }
 
@@ -31,7 +34,7 @@ class NodeAdapter
     {
         $node = new FileNode();
         $path = $this->cutPath($info->getRealPath());
-        $dir = Stuff::directory($path);
+        $dir = Stuff::removeEndingSlash(Stuff::directory($path));
         if (ITree::CURRENT_DIR == $info->getFilename()) {
             $name = Stuff::filename($path);
             $node->setData(
@@ -59,6 +62,9 @@ class NodeAdapter
 
     protected function cutPath(string $path): string
     {
-        return mb_substr($path, min(mb_strlen($this->cutDir), mb_strlen($path)));
+        return (0 === mb_strpos($path, $this->cutDir))
+            ? mb_substr($path, mb_strlen($this->cutDir))
+            : $path
+        ;
     }
 }
