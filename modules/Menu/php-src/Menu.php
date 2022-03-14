@@ -102,7 +102,7 @@ class Menu extends AModule
             return '';
         }
 
-        $items = $menu->getItems();
+        $items = $menu->getEntries();
         $result = [];
         for ($i = 1; $i <= $menu->getDisplayCount(); $i++) {
             if (!empty($items[$i])) { # have anything on position?

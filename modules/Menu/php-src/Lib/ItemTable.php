@@ -7,7 +7,7 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_menu\DataProcessor;
+use kalanis\kw_menu\MetaProcessor;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
@@ -36,12 +36,12 @@ class ItemTable
     }
 
     /**
-     * @param DataProcessor $data
+     * @param MetaProcessor $data
      * @return string
      * @throws ConnectException
      * @throws TableException
      */
-    public function prepareHtml(DataProcessor $data)
+    public function prepareHtml(MetaProcessor $data)
     {
         // cut table init - no search
         $table = new Table();
@@ -50,7 +50,7 @@ class ItemTable
         $form = new Form('messagesForm');
         $table->addHeaderFilter(new KwFilter($form));
 
-        $table->addColumn(Lang::get('menu.entry_name'), new Columns\Func('file', [$this, 'idLink']));
+        $table->addColumn(Lang::get('menu.entry_name'), new Columns\Func('id', [$this, 'idLink']));
         $table->addColumn(Lang::get('menu.name_in_menu'), new Columns\Basic('name'));
         $table->addColumn(Lang::get('menu.desc_in_menu'), new Columns\Basic('desc'));
         $table->addColumn(Lang::get('menu.submenu'), new Columns\Map('sub', [
@@ -59,7 +59,7 @@ class ItemTable
         ]));
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'file');
-        $columnActions->addColumn(new Columns\Func('file', [$this, 'editLink']));
+        $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
         $columnActions->style('width:100px', new Rules\Always());
 
         $table->addColumn(Lang::get('menu.actions'), $columnActions);
@@ -71,16 +71,16 @@ class ItemTable
     }
 
     /**
-     * @param DataProcessor $data
+     * @param MetaProcessor $data
      * @return mixed
      * @throws ConnectException
      * @throws TableException
      */
-    public function prepareJson(DataProcessor $data)
+    public function prepareJson(MetaProcessor $data)
     {
         $table = new Table();
 
-        $table->addColumn(Lang::get('menu.entry_name'), new Columns\Basic('file'));
+        $table->addColumn(Lang::get('menu.entry_name'), new Columns\Basic('id'));
         $table->addColumn(Lang::get('menu.name_in_menu'), new Columns\Basic('name'));
         $table->addColumn(Lang::get('menu.desc_in_menu'), new Columns\Basic('desc'));
         $table->addColumn(Lang::get('menu.position'), new Columns\Basic('pos'));
@@ -94,7 +94,7 @@ class ItemTable
 
     public function idLink($name)
     {
-        $this->forward->setLink($this->link->linkVariant('menu/edit/?filename=' . $name));
+        $this->forward->setLink($this->link->linkVariant('menu/edit/?id=' . $name));
         $this->forward->setForward($this->link->linkVariant('menu/names'));
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
@@ -104,7 +104,7 @@ class ItemTable
 
     public function editLink($name)
     {
-        $this->forward->setLink($this->link->linkVariant('menu/edit/?filename=' . $name));
+        $this->forward->setLink($this->link->linkVariant('menu/edit/?id=' . $name));
         $this->forward->setForward($this->link->linkVariant('menu/names'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x25B6; </a>',
             $this->forward->getLink(),

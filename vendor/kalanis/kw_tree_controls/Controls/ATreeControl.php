@@ -24,6 +24,7 @@ abstract class ATreeControl extends Controls\AControl
     {
         $this->setEntry($key, $value, $label);
         $this->tree = $this->fillTreeControl($tree);
+        $this->setValue($value);
         return $this;
     }
 

@@ -11,7 +11,7 @@ use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_menu\Menu\Item;
+use kalanis\kw_menu\Menu\Entry;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
@@ -59,17 +59,17 @@ class Edit extends AAuthModule implements IModuleTitle
         try {
             $this->runTMenu($this->inputs, $this->user->getDir());
 
-            $name = $this->checkedName();
-            $this->form->composeForm($this->checkedItem($name));
+            $id = $this->checkedId();
+            $this->form->composeForm($this->checkedEntry($id));
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
-                $this->libMenu->getData()->update(
-                    $name,
+                $this->libMenu->getMeta()->updateEntry(
+                    $id,
                     strval($this->form->getControl('menuName')->getValue()),
                     strval($this->form->getControl('menuDesc')->getValue()),
                     boolval(intval($this->form->getControl('menuGoSub')->getValue()))
                 );
-                $this->libMenu->getData()->save();
+                $this->libMenu->getMeta()->save();
                 $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
@@ -82,9 +82,9 @@ class Edit extends AAuthModule implements IModuleTitle
      * @return string
      * @throws MenuException
      */
-    protected function checkedName(): string
+    protected function checkedId(): string
     {
-        $name = $this->getFromParam('filename');
+        $name = $this->getFromParam('id');
         if (empty($name)) {
             throw new MenuException(Lang::get('menu.error.item_not_found', $name));
         }
@@ -93,12 +93,12 @@ class Edit extends AAuthModule implements IModuleTitle
 
     /**
      * @param string $name
-     * @return Item
+     * @return Entry
      * @throws MenuException
      */
-    protected function checkedItem(string $name): Item
+    protected function checkedEntry(string $name): Entry
     {
-        $item = $this->libMenu->getData()->getItem($name);
+        $item = $this->libMenu->getMeta()->getEntry($name);
         if (empty($item)) {
             throw new MenuException(Lang::get('menu.error.item_not_found', $name));
         }

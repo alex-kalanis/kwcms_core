@@ -48,7 +48,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         try {
             $this->runTMenu($this->inputs, $this->user->getDir());
-            $item = $this->libMenu->getData()->getMenu();
+            $item = $this->libMenu->getMeta()->getMenu();
             if (empty($item->getFile())) {
                 $item->setData($this->getWhereDir(), $item->getName(), $item->getTitle(), $item->getDisplayCount());
             }
@@ -65,12 +65,12 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $this->editPropsForm->composeForm($item);
             $this->editPropsForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editPropsForm->process()) {
-                $this->libMenu->getData()->updateInfo(
+                $this->libMenu->getMeta()->updateInfo(
                     (string)$this->editPropsForm->getControl('menuName')->getValue(),
                     (string)$this->editPropsForm->getControl('menuDesc')->getValue(),
                     (int)$this->editPropsForm->getControl('menuCount')->getValue()
                 );
-                $this->libMenu->getData()->save();
+                $this->libMenu->getMeta()->save();
                 $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
