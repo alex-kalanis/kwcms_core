@@ -1,19 +1,19 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_templates\HtmlElement;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\ControlNode;
 
 
 /**
  * Trait TSubEntry
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  */
 trait TSubEntry
 {
-    protected function renderTree(?FileNode $baseNode): string
+    protected function renderTree(?ControlNode $baseNode): string
     {
         if (empty($baseNode)) {
             return '';
@@ -28,11 +28,11 @@ trait TSubEntry
         return $fieldset->render();
     }
 
-    protected function getSubEntry(FileNode $node): HtmlElement
+    protected function getSubEntry(ControlNode $node): HtmlElement
     {
-        $entry = HtmlElement::init('li', ['value' => $node->getPath()]);
+        $entry = HtmlElement::init('li', ['value' => $node->getNode()->getPath()]);
         $label = HtmlElement::init('label', ['class' => 'dir']);
-        $label->addChild($node->getName());
+        $label->addChild($node->getNode()->getName());
         $entry->addChild($label);
         return $entry;
     }

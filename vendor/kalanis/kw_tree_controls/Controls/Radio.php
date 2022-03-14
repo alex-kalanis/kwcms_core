@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
@@ -9,7 +9,7 @@ use kalanis\kw_forms\Controls\RadioSet;
 
 /**
  * Class Radio
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  * Radio with simplified label
  */
 class Radio extends Controls\Radio

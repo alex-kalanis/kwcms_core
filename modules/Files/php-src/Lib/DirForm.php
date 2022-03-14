@@ -6,10 +6,10 @@ namespace KWCMS\modules\Files\Lib;
 use kalanis\kw_forms\Controls;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_tree\Controls\DirCheckboxes;
-use kalanis\kw_tree\Controls\DirSelect;
-use kalanis\kw_tree\Controls\FileRadio;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\Controls\DirCheckboxes;
+use kalanis\kw_tree_controls\Controls\DirSelect;
+use kalanis\kw_tree_controls\Controls\FileRadio;
 
 
 /**

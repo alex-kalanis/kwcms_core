@@ -64,7 +64,7 @@ class Names extends AAuthModule implements IModuleTitle
         if (!$this->error) {
             try {
                 Styles::want('Menu', 'menu.css');
-                return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->libMenu->getData())));
+                return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->libMenu->getMeta())));
             } catch (ConnectException | TableException $ex) {
                 $this->error = $ex;
             }
@@ -82,7 +82,7 @@ class Names extends AAuthModule implements IModuleTitle
         $out = new Output\Json();
         $table = new Lib\ItemTable($this->links);
         try {
-            return $out->setContent($table->prepareJson($this->libMenu->load()->getData()));
+            return $out->setContent($table->prepareJson($this->libMenu->load()->getMeta()));
         } catch (ConnectException | TableException | MenuException $ex) {
             $this->error = $ex;
         }

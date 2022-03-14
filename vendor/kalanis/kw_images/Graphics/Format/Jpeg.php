@@ -22,23 +22,29 @@ class Jpeg extends AFormat
     {
         $this->setLang($lang);
         if (!function_exists('imagecreatefromjpeg') || !function_exists('imagejpeg')) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function load(string $path)
     {
         $result = imagecreatefromjpeg($path);
         if (false === $result) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotCreateFromResource());
         }
+        // @codeCoverageIgnoreEnd
         return $result;
     }
 
     public function save(string $path, $resource): void
     {
         if (!imagejpeg($resource, $path)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotSaveResource());
         }
+        // @codeCoverageIgnoreEnd
     }
 }

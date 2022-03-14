@@ -15,7 +15,7 @@ class Params
 {
     public function filterFiles(SplFileInfo $info): bool
     {
-        return in_array($info->getExtension(), $this->filteredTypes());
+        return $info->isFile() && in_array($info->getExtension(), $this->filteredTypes());
     }
 
     public function filteredTypes(): array

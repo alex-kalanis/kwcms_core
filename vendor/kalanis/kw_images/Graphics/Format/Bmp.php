@@ -22,23 +22,29 @@ class Bmp extends AFormat
     {
         $this->setLang($lang);
         if (!function_exists('imagecreatefrombmp') || !function_exists('imagebmp')) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function load(string $path)
     {
         $result = imagecreatefrombmp($path);
         if (false === $result) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotCreateFromResource());
         }
+        // @codeCoverageIgnoreEnd
         return $result;
     }
 
     public function save(string $path, $resource): void
     {
         if (!imagebmp($resource, $path)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotSaveResource());
         }
+        // @codeCoverageIgnoreEnd
     }
 }

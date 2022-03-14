@@ -8,7 +8,6 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
-use kalanis\kw_images\TLang;
 
 
 /**
@@ -18,7 +17,6 @@ use kalanis\kw_images\TLang;
  */
 class Image extends AFiles
 {
-    use TLang;
     use TSizes;
 
     protected $maxWidth = 1024;

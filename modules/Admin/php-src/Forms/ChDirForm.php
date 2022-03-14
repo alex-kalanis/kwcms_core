@@ -6,8 +6,8 @@ namespace KWCMS\modules\Admin\Forms;
 use kalanis\kw_forms\Controls\Submit;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_tree\Controls;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\Controls;
 
 
 /**

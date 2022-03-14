@@ -42,10 +42,12 @@ class Thumb extends AFiles
     {
         $thumb = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
         $tempThumb = $thumb . static::FILE_TEMP;
-        if (is_file($thumb)) {
+        if ($this->libExtendDir->isFile($thumb)) {
             if (!rename($thumb, $tempThumb)) {
+                // @codeCoverageIgnoreStart
                 throw new ImagesException($this->getLang()->imThumbCannotRemoveCurrent());
             }
+            // @codeCoverageIgnoreEnd
         }
         try {
             $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
@@ -53,14 +55,18 @@ class Thumb extends AFiles
             $this->libGraphics->resample($sizes['width'], $sizes['height']);
             $this->libGraphics->save($thumb);
         } catch (ImagesException $ex) {
-            if (is_file($tempThumb) && !rename($tempThumb, $thumb)) {
+            if ($this->libExtendDir->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
+                // @codeCoverageIgnoreStart
                 throw new ImagesException($this->getLang()->imThumbCannotRestore());
             }
+            // @codeCoverageIgnoreEnd
             throw $ex;
         }
-        if (is_file($tempThumb) && !unlink($tempThumb)) {
+        if ($this->libExtendDir->isFile($tempThumb) && !unlink($tempThumb)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imThumbCannotRemoveOld());
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -68,11 +74,10 @@ class Thumb extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @return bool
      * @throws PathsException
      * @throws ImagesException
      */
-    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
         $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
         $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
@@ -87,8 +92,6 @@ class Thumb extends AFiles
             $this->getLang()->imThumbCannotRemoveOld(),
             $this->getLang()->imThumbCannotCopyBase()
         );
-
-        return true;
     }
 
     /**

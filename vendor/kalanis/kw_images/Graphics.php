@@ -38,8 +38,10 @@ class Graphics
             && function_exists('imagesx')
             && function_exists('imagesy')
         )) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imGdLibNotPresent());
         }
+        // @codeCoverageIgnoreEnd
 
         $this->factory = $factory;
         $this->libMime = $libMime;
@@ -101,9 +103,11 @@ class Graphics
         $height = (!is_null($height) && ($height > 0)) ? (int)$height : $fromHeight;
         $resource = $this->create($width, $height);
         if (false === imagecopyresized($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
+            // @codeCoverageIgnoreStart
             imagedestroy($resource);
             throw new ImagesException($this->getLang()->imImageCannotResize());
         }
+        // @codeCoverageIgnoreEnd
         imagedestroy($this->resource);
         $this->resource = $resource;
         return $this;
@@ -125,9 +129,11 @@ class Graphics
         $height = ($height && is_numeric($height) && ($height > 0)) ? (int)$height : $fromHeight;
         $resource = $this->create($width, $height);
         if (false === imagecopyresampled($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
+            // @codeCoverageIgnoreStart
             imagedestroy($resource);
             throw new ImagesException($this->getLang()->imImageCannotResample());
         }
+        // @codeCoverageIgnoreEnd
         imagedestroy($this->resource);
         $this->resource = $resource;
         return $this;
@@ -143,8 +149,11 @@ class Graphics
     protected function create(int $width, int $height)
     {
         $resource = imagecreatetruecolor($width, $height);
-        if (false === $resource)
+        if (false === $resource) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageCannotCreateEmpty());
+        }
+        // @codeCoverageIgnoreEnd
         return $resource;
     }
 
@@ -157,8 +166,10 @@ class Graphics
         $this->checkResource();
         $size = imagesx($this->resource);
         if (false === $size) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageCannotGetSize());
         }
+        // @codeCoverageIgnoreEnd
         return intval($size);
     }
 
@@ -171,8 +182,10 @@ class Graphics
         $this->checkResource();
         $size = imagesy($this->resource);
         if (false === $size) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageCannotGetSize());
         }
+        // @codeCoverageIgnoreEnd
         return intval($size);
     }
 

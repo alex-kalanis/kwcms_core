@@ -1,17 +1,18 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Interfaces\IMultiValue;
 use kalanis\kw_templates\HtmlElement;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\ControlNode;
 
 
 /**
  * Class DirCheckboxes
- * @package kalanis\kw_tree\Controls
+ * @package kalanis\kw_tree_controls\Controls
  */
 class DirCheckboxes extends ATreeControl implements IMultiValue
 {
@@ -21,7 +22,7 @@ class DirCheckboxes extends ATreeControl implements IMultiValue
     protected $templateLabel = '';
 
     /**
-     * @param FileNode[] $nodes
+     * @param ControlNode[] $nodes
      * @return string
      */
     protected function fillEntries(array $nodes): string
@@ -35,7 +36,7 @@ class DirCheckboxes extends ATreeControl implements IMultiValue
         return strval($list);
     }
 
-    protected function getEntry(FileNode $node): HtmlElement
+    protected function getEntry(ControlNode $node): HtmlElement
     {
         $entry = HtmlElement::init('li', ['class' => 'dir']);
         $entry->addChild($node->getControl());

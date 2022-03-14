@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_listing;
+namespace KWCMS\modules\Dirlist;
 
 
 use kalanis\kw_address_handler\Handler;
@@ -11,7 +11,7 @@ use kalanis\kw_paging\Interfaces\ILink;
 
 /**
  * Class Linking
- * @package kalanis\kw_listing
+ * @package kalanis\kw_directory_listing
  * Make links for current page
  */
 class Linking implements ILink

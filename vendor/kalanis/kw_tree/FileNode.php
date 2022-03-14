@@ -3,7 +3,6 @@
 namespace kalanis\kw_tree;
 
 
-use kalanis\kw_forms\Controls\AControl;
 use kalanis\kw_tree\Interfaces\ITree;
 
 
@@ -16,22 +15,20 @@ use kalanis\kw_tree\Interfaces\ITree;
 class FileNode
 {
     protected $path = '';
-    protected $name = '';
     protected $dir = '';
+    protected $name = '';
     protected $type = ITree::TYPE_UNKNOWN;
     protected $size = 0;
     protected $readable = false;
     protected $writable = false;
     /** @var FileNode[] */
     protected $subNodes = [];
-    /** @var AControl|null */
-    protected $control = null;
 
-    public function setData(string $name, string $dir, string $path, int $size, string $type, bool $readable, bool $writable): self
+    public function setData(string $path, string $dir, string $name, int $size, string $type, bool $readable, bool $writable): self
     {
         $this->path = $path;
-        $this->name = $name;
         $this->dir = $dir;
+        $this->name = $name;
         $this->size = $size;
         $this->type = $type;
         $this->readable = $readable;
@@ -51,17 +48,6 @@ class FileNode
     public function getSubNodes(): array
     {
         return $this->subNodes;
-    }
-
-    public function setControl(?AControl $control = null): self
-    {
-        $this->control = $control;
-        return $this;
-    }
-
-    public function getControl(): ?AControl
-    {
-        return $this->control;
     }
 
     public function getPath(): string

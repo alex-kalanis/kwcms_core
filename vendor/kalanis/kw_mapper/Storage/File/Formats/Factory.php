@@ -30,7 +30,7 @@ class Factory
         }
         $instance = new $path();
         if (!$instance instanceof IFileFormat) {
-            throw new MapperException(sprintf('Defined class %s is not instance of IFilePacker!', $path));
+            throw new MapperException(sprintf('Defined class %s is not instance of IFileFormat!', $path));
         }
         return $instance;
     }

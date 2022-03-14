@@ -32,7 +32,7 @@ class Factory
             }
             $instance = new $path();
             if (!$instance instanceof ADialect) {
-                throw new MapperException(sprintf('Defined class %s is not instance of AMapper!', $path));
+                throw new MapperException(sprintf('Defined class %s is not instance of ADialect!', $path));
             }
             static::$instances[$path] = $instance;
         }

@@ -4,25 +4,25 @@ namespace kalanis\kw_menu\Menu;
 
 
 /**
- * Class Item
+ * Class Entry
  * @package kalanis\kw_menu\Menu
- * Menu items
+ * Menu entries
  */
-class Item
+class Entry
 {
+    protected $id = '';
     protected $name = '';
-    protected $title = '';
-    protected $file = '';
+    protected $desc = '';
     protected $position = 0;
     protected $goSub = false;
     /** @var Menu|null */
     protected $submenu = null;
 
-    public function setData(string $name, string $title, string $file, int $position, bool $goSub = false): self
+    public function setData(string $id, string $name, string $desc, int $position, bool $goSub = false): self
     {
+        $this->id = $id;
         $this->name = $name;
-        $this->title = $title;
-        $this->file = $file;
+        $this->desc = $desc;
         $this->position = $position;
         $this->goSub = $goSub;
         $this->submenu = null;
@@ -41,19 +41,19 @@ class Item
         return $this;
     }
 
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;
     }
 
-    public function getTitle(): string
+    public function getDesc(): string
     {
-        return $this->title;
-    }
-
-    public function getFile(): string
-    {
-        return $this->file;
+        return $this->desc;
     }
 
     public function getPosition(): int

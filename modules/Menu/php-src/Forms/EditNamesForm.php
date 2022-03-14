@@ -7,7 +7,7 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_menu\Menu\Item;
+use kalanis\kw_menu\Menu\Entry;
 
 
 /**
@@ -23,13 +23,13 @@ use kalanis\kw_menu\Menu\Item;
  */
 class EditNamesForm extends Form
 {
-    public function composeForm(Item $item): self
+    public function composeForm(Entry $item): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
-        $this->addText('current', Lang::get('menu.entry_name'), $item->getFile(), ['class' => 'file', 'disabled' => 'disabled']);
+        $this->addText('current', Lang::get('menu.entry_name'), $item->getId(), ['class' => 'file', 'disabled' => 'disabled']);
         $this->addText('menuName', Lang::get('menu.name_in_menu'), $item->getName(), ['class' => 'name']);
-        $this->addText('menuDesc', Lang::get('menu.desc_in_menu'), $item->getTitle(), ['class' => 'desc']);
+        $this->addText('menuDesc', Lang::get('menu.desc_in_menu'), $item->getDesc(), ['class' => 'desc']);
         $this->addRadios('menuGoSub', Lang::get('menu.submenu'), intval($item->canGoSub()), [
             0 => Lang::get('dashboard.button_no'),
             1 => Lang::get('dashboard.button_yes'),

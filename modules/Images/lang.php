@@ -31,7 +31,7 @@ $lang = [
         'images.upload.note' => 'Details - max 1024 x 1024 px, 10MB',
         'images.error.must_contain_file' => 'The entry must contains a file.',
         'images.must_be_sent' => 'The entry must be sent.',
-        'images.umplad.cannot_move' => 'The image cannot be moved from temporary storage.',
+        'images.upload.cannot_move' => 'The image cannot be moved from temporary storage.',
         'images.uploaded' => 'The image has been uploaded.',
 
         'images.thumb' => 'Thumbnail',
@@ -98,7 +98,7 @@ $lang = [
         'images.upload.note' => 'D&#x00E9;tails - max 1024 x 1024 px, 10MB',
         'images.error.must_contain_file' => 'The entry must contains a file.',
         'images.must_be_sent' => 'The entry must be sent.',
-        'images.umplad.cannot_move' => 'The image cannot be moved from temporary storage.',
+        'images.upload.cannot_move' => 'The image cannot be moved from temporary storage.',
         'images.uploaded' => 'The image has been uploaded.',
 
         'images.thumb' => 'Thumbnail',
@@ -164,7 +164,7 @@ $lang = [
         'images.upload.note' => 'Detaily - max 1024 x 1024 px, 10MB',
         'images.error.must_contain_file' => 'Polo&#x017E;ka mus&#x00ED; obsahovat soubor.',
         'images.must_be_sent' => 'Polo&#x017E;ka mus&#x00ED; b&#x00FD;t odesl&#x00E1;na.',
-        'images.umplad.cannot_move' => 'Obr&#x00E1;zek nelze p&#x0159;esunout z do&#x010D;asn&#x00E9;ho um&#x00ED;st&#x011B;n&#x00ED;.',
+        'images.upload.cannot_move' => 'Obr&#x00E1;zek nelze p&#x0159;esunout z do&#x010D;asn&#x00E9;ho um&#x00ED;st&#x011B;n&#x00ED;.',
         'images.uploaded' => 'Obr&#x00E1;zek %s nahr&#x00E1;n.',
 
         'images.thumb' => 'N&#x00E1;hled',

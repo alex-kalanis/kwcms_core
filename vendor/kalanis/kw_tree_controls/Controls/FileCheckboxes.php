@@ -1,33 +1,35 @@
 <?php
 
-namespace kalanis\kw_tree\Controls;
+namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
+use kalanis\kw_forms\Interfaces\IMultiValue;
 use kalanis\kw_templates\HtmlElement;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\ControlNode;
 
 
 /**
- * Class FileRadio
- * @package kalanis\kw_tree\Controls
+ * Class FileCheckboxes
+ * @package kalanis\kw_tree_controls\Controls
  */
-class FileRadio extends ATreeControl
+class FileCheckboxes extends ATreeControl implements IMultiValue
 {
-    use TRadio;
+    use TMultiValue;
     use TSubEntry;
 
     protected $templateLabel = '';
 
     /**
-     * @param FileNode[] $nodes
+     * @param ControlNode[] $nodes
      * @return string
      */
     protected function fillEntries(array $nodes): string
     {
         $list = HtmlElement::init('ul');
         foreach ($nodes as $subNode) {
-            if ($subNode->isDir()) {
+            if ($subNode->getNode()->isDir()) {
                 $entry = $this->getSubEntry($subNode);
                 $entry->addChild($this->fillEntries($subNode->getSubNodes()));
                 $list->addChild($entry);
@@ -38,7 +40,7 @@ class FileRadio extends ATreeControl
         return strval($list);
     }
 
-    protected function getEntry(FileNode $node): HtmlElement
+    protected function getEntry(ControlNode $node): HtmlElement
     {
         $entry = HtmlElement::init('li', ['class' => 'file']);
         $entry->addChild($node->getControl());
@@ -47,7 +49,7 @@ class FileRadio extends ATreeControl
 
     protected function getInput(FileNode $node): Controls\AControl
     {
-        $input = new Radio();
+        $input = new Controls\Checkbox();
         $input->set($this->getKey(), $node->getPath(), $node->getName());
         $this->inputs[] = $input;
         return $input;
