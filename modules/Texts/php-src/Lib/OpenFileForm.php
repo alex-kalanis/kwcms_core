@@ -28,7 +28,7 @@ class OpenFileForm extends Form
 
         $radios = new FileRadio();
         $radios->set('fileName', $defaultWhere, Lang::get('texts.set_file'), $tree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('openFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));

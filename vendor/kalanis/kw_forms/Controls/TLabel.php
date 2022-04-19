@@ -22,12 +22,10 @@ trait TLabel
     /**
      * Set object label
      * @param string $value
-     * @return $this
      */
-    public function setLabel(?string $value): self
+    public function setLabel(?string $value): void
     {
         $this->label = $value;
-        return $this;
     }
 
     /**

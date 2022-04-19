@@ -38,7 +38,7 @@ class EditPosForm extends Form
     {
         $input = new InputPosition();
         $input->set(sprintf('pos[%s]', $key), $item->getPosition(), $item->getName());
-        $this->addControl($input);
+        $this->addControlDefaultKey($input);
         $this->inputs[] = $input;
     }
 

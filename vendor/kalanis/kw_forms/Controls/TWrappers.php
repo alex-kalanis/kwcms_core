@@ -32,6 +32,7 @@ trait TWrappers
     protected $wrappersError = [];
     /** @var IHtmlElement[] */
     protected $wrappersErrors = [];
+    protected $errorMustBeAnInstance = 'Wrapper must be an instance of IHtmlElement or array of its instances';
 
     /**
      * Pack string into preset html element
@@ -51,7 +52,7 @@ trait TWrappers
             $wrappers->addChild($return);
             $return = $wrappers->render();
         } else {
-            throw new RenderException('Wrapper must be an instance of IHtmlElement or array of its instances');
+            throw new RenderException($this->errorMustBeAnInstance);
         }
 
         return $return;

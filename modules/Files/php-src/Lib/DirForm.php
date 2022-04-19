@@ -34,11 +34,11 @@ class DirForm extends AForm
 
         $checkboxes = new DirCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
@@ -51,11 +51,11 @@ class DirForm extends AForm
 
         $checkboxes = new DirCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
@@ -68,7 +68,7 @@ class DirForm extends AForm
 
         $radios = new FileRadio();
         $radios->set('sourceName', '', Lang::get('files.dir.select'), $tree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addText('targetPath', Lang::get('files.dir.newName'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -82,14 +82,14 @@ class DirForm extends AForm
 
         $checkboxes = new DirCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $tree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $radios = new Controls\RadioSet();
         $radios->set('targetPath', 'no', Lang::get('files.check.really'), [
             'yes' => Lang::get('files.check.yes'),
             'no' => Lang::get('files.check.no'),
         ]);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));

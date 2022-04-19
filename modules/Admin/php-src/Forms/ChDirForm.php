@@ -24,7 +24,7 @@ class ChDirForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
         $radios = new Controls\DirRadio();
         $radios->set('dir', $defaultWhere, 'Set dir', $tree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
         $this->addSubmit('changeDir', 'OK');
         return $this;
     }
