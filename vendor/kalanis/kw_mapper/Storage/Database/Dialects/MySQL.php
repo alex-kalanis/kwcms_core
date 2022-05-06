@@ -15,7 +15,7 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class MySQL extends AEscapedDialect
 {
-    public function insert(QueryBuilder $builder): string
+    public function insert(QueryBuilder $builder)
     {
         return sprintf('INSERT INTO `%s` SET %s;',
             $builder->getBaseTable(),
@@ -23,20 +23,21 @@ class MySQL extends AEscapedDialect
         );
     }
 
-    public function select(QueryBuilder $builder): string
+    public function select(QueryBuilder $builder)
     {
-        return sprintf('SELECT %s FROM `%s` %s %s%s%s%s;',
+        return sprintf('SELECT %s FROM `%s` %s %s%s%s%s%s;',
             $this->makeColumns($builder->getColumns()),
             $builder->getBaseTable(),
             $this->makeJoin($builder->getJoins()),
             $this->makeConditions($builder->getConditions(), $builder->getRelation()),
             $this->makeGrouping($builder->getGrouping()),
+            $this->makeHaving($builder->getHavingCondition(), $builder->getRelation()),
             $this->makeOrdering($builder->getOrdering()),
             $this->makeLimits($builder->getLimit(), $builder->getOffset())
         );
     }
 
-    public function update(QueryBuilder $builder): string
+    public function update(QueryBuilder $builder)
     {
         return sprintf('UPDATE `%s` SET %s%s%s;',
             $builder->getBaseTable(),
@@ -46,7 +47,7 @@ class MySQL extends AEscapedDialect
         );
     }
 
-    public function delete(QueryBuilder $builder): string
+    public function delete(QueryBuilder $builder)
     {
         return sprintf('DELETE FROM `%s`%s%s;',
             $builder->getBaseTable(),
@@ -55,7 +56,7 @@ class MySQL extends AEscapedDialect
         );
     }
 
-    public function describe(QueryBuilder $builder): string
+    public function describe(QueryBuilder $builder)
     {
         return sprintf('DESCRIBE `%s`;', $builder->getBaseTable() );
     }
@@ -96,7 +97,7 @@ class MySQL extends AEscapedDialect
             case IQueryBuilder::OPERATION_NIN:
                 return 'NOT IN';
             default:
-                throw new MapperException(sprintf('Unknown operation %s', $operation));
+                throw new MapperException(sprintf('Unknown operation *%s*', $operation));
         }
     }
 

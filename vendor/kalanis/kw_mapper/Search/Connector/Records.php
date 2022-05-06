@@ -10,7 +10,7 @@ use kalanis\kw_mapper\Storage;
 
 
 /**
- * Class FileTable
+ * Class Records
  * @package kalanis\kw_mapper\Search
  * Connect records behaving as datasource
  * Behave only as advanced filtering
@@ -27,9 +27,14 @@ class Records extends AConnector
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
-        $this->records[$record->getMapper()->getAlias()] = $record; // correct column
-        $this->queryBuilder = new Storage\Shared\QueryBuilder();
+        $this->initRecordLookup($record); // correct column
+        $this->queryBuilder = $this->initQueryBuilder();
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+    }
+
+    protected function initQueryBuilder(): Storage\Shared\QueryBuilder
+    {
+        return new Storage\Shared\QueryBuilder();
     }
 
     /**
@@ -49,12 +54,13 @@ class Records extends AConnector
     /**
      * @param string $table
      * @return string
-     * The table represents a file, in which it's saved - so it's redundant
-     * In fact on some SQL engines it's also real file on volume
+     * The table here represents a unknown entity, in which it's saved - can even be no storage and the whole can be
+     * initialized on-the-fly. So return no table. Also good for files where the storage points to the whole file path.
+     * In fact in some SQL engines it's also real file on volume.
      */
     protected function correctTable(string $table): string
     {
-        return $this->basicRecord->getMapper()->getAlias();
+        return '';
     }
 
     /**
@@ -82,11 +88,6 @@ class Records extends AConnector
         throw new MapperException('Cannot make relations over already loaded records!');
     }
 
-    public function childTree(string $childAlias): array
-    {
-        throw new MapperException('Cannot access relations over already loaded records!');
-    }
-
     public function getCount(): int
     {
         return count($this->getResults(false));
@@ -95,23 +96,25 @@ class Records extends AConnector
     /**
      * @param bool $limited
      * @return ARecord[]
+     * @throws MapperException
      */
     public function getResults(bool $limited = true): array
     {
-        $results = $this->getInitialRecords();
+        $results = $this->sortResults( // sorting
+                $this->filterResults( // filters after grouping
+                $this->groupResults( // grouping
+                    $this->filterResults( // basic filters
+                        $this->getInitialRecords(), // all records
+                        $this->queryBuilder->getConditions()
+                    ),
+                    $this->queryBuilder->getGrouping()
+                ),
+                $this->queryBuilder->getHavingCondition()
+            ),
+            $this->queryBuilder->getOrdering()
+        );
 
-        foreach ($this->queryBuilder->getConditions() as $condition) {
-            $this->condition = $condition;
-            $results = array_filter($results, [$this, 'filterCondition']);
-        }
-        $this->condition = null;
-
-        foreach ($this->queryBuilder->getOrdering() as $order) {
-            $this->sortingOrder = $order;
-            usort($results, [$this, 'sortOrder']);
-        }
-        $this->sortingOrder = null;
-
+        // paging
         return $limited
             ? array_slice($results, intval($this->queryBuilder->getOffset()), $this->queryBuilder->getLimit())
             : $results ;
@@ -123,17 +126,101 @@ class Records extends AConnector
     }
 
     /**
+     * @param ARecord[] $records
+     * @param Storage\Shared\QueryBuilder\Condition[] $conditions
+     * @return ARecord[]
+     */
+    protected function filterResults(array $records, array $conditions): array
+    {
+        foreach ($conditions as $condition) {
+            $this->condition = $condition;
+            $records = array_filter($records, [$this, 'filterCondition']);
+        }
+        $this->condition = null;
+        return $records;
+    }
+
+    /**
+     * @param ARecord[] $records
+     * @param Storage\Shared\QueryBuilder\Group[] $grouping
+     * @return ARecord[]
+     * @throws MapperException
+     * Each one in group must have the same value; one difference = another group
+     */
+    protected function groupResults(array $records, array $grouping): array
+    {
+        // no groups - no process
+        if (empty($grouping)) {
+            return $records;
+        }
+        // get indexes of groups
+        $indexes = [];
+        foreach ($grouping as $group) {
+            $indexes[] = $group->getColumnName();
+        }
+        $keys = [];
+        // over records...
+        foreach ($records as $record) {
+            $key = [];
+            // get value of each element wanted for grouping
+            foreach ($indexes as $index) {
+                $key[] = strval($record->offsetGet($index));
+            }
+            // create key which represents that element from the angle of view of groups
+            $expected = implode('__', $key);
+            // and check if already exists - add if not
+            if (!isset($keys[$expected])) {
+                $keys[$expected] = $record;
+            }
+        }
+        // here stays only the first one
+        return $keys;
+    }
+
+    /**
+     * @param ARecord[] $records
+     * @param Storage\Shared\QueryBuilder\Order[] $ordering
+     * @return ARecord[]
+     */
+    protected function sortResults(array $records, array $ordering): array
+    {
+        foreach ($ordering as $order) {
+            $this->sortingOrder = $order;
+            usort($records, [$this, 'sortOrder']);
+        }
+        $this->sortingOrder = null;
+        return $records;
+    }
+
+    /**
      * @param ARecord $result
      * @return bool
      * @throws MapperException
      */
-    public function filterCondition($result)
+    public function filterCondition(ARecord $result): bool
     {
-        return $this->checkCondition(
-            $this->condition->getOperation(),
-            $result->offsetGet($this->condition->getColumnName()),
-            $this->queryBuilder->getParams()[$this->condition->getColumnKey()]
-        );
+        $columnKey = $this->condition->getColumnKey();
+        return is_array($columnKey)
+            ? $this->filterFromManyValues($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams(), $columnKey)
+            : $this->checkCondition($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams()[$columnKey] )
+        ;
+    }
+
+    /**
+     * @param string $operation
+     * @param mixed $value
+     * @param string[] $params
+     * @param string[] $columnKeys
+     * @return bool
+     * @throws MapperException
+     */
+    protected function filterFromManyValues(string $operation, $value, array $params, array $columnKeys): bool
+    {
+        $values = [];
+        foreach ($columnKeys as $columnKey) {
+            $values[$columnKey] = $params[$columnKey];
+        }
+        return $this->checkCondition($operation, $value, $values);
     }
 
     /**
@@ -183,15 +270,12 @@ class Records extends AConnector
      * @return int
      * @throws MapperException
      */
-    public function sortOrder($resultA, $resultB): int
+    public function sortOrder(ARecord $resultA, ARecord $resultB): int
     {
         $sortingDirection = empty($this->sortingOrder->getDirection()) ? IQueryBuilder::ORDER_ASC : $this->sortingOrder->getDirection();
         $a = $resultA->offsetGet($this->sortingOrder->getColumnName());
         $b = $resultB->offsetGet($this->sortingOrder->getColumnName());
 
-        if ($a == $b) {
-            return 0;
-        }
-        return (IQueryBuilder::ORDER_ASC == $sortingDirection) ? (($a < $b) ? -1 : 1) : (($a > $b) ? -1 : 1);
+        return (IQueryBuilder::ORDER_ASC == $sortingDirection) ? $a <=> $b : $b <=> $a ;
     }
 }
