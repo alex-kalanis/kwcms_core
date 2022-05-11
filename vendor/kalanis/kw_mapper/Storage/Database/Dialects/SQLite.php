@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Storage\Database\Dialects;
 
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
@@ -11,32 +12,38 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  * Class SQLite
  * @package kalanis\kw_mapper\Storage\Database\Dialects
  * Create queries for SQLite - when you save it to the file and yet have file which has it all
+ * There is a lot of ignored things - mainly statements without table name for queries with joins
  */
-class SQLite extends AEscapedDialect
+class SQLite extends ADialect
 {
+    use TQuotationDialect;
+
     /**
      * @param QueryBuilder $builder
      * @return string
+     * @throws MapperException
      * @link https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
      */
     public function insert(QueryBuilder $builder)
     {
-        return sprintf('INSERT INTO `%s` SET %s;',
+        return sprintf('INSERT INTO "%s" (%s) VALUES (%s);',
             $builder->getBaseTable(),
-            $this->makeProperty($builder->getProperties())
+            $this->makeSimplePropertyList($builder->getProperties()),
+            $this->makePropertyEntries($builder->getProperties())
         );
     }
 
     public function select(QueryBuilder $builder)
     {
-        return sprintf('SELECT %s FROM `%s` %s %s%s%s%s%s;',
-            $this->makeColumns($builder->getColumns()),
+        $joins = $builder->getJoins();
+        return sprintf('SELECT %s FROM "%s" %s %s%s%s%s%s;',
+            empty($joins) ? $this->makeSimpleColumns($builder->getColumns()) : $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
-            $this->makeJoin($builder->getJoins()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
-            $this->makeGrouping($builder->getGrouping()),
-            $this->makeHaving($builder->getHavingCondition(), $builder->getRelation()),
-            $this->makeOrdering($builder->getOrdering()),
+            empty($joins) ? '' : $this->makeJoin($builder->getJoins()),
+            empty($joins) ? $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation()) : $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
+            empty($joins) ? $this->makeSimpleGrouping($builder->getGrouping()) : $this->makeFullGrouping($builder->getGrouping()),
+            empty($joins) ? $this->makeSimpleHaving($builder->getHavingCondition(), $builder->getRelation()) : $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
+            empty($joins) ? $this->makeSimpleOrdering($builder->getOrdering()) : $this->makeFullOrdering($builder->getOrdering()),
             $this->makeLimits($builder->getLimit(), $builder->getOffset())
         );
     }
@@ -51,10 +58,10 @@ class SQLite extends AEscapedDialect
      */
     public function update(QueryBuilder $builder)
     {
-        return sprintf('UPDATE `%s` SET %s%s;',
+        return sprintf('UPDATE "%s" SET %s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
@@ -68,15 +75,15 @@ class SQLite extends AEscapedDialect
      */
     public function delete(QueryBuilder $builder)
     {
-        return sprintf('DELETE FROM `%s`%s;',
+        return sprintf('DELETE FROM "%s"%s;',
             $builder->getBaseTable(),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
     public function describe(QueryBuilder $builder)
     {
-        return sprintf('SELECT `sql` FROM `sqlite_master` WHERE `name` = \'%s\';', $builder->getBaseTable() );
+        return sprintf('SELECT "sql" FROM "sqlite_master" WHERE "name" = \'%s\';', $builder->getBaseTable() );
     }
 
     protected function makeLimits(?int $limit, ?int $offset): string
