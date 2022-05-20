@@ -6,6 +6,7 @@ namespace KWCMS\modules\Chsett\Lib;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
+use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IGroup;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Sources\Files;
@@ -15,6 +16,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_pager\BasicPager;
@@ -23,7 +25,8 @@ use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
+use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
@@ -62,6 +65,9 @@ class UserTable
      * @return Table
      * @throws ConnectException
      * @throws FormsException
+     * @throws TableException
+     * @throws AuthException
+     * @throws LockException
      */
     public function getTable()
     {
@@ -73,8 +79,8 @@ class UserTable
         $form->setInputs($inputVariables);
 
         // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $this->table->addSorter($sorter);
+        $sorter = new Order(new Handler(new Sources\Inputs($this->variables)));
+        $this->table->addOrder($sorter);
 
         // pager
         $pager = new BasicPager();
@@ -83,22 +89,22 @@ class UserTable
         $this->table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         // now normal code - columns
-        $this->table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $this->table->addOrdering('id', IQueryBuilder::ORDER_DESC);
 
         $this->table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
-        $this->table->addSortedColumn(Lang::get('chsett.table.id'), $columnUserId );
+        $this->table->addOrderedColumn(Lang::get('chsett.table.id'), $columnUserId );
 
-        $this->table->addSortedColumn(Lang::get('chsett.table.login'), new Columns\Basic('login'), new Fields\TextContains());
-        $this->table->addSortedColumn(Lang::get('chsett.table.dir'), new Columns\Basic('dir'), new Fields\TextContains());
+        $this->table->addOrderedColumn(Lang::get('chsett.table.login'), new Columns\Basic('login'), new Fields\TextContains());
+        $this->table->addOrderedColumn(Lang::get('chsett.table.dir'), new Columns\Basic('dir'), new Fields\TextContains());
 
         $groups = $this->getGroups();
-        $this->table->addSortedColumn(Lang::get('chsett.table.group'), new Columns\Map('group', $groups), new Fields\Options($groups));
+        $this->table->addOrderedColumn(Lang::get('chsett.table.group'), new Columns\Map('group', $groups), new Fields\Options($groups));
         $classes = $this->libAuth->readClasses();
-        $this->table->addSortedColumn(Lang::get('chsett.table.class'), new Columns\Map('class', $classes), new Fields\Options($classes));
-        $this->table->addSortedColumn(Lang::get('chsett.table.name'), new Columns\Bold('name'), new Fields\TextContains());
+        $this->table->addOrderedColumn(Lang::get('chsett.table.class'), new Columns\Map('class', $classes), new Fields\Options($classes));
+        $this->table->addOrderedColumn(Lang::get('chsett.table.name'), new Columns\Bold('name'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
@@ -113,6 +119,11 @@ class UserTable
         return $this->table;
     }
 
+    /**
+     * @return array
+     * @throws AuthException
+     * @throws LockException
+     */
     protected function getGroups(): array
     {
         $groups = $this->libAuth->readGroup();

@@ -26,7 +26,7 @@ class Connector extends AConnector implements IConnector
     /** @var array */
     protected $dataSource = [];
     /** @var string[][] */
-    protected $sorting = [];
+    protected $ordering = [];
     /** @var array */
     protected $filteredData = [];
     /** @var string */
@@ -59,9 +59,9 @@ class Connector extends AConnector implements IConnector
         return new Row($data);
     }
 
-    public function setSorting(string $colName, string $direction): void
+    public function setOrdering(string $colName, string $direction): void
     {
-        $this->sorting[] = [$colName, $direction];
+        $this->ordering[] = [$colName, $direction];
     }
 
     public function setPagination(?int $offset, ?int $limit): void
@@ -103,7 +103,7 @@ class Connector extends AConnector implements IConnector
             $filtered = $type->getDataSource();
         }
 
-        foreach (array_reverse($this->sorting) as list($columnName, $direction)) {
+        foreach (array_reverse($this->ordering) as list($columnName, $direction)) {
             $toSort = $this->indexedArray($filtered, $columnName);
             if (IOrder::ORDER_DESC == $direction) {
                 asort($toSort);

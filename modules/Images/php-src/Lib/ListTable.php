@@ -20,7 +20,7 @@ use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
@@ -70,8 +70,8 @@ class ListTable
         $form->setInputs($inputVariables, $inputFiles);
 
         // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $table->addSorter($sorter);
+        $sorter = new Order(new Handler(new Sources\Inputs($this->variables)));
+        $table->addOrder($sorter);
 
         // pager
         $pager = new BasicPager();
@@ -80,20 +80,20 @@ class ListTable
         $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         // now normal code - columns
-        $table->setDefaultSorting('name', IQueryBuilder::ORDER_DESC);
+        $table->addOrdering('name', IQueryBuilder::ORDER_DESC);
         $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnThumbLink = new Columns\MultiColumnLink('thumb', [new Columns\Basic('name')], [$this, 'imageLink']);
         $columnThumbLink->style('width:140px', new Rules\Always());
         $table->addColumn(Lang::get('images.thumb'), $columnThumbLink );
 
-        $table->addSortedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Fields\TextContains());
-        $table->addSortedColumn(Lang::get('images.size'), new Columns\Basic('size'), new Fields\Multiple([
+        $table->addOrderedColumn(Lang::get('images.name'), new Columns\Bold('name'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('images.size'), new Columns\Basic('size'), new Fields\Multiple([
             new Fields\MultipleValue(new Fields\NumFrom(), Lang::get('images.filter.from')),
             new Fields\MultipleValue(new Fields\NumToWith(), Lang::get('images.filter.to'))
         ]));
 
-        $table->addSortedColumn(Lang::get('images.desc'), new Columns\Basic('desc'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('images.desc'), new Columns\Basic('desc'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'name');
         $columnActions->addColumn(new Columns\Func('name', [$this, 'editLink']));

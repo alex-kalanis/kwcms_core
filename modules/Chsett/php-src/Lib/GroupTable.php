@@ -24,7 +24,8 @@ use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
+use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
@@ -59,10 +60,11 @@ class GroupTable
 
     /**
      * @return Table
+     * @throws AuthException
      * @throws ConnectException
      * @throws FormsException
-     * @throws AuthException
      * @throws LockException
+     * @throws TableException
      */
     public function getTable()
     {
@@ -74,8 +76,8 @@ class GroupTable
         $form->setInputs($inputVariables);
 
         // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $table->addSorter($sorter);
+        $sorter = new Order(new Handler(new Sources\Inputs($this->variables)));
+        $table->addOrder($sorter);
 
         // pager
         $pager = new BasicPager();
@@ -84,16 +86,16 @@ class GroupTable
         $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         // now normal code - columns
-        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $table->addOrdering('id', IQueryBuilder::ORDER_DESC);
 
         $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('chsett.group_id'), $columnUserId );
+        $table->addOrderedColumn(Lang::get('chsett.group_id'), $columnUserId );
 
-        $table->addSortedColumn(Lang::get('chsett.group_name'), new Columns\Basic('name'), new Fields\TextContains());
-        $table->addSortedColumn(Lang::get('chsett.group_desc'), new Columns\Basic('desc'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('chsett.group_name'), new Columns\Basic('name'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('chsett.group_desc'), new Columns\Basic('desc'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
