@@ -76,9 +76,8 @@ class PedigreeTable
         $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
-        // sorter links
-        $sorter = new Order(new Handler(new Sources\Inputs($this->variables)));
-        $this->table->addOrder($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\Inputs($this->variables))));
 
         // pager
         $pager = new BasicPager();

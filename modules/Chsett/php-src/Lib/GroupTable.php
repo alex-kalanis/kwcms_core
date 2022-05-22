@@ -75,9 +75,8 @@ class GroupTable
         $table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables);
 
-        // sorter links
-        $sorter = new Order(new Handler(new Sources\Inputs($this->variables)));
-        $table->addOrder($sorter);
+        // order links
+        $table->addOrder(new Order(new Handler(new Sources\Inputs($this->variables))));
 
         // pager
         $pager = new BasicPager();

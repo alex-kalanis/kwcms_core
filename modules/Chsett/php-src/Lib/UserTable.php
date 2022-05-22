@@ -78,9 +78,8 @@ class UserTable
         $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables);
 
-        // sorter links
-        $sorter = new Order(new Handler(new Sources\Inputs($this->variables)));
-        $this->table->addOrder($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\Inputs($this->variables))));
 
         // pager
         $pager = new BasicPager();
