@@ -22,7 +22,7 @@ This is only example of work with KWCMS3, it should be treated that way.
 
 ### So what is that
 
-* vanilla php7.2 (my virtual machine limit now), possible php8
+* vanilla php7.3 (my virtual machine limit now), possible php8
 * Tiny core, most things outside in modules and libraries
 * Object-oriented code, precisely defined code tree ( \{author}{\project}\{module}\{paths\to\libraries} ) simplifying autoloading
 * Well-defined inputs and outputs
