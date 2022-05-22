@@ -3,6 +3,7 @@
 namespace kalanis\kw_clipr\Tasks;
 
 
+use kalanis\kw_clipr\CliprException;
 use kalanis\kw_locks\Interfaces\ILock;
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
@@ -18,18 +19,26 @@ abstract class ASingleTask extends ATask
 {
     protected $lock = null;
 
+    /**
+     * @param ILock|null $lock
+     * @throws LockException
+     */
     public function __construct(?ILock $lock = null)
     {
-        $this->lock = empty($lock) ? $this->getPresetLock() : $lock;
-        if ($lock instanceof IPassedKey) {
-            $lock->setKey(str_replace('/', ':', get_class($this)) . ILock::LOCK_FILE);
-        } elseif (method_exists($lock, 'setClass')) {
-            $lock->setClass($this);
+        $this->lock = $lock ?: $this->getPresetLock();
+        if ($this->lock instanceof IPassedKey) {
+            $this->lock->setKey(str_replace('/', ':', get_class($this)) . ILock::LOCK_FILE);
+        } elseif (method_exists($this->lock, 'setClass')) {
+            $this->lock->setClass($this);
         }
         // temp dir path must go via lock's constructor
         // when it comes via IStorage (StorageLock), it's possible to connect it into Redis or Memcache and then that path might not be necessary
     }
 
+    /**
+     * @return ILock
+     * @throws LockException
+     */
     protected function getPresetLock(): ILock
     {
         return new PidLock($this->getTempPath());
@@ -40,6 +49,9 @@ abstract class ASingleTask extends ATask
         return '/tmp';
     }
 
+    /**
+     * @throws CliprException
+     */
     protected function startup(): void
     {
         parent::startup();
@@ -48,16 +60,19 @@ abstract class ASingleTask extends ATask
         $this->checkSingleInstance();
     }
 
+    /**
+     * @throws CliprException
+     */
     protected function checkSingleInstance()
     {
         try {
             if ($this->isSingleInstance() && $this->isFileLocked()) {
                 // check if exists another instance
-                die('One script instance is already running!');
+                throw new SingleTaskException('One script instance is already running!');
                 // create own lock file
             }
         } catch (LockException $ex) {
-            die('Locked by another user. Cannot unlock here.');
+            throw new SingleTaskException('Locked by another user. Cannot unlock here.', 0, $ex);
         }
     }
 
@@ -75,6 +90,7 @@ abstract class ASingleTask extends ATask
         try {
             if (!$this->lock->has()) {
                 $this->lock->create();
+                return false;
             }
             return true;
         } catch (LockException $ex) {
