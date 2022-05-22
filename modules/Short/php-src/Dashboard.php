@@ -6,7 +6,6 @@ namespace KWCMS\modules\Short;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -16,9 +15,9 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -72,7 +71,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $table = new Lib\MessageTable($this->inputs, $this->links);
         if ($this->search) {
             try {

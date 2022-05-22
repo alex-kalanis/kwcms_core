@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Files\Lib;
 
 
-use kalanis\kw_extras\TNameFinder;
 use kalanis\kw_input\Interfaces\IFileEntry;
+use kalanis\kw_paths\Extras\TNameFinder;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;

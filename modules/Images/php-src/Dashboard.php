@@ -6,7 +6,6 @@ namespace KWCMS\modules\Images;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\Config;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
@@ -15,11 +14,11 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 use SplFileInfo;
 
 
@@ -78,7 +77,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         if (!empty($this->error)) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }

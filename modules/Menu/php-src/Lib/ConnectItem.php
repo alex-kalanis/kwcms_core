@@ -4,19 +4,19 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_connect\core\Interfaces\IRow;
-use kalanis\kw_menu\Menu\Item;
+use kalanis\kw_menu\Menu\Entry;
 
 
 class ConnectItem implements IRow
 {
     protected $array;
 
-    public function __construct(Item $item)
+    public function __construct(Entry $item)
     {
         $this->array = [
-            'file' => $item->getFile(),
+            'id' => $item->getId(),
             'name' => $item->getName(),
-            'desc' => $item->getTitle(),
+            'desc' => $item->getDesc(),
             'pos' => $item->getPosition(),
             'sub' => intval($item->canGoSub()),
         ];
@@ -24,7 +24,7 @@ class ConnectItem implements IRow
 
     public function getValue($property)
     {
-        return $this->array[$property];
+        return $this->__isset($property) ? $this->array[$property] : null ;
     }
 
     public function __isset($property)

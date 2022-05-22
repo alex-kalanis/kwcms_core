@@ -8,7 +8,7 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_menu\Menu\Item;
+use kalanis\kw_menu\Menu\Entry;
 
 
 /**
@@ -34,11 +34,11 @@ class EditPosForm extends Form
         return $this;
     }
 
-    protected function addItemControl(Item $item, $key): void
+    protected function addItemControl(Entry $item, $key): void
     {
         $input = new InputPosition();
         $input->set(sprintf('pos[%s]', $key), $item->getPosition(), $item->getName());
-        $this->addControl($input);
+        $this->addControlDefaultKey($input);
         $this->inputs[] = $input;
     }
 

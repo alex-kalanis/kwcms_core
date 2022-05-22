@@ -6,7 +6,7 @@ namespace kalanis\kw_auth_forms;
 use ArrayAccess;
 use kalanis\kw_forms\Form;
 use kalanis\kw_rules\Exceptions\RuleException;
-use kalanis\kw_rules\Rules\MatchAny;
+use kalanis\kw_rules\Rules\MatchAll;
 use kalanis\kw_rules\Rules\ProcessCallback;
 
 
@@ -45,7 +45,7 @@ class AuthForm
         // add rule to input
         $csrf->removeRules();
         $csrf->addRules([$digest]);
-        $boundForm->addControl($csrf);
+        $boundForm->addControlDefaultKey($csrf);
     }
 
     /**
@@ -73,13 +73,13 @@ class AuthForm
         $digest->setErrorText('Digest fails');
 
         // match any rule
-        $match = new MatchAny();
+        $match = new MatchAll();
         $match->setErrorText('Nothing match');
         $match->setAgainstValue([$check, $digest]);
 
         // add rules to input
         $csrf->removeRules();
         $csrf->addRules([$match]);
-        $boundForm->addControl($csrf);
+        $boundForm->addControlDefaultKey($csrf);
     }
 }

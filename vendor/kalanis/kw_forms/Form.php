@@ -5,12 +5,9 @@ namespace kalanis\kw_forms;
 
 use kalanis\kw_forms\Adapters\AAdapter;
 use kalanis\kw_forms\Adapters\FilesAdapter;
-use kalanis\kw_forms\Controls\AControl;
-use kalanis\kw_forms\Controls\TWrappers;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Validate;
-use kalanis\kw_templates\HtmlElement\IHtmlElement;
+use kalanis\kw_templates\Interfaces\IHtmlElement;
 use kalanis\kw_templates\HtmlElement\THtmlElement;
 
 
@@ -22,10 +19,12 @@ use kalanis\kw_templates\HtmlElement\THtmlElement;
 class Form implements IHtmlElement
 {
     use Cache\TStorage;
+    use Controls\TSubControls;
+    use Controls\TSubErrors;
     use Form\TControl;
     use Form\TMethod;
     use THtmlElement;
-    use TWrappers;
+    use Controls\TWrappers;
 
     /** @var Controls\Factory */
     protected $controlFactory = null;
@@ -37,10 +36,6 @@ class Form implements IHtmlElement
     protected $files = [];
     /** @var string Form label */
     protected $label = '';
-    /** @var Controls\AControl[] */
-    protected $controls = [];
-    /** @var RuleException[][] */
-    protected $errors = [];
 
     /**
      * Main Form template
@@ -103,26 +98,9 @@ class Form implements IHtmlElement
         return $this->controlFactory;
     }
 
-    public function addControl(Controls\AControl $control): void
+    public function addControlDefaultKey(Controls\AControl $control): void
     {
-        $this->controls[$control->getKey()] = $control;
-    }
-
-    /**
-     * Get control
-     * @param string $key
-     * @return AControl|null
-     */
-    public function getControl(string $key): ?AControl
-    {
-        foreach ($this->controls as &$control) {
-            if ($control instanceof Controls\AControl) {
-                if ($control->getKey() == $key) {
-                    return $control;
-                }
-            }
-        }
-        return null;
+        $this->addControl($control->getKey(), $control);
     }
 
     /**
@@ -137,49 +115,6 @@ class Form implements IHtmlElement
         }
         $this->setChildren($child->getChildren());
         $this->setAttributes($child->getAttributes());
-    }
-
-    /**
-     * Get values of all children
-     * @return string[]
-     */
-    public function getValues()
-    {
-        $array = [];
-        foreach ($this->controls as $key => &$child) {
-            if ($child instanceof Interfaces\IMultiValue) {
-                $array += $child->getValues();
-            } else {
-                $_alias = ($child instanceof AControl) ? $child->getKey() : $key ;
-                $array[$_alias] = $child->getValue();
-            }
-        }
-        return $array;
-    }
-
-    /**
-     * Set values to all children, !!undefined values will NOT be set!!
-     * <b>Usage</b>
-     * <code>
-     *  $form->setValues($this->context->post) // set values from Post
-     *  $form->setValues($mapperObject) // set values from other source
-     * </code>
-     * @param string[] $data
-     * @return $this
-     */
-    public function setValues(array $data = [])
-    {
-        foreach ($this->controls as $key => &$child) {
-            if ($child instanceof Interfaces\IMultiValue) {
-                $child->setValues($data);
-            } else {
-                $_alias = ($child instanceof AControl) ? $child->getKey() : $key ;
-                if (isset($data[$_alias])) {
-                    $child->setValue($data[$_alias]);
-                }
-            }
-        }
-        return $this;
     }
 
     /**
@@ -204,34 +139,6 @@ class Form implements IHtmlElement
     {
         $control = $this->getControl($key);
         return $control ? $control->getValue() : null ;
-    }
-
-    /**
-     * Get labels of all children
-     * @return array
-     */
-    public function getLabels()
-    {
-        $array = [];
-        foreach ($this->controls as &$child) {
-            $array[$child->getKey()] = $child->getLabel();
-        }
-        return $array;
-    }
-
-    /**
-     * Set labels to all children
-     * @param string[] $array
-     * @return $this
-     */
-    public function setLabels(array $array = [])
-    {
-        foreach ($this->controls as &$child) {
-            if (isset($array[$child->getKey()])) {
-                $child->setLabel($array[$child->getKey()]);
-            }
-        }
-        return $this;
     }
 
     /**
@@ -340,7 +247,10 @@ class Form implements IHtmlElement
         $this->errors = [];
         $validation = true;
         foreach ($this->controls as &$child) {
-            if ($child instanceof Controls\AControl) {
+            if ($child instanceof Interfaces\IContainsControls) {
+                $validation &= $child->validateControls($this->validate);
+                $this->errors += $child->getValidatedErrors();
+            } elseif ($child instanceof Controls\AControl) {
                 $validation &= $this->validate->validate($child);
                 $this->errors += $this->validate->getErrors();
             }
@@ -408,19 +318,7 @@ class Form implements IHtmlElement
      */
     public function renderErrorsArray()
     {
-        $errors = [];
-        foreach ($this->controls as &$child) {
-            if ($child instanceof Controls\AControl) {
-                if (isset($this->errors[$child->getKey()])) {
-                    if (!$child->wrappersErrors()) {
-                        $child->addWrapperErrors($this->wrappersError);
-                    }
-                    $errors[$child->getKey()] = $child->renderErrors($this->errors[$child->getKey()]);
-                }
-            }
-        }
-
-        return $errors;
+        return $this->getErrors($this->errors, $this->wrappersError);
     }
 
     /**

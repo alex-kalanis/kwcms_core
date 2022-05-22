@@ -7,7 +7,6 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -28,8 +27,7 @@ class Sysinfo extends AAuthModule implements IModuleTitle
 
     public function result(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
-
+        $out = new Output\Html();
         ob_start();
         phpinfo();
         $content = ob_get_clean();

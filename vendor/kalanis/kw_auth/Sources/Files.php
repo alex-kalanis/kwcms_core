@@ -9,6 +9,8 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IAuthCert;
 use kalanis\kw_auth\Interfaces\IFile;
+use kalanis\kw_auth\Interfaces\IKATranslations;
+use kalanis\kw_auth\Interfaces\IMode;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Interfaces\IUserCert;
 use kalanis\kw_locks\Interfaces\ILock;
@@ -42,30 +44,34 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
     const SH_CERT_KEY = 5;
     const SH_FEED = 6;
 
-    protected $salt = '';
+    protected $mode = null;
 
-    public function __construct(ILock $lock, string $dir, string $salt)
+    public function __construct(IMode $mode, ILock $lock, string $dir, ?IKATranslations $lang = null)
     {
+        $this->setLang($lang);
         $this->initAuthLock($lock);
         $this->path = $dir;
-        $this->salt = $salt;
+        $this->mode = $mode;
     }
 
     public function authenticate(string $userName, array $params = []): ?IUser
     {
         if (empty($params['password'])) {
-            throw new AuthException('You must set the password to check!');
+            throw new AuthException($this->getLang()->kauPassMustBeSet());
         }
         $time = time();
         $name = $this->stripChars($userName);
-        $pass = $this->hashPassword($params['password']);
 
         // load from shadow
         $this->checkLock();
 
         $shadowLines = $this->openShadow();
         foreach ($shadowLines as &$line) {
-            if (($line[static::SH_NAME] == $name) && ($line[static::SH_PASS] == $pass) && ($time < $line[static::SH_CHANGE_NEXT])) {
+            if (
+                ($line[static::SH_NAME] == $name)
+                && $this->mode->check((string)$params['password'], (string)$line[static::SH_PASS])
+                && ($time < $line[static::SH_CHANGE_NEXT])
+            ) {
                 $class = $this->getDataOnly($userName);
                 if ($class) {
                     $this->setExpirationNotice($class, intval($line[static::SH_CHANGE_NEXT]));
@@ -141,7 +147,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         foreach ($lines as &$line) {
             if ($line[static::SH_NAME] == $name) {
                 $changed = true;
-                $line[static::SH_PASS] = $this->hashPassword($passWord);
+                $line[static::SH_PASS] = $this->mode->hash($passWord);
                 $line[static::SH_CHANGE_NEXT] = $this->whenItExpire();
             }
         }
@@ -188,7 +194,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
 
         # no everything need is set
         if (empty($userName) || empty($directory) || empty($password)) {
-            throw new AuthException('MISSING_NECESSARY_PARAMS');
+            throw new AuthException($this->getLang()->kauPassMissParam());
         }
         $this->checkLock();
 
@@ -219,7 +225,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
 
         $newUserShade = [
             static::SH_NAME => $userName,
-            static::SH_PASS => $this->hashPassword($password),
+            static::SH_PASS => $this->mode->hash($password),
             static::SH_CHANGE_LAST => time(),
             static::SH_CHANGE_NEXT => $this->whenItExpire(),
             static::SH_CERT_SALT => $certSalt,
@@ -272,10 +278,19 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $this->checkLock();
 
         $this->lock->create();
+        $oldName = null;
         $passwordLines = $this->openPassword();
         foreach ($passwordLines as &$line) {
-            if ($line[static::PW_NAME] == $userName) {
+            if (($line[static::PW_NAME] == $userName) && ($line[static::PW_ID] != $user->getAuthId())) {
+                $this->lock->delete();
+                throw new AuthException($this->getLang()->kauPassLoginExists());
+            }
+            if ($line[static::PW_ID] == $user->getAuthId()) {
                 // REFILL
+                if (!empty($userName) && $userName != $line[static::PW_NAME]) {
+                    $oldName = $line[static::PW_NAME];
+                    $line[static::PW_NAME] = $userName;
+                }
                 $line[static::PW_GROUP] = !empty($user->getGroup()) ? $user->getGroup() : $line[static::PW_GROUP] ;
                 $line[static::PW_CLASS] = !empty($user->getClass()) ? $user->getClass() : $line[static::PW_CLASS] ;
                 $line[static::PW_DISPLAY] = !empty($displayName) ? $displayName : $line[static::PW_DISPLAY] ;
@@ -284,6 +299,16 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         }
 
         $this->savePassword($passwordLines);
+
+        if (!is_null($oldName)) {
+            $lines = $this->openShadow();
+            foreach ($lines as &$line) {
+                if ($line[static::SH_NAME] == $oldName) {
+                    $line[static::SH_NAME] = $userName;
+                }
+            }
+            $this->saveShadow($lines);
+        }
         $this->lock->delete();
     }
 
@@ -326,7 +351,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $passLines = $this->openPassword();
         foreach ($passLines as &$line) {
             if ($line[static::PW_GROUP] == $groupId) {
-                throw new AuthException('Group to removal still has members. Remove them first.');
+                throw new AuthException($this->getLang()->kauGroupHasMembers());
             }
         }
     }
@@ -383,48 +408,5 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
     protected function saveGroups(array $lines): void
     {
         $this->saveFile($this->path . DIRECTORY_SEPARATOR . IFile::GROUP_FILE, $lines);
-    }
-
-    /**
-     * @param string $input
-     * @return string
-     * @throws AuthException
-     */
-    protected function hashPassword(string $input): string
-    {
-        // older kwcms style
-        return base64_encode(bin2hex($this->makeHash($this->passSalt($input))));
-    }
-
-    private function passSalt(string $input): string
-    {
-        $ln = strlen($input);
-        # pass is too long and salt too short
-        $salt = (strlen($this->salt) < ($ln*5))
-            ? str_repeat($this->salt, 5)
-            : $this->salt ;
-        return substr($salt, $ln, $ln)
-            . substr($input,0, (int)($ln/2))
-            . substr($salt,$ln*2, $ln)
-            . substr($input, (int)($ln/2))
-            . substr($salt,$ln*3, $ln);
-    }
-
-    /**
-     * @param string $word
-     * @return string
-     * @throws AuthException
-     */
-    private function makeHash(string $word): string
-    {
-        if (function_exists('mhash')) {
-            return mhash(MHASH_SHA256, $word);
-        }
-        // @codeCoverageIgnoreStart
-        if (function_exists('hash')) {
-            return hash('sha256', $word);
-        }
-        throw new AuthException('Cannot find function for making hashes!');
-        // @codeCoverageIgnoreEnd
     }
 }

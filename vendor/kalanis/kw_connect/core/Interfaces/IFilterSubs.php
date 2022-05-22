@@ -3,9 +3,6 @@
 namespace kalanis\kw_connect\core\Interfaces;
 
 
-use kalanis\kw_connect\core\ConnectException;
-
-
 /**
  * Interface IFilterSubs
  * @package kalanis\kw_connect\core\Interfaces
@@ -14,10 +11,7 @@ use kalanis\kw_connect\core\ConnectException;
 interface IFilterSubs extends IFilterType
 {
     /**
-     * @param string $alias
-     * @param IFilterType $filter
-     * @return mixed
-     * @throws ConnectException
+     * @param IFilterFactory $factory
      */
-    public function addSubFilter(string $alias, IFilterType $filter): void;
+    public function addFilterFactory(IFilterFactory $factory): void;
 }

@@ -6,7 +6,7 @@ namespace KWCMS\modules\Menu\Templates;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\ATemplate;
-use KWCMS\modules\Menu\Lib\EditPropsForm;
+use KWCMS\modules\Menu\Forms\EditPropsForm;
 
 
 /**

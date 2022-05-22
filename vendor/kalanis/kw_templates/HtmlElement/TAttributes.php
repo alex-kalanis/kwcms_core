@@ -22,7 +22,7 @@ trait TAttributes
      * @param string|string[] $attributes
      * @return string
      */
-    protected final function renderAttributes($attributes = null): string
+    protected function renderAttributes($attributes = null): string
     {
         $attributes = is_null($attributes) ? $this->attributes : $this->attributesParse($attributes);
 
@@ -38,7 +38,7 @@ trait TAttributes
      * Add array of attributes into current object attributes
      * @param string|string[] $attributes
      */
-    public final function addAttributes($attributes): void
+    public function addAttributes($attributes): void
     {
         $this->attributes = array_merge($this->attributes, $this->attributesParse($attributes));
     }
@@ -49,7 +49,7 @@ trait TAttributes
      * @param string|string[] $attributes
      * @return string[]
      */
-    public final function attributesParse($attributes): array
+    public function attributesParse($attributes): array
     {
         $attributes = is_array($attributes) ? $attributes : $this->attributesParseString(strval($attributes));
         return $this->attributesParseArray($attributes);
@@ -61,7 +61,7 @@ trait TAttributes
      * @param string[] $attributes
      * @return string[]
      */
-    public final function attributesParseArray(array $attributes): array
+    public function attributesParseArray(array $attributes): array
     {
         $array = [];
         foreach ($attributes as $key => $val) {
@@ -89,7 +89,7 @@ trait TAttributes
      * @param string $attributes
      * @return string[]
      */
-    public final function attributesParseString(string $attributes): array
+    public function attributesParseString(string $attributes): array
     {
         $array = [];
         $string = trim($attributes);
@@ -105,7 +105,7 @@ trait TAttributes
      * Set attributes, leave nothing from previous ones
      * @param array $attributes
      */
-    public final function setAttributes(array $attributes): void
+    public function setAttributes(array $attributes): void
     {
         $this->attributes = [];
         $this->addAttributes($attributes);
@@ -115,7 +115,7 @@ trait TAttributes
      * Get all available attributes
      * @return string[]
      */
-    public final function getAttributes(): array
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -125,7 +125,7 @@ trait TAttributes
      * @param string $name
      * @return string|null
      */
-    public final function getAttribute(string $name): ?string
+    public function getAttribute(string $name): ?string
     {
         return isset($this->attributes[$name]) ? $this->attributes[$name] : null ;
     }
@@ -135,7 +135,7 @@ trait TAttributes
      * @param string $name
      * @param string $value
      */
-    public final function setAttribute(string $name, string $value): void
+    public function setAttribute(string $name, string $value): void
     {
         $this->attributes[$name] = $value;
     }
@@ -144,7 +144,7 @@ trait TAttributes
      * Remove attribute
      * @param string $name
      */
-    public final function removeAttribute(string $name): void
+    public function removeAttribute(string $name): void
     {
         if (isset($this->attributes[$name])) {
             unset($this->attributes[$name]);

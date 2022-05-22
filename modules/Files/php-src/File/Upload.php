@@ -15,7 +15,6 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 use KWCMS\modules\Files\FilesException;
 use KWCMS\modules\Files\Lib;
 
@@ -85,7 +84,7 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $page = new Lib\UploadTemplate();
         if ($this->error) {
             Notification::addError($this->error->getMessage());

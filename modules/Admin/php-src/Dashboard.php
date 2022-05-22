@@ -7,7 +7,7 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
-use kalanis\kw_modules\Output\AOutput;
+use kalanis\kw_modules\Output;
 
 
 /**
@@ -31,9 +31,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
     }
 
-    public function result(): AOutput
+    public function result(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         ob_start();
         var_dump($_SESSION);
         $out->setContent(ob_get_clean());

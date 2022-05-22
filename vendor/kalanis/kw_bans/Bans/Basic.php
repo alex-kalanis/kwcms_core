@@ -3,6 +3,7 @@
 namespace kalanis\kw_bans\Bans;
 
 
+use kalanis\kw_bans\Interfaces\IKBTranslations;
 use kalanis\kw_bans\Sources\ASources;
 
 
@@ -13,7 +14,7 @@ class Basic extends ABan
     /** @var string */
     protected $searchKey = '';
 
-    public function __construct(ASources $source)
+    public function __construct(ASources $source, ?IKBTranslations $lang = null)
     {
         $this->knownRecords = $source->getRecords();
     }

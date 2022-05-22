@@ -3,6 +3,9 @@
 namespace kalanis\kw_templates\HtmlElement;
 
 
+use kalanis\kw_templates\Interfaces\IAttributes;
+
+
 /**
  * Trait TCss
  * @package kalanis\kw_templates\Template
@@ -18,7 +21,7 @@ trait TCss
      * @param string $name
      * @return $this
      */
-    public final function addClass(string $name): self
+    public function addClass(string $name): self
     {
         $class = $this->getAttribute(IAttributes::ATTR_NAME_CLASS);
         if (!empty($class)) {
@@ -38,7 +41,7 @@ trait TCss
      * @param string $name
      * @return $this
      */
-    public final function removeClass(string $name): self
+    public function removeClass(string $name): self
     {
         $class = $this->getAttribute(IAttributes::ATTR_NAME_CLASS);
         if (!empty ($class)) {

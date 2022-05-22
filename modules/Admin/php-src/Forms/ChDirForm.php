@@ -6,8 +6,8 @@ namespace KWCMS\modules\Admin\Forms;
 use kalanis\kw_forms\Controls\Submit;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_tree\Controls;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\Controls;
 
 
 /**
@@ -24,7 +24,7 @@ class ChDirForm extends Form
         $this->setMethod(IEntry::SOURCE_POST);
         $radios = new Controls\DirRadio();
         $radios->set('dir', $defaultWhere, 'Set dir', $tree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
         $this->addSubmit('changeDir', 'OK');
         return $this;
     }

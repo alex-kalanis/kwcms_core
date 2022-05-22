@@ -13,8 +13,8 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_scripts\Scripts;
+use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -48,18 +48,18 @@ class Positions extends AAuthModule implements IModuleTitle
     {
         try {
             $this->runTMenu($this->inputs, $this->user->getDir());
-            $this->editPosForm->composeForm($this->libMenu->getData()->getWorking(), $this->libMenu->getData()->getMenu()->getDisplayCount());
+            $this->editPosForm->composeForm($this->libMenu->getMeta()->getWorking(), $this->libMenu->getMeta()->getMenu()->getDisplayCount());
             $this->editPosForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editPosForm->process()) {
-                $this->libMenu->getData()->rearrangePositions($this->editPosForm->getPositions());
-                $this->libMenu->getData()->save();
+                $this->libMenu->getMeta()->rearrangePositions($this->editPosForm->getPositions());
+                $this->libMenu->getMeta()->save();
                 $this->libSemaphore->want();
                 // AGAIN! - re-create form
                 $this->editPosForm = new Forms\EditPosForm('editPosForm');
-                $this->editPosForm->composeForm($this->libMenu->getData()->getWorking(), $this->libMenu->getData()->getMenu()->getDisplayCount());
+                $this->editPosForm->composeForm($this->libMenu->getMeta()->getWorking(), $this->libMenu->getMeta()->getMenu()->getDisplayCount());
                 $this->isProcessed = true;
             }
-        } catch (FormsException | MenuException $ex) {
+        } catch (FormsException | MenuException | SemaphoreException $ex) {
             $this->error = $ex;
         }
     }
@@ -73,7 +73,7 @@ class Positions extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         if (!empty($this->error)) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }

@@ -22,7 +22,7 @@ trait TControl
     {
         $input = new Controls\Input();
         $input->set($type, $alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($input);
+        $this->addControlDefaultKey($input);
         return $input;
     }
 
@@ -38,7 +38,7 @@ trait TControl
     {
         $text = new Controls\Text();
         $text->set($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($text);
+        $this->addControlDefaultKey($text);
         return $text;
     }
 
@@ -54,7 +54,7 @@ trait TControl
     {
         $mail = new Controls\Email();
         $mail->set($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($mail);
+        $this->addControlDefaultKey($mail);
         return $mail;
     }
 
@@ -69,7 +69,7 @@ trait TControl
     {
         $pass = new Controls\Password();
         $pass->set($alias, $label)->addAttributes($attributes);
-        $this->addControl($pass);
+        $this->addControlDefaultKey($pass);
         return $pass;
     }
 
@@ -84,7 +84,7 @@ trait TControl
     {
         $hidden = new Controls\Hidden();
         $hidden->set($alias, $value)->addAttributes($attributes);
-        $this->addControl($hidden);
+        $this->addControlDefaultKey($hidden);
         return $hidden;
     }
 
@@ -100,7 +100,7 @@ trait TControl
     {
         $date = new Controls\DatePicker();
         $date->set($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($date);
+        $this->addControlDefaultKey($date);
         return $date;
     }
 
@@ -116,7 +116,7 @@ trait TControl
     {
         $date = new Controls\DateTimePicker();
         $date->set($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($date);
+        $this->addControlDefaultKey($date);
         return $date;
     }
 
@@ -132,7 +132,7 @@ trait TControl
     {
         $date = new Controls\DateRange();
         $date->set($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($date);
+        $this->addControlDefaultKey($date);
         return $date;
     }
 
@@ -147,7 +147,7 @@ trait TControl
     {
         $desc = new Controls\Description();
         $desc->setEntry($alias, $value, $label);
-        $this->addControl($desc);
+        $this->addControlDefaultKey($desc);
         return $desc;
     }
 
@@ -163,7 +163,7 @@ trait TControl
     {
         $html = new Controls\Html();
         $html->setEntry($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($html);
+        $this->addControlDefaultKey($html);
         return $html;
     }
 
@@ -179,7 +179,7 @@ trait TControl
     {
         $text = new Controls\Textarea();
         $text->set($alias, $value, $label)->addAttributes($attributes);
-        $this->addControl($text);
+        $this->addControlDefaultKey($text);
         return $text;
     }
 
@@ -196,7 +196,7 @@ trait TControl
     {
         $select = new Controls\Select();
         $select->set($alias, $value, $label, $children)->addAttributes($attributes);
-        $this->addControl($select);
+        $this->addControlDefaultKey($select);
         return $select;
     }
 
@@ -212,7 +212,7 @@ trait TControl
     {
         $select = new Controls\SelectList();
         $select->set($alias, $label, $children)->addAttributes($attributes);
-        $this->addControl($select);
+        $this->addControlDefaultKey($select);
         return $select;
     }
 
@@ -229,7 +229,7 @@ trait TControl
     {
         $radio = new Controls\RadioSet();
         $radio->set($alias, $value, $label, $children)->addAttributes($attributes);
-        $this->addControl($radio);
+        $this->addControlDefaultKey($radio);
         return $radio;
     }
 
@@ -247,7 +247,7 @@ trait TControl
         $check = new Controls\Checkbox();
         $check->set($alias, $value, $label)->addAttributes($attributes);
         $check->setValue(strval($checked));
-        $this->addControl($check);
+        $this->addControlDefaultKey($check);
         return $check;
     }
 
@@ -265,7 +265,7 @@ trait TControl
         $switch = new Controls\CheckboxSwitch();
         $switch->set($alias, $value, $label)->addAttributes($attributes);
         $switch->setValue(strval($checked));
-        $this->addControl($switch);
+        $this->addControlDefaultKey($switch);
         return $switch;
     }
 
@@ -282,7 +282,7 @@ trait TControl
     {
         $check = new Controls\Checkboxes();
         $check->set($alias, $checked, $label, $children)->addAttributes($attributes);
-        $this->addControl($check);
+        $this->addControlDefaultKey($check);
         return $check;
     }
 
@@ -298,7 +298,7 @@ trait TControl
         $file = new Controls\File();
         $file->set($alias, $label)->addAttributes($attributes);
         $this->setAttribute('enctype', 'multipart/form-data');
-        $this->addControl($file);
+        $this->addControlDefaultKey($file);
         return $file;
     }
 
@@ -315,7 +315,7 @@ trait TControl
         $file = new Controls\Files();
         $file->set($alias, $inputs, $label, $attributes);
         $this->setAttribute('enctype', 'multipart/form-data');
-        $this->addControl($file);
+        $this->addControlDefaultKey($file);
         return $file;
     }
 
@@ -330,7 +330,7 @@ trait TControl
     {
         $button = new Controls\Button();
         $button->set($alias, $label)->addAttributes($attributes);
-        $this->addControl($button);
+        $this->addControlDefaultKey($button);
         return $button;
     }
 
@@ -345,7 +345,7 @@ trait TControl
     {
         $reset = new Controls\Reset();
         $reset->set($alias, $label)->addAttributes($attributes);
-        $this->addControl($reset);
+        $this->addControlDefaultKey($reset);
         return $reset;
     }
 
@@ -360,7 +360,7 @@ trait TControl
     {
         $submit = new Controls\Submit();
         $submit->set($alias, $label)->addAttributes($attributes);
-        $this->addControl($submit);
+        $this->addControlDefaultKey($submit);
         return $submit;
     }
 
@@ -377,7 +377,7 @@ trait TControl
     {
         $csrf = new Controls\Security\Csrf();
         $csrf->setHidden($alias, $cookie, $errorMessage)->addAttributes($attributes);
-        $this->addControl($csrf);
+        $this->addControlDefaultKey($csrf);
         return $csrf;
     }
 
@@ -393,7 +393,7 @@ trait TControl
     {
         $csrf = new Controls\Security\MultiSend();
         $csrf->setHidden($alias, $cookie, $errorMessage)->addAttributes($attributes);
-        $this->addControl($csrf);
+        $this->addControlDefaultKey($csrf);
         return $csrf;
     }
 
@@ -406,7 +406,7 @@ trait TControl
     {
         $captcha = new Controls\Security\Captcha\Disabled();
         $captcha->setEntry($alias);
-        $this->addControl($captcha);
+        $this->addControlDefaultKey($captcha);
         return $captcha;
     }
 
@@ -421,7 +421,7 @@ trait TControl
     {
         $captcha = new Controls\Security\Captcha\Text();
         $captcha->set($alias, $session, $errorMessage);
-        $this->addControl($captcha);
+        $this->addControlDefaultKey($captcha);
         return $captcha;
     }
 
@@ -436,7 +436,7 @@ trait TControl
     {
         $captcha = new Controls\Security\Captcha\Numerical();
         $captcha->set($alias, $session, $errorMessage);
-        $this->addControl($captcha);
+        $this->addControlDefaultKey($captcha);
         return $captcha;
     }
 
@@ -451,7 +451,7 @@ trait TControl
     {
         $captcha = new Controls\Security\Captcha\ColourfulText();
         $captcha->set($alias, $session, $errorMessage);
-        $this->addControl($captcha);
+        $this->addControlDefaultKey($captcha);
         return $captcha;
     }
 
@@ -465,11 +465,11 @@ trait TControl
     {
         $recaptcha = new Controls\Security\Captcha\NoCaptcha();
         $recaptcha->set($alias, $errorMessage);
-        $this->addControl($recaptcha);
+        $this->addControlDefaultKey($recaptcha);
         return $recaptcha;
     }
 
-    abstract public function addControl(Controls\AControl $control): void;
+    abstract public function addControlDefaultKey(Controls\AControl $control): void;
 
     abstract public function setAttribute(string $name, string $value): void;
 }

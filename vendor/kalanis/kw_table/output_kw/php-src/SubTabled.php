@@ -31,7 +31,7 @@ class SubTabled extends Table
     public function translateData(): void
     {
         if (is_null($this->dataSetConnector)) {
-            throw new TableException('Cant create table from empty dataset');
+            throw new TableException('Cannot create table from empty dataset');
         }
 
         if (empty($this->columns)) {

@@ -4,7 +4,6 @@ namespace KWCMS\modules\MediaRss;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
@@ -13,6 +12,7 @@ use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\InternalLink;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_tree\FileNode;
 use kalanis\kw_tree\Tree;
 

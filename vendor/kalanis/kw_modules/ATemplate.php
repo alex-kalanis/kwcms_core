@@ -54,13 +54,13 @@ abstract class ATemplate extends \kalanis\kw_templates\ATemplate
                 IPaths::DIR_USER, $userDir,
                 IPaths::DIR_MODULE, $this->moduleName,
                 IPaths::DIR_STYLE, $defaultStyle,
-                'default', $this->templateName,
+                'default', $this->getTemplateName(),
                 'dummy', '.htm', '.html');
             if ($clearPath = realpath($path)) {
                 return $clearPath;
             }
         }
-        throw new TemplateException(sprintf('Unknown template for configuration *%s* - *%s*', $this->moduleName, $this->templateName));
+        throw new TemplateException(sprintf('Unknown template for configuration *%s* - *%s*', $this->moduleName, $this->getTemplateName()));
     }
 
     public function getTemplateName(): string

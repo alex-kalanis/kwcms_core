@@ -3,6 +3,7 @@
 namespace kalanis\kw_locks\Methods;
 
 
+use kalanis\kw_locks\Interfaces\IKLTranslations;
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_storage\Storage;
@@ -17,12 +18,15 @@ class StorageLock implements IPassedKey
 {
     /** @var Storage */
     protected $storage = null;
+    /** @var IKLTranslations */
+    protected $lang = null;
     protected $specialKey = '';
     protected $checkContent = '';
 
-    public function __construct(Storage $storage)
+    public function __construct(Storage $storage, ?IKLTranslations $lang = null)
     {
         $this->storage = $storage;
+        $this->lang = $lang ?: new Translations();
     }
 
     public function __destruct()
@@ -50,9 +54,9 @@ class StorageLock implements IPassedKey
             if ($this->checkContent == $this->storage->get($this->specialKey)) {
                 return true;
             }
-            throw new LockException('Locked by another!');
+            throw new LockException($this->lang->iklLockedByOther());
         } catch (StorageException $ex) {
-            throw new LockException('Problem with storage', 0, $ex);
+            throw new LockException($this->lang->iklProblemWithStorage(), 0, $ex);
         }
     }
 
@@ -65,7 +69,7 @@ class StorageLock implements IPassedKey
             $result = $this->storage->set($this->specialKey, $this->checkContent);
             return $result;
         } catch (StorageException $ex) {
-            throw new LockException('Problem with storage', 0, $ex);
+            throw new LockException($this->lang->iklProblemWithStorage(), 0, $ex);
         }
     }
 
@@ -77,7 +81,7 @@ class StorageLock implements IPassedKey
         try {
             return $this->storage->delete($this->specialKey);
         } catch (StorageException $ex) {
-            throw new LockException('Problem with storage', 0, $ex);
+            throw new LockException($this->lang->iklProblemWithStorage(), 0, $ex);
         }
     }
 }

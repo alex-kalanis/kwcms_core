@@ -5,6 +5,7 @@ namespace kalanis\kw_forms\Controls;
 
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_templates\HtmlElement;
+use kalanis\kw_templates\Interfaces\IHtmlElement;
 
 
 /**
@@ -17,25 +18,26 @@ trait TWrappers
 {
     use TTemplateError;
 
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappers = [];
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappersLabel = [];
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappersInput = [];
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappersChild = [];
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappersChildren = [];
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappersError = [];
-    /** @var HtmlElement\IHtmlElement[] */
+    /** @var IHtmlElement[] */
     protected $wrappersErrors = [];
+    protected $errorMustBeAnInstance = 'Wrapper must be an instance of IHtmlElement or array of its instances';
 
     /**
      * Pack string into preset html element
      * @param string $string
-     * @param HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrappers
+     * @param IHtmlElement|IHtmlElement[] $wrappers
      * @return string
      * @throws RenderException
      */
@@ -46,11 +48,11 @@ trait TWrappers
             foreach ($wrappers as $wrapper) {
                 $return = $this->wrapIt($return, $wrapper);
             }
-        } elseif ($wrappers instanceof HtmlElement\IHtmlElement) {
+        } elseif ($wrappers instanceof IHtmlElement) {
             $wrappers->addChild($return);
             $return = $wrappers->render();
         } else {
-            throw new RenderException('Wrapper must be an instance of IHtmlElement or array of its instances');
+            throw new RenderException($this->errorMustBeAnInstance);
         }
 
         return $return;
@@ -58,8 +60,8 @@ trait TWrappers
 
     /**
      * Add wrapper into predefined stack
-     * @param HtmlElement\IHtmlElement[] $stack
-     * @param HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[]|string|string[] $wrapper
+     * @param IHtmlElement[] $stack
+     * @param IHtmlElement|IHtmlElement[]|string|string[] $wrapper
      * @param mixed $attributes
      */
     protected function addWrapperToStack(&$stack, $wrapper, array $attributes = []): void
@@ -69,7 +71,7 @@ trait TWrappers
                 $this->addWrapperToStack($stack, $_wrapper);
             }
         } else {
-            if (!($wrapper instanceof HtmlElement\IHtmlElement)) {
+            if (!($wrapper instanceof IHtmlElement)) {
                 $wrapper = HtmlElement::init($wrapper, $attributes);
             } else if ($attributes !== null) {
                 $wrapper->setAttributes($attributes);
@@ -82,7 +84,7 @@ trait TWrappers
 
     /**
      * Add wrapper for the whole object
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param mixed $attributes
      * @return $this
      * @see AControl::render
@@ -95,7 +97,7 @@ trait TWrappers
 
     /**
      * Add wrapper for each child
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param mixed $attributes
      * @return $this
      * @see AControl::renderChild
@@ -108,7 +110,7 @@ trait TWrappers
 
     /**
      * Add wrapper for labels
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param mixed $attributes
      * @return $this
      * @see AControl::renderLabel
@@ -121,7 +123,7 @@ trait TWrappers
 
     /**
      * Add wrapper for inputs
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param mixed $attributes
      * @return $this
      * @see AControl::renderInput
@@ -134,7 +136,7 @@ trait TWrappers
 
     /**
      * Add wrapper for content of children
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param mixed $attributes
      * @return $this
      * @see AControl::renderChildren
@@ -147,7 +149,7 @@ trait TWrappers
 
     /**
      * Add wrapper for error messages
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param string|array $attributes
      * @return $this
      * @see AControl::renderErrors
@@ -160,7 +162,7 @@ trait TWrappers
 
     /**
      * Add wrapper for error messages
-     * @param string|string[]|HtmlElement\IHtmlElement|HtmlElement\IHtmlElement[] $wrapper
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
      * @param string|array $attributes
      * @return $this
      * @see AControl::renderErrors

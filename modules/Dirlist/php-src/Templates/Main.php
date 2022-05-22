@@ -21,20 +21,26 @@ class Main extends ATemplate
     {
         $this->addInput('{CONTENT}');
         $this->addInput('{PAGER}');
-        $this->addInput('{FILES-DIRS}', Lang::get('dirlist.files_dirs'));
+        $this->addInput('{FILES-DIRS}');
         $this->addInput('{FROM}');
         $this->addInput('{TO}');
-        $this->addInput('{OF}', Lang::get('dirlist.of'));
+        $this->addInput('{OF}');
         $this->addInput('{COUNT}');
     }
 
-    public function setData(string $content, SimplifiedPager $pager): self
+    public function setData(string $content, SimplifiedPager $pager, $showPagerPositions = false): self
     {
         $this->updateItem('{CONTENT}', $content);
-        $this->updateItem('{PAGER}', $pager->render());
-        $this->updateItem('{FROM}', $pager->getPager()->getOffset() ? $pager->getPager()->getOffset() + 1 : 0);
-        $this->updateItem('{TO}', strval(min($pager->getPager()->getOffset() + $pager->getPager()->getLimit(), $pager->getPager()->getMaxResults())));
-        $this->updateItem('{COUNT}', strval($pager->getPager()->getMaxResults()));
+        if ($showPagerPositions) {
+            $this->updateItem('{PAGER}', $pager->render(true));
+        } else {
+            $this->updateItem('{PAGER}', $pager->render(false));
+            $this->updateItem('{FILES-DIRS}', Lang::get('dirlist.files_dirs'));
+            $this->updateItem('{OF}', Lang::get('dirlist.of'));
+            $this->updateItem('{FROM}', $pager->getPager()->getOffset() ? $pager->getPager()->getOffset() + 1 : 1);
+            $this->updateItem('{TO}', strval(min($pager->getPager()->getOffset() + $pager->getPager()->getLimit(), $pager->getPager()->getMaxResults())));
+            $this->updateItem('{COUNT}', strval($pager->getPager()->getMaxResults()));
+        }
         return $this;
     }
 }

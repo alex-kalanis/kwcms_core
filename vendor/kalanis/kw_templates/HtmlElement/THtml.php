@@ -20,7 +20,7 @@ trait THtml
      * @param string $value
      * @return $this
      */
-    public final function addInnerHTML(string $value): self
+    public function addInnerHTML(string $value): self
     {
         $this->innerHtml = $value;
         return $this;
@@ -30,7 +30,7 @@ trait THtml
      * Get internal content of element
      * @return string
      */
-    public final function getInnerHTML(): string
+    public function getInnerHTML(): string
     {
         return $this->innerHtml;
     }

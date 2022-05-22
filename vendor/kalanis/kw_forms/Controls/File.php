@@ -18,6 +18,7 @@ use kalanis\kw_rules\Rules;
 class File extends AControl implements Interfaces\IValidateFile
 {
     protected $templateInput = '<input type="file"%2$s />';
+    protected $errorEntryNotFile = 'Entry %s does not contain a file';
 
     /** @var IFileEntry|null */
     protected $value = null;
@@ -87,7 +88,7 @@ class File extends AControl implements Interfaces\IValidateFile
     protected function checkFile(): void
     {
         if (empty($this->value)) {
-            throw new EntryException(sprintf('Entry %s does not contains file', $this->getKey()));
+            throw new EntryException(sprintf($this->errorEntryNotFile, $this->getKey()));
         }
     }
 }

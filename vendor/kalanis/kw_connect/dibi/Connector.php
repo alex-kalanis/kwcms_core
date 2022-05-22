@@ -5,10 +5,11 @@ namespace kalanis\kw_connect\dibi;
 
 use Dibi;
 use Dibi\Fluent;
-use kalanis\kw_connect\core\Connectors\AConnector;
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IFilterSubs;
+use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 
@@ -40,13 +41,17 @@ class Connector extends AConnector implements IConnector
         $this->primaryKey = $primaryKey;
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
+        $type = $this->getFilterFactory()->getFilter($filterType);
+        if ($type instanceof IFilterSubs) {
+            $type->addFilterFactory($this->getFilterFactory());
+        }
         $type->setDataSource($this->dibiFluent);
         $type->setFiltering($colName, $value);
     }
 
-    public function setSorting(string $colName, string $direction): void
+    public function setOrdering(string $colName, string $direction): void
     {
         $this->sorters[] = [$colName, $direction];
     }
@@ -67,7 +72,8 @@ class Connector extends AConnector implements IConnector
     public function fetchData(): void
     {
         foreach (array_reverse($this->sorters) as list($colName, $direction)) {
-            $this->dibiFluent->orderBy($colName, $direction);
+            $dir = IOrder::ORDER_ASC == $direction ? 'ASC' : 'DESC' ;
+            $this->dibiFluent->orderBy($colName, $dir);
         }
         $this->rawData = $this->dibiFluent->fetchAll($this->offset, $this->limit);
         $this->parseData();

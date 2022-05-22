@@ -7,10 +7,10 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_rules\Interfaces\IRules;
-use kalanis\kw_tree\Controls\DirSelect;
-use kalanis\kw_tree\Controls\FileCheckboxes;
-use kalanis\kw_tree\Controls\FileRadio;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\Controls\DirSelect;
+use kalanis\kw_tree_controls\Controls\FileCheckboxes;
+use kalanis\kw_tree_controls\Controls\FileRadio;
 
 
 /**
@@ -36,7 +36,7 @@ class FileForm extends AForm
 
         $checkboxes = new FileRadio();
         $checkboxes->set('sourceName', '', Lang::get('files.file.select'), $sourceTree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
@@ -49,11 +49,11 @@ class FileForm extends AForm
 
         $checkboxes = new FileCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
@@ -66,11 +66,11 @@ class FileForm extends AForm
 
         $checkboxes = new FileCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
@@ -83,7 +83,7 @@ class FileForm extends AForm
 
         $radios = new FileRadio();
         $radios->set('sourceName', '', Lang::get('files.file.select'), $tree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addText('targetPath', Lang::get('files.file.newName'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -97,14 +97,14 @@ class FileForm extends AForm
 
         $checkboxes = new FileCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $tree);
-        $this->addControl($checkboxes);
+        $this->addControlDefaultKey($checkboxes);
 
         $radios = new Controls\RadioSet();
         $radios->set('targetPath', 'no', Lang::get('files.check.really'), [
             'yes' => Lang::get('files.check.yes'),
             'no' => Lang::get('files.check.no'),
         ]);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));

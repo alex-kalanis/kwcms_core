@@ -7,8 +7,8 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_tree\Controls\FileRadio;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\Controls\FileRadio;
 
 
 /**
@@ -28,7 +28,7 @@ class OpenFileForm extends Form
 
         $radios = new FileRadio();
         $radios->set('fileName', $defaultWhere, Lang::get('texts.set_file'), $tree);
-        $this->addControl($radios);
+        $this->addControlDefaultKey($radios);
 
         $this->addSubmit('openFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));

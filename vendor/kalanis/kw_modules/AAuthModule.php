@@ -11,6 +11,7 @@ use kalanis\kw_auth\Interfaces\IAuthTree;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\Output;
 
 
@@ -23,7 +24,7 @@ use kalanis\kw_modules\Output;
  * run() is for that hard work when logged in
  * result() is for getting output class
  */
-abstract class AAuthModule extends AModule
+abstract class AAuthModule extends AModule implements IModuleUser
 {
     /** @var IUser|null */
     protected $user = null;
@@ -116,4 +117,9 @@ abstract class AAuthModule extends AModule
      * @return Output\AOutput
      */
     abstract protected function result(): Output\AOutput;
+
+    public function getUser(): ?IUser
+    {
+        return $this->user;
+    }
 }

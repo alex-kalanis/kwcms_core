@@ -3,11 +3,13 @@
 namespace kalanis\kw_connect\search;
 
 
-use kalanis\kw_connect\core\Connectors\AConnector;
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IFilterSubs;
+use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Search\Search as MapperSearch;
@@ -34,6 +36,9 @@ class Connector extends AConnector implements IConnector
         $this->dataSource = $search;
     }
 
+    /**
+     * @throws MapperException
+     */
     protected function parseData(): void
     {
         foreach ($this->rawData as $mapper) {
@@ -61,15 +66,27 @@ class Connector extends AConnector implements IConnector
         return implode('_', $values);
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
+        $type = $this->getFilterFactory()->getFilter($filterType);
+        if ($type instanceof IFilterSubs) {
+            $type->addFilterFactory($this->getFilterFactory());
+        }
         $type->setDataSource($this->dataSource);
         $type->setFiltering($colName, $value);
     }
 
-    public function setSorting(string $colName, string $direction): void
+    /**
+     * @param string $colName
+     * @param string $direction
+     * @throws MapperException
+     */
+    public function setOrdering(string $colName, string $direction): void
     {
-        $this->dataSource->orderBy($colName, $direction);
+        $this->dataSource->orderBy(
+            $colName,
+            IOrder::ORDER_ASC == $direction ? IQueryBuilder::ORDER_ASC : IQueryBuilder::ORDER_DESC
+        );
     }
 
     public function setPagination(?int $offset, ?int $limit): void
@@ -78,11 +95,18 @@ class Connector extends AConnector implements IConnector
         $this->dataSource->limit($limit);
     }
 
+    /**
+     * @return int
+     * @throws MapperException
+     */
     public function getTotalCount(): int
     {
         return $this->dataSource->getCount();
     }
 
+    /**
+     * @throws MapperException
+     */
     public function fetchData(): void
     {
         $this->rawData = $this->dataSource->getResults();

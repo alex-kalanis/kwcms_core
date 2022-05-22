@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_connect\record;
+namespace kalanis\kw_connect\records;
 
 
 use kalanis\kw_mapper\Records\ARecord;
@@ -9,7 +9,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
 
 /**
  * Class Row
- * @package kalanis\kw_connect\record
+ * @package kalanis\kw_connect\records
  */
 class Row implements IRow
 {

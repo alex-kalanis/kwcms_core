@@ -11,7 +11,7 @@ use ArrayAccess, IteratorAggregate, Traversable, Countable, ArrayIterator;
  * @author Adam Dornak original
  * @author Petr Plsek refactored
  */
-abstract class AHtmlElement implements HtmlElement\IHtmlElement, ArrayAccess, IteratorAggregate, Countable
+abstract class AHtmlElement implements Interfaces\IHtmlElement, ArrayAccess, IteratorAggregate, Countable
 {
     use HtmlElement\THtmlElement;
 
@@ -56,7 +56,7 @@ abstract class AHtmlElement implements HtmlElement\IHtmlElement, ArrayAccess, It
     /**
      * Implementing ArrayAccess
      * @param string|int $offset
-     * @return HtmlElement\IHtmlElement|null
+     * @return Interfaces\IHtmlElement|null
      */
     public final function offsetGet($offset)
     {

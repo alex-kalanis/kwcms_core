@@ -114,7 +114,7 @@ class Connect implements Interfaces\IConnect
                 } else {
                     $sorter->setDirection($available->getDefaultLimitation());
                 }
-                $this->connector->setSorting($sorter->getKey(), $sorter->getDirection());
+                $this->connector->setOrdering($sorter->getKey(), $sorter->getDirection());
             }
         }
     }

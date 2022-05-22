@@ -14,46 +14,50 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class PostgreSQL extends ADialect
 {
-    public function insert(QueryBuilder $builder): string
+    use TQuotationDialect;
+
+    public function insert(QueryBuilder $builder)
     {
-        return sprintf('INSERT INTO %s (%s) VALUES (%s);',
+        return sprintf('INSERT INTO "%s" (%s) VALUES (%s);',
             $builder->getBaseTable(),
-            $this->makePropertyList($builder->getProperties()),
+            $this->makeSimplePropertyList($builder->getProperties()),
             $this->makePropertyEntries($builder->getProperties())
         );
     }
 
-    public function select(QueryBuilder $builder): string
+    public function select(QueryBuilder $builder)
     {
-        return sprintf('SELECT %s FROM %s %s %s%s%s%s;',
-            $this->makeColumns($builder->getColumns()),
+        $joins = $builder->getJoins();
+        return sprintf('SELECT %s FROM "%s" %s %s%s%s%s%s;',
+            empty($joins) ? $this->makeSimpleColumns($builder->getColumns()) : $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
-            $this->makeJoin($builder->getJoins()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
-            $this->makeGrouping($builder->getGrouping()),
-            $this->makeOrdering($builder->getOrdering()),
+            empty($joins) ? '' : $this->makeJoin($builder->getJoins()),
+            empty($joins) ? $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation()) : $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
+            empty($joins) ? $this->makeSimpleGrouping($builder->getGrouping()) : $this->makeFullGrouping($builder->getGrouping()),
+            empty($joins) ? $this->makeSimpleHaving($builder->getHavingCondition(), $builder->getRelation()) : $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
+            empty($joins) ? $this->makeSimpleOrdering($builder->getOrdering()) : $this->makeFullOrdering($builder->getOrdering()),
             $this->makeLimits($builder->getLimit(), $builder->getOffset())
         );
     }
 
-    public function update(QueryBuilder $builder): string
+    public function update(QueryBuilder $builder)
     {
-        return sprintf('UPDATE %s SET %s%s;',
+        return sprintf('UPDATE "%s" SET %s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
-    public function delete(QueryBuilder $builder): string
+    public function delete(QueryBuilder $builder)
     {
-        return sprintf('DELETE FROM %s%s;',
+        return sprintf('DELETE FROM "%s"%s;',
             $builder->getBaseTable(),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
-    public function describe(QueryBuilder $builder): string
+    public function describe(QueryBuilder $builder)
     {
         return sprintf('SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_name = \'%s\';', $builder->getBaseTable() );
     }
@@ -67,11 +71,6 @@ class PostgreSQL extends ADialect
                 : sprintf(' LIMIT %d OFFSET %d', $limit, $offset)
             )
         ;
-    }
-
-    public function singlePropertyListed(QueryBuilder\Property $column): string
-    {
-        return strval($column->getColumnName());
     }
 
     public function availableJoins(): array

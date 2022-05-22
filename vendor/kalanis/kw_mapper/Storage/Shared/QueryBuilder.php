@@ -43,6 +43,8 @@ class QueryBuilder
     protected $ordering = [];
     /** @var QueryBuilder\Group[] */
     protected $grouping = [];
+    /** @var QueryBuilder\Condition[] */
+    protected $having = [];
     /** @var int|null */
     protected $offset = null;
     /** @var int|null */
@@ -110,7 +112,7 @@ class QueryBuilder
     public function addProperty(string $tableName, $columnName, $value = null): void
     {
         $property = clone $this->property;
-        $this->properties[] = $property->setData($tableName, $columnName, $this->multipleByValue($columnName, $value));
+        $this->properties[] = $property->setData($tableName, $columnName, $this->simpleByValue($columnName, $value));
     }
 
     /**
@@ -128,23 +130,49 @@ class QueryBuilder
         $this->joins[] = $join->setData($joinUnderAlias, $addTableName, $addColumnName, $knownTableName, $knownColumnName, $side, $tableAlias);
     }
 
+    /**
+     * @param string $tableName
+     * @param string|int $columnName
+     * @param string $operation
+     * @param mixed $value
+     * @throws MapperException
+     */
+    public function addHavingCondition(string $tableName, $columnName, string $operation, $value = null): void
+    {
+        if (!empty($operation) && !in_array($operation, [
+                IQueryBuilder::OPERATION_NULL, IQueryBuilder::OPERATION_NNULL,
+                IQueryBuilder::OPERATION_EQ, IQueryBuilder::OPERATION_NEQ,
+                IQueryBuilder::OPERATION_GT, IQueryBuilder::OPERATION_GTE,
+                IQueryBuilder::OPERATION_LT, IQueryBuilder::OPERATION_LTE,
+                IQueryBuilder::OPERATION_LIKE, IQueryBuilder::OPERATION_NLIKE,
+                IQueryBuilder::OPERATION_REXP,
+                IQueryBuilder::OPERATION_IN, IQueryBuilder::OPERATION_NIN,
+            ])) {
+            throw new MapperException(sprintf('Unknown operation *%s* !', $operation));
+        }
+        $condition = clone $this->condition;
+        $this->having[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
+    }
+
     protected function multipleByValue(string $columnName, $value)
     {
         if (is_array($value)) {
             $keys = [];
             foreach ($value as $item) {
-                $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-                static::$uniqId++;
-                $this->params[$columnKey] = strval($item);
-                $keys[] = $columnKey;
+                $keys[] = $this->simpleByValue($columnName, $item);
             }
             return $keys;
         } else {
-            $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-            static::$uniqId++;
-            $this->params[$columnKey] = strval($value);
-            return $columnKey;
+            return $this->simpleByValue($columnName, $value);
         }
+    }
+
+    protected function simpleByValue(string $columnName, $value): string
+    {
+        $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
+        static::$uniqId++;
+        $this->params[$columnKey] = is_null($value) ? null : strval($value);
+        return $columnKey;
     }
 
     /**
@@ -201,6 +229,7 @@ class QueryBuilder
         $this->properties = [];
         $this->ordering = [];
         $this->grouping = [];
+        $this->having = [];
         $this->joins = [];
         $this->offset = null;
         $this->limit = null;
@@ -280,6 +309,14 @@ class QueryBuilder
     public function getGrouping(): array
     {
         return $this->grouping;
+    }
+
+    /**
+     * @return QueryBuilder\Condition[]
+     */
+    public function getHavingCondition(): array
+    {
+        return $this->having;
     }
 
     public function getLimit(): ?int

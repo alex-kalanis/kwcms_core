@@ -31,6 +31,7 @@ abstract class ARule extends OrigRule
     protected function sentInputs(array $whichInputs)
     {
         $this->checkForm();
+        $this->boundForm->setSentValues();
         // we want only predefined ones
         $data = array_filter($this->boundForm->getValues(), function ($k) use ($whichInputs) {
             return in_array($k, $whichInputs);
@@ -39,7 +40,7 @@ abstract class ARule extends OrigRule
         // now set it in predefined order
         $flippedInputs = array_flip($whichInputs);
         uksort($data, function ($a, $b) use ($flippedInputs) {
-            return strval($flippedInputs[$a]) > strval($flippedInputs[$b]) ? -1 : 1;
+            return strval($flippedInputs[$a]) <=> strval($flippedInputs[$b]);
         });
 
         return $data;

@@ -80,6 +80,7 @@ $authenticator = new \kalanis\kw_auth\Sources\Files(
     $paths->getDocumentRoot() . $paths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web',
     strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))
 );
+\kalanis\kw_auth\Auth::setAuthenticator($authenticator);
 
 class ExBanned extends \kalanis\kw_auth\Methods\Banned
 {

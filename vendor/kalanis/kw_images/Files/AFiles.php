@@ -3,9 +3,11 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_extras\ExtendDir;
-use kalanis\kw_extras\ExtrasException;
+use kalanis\kw_paths\Extras\ExtendDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
+use kalanis\kw_images\TLang;
 
 
 /**
@@ -15,11 +17,14 @@ use kalanis\kw_images\ImagesException;
  */
 abstract class AFiles
 {
+    use TLang;
+
     /** @var ExtendDir|null */
     protected $libExtendDir = null;
 
-    public function __construct(ExtendDir $libExtendDir)
+    public function __construct(ExtendDir $libExtendDir, ?IIMTranslations $lang = null)
     {
+        $this->setLang($lang);
         $this->libExtendDir = $libExtendDir;
     }
 
@@ -28,11 +33,16 @@ abstract class AFiles
         return $this->libExtendDir;
     }
 
+    public function isHere(string $path): bool
+    {
+        return $this->libExtendDir->isFile($this->libExtendDir->getWebRootDir() . $this->getPath($path));
+    }
+
     abstract public function getPath(string $path): string;
 
     /**
      * @param string $path
-     * @throws ExtrasException
+     * @throws PathsException
      */
     protected function checkWritable(string $path): void
     {
@@ -73,10 +83,12 @@ abstract class AFiles
      */
     protected function dataOverwriteCopy(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if ($this->libExtendDir->isFile($target) && !unlink($target)) {
+        if ($this->libExtendDir->isFile($target) && !@unlink($target)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($unlinkErrDesc);
         }
-        if ($this->libExtendDir->isFile($source) && !copy($source, $target)) {
+        // @codeCoverageIgnoreEnd
+        if ($this->libExtendDir->isFile($source) && !@copy($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
     }
@@ -115,10 +127,12 @@ abstract class AFiles
      */
     protected function dataOverwriteRename(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if ($this->libExtendDir->isFile($target) && !unlink($target)) {
+        if ($this->libExtendDir->isFile($target) && !@unlink($target)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($unlinkErrDesc);
         }
-        if ($this->libExtendDir->isFile($source) && !rename($source, $target)) {
+        // @codeCoverageIgnoreEnd
+        if ($this->libExtendDir->isFile($source) && !@rename($source, $target)) {
             throw new ImagesException($copyErrDesc);
         }
     }
@@ -133,8 +147,10 @@ abstract class AFiles
         if (!$this->libExtendDir->isFile($source)) {
             return;
         }
-        if ($this->libExtendDir->isFile($source) && !unlink($source)) {
+        if ($this->libExtendDir->isFile($source) && !@unlink($source)) {
+            // @codeCoverageIgnoreStart
             throw new ImagesException($unlinkErrDesc);
         }
+        // @codeCoverageIgnoreEnd
     }
 }

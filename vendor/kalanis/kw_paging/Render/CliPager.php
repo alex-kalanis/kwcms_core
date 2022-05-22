@@ -5,6 +5,7 @@ namespace kalanis\kw_paging\Render;
 
 use kalanis\kw_pager\Interfaces\IPager;
 use kalanis\kw_paging\Interfaces\IOutput;
+use kalanis\kw_paging\Interfaces\IPGTranslations;
 use kalanis\kw_paging\Interfaces\IPositions;
 
 
@@ -23,10 +24,11 @@ class CliPager implements IOutput
     const PREV_PAGE = '<';
     const NEXT_PAGE = '>';
 
-    public function __construct(IPositions $positions, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT)
+    public function __construct(IPositions $positions, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)
     {
         $this->positions = $positions;
         $this->displayPagesCount = $displayPages;
+        $this->setLang($lang ?: new Translations());
     }
 
     public function __toString()
@@ -34,7 +36,7 @@ class CliPager implements IOutput
         return $this->render();
     }
 
-    public function render(): string
+    public function render(bool $showPositions = true): string
     {
         if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
             return '';
@@ -47,7 +49,7 @@ class CliPager implements IOutput
         $pages[] = $this->positions->nextPageExists() ? $this->positions->getNextPage() . ' ' . static::NEXT_PAGE : static::NONE_PAGE ;
         $pages[] = $this->positions->nextPageExists() ? $this->positions->getLastPage() . ' ' . static::NEXT_PAGE . static::NEXT_PAGE : static::NONE_PAGE . static::NONE_PAGE ;
 
-        return implode(' | ', $pages) . PHP_EOL . $this->getFilledText($this->positions);
+        return implode(' | ', $pages) . ($showPositions ? ( PHP_EOL . $this->getFilledText($this->positions) ) : '' );
     }
 
     public function getPager(): IPager

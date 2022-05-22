@@ -7,8 +7,8 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_tree\Controls\DirSelect;
 use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree_controls\Controls\DirSelect;
 
 
 /**
@@ -29,7 +29,7 @@ class DirNewForm extends Form
         $this->setAttribute('action', $targetLink);
         $select = new DirSelect();
         $select->set('where', '', Lang::get('images.dir.select'), $tree);
-        $this->addControl($select);
+        $this->addControlDefaultKey($select);
         $this->addText('name', Lang::get('images.dir.name'));
         $this->addCheckbox('into', Lang::get('images.dir.move_into'));
         $this->addSubmit('saveDir', Lang::get('dashboard.button_set'));

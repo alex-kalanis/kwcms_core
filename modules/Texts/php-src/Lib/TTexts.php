@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Texts\Lib;
 
 
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_input\Simplified\SessionAdapter;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Path;
 use kalanis\kw_storage\Storage;
 use kalanis\kw_tree\TWhereDir;

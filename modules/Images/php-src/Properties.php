@@ -14,7 +14,6 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -87,7 +86,7 @@ class Properties extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         $extraPage = new Templates\DirExtraTemplate();
         $descPage = new Templates\DirDescTemplate();
         if ($this->error) {

@@ -12,7 +12,7 @@ use kalanis\kw_connect\core\Interfaces\IFilterFactory;
  */
 class TextExact extends AField
 {
-    protected function getFilterAction(): string
+    public function getFilterAction(): string
     {
         return IFilterFactory::ACTION_EXACT;
     }

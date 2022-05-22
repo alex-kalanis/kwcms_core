@@ -4,8 +4,8 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_extras\UserDir;
 use kalanis\kw_images\FilesHelper;
+use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces;
 

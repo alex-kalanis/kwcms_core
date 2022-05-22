@@ -3,6 +3,9 @@
 namespace kalanis\kw_templates\HtmlElement;
 
 
+use kalanis\kw_templates\Interfaces\IAttributes;
+
+
 /**
  * Trait TStyles
  * @package kalanis\kw_templates\Template
@@ -13,7 +16,7 @@ namespace kalanis\kw_templates\HtmlElement;
  */
 trait TStyles
 {
-    public final function addCss(string $name, string $value): self
+    public function addCss(string $name, string $value): self
     {
         $attrStyle = $this->readCss();
         $attrStyle[$name] = $value;
@@ -21,13 +24,13 @@ trait TStyles
         return $this;
     }
 
-    public final function getCss(string $name): string
+    public function getCss(string $name): string
     {
         $attrStyle = $this->readCss();
         return $attrStyle[$name];
     }
 
-    public final function removeCss(string $name): self
+    public function removeCss(string $name): self
     {
         $attrStyle = $this->readCss();
         if (isset($attrStyle[$name])) {
@@ -37,7 +40,7 @@ trait TStyles
         return $this;
     }
 
-    private final function readCss(): array
+    private function readCss(): array
     {
         $attrStyle = $this->getAttribute(IAttributes::ATTR_NAME_STYLE);
         $parts = explode(IAttributes::ATTR_SEP_STYLE, $attrStyle);
@@ -52,7 +55,7 @@ trait TStyles
         return $styles;
     }
 
-    private final function updateCss(array $attrStyle): self
+    private function updateCss(array $attrStyle): self
     {
         $style = '';
         foreach ($attrStyle as $key => $val) {

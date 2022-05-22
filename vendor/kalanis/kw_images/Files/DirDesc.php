@@ -27,8 +27,10 @@ class DirDesc extends AFiles
         }
         $content = file_get_contents($descPath);
         if (false === $content) {
-            throw new ImagesException('Cannot read dir desc!');
+            // @codeCoverageIgnoreStart
+            throw new ImagesException($this->getLang()->imDirDescCannotRead());
         }
+        // @codeCoverageIgnoreEnd
         return $content;
     }
 
@@ -43,9 +45,11 @@ class DirDesc extends AFiles
         $descPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
         $this->isUsable($descPath);
 
-        if (false === file_put_contents($descPath, $content)) {
-            throw new ImagesException('Cannot write dir desc!');
+        if (false === @file_put_contents($descPath, $content)) {
+            // @codeCoverageIgnoreStart
+            throw new ImagesException($this->getLang()->imDirDescCannotAdd());
         }
+        // @codeCoverageIgnoreEnd
         return true;
     }
 
@@ -57,16 +61,18 @@ class DirDesc extends AFiles
     public function remove(string $path): bool
     {
         $descPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
-        if (is_file($descPath) && !unlink($descPath)) {
-            throw new ImagesException('Cannot remove dir desc!');
+        if ($this->libExtendDir->isFile($descPath) && !unlink($descPath)) {
+            // @codeCoverageIgnoreStart
+            throw new ImagesException($this->getLang()->imDirDescCannotRemove());
         }
+        // @codeCoverageIgnoreEnd
         return true;
     }
 
     public function canUse(string $path): bool
     {
         $descPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
-        return is_dir($descPath) && is_readable($descPath) && is_writable($descPath);
+        return $this->libExtendDir->isDir($descPath) && is_readable($descPath) && is_writable($descPath);
     }
 
     /**
@@ -83,7 +89,7 @@ class DirDesc extends AFiles
         if (!file_exists($path) && is_readable($dir) && is_writable($dir)) {
             return null;
         }
-        throw new ImagesException('Cannot access that file!');
+        throw new ImagesException($this->getLang()->imDirDescCannotAccess());
     }
 
     public function getPath(string $path): string

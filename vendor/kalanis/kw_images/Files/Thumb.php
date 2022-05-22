@@ -3,10 +3,11 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_extras\ExtendDir;
-use kalanis\kw_extras\ExtrasException;
+use kalanis\kw_paths\Extras\ExtendDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_paths\Stuff;
 
 
@@ -25,9 +26,9 @@ class Thumb extends AFiles
     protected $maxHeight = 180;
     protected $libGraphics = null;
 
-    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [])
+    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
     {
-        parent::__construct($libExtendDir);
+        parent::__construct($libExtendDir, $lang);
         $this->libGraphics = $libGraphics;
         $this->maxWidth = !empty($params["tmb_width"]) ? strval($params["tmb_width"]) : $this->maxWidth;
         $this->maxHeight = !empty($params["tmb_height"]) ? strval($params["tmb_height"]) : $this->maxHeight;
@@ -41,10 +42,12 @@ class Thumb extends AFiles
     {
         $thumb = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
         $tempThumb = $thumb . static::FILE_TEMP;
-        if (is_file($thumb)) {
+        if ($this->libExtendDir->isFile($thumb)) {
             if (!rename($thumb, $tempThumb)) {
-                throw new ImagesException('Cannot remove current thumb!');
+                // @codeCoverageIgnoreStart
+                throw new ImagesException($this->getLang()->imThumbCannotRemoveCurrent());
             }
+            // @codeCoverageIgnoreEnd
         }
         try {
             $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
@@ -52,14 +55,18 @@ class Thumb extends AFiles
             $this->libGraphics->resample($sizes['width'], $sizes['height']);
             $this->libGraphics->save($thumb);
         } catch (ImagesException $ex) {
-            if (is_file($tempThumb) && !rename($tempThumb, $thumb)) {
-                throw new ImagesException('Cannot remove current thumb back!');
+            if ($this->libExtendDir->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
+                // @codeCoverageIgnoreStart
+                throw new ImagesException($this->getLang()->imThumbCannotRestore());
             }
+            // @codeCoverageIgnoreEnd
             throw $ex;
         }
-        if (is_file($tempThumb) && !unlink($tempThumb)) {
-            throw new ImagesException('Cannot remove old thumb!');
+        if ($this->libExtendDir->isFile($tempThumb) && !unlink($tempThumb)) {
+            // @codeCoverageIgnoreStart
+            throw new ImagesException($this->getLang()->imThumbCannotRemoveOld());
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -67,11 +74,10 @@ class Thumb extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @return bool
-     * @throws ExtrasException
+     * @throws PathsException
      * @throws ImagesException
      */
-    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
         $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
         $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
@@ -81,13 +87,11 @@ class Thumb extends AFiles
             $sourcePath . DIRECTORY_SEPARATOR . $fileName,
             $targetPath . DIRECTORY_SEPARATOR . $fileName,
             $overwrite,
-            'Cannot find that thumb.',
-            'Thumb with the same name already exists here.',
-            'Cannot remove old thumb.',
-            'Cannot copy base thumb.'
+            $this->getLang()->imThumbCannotFind(),
+            $this->getLang()->imThumbAlreadyExistsHere(),
+            $this->getLang()->imThumbCannotRemoveOld(),
+            $this->getLang()->imThumbCannotCopyBase()
         );
-
-        return true;
     }
 
     /**
@@ -95,7 +99,7 @@ class Thumb extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws ExtrasException
+     * @throws PathsException
      * @throws ImagesException
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
@@ -108,10 +112,10 @@ class Thumb extends AFiles
             $sourcePath . DIRECTORY_SEPARATOR . $fileName,
             $targetPath . DIRECTORY_SEPARATOR . $fileName,
             $overwrite,
-            'Cannot find that thumb.',
-            'Thumb with the same name already exists here.',
-            'Cannot remove old thumb.',
-            'Cannot move base thumb.'
+            $this->getLang()->imThumbCannotFind(),
+            $this->getLang()->imThumbAlreadyExistsHere(),
+            $this->getLang()->imThumbCannotRemoveOld(),
+            $this->getLang()->imThumbCannotMoveBase()
         );
     }
 
@@ -120,7 +124,7 @@ class Thumb extends AFiles
      * @param string $sourceName
      * @param string $targetName
      * @param bool $overwrite
-     * @throws ExtrasException
+     * @throws PathsException
      * @throws ImagesException
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
@@ -132,10 +136,10 @@ class Thumb extends AFiles
             $whatPath . DIRECTORY_SEPARATOR . $sourceName,
             $whatPath . DIRECTORY_SEPARATOR . $targetName,
             $overwrite,
-            'Cannot find that thumb.',
-            'Thumb with the same name already exists here.',
-            'Cannot remove old thumb.',
-            'Cannot rename base thumb.'
+            $this->getLang()->imThumbCannotFind(),
+            $this->getLang()->imThumbAlreadyExistsHere(),
+            $this->getLang()->imThumbCannotRemoveOld(),
+            $this->getLang()->imThumbCannotRenameBase()
         );
     }
 
@@ -147,7 +151,7 @@ class Thumb extends AFiles
     public function delete(string $sourceDir, string $fileName): void
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
-        $this->dataRemove($whatPath, 'Cannot remove thumb!');
+        $this->dataRemove($whatPath, $this->getLang()->imThumbCannotRemove());
     }
 
     public function getPath(string $path): string

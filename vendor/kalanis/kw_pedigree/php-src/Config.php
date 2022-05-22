@@ -24,7 +24,8 @@ class Config
             Database\ConfigStorage::getInstance()->addConfig(
                 Database\Config::init()->setTarget(
                     IDriverSources::TYPE_PDO_MYSQL, 'pedigree', 'localhost', 3306, 'kwdeploy', 'testingpass', 'kw_deploy'
-                ));
+                )
+            );
         }
     }
 }

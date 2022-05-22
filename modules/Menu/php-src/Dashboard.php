@@ -13,8 +13,8 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_scripts\Scripts;
+use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
-use KWCMS\modules\Admin\Shared;
 
 
 /**
@@ -27,7 +27,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     use Lib\TMenu;
     use Templates\TModuleTemplate;
 
-    /** @var Lib\EditPropsForm|null */
+    /** @var Forms\EditPropsForm|null */
     protected $editPropsForm = null;
     /** @var bool */
     protected $isProcessed = false;
@@ -36,7 +36,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate(Config::getPath());
         $this->initTMenu(Config::getPath());
-        $this->editPropsForm = new Lib\EditPropsForm('editPropsForm');
+        $this->editPropsForm = new Forms\EditPropsForm('editPropsForm');
     }
 
     public function allowedAccessClasses(): array
@@ -48,7 +48,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         try {
             $this->runTMenu($this->inputs, $this->user->getDir());
-            $item = $this->libMenu->getData()->getMenu();
+            $item = $this->libMenu->getMeta()->getMenu();
             if (empty($item->getFile())) {
                 $item->setData($this->getWhereDir(), $item->getName(), $item->getTitle(), $item->getDisplayCount());
             }
@@ -65,16 +65,16 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $this->editPropsForm->composeForm($item);
             $this->editPropsForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editPropsForm->process()) {
-                $this->libMenu->getData()->updateInfo(
+                $this->libMenu->getMeta()->updateInfo(
                     (string)$this->editPropsForm->getControl('menuName')->getValue(),
                     (string)$this->editPropsForm->getControl('menuDesc')->getValue(),
                     (int)$this->editPropsForm->getControl('menuCount')->getValue()
                 );
-                $this->libMenu->getData()->save();
+                $this->libMenu->getMeta()->save();
                 $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
-        } catch (FormsException | MenuException $ex) {
+        } catch (FormsException | MenuException | SemaphoreException $ex) {
             $this->error = $ex;
         }
     }
@@ -88,7 +88,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function outHtml(): Output\AOutput
     {
-        $out = new Shared\FillHtml($this->user);
+        $out = new Output\Html();
         if (!empty($this->error)) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }

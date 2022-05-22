@@ -3,10 +3,11 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_extras\ExtendDir;
-use kalanis\kw_extras\ExtrasException;
+use kalanis\kw_paths\Extras\ExtendDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
 
 
 /**
@@ -23,9 +24,9 @@ class Image extends AFiles
     protected $maxFileSize = 10485760;
     protected $libGraphics = null;
 
-    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [])
+    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
     {
-        parent::__construct($libExtendDir);
+        parent::__construct($libExtendDir, $lang);
         $this->libGraphics = $libGraphics;
         $this->maxWidth = !empty($params["max_width"]) ? strval($params["max_width"]) : $this->maxWidth;
         $this->maxHeight = !empty($params["max_height"]) ? strval($params["max_height"]) : $this->maxHeight;
@@ -46,10 +47,10 @@ class Image extends AFiles
     {
         $size = @filesize($this->libExtendDir->getWebRootDir() . $path);
         if (false === $size) {
-            throw new ImagesException('Cannot read file size. Exists?');
+            throw new ImagesException($this->getLang()->imImageSizeExists());
         }
         if ($this->maxFileSize < $size) {
-            throw new ImagesException('This image is too big to use.');
+            throw new ImagesException($this->getLang()->imImageSizeTooLarge());
         }
     }
 
@@ -72,7 +73,7 @@ class Image extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws ExtrasException
+     * @throws PathsException
      * @throws ImagesException
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
@@ -85,10 +86,10 @@ class Image extends AFiles
             $sourcePath . DIRECTORY_SEPARATOR . $fileName,
             $targetPath . DIRECTORY_SEPARATOR . $fileName,
             $overwrite,
-            'Cannot find that image.',
-            'Image with the same name already exists here.',
-            'Cannot remove old image.',
-            'Cannot copy base image.'
+            $this->getLang()->imImageCannotFind(),
+            $this->getLang()->imImageAlreadyExistsHere(),
+            $this->getLang()->imImageCannotRemoveOld(),
+            $this->getLang()->imImageCannotCopyBase()
         );
     }
 
@@ -97,7 +98,7 @@ class Image extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws ExtrasException
+     * @throws PathsException
      * @throws ImagesException
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
@@ -110,10 +111,10 @@ class Image extends AFiles
             $sourcePath . DIRECTORY_SEPARATOR . $fileName,
             $targetPath . DIRECTORY_SEPARATOR . $fileName,
             $overwrite,
-            'Cannot find that image.',
-            'Image with the same name already exists here.',
-            'Cannot remove old image.',
-            'Cannot move base image.'
+            $this->getLang()->imImageCannotFind(),
+            $this->getLang()->imImageAlreadyExistsHere(),
+            $this->getLang()->imImageCannotRemoveOld(),
+            $this->getLang()->imImageCannotMoveBase()
         );
     }
 
@@ -122,7 +123,7 @@ class Image extends AFiles
      * @param string $targetName
      * @param string $sourceName
      * @param bool $overwrite
-     * @throws ExtrasException
+     * @throws PathsException
      * @throws ImagesException
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
@@ -134,10 +135,10 @@ class Image extends AFiles
             $whatPath . DIRECTORY_SEPARATOR . $sourceName,
             $whatPath . DIRECTORY_SEPARATOR . $targetName,
             $overwrite,
-            'Cannot find that image.',
-            'Image with the same name already exists here.',
-            'Cannot remove old image.',
-            'Cannot rename base image.'
+            $this->getLang()->imImageCannotFind(),
+            $this->getLang()->imImageAlreadyExistsHere(),
+            $this->getLang()->imImageCannotRemoveOld(),
+            $this->getLang()->imImageCannotRenameBase()
         );
     }
 
@@ -149,7 +150,7 @@ class Image extends AFiles
     public function delete(string $sourceDir, string $fileName): void
     {
         $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
-        $this->dataRemove($whatPath, 'Cannot remove image!');
+        $this->dataRemove($whatPath, $this->getLang()->imImageCannotRemove());
     }
 
     public function getPath(string $path): string

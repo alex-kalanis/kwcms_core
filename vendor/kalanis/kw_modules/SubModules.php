@@ -69,12 +69,16 @@ class SubModules
                     // do nothing
                 }
 
-                $configParams = Support::paramsIntoArray($this->moduleProcessor->read($module)->getParams());
-                $moduleClass = $this->initModule($module, $inputs, [], array_merge(
-                    $sharedParams, $configParams, $templateParams, [ISitePart::KEY_LEVEL => $level]
-                ));
-                $moduleClass->process();
-                $template->change($contentToChange, $moduleClass->output()->output());
+                $moduleInfo = $this->moduleProcessor->readNormalized($module);
+                $moduleInfo = $moduleInfo ?: $this->moduleProcessor->readDirect($module);
+                if ($moduleInfo) {
+                    $configParams = Support::paramsIntoArray($moduleInfo->getParams());
+                    $moduleClass = $this->initModule($module, $inputs, [], array_merge(
+                        $sharedParams, $configParams, $templateParams, [ISitePart::KEY_LEVEL => $level]
+                    ));
+                    $moduleClass->process();
+                    $template->change($contentToChange, $moduleClass->output()->output());
+                }
             }
         }
         return $template;

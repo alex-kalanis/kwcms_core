@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Graphics\Format;
 
 
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\TLang;
 
 
 /**
@@ -12,6 +13,8 @@ use kalanis\kw_images\ImagesException;
  */
 abstract class AFormat
 {
+    use TLang;
+
     /**
      * @param string $path
      * @return resource

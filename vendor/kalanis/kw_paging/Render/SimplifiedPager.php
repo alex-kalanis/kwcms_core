@@ -6,6 +6,7 @@ namespace kalanis\kw_paging\Render;
 use kalanis\kw_pager\Interfaces\IPager;
 use kalanis\kw_paging\Interfaces\ILink;
 use kalanis\kw_paging\Interfaces\IOutput;
+use kalanis\kw_paging\Interfaces\IPGTranslations;
 use kalanis\kw_paging\Interfaces\IPositions;
 
 
@@ -27,12 +28,13 @@ class SimplifiedPager implements IOutput
     protected $anotherPage = null;
     protected $disabledPage = null;
 
-    public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT)
+    public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)
     {
         $this->positions = $positions;
         $this->link = $link;
         $this->displayPagesCount = $displayPages;
         $this->pager = new SimplifiedPager\Pager();
+        $this->pager->setLang($lang ?: new Translations());
         $this->currentPage = new SimplifiedPager\CurrentPage();
         $this->anotherPage = new SimplifiedPager\AnotherPage();
         $this->disabledPage = new SimplifiedPager\DisabledPage();
@@ -43,7 +45,7 @@ class SimplifiedPager implements IOutput
         return $this->render();
     }
 
-    public function render(): string
+    public function render(bool $showPositions = true): string
     {
         if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
             return '';
@@ -70,7 +72,7 @@ class SimplifiedPager implements IOutput
 
         $this->pager->setData(
             implode('', $pages),
-            $this->positions
+            $showPositions ? $this->positions : null
         );
         return $this->pager->render();
     }

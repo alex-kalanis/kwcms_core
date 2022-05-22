@@ -7,40 +7,10 @@
     <meta lang="{LANG}" name="keywords" content="{KEYWORDS}">
     <meta lang="{LANG}" name="description" content="{ABOUT}">
     {ICON}path=favicon.ico{/ICON}
-    {STYLES}path=style/default{/STYLES}
-    {SCRIPTS}path=style/default/themes.js{/SCRIPTS}
-    <link rel="icon" type="image/ico" href="{SERVER_PATH}favicon.ico">
-    <link rel="StyleSheet" type="text/css" href="{SERVER_PATH}style/default/styles.css">
-    <link rel="StyleSheet" type="text/css" href="{SERVER_PATH}style/default/mobile.css" media="handheld">
-    <link rel="StyleSheet" type="text/css" href="{SERVER_PATH}style/default/print.css">
-    <script type="text/JavaScript" src="{SERVER_PATH}style/default/themes.js"></script>
+    {STYLES}path=style/blue{/STYLES}
+    {SCRIPTS}path=style/blue/themes.js{/SCRIPTS}
   </head>
   <body>
-    <div id="telo">
-      <div id="head">
-        <h1 id="title">
-          {SITE_NAME}
-        </h1>
-{LOGO}{/LOGO}
-      </div>
-      <div id="to_menu"><a href="#menu">{TO_MENU}</a></div>
-      <div id="page_iframe">
-        <div id="iframed_page">
-          {CONTENT}
-        </div>
-      </div>
-      <div id="contact">
-        {CONTACT}
-      </div>
-      <div id="noscript">
-        <noscript>
-          <hr>
-          {NOSCRIPT}
-          <hr>
-        </noscript>
-      </div>
-{MENU}{/MENU}
-    </div>
-<!-- optimalizace: FF60, Links2 -->
+    {CONTENT}
   </body>
 </html>

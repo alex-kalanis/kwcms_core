@@ -1,14 +1,13 @@
 <?php
 
-namespace kalanis\kw_connect\record;
+namespace kalanis\kw_connect\records;
 
 
-use kalanis\kw_connect\core\Connectors\AConnector;
+use kalanis\kw_connect\arrays\Filters;
+use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Filters\Arrays;
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_mapper\Records\ARecord;
@@ -16,7 +15,7 @@ use kalanis\kw_mapper\Records\ARecord;
 
 /**
  * Class Connector
- * @package kalanis\kw_connect\record
+ * @package kalanis\kw_connect\records
  * Data source is kw_mapper/Record
  */
 class Connector extends AConnector implements IConnector
@@ -26,9 +25,9 @@ class Connector extends AConnector implements IConnector
     /** @var array */
     protected $filteredData = [];
     /** @var string */
-    protected $sortDirection = IOrder::ORDER_ASC;
+    protected $orderDirection = IOrder::ORDER_ASC;
     /** @var string */
-    protected $sortColumn = '';
+    protected $orderColumn = '';
     /** @var string|null */
     protected $filterByColumn = null;
     /** @var string|null */
@@ -56,16 +55,16 @@ class Connector extends AConnector implements IConnector
         return new Row($data);
     }
 
-    public function setFiltering(string $colName, $value, IFilterType $type): void
+    public function setFiltering(string $colName, string $filterType, $value): void
     {
         $this->filterByColumn = $colName;
         $this->filterByNamePart = $value;
     }
 
-    public function setSorting(string $colName, string $direction): void
+    public function setOrdering(string $colName, string $direction): void
     {
-        $this->sortColumn = $colName;
-        $this->sortDirection = $direction;
+        $this->orderColumn = $colName;
+        $this->orderDirection = $direction;
     }
 
     public function setPagination(?int $offset, ?int $limit): void
@@ -131,14 +130,14 @@ class Connector extends AConnector implements IConnector
     public function sortItems(IRow $a, IRow $b)
     {
         return
-            IOrder::ORDER_ASC == $this->sortDirection
-                ? $a->getValue($this->sortColumn) <=> $b->getValue($this->sortColumn)
-                : $b->getValue($this->sortColumn) <=> $a->getValue($this->sortColumn)
+            IOrder::ORDER_ASC == $this->orderDirection
+                ? $a->getValue($this->orderColumn) <=> $b->getValue($this->orderColumn)
+                : $b->getValue($this->orderColumn) <=> $a->getValue($this->orderColumn)
             ;
     }
 
     public function getFilterFactory(): IFilterFactory
     {
-        return Arrays\Factory::getInstance();
+        return Filters\Factory::getInstance();
     }
 }

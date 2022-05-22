@@ -44,7 +44,7 @@ class Request extends AParams
     public function process(): parent
     {
         list($path, $params) = $this->explodeInput($this->requestUri);
-        list($staticalPath, $virtualPrefix, $virtualParamPath) = $this->pathToSegments($path, $this->virtualDir);
+        list($staticalPath, $virtualPrefix, $virtualParamPath) = $this->pathToSegments(urldecode($path), $this->virtualDir);
         $this->preset( array_merge(
                 compact('staticalPath', 'virtualPrefix'),
                 $this->updateVirtualKeys($this->parseVirtualPath($virtualParamPath)),

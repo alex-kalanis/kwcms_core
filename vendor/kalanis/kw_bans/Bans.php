@@ -23,6 +23,11 @@ class Bans
         }
     }
 
+    /**
+     * @param mixed ...$toCompare
+     * @return bool
+     * @throws BanException
+     */
     public function has(...$toCompare): bool
     {
         $smallerSources = array_slice($this->sources, 0, min(count($this->sources), count($toCompare)));

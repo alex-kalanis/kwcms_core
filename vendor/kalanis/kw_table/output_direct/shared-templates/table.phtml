@@ -1,6 +1,6 @@
 <?php /** @var  \kalanis\kw_table\core\Table $table */ ?>
-<?php if ($table->showPagerOnHead() && $table->getOutputPager()): ?>
-    <?= $table->getOutputPager()->render() ?>
+<?php if ($table->showPagerOnHead() && $table->getPager()): ?>
+    <?= $table->getPager()->render() ?>
 <?php endif; ?>
 
 <?php $headerFilter = $table->getHeaderFilter() ?>
@@ -10,9 +10,9 @@
 <table class="<?= $table->getClassesInString() ?>">
     <thead>
     <tr>
-        <?php $sorter = $table->getSorter() ?>
+        <?php $sorter = $table->getOrder() ?>
         <?php foreach ($table->getColumns() as $column): /** @var \kalanis\kw_table\core\Table\Columns\AColumn $column */ ?>
-            <?php if ($sorter && $sorter->isSorted($column)): ?>
+            <?php if ($sorter && $sorter->isInOrder($column)): ?>
                 <th><a href="<?= $sorter->getHref($column) ?>"><?= $sorter->getHeaderText($column) ?></a></th>
             <?php else: ?>
                 <th><?= $column->getHeaderText(); ?></th>
@@ -58,8 +58,8 @@
 
 <?= $headerFilter ? $headerFilter->renderEnd() : ($footerFilter ? $footerFilter->renderEnd() : '') ?>
 
-<?php if ($table->showPagerOnFoot() && $table->getOutputPager()): ?>
-    <?= $table->getOutputPager()->render() ?>
+<?php if ($table->showPagerOnFoot() && $table->getPager()): ?>
+    <?= $table->getPager()->render() ?>
 <?php endif; ?>
 
 <div class="clearfix"></div>

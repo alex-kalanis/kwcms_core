@@ -14,6 +14,9 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Join;
  * Class Filler
  * @package kalanis\kw_mapper\Search\Connector\Database
  * Filling both columns and Records
+ *
+ * Start with getColumns() to decide which columns will be get from DB
+ * After the data will be obtained pass them through fillResults() to fill records itself
  */
 class Filler
 {
@@ -21,34 +24,43 @@ class Filler
 
     protected $hashDelimiter = "--::\e::--";
     protected $columnDelimiter = "____";
-    protected $record = null;
+    /** @var ARecord|null */
+    protected $basicRecord = null;
+    /** @var Records[] */
+    protected $joinRecords = [];
     private $fromDatabase = false;
 
-    public function __construct(ARecord $record)
+    /**
+     * @param ARecord $basicRecord
+     * @param Records[] $records
+     */
+    public function initTreeSolver(ARecord $basicRecord, array &$records): void
     {
-        $this->record = $record;
+        $this->basicRecord = $basicRecord;
+        $this->joinRecords = $records;
     }
 
     /**
-     * @param ARecord[] $records
      * @param Join[] $joins
      * @return string[][]
      */
-    public function getColumns(array &$records, array $joins): array
+    public function getColumns(array $joins): array
     {
         $used = [];
         $columns = [];
         $join = $this->orderJoinsColumns($joins);
-        foreach ($records as $alias => &$record) {
-            if (in_array($alias, $used)) { // if they came here more than once
+        foreach ($this->joinRecords as &$record) {
+            $alias = $record->getStoreKey();
+            if (in_array($alias, $used)) {
+                // @codeCoverageIgnoreStart
+                // if they came here more than once
+                // usually happens when the circular dependency came - the child has child which is the same record
                 continue;
             }
-            foreach ($record->getMapper()->getRelations() as $relation) {
-                if (!empty($join[$alias])) {
-                    $columns[] = [$join[$alias], $relation, implode($this->columnDelimiter, [$join[$alias], $relation])];
-                } else {
-                    $columns[] = [$alias, $relation, implode($this->columnDelimiter, [$alias, $relation])];
-                }
+            // @codeCoverageIgnoreEnd
+            foreach ($record->getRecord()->getMapper()->getRelations() as $relation) {
+                $joinAlias = empty($join[$alias]) ? $alias : $join[$alias];
+                $columns[] = [$joinAlias, $relation, implode($this->columnDelimiter, [$joinAlias, $relation])];
             }
             $used[] = $alias;
         }
@@ -69,122 +81,192 @@ class Filler
     }
 
     /**
-     * Filling results to the tree of records
-     * Records came as table, must put them into the tree
-     * @param ARecord[] $records
-     * @param iterable $rows
-     * @param Join[] $joins
+     * @param iterable $dataSourceRows
      * @param mixed $parent
      * @return ARecord[]
      * @throws MapperException
-     *
-     * Three tables:
-     * first with processed records; the keys are the hashes
-     * second, aerial what say what table is where;
-     *      first-level is the same as original records and contains sub-table,
-     *      second-level has table name as key and hash as value
-     * third which tells what is parent
      */
-    public function fillResults(array &$records, array $joins, iterable $rows, $parent = null): array
+    public function fillResults(iterable $dataSourceRows, $parent = null): array
     {
-        if ($parent) {
-            $this->setAsFromDatabase($parent);
-        }
-        $soloRecords = [];
-        $whatTablesInRow = [];
+        $this->setAsFromDatabase($parent);
+        /** @var ARecord[][] */
+        $aliasedRecords = [];
+        $hashedRows = [];
+        // parse input data into something processable
+        // got records with elementary data and hashes of them
+        foreach ($dataSourceRows as $lineNo => &$row) {
+            // get each table from resulted row
+            $splitRow = $this->splitByTables($row);
+//print_r(['row', $splitRow]);
 
-        // load and translate data from database
-        foreach ($rows as $rowId => &$row) {
-            $byTables = $this->splitByTables($row);
-            foreach ($byTables as $table => &$columns) {
-                $hash = md5(implode($this->hashDelimiter, $columns));
-                if (!isset($soloRecords[$hash])) { // new one
-                    if (!isset($records[$table])) {
-                        throw new MapperException(sprintf('Alias of table *%s* cannot been found within available records', $table));
-                    }
-                    $soloRecords[$hash] = $this->fillTableRecord(clone $records[$table], $columns);
+            // now put each table into record
+            foreach ($splitRow as $alias => &$columns) {
+                $hashedRecord = $this->hashRow($columns);
+                // store info which row is it
+                if (!isset($hashedRows[$lineNo])) {
+                    $hashedRows[$lineNo] = [];
                 }
-                $whatTablesInRow[$rowId][$table] = $hash;
+                $hashedRows[$lineNo][$alias] = $hashedRecord;
+                if (is_null($hashedRecord)) {
+                    // skip for empty content
+                    continue;
+                }
+                // store that record
+                if (!isset($aliasedRecords[$alias])) {
+                    $aliasedRecords[$alias] = [];
+                }
+                if (isset($aliasedRecords[$alias][$hashedRecord])) {
+                    // skip for existing
+                    continue;
+                }
+                $aliasedRecords[$alias][$hashedRecord] = $this->fillRecordFromAlias($alias, $columns);
             }
         }
 
-        $results = [];
-        $tableHasChildren = [];
-        $joinTables = $this->fillJoins($joins);
+//print_r(['hashes rec', $aliasedRecords]); // records of each table in each row keyed to their hash --> $aliasedRecords[table_name][hash] = Record
+//print_r(['hashes row', $hashedRows]); // line contains --> $hashedRows[line_number][table_name] = hash
 
-        // now we have complete necessary data
-        foreach ($whatTablesInRow as &$row) {
-            foreach ($row as $table => &$hash) {
-                if (empty($joinTables[$table])) { // nothing as parent
-                    $results[] = $soloRecords[$hash];
-                } else {
-                    $relations = $joinTables[$table];
-                    $parentTableName = $relations->getKnownTableName();
-                    $parentHash = $row[$parentTableName];
-                    if (!isset($tableHasChildren[$parentHash])) { // parent table was not used
-                        $tableHasChildren[$parentHash] = [];
-                    }
-                    if (!in_array($hash, $tableHasChildren[$parentHash])) { // connect it only once
-                        $this->addChild(
-                            $relations->getJoinUnderAlias(),
-                            $soloRecords[$parentHash],
-                            $soloRecords[$hash]
-                        );
-                        $tableHasChildren[$parentHash][] = $hash;
-                    }
+        // tell which alias is parent of another - only by hashes
+        $parentsAliases = $this->getParentsAliases();
+        $children = [];
+        foreach ($hashedRows as &$hashedRow) {
+            foreach ($parentsAliases as $currentAlias => &$parentsAlias) {
+                if (empty($hashedRow[$parentsAlias])) { // top parent
+                    continue;
+                }
+                $currentHash = $hashedRow[$currentAlias];
+                $parentHash = $hashedRow[$parentsAlias];
+                // from parent aliases which will be called to fill add child aliases with their content
+                if (!isset($children[$parentsAlias])) {
+                    $children[$parentsAlias] = [];
+                }
+                if (!isset($children[$parentsAlias][$parentHash])) {
+                    $children[$parentsAlias][$parentHash] = [];
+                }
+                if (!isset($children[$parentsAlias][$parentHash][$currentAlias])) {
+                    $children[$parentsAlias][$parentHash][$currentAlias] = [];
+                }
+                // can be more than one child for parent
+                if (!empty($currentHash)) {
+                    $children[$parentsAlias][$parentHash][$currentAlias][] = $currentHash;
                 }
             }
         }
+
+//print_r(['hashes children', $children]);
+
+        // now put records together as they're defined by their hashes
+        foreach ($children as $parentAlias => &$hashes) {
+            foreach ($hashes as $parentHash => &$childrenHashes) {
+                /** @var ARecord $record */
+                $record = $aliasedRecords[$parentAlias][$parentHash];
+
+                foreach ($childrenHashes as $childAlias => $childrenHashArr) {
+                    $records = [];
+                    $aliasParams = $this->getRecordForAlias($childAlias);
+                    foreach ($childrenHashArr as $hash) {
+                        $records[] = $aliasedRecords[$childAlias][$hash];
+                    }
+                    $record->getEntry($aliasParams->getKnownAs())->setData($records, $this->fromDatabase);
+                }
+            }
+        }
+
+        $results = array_values($aliasedRecords[$this->getRecordForRoot()->getStoreKey()]);
+//print_r(['count res', count($results) ]);
 
         return $results;
     }
 
-    protected function addChild(string $joinAlias, &$parent, &$current)
+    protected function hashRow(array &$columns): ?string
     {
-        $parent->{$joinAlias} = empty($parent->{$joinAlias})
-            ? [$current]
-            : $parent->{$joinAlias} + [$current]
-        ;
+        $cols = implode($this->hashDelimiter, $columns);
+        if (empty(str_replace($this->hashDelimiter, '', $cols))) {
+            return null;
+        }
+        return md5($cols);
     }
 
-    private function setAsFromDatabase(&$class): void
+    /**
+     * @param string $alias
+     * @param array $columns
+     * @return ARecord
+     * @throws MapperException
+     */
+    protected function fillRecordFromAlias(string $alias, array &$columns): ARecord
     {
-        if (is_object($class)) {
+        $original = $this->getRecordForAlias($alias)->getRecord();
+        $record = clone $original;
+        $properties = array_flip($record->getMapper()->getRelations());
+        foreach ($columns as $column => $value) {
+            if (isset($properties[$column])) {
+                $property = $properties[$column];
+                if ($record->offsetExists($property) && ($record->offsetGet($property)) !== $value) {
+                    $record->getEntry($property)->setData($value, $this->fromDatabase);
+                }
+            }
+        }
+        return $record;
+    }
+
+    /**
+     * @param string $alias
+     * @return Records
+     * @throws MapperException
+     */
+    protected function getRecordForAlias(string $alias): Records
+    {
+        foreach ($this->joinRecords as $joinRecord) {
+            if ($joinRecord->getStoreKey() == $alias) {
+                return $joinRecord;
+            }
+        }
+        throw new MapperException(sprintf('No record for alias *%s* found.', $alias));
+    }
+
+    /**
+     * @return Records
+     * @throws MapperException
+     */
+    protected function getRecordForRoot(): Records
+    {
+        foreach ($this->joinRecords as $joinRecord) {
+            if (is_null($joinRecord->getParentAlias())) {
+                return $joinRecord;
+            }
+        }
+        throw new MapperException(sprintf('No root record found.'));
+    }
+
+    protected function getParentsAliases(): array
+    {
+        $result = [];
+        foreach ($this->joinRecords as &$joinRecord) {
+            $result[$joinRecord->getStoreKey()] = $joinRecord->getParentAlias();
+        }
+        return $result;
+    }
+
+    private function setAsFromDatabase($class): void
+    {
+        if ($class && is_object($class)) {
             if ($class instanceof Connector\Database) {
                 $this->fromDatabase = true;
                 return;
             }
-            // another for mapper - probably...
+            // another for other possible connectors - probably...
         }
         $this->fromDatabase = false;
-    }
-
-    /**
-     * @param Join[] $joins
-     * @return Join[]
-     */
-    protected function fillJoins(array &$joins): array
-    {
-        $result = [];
-        $result[$this->record->getMapper()->getAlias()] = null;
-        foreach ($joins as $join) {
-            $key = empty($join->getTableAlias()) ? $join->getJoinUnderAlias() : $join->getTableAlias() ;
-            if (isset($result[$key])) {
-                continue;
-            }
-            $result[$key] = $join;
-        }
-        return $result;
     }
 
     protected function splitByTables(&$row): array
     {
         $byTables = [];
         foreach ($row as $column => &$data) {
-            $delimiterPoint = strpos($column, '.'); // look for delimiter, not everytime is present
+            $delimiterPoint = strpos($column, '.'); // look for delimiter, not every time is present
             $delimiterOur = strpos($column, $this->columnDelimiter); // our delimiter, because some databases returns only columns
             if ((false === $delimiterPoint) && (false === $delimiterOur)) {
-                $table = $this->record->getMapper()->getAlias();
+                $table = $this->basicRecord->getMapper()->getAlias();
             } elseif (false === $delimiterPoint) { // database returns our delimiter
                 $table = substr($column, 0, $delimiterOur);
                 $column = substr($column, $delimiterOur + strlen($this->columnDelimiter));
@@ -195,21 +277,5 @@ class Filler
             $byTables[$table][$column] = $data;
         }
         return $byTables;
-    }
-
-    /**
-     * @param ARecord $record
-     * @param iterable $columns
-     * @return ARecord
-     * @throws MapperException
-     */
-    protected function fillTableRecord(ARecord $record, iterable $columns): ARecord
-    {
-        $flippedRelations = array_flip($record->getMapper()->getRelations());
-        foreach ($columns as $index => &$data) {
-            $entry = $record->getEntry($flippedRelations[$index]);
-            $entry->setData($this->typedFillSelection($entry, $data), $this->fromDatabase);
-        }
-        return $record;
     }
 }

@@ -4,7 +4,7 @@ namespace kalanis\kw_connect\search\Filters;
 
 
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_connect\core\TMultiple;
 
 
 /**
@@ -13,22 +13,10 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
  */
 class Multiple extends AType implements IFilterSubs
 {
-    /** @var IFilterType[] */
-    protected $subFilters = [];
+    use TMultiple;
 
-    public function addSubFilter(string $alias, IFilterType $filter): void
+    protected function getDataSourceName(): string
     {
-        $this->subFilters[$alias] = $filter;
-    }
-
-    public function setFiltering(string $colName, $value)
-    {
-        foreach ($this->subFilters as $alias => &$subFilter) {
-            if (isset($value[$alias]) && (IFilterType::EMPTY_FILTER != $value[$alias])) {
-                $subFilter->setDataSource($this->search);
-                $subFilter->setFiltering($colName, $value[$alias]);
-            }
-        }
-        return $this;
+        return 'search';
     }
 }

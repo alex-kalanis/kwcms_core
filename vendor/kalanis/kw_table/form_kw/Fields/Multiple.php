@@ -5,8 +5,7 @@ namespace kalanis\kw_table\form_kw\Fields;
 
 use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
-use kalanis\kw_connect\core\Interfaces\IFilterSubs;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_table\core\Interfaces\Table\IFilterMulti;
 use kalanis\kw_table\core\Interfaces\Table\IFilterRender;
@@ -83,18 +82,7 @@ class Multiple extends AField implements IFilterRender, IFilterMulti
         $this->fields = $fields;
     }
 
-    public function getFilterType(): IFilterType
-    {
-        $filter = $this->connector->getFilterFactory()->getFilter($this->getFilterAction());
-        if ($filter instanceof IFilterSubs) {
-            foreach ($this->fields as $field) {
-                $filter->addSubFilter($field->getAlias(), $field->getField()->getFilterType());
-            }
-        }
-        return $filter;
-    }
-
-    protected function getFilterAction(): string
+    public function getFilterAction(): string
     {
         return IFilterFactory::ACTION_MULTIPLE;
     }
@@ -111,6 +99,11 @@ class Multiple extends AField implements IFilterRender, IFilterMulti
         return implode($this->separator, array_map([$this, 'renderField'], $this->fields));
     }
 
+    /**
+     * @param MultipleValue $field
+     * @return string
+     * @throws RenderException
+     */
     public function renderField(MultipleValue $field): string
     {
         return $field->renderContent();
@@ -121,7 +114,9 @@ class Multiple extends AField implements IFilterRender, IFilterMulti
         $values = [];
         foreach ($this->fields as $field) {
             $control = $this->form->getControl($field->getAlias());
-            $values[$control->getKey()] = $control->getValue();
+            if (!empty($control->getValue())) {
+                $values[] = [$field->getField()->getFilterAction(), $control->getValue()];
+            }
         }
         return $values;
     }

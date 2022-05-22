@@ -3,10 +3,10 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_extras\ExtrasException;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Images\Interfaces\IProcessDirs;
 
 
@@ -36,8 +36,9 @@ class ProcessDir implements IProcessDirs
     public function createDir(string $target, string $name): bool
     {
         try {
-            return $this->libFiles->getLibDirDesc()->getExtendDir()->createDir($this->sourcePath, $target, $name, true);
-        } catch (ExtrasException $ex) {
+            $targetPath = Stuff::removeEndingSlash($target) . DIRECTORY_SEPARATOR;
+            return $this->libFiles->getLibDirDesc()->getExtendDir()->createDir($targetPath, $name, true);
+        } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -46,7 +47,7 @@ class ProcessDir implements IProcessDirs
     {
         try {
             return $this->libFiles->getLibDirDesc()->getExtendDir()->makeExtended($this->sourcePath);
-        } catch (ExtrasException $ex) {
+        } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }

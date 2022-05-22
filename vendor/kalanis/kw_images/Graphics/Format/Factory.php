@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Graphics\Format;
 
 
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Interfaces\IIMTranslations;
 
 
 /**
@@ -24,15 +25,16 @@ class Factory
 
     /**
      * @param string $type
+     * @param IIMTranslations $lang
      * @return AFormat
      * @throws ImagesException
      */
-    public function getByType(string $type): AFormat
+    public function getByType(string $type, IIMTranslations $lang): AFormat
     {
         if (!isset($this->types[$type])) {
-            throw new ImagesException(sprintf('Unknown type *%s*', $type));
+            throw new ImagesException($lang->imUnknownType($type));
         }
         $class = $this->types[$type];
-        return new $class();
+        return new $class($lang);
     }
 }

@@ -4,17 +4,18 @@ namespace KWCMS\modules\Menu;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_cache\Cache;
-use kalanis\kw_menu\Interfaces\ISemaphore;
-use kalanis\kw_menu\MenuException;
-use kalanis\kw_menu\Semaphore;
+use kalanis\kw_cache\Storage as CacheStorage;
+use kalanis\kw_cache\Interfaces\ICache;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_semaphore\Interfaces\ISemaphore;
+use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_storage\Storage;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -31,7 +32,6 @@ class Menu extends AModule
     protected $tree = null;
     protected $tmplOpen = null;
     protected $tmplDisplay = null;
-    protected $libSemaphore = null;
 
     public function __construct()
     {
@@ -43,16 +43,14 @@ class Menu extends AModule
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
         $this->libCache = $this->getCache();
-        $this->libSemaphore = $this->getSemaphore();
     }
 
-    protected function getCache(): Cache
+    protected function getCache(): ICache
     {
         $cachePath = Config::getPath()->getDocumentRoot() . DIRECTORY_SEPARATOR . IPaths::DIR_TEMP;
         Storage\Key\DirKey::setDir($cachePath. DIRECTORY_SEPARATOR);
-        $storage = new Storage(new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory()));
-        $storage->init('volume');
-        $cache = new Cache($storage);
+        $storage = new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory());
+        $cache = new CacheStorage\Semaphore($storage->getStorage('volume'), $this->getSemaphore());
         $cache->init('Menu');
         return $cache;
     }
@@ -73,17 +71,16 @@ class Menu extends AModule
         $out = new Html();
         try {
             if ($this->canCache) {
-                if ($this->libSemaphore->has() || !$this->libCache->isAvailable()) {
+                if (!$this->libCache->exists()) {
                     $content = $this->getRendered();
-                    $this->libCache->save($content);
-                    $this->libSemaphore->remove();
+                    $this->libCache->set($content);
                 } else {
                     $content = $this->libCache->get();
                 }
             } else {
                 $content = $this->getRendered();
             }
-        } catch (MenuException $ex) {
+        } catch (StorageException $ex) {
             // Add logging when done
             $content = $this->getRendered();
         }
@@ -105,7 +102,7 @@ class Menu extends AModule
             return '';
         }
 
-        $items = $menu->getItems();
+        $items = $menu->getEntries();
         $result = [];
         for ($i = 1; $i <= $menu->getDisplayCount(); $i++) {
             if (!empty($items[$i])) { # have anything on position?
