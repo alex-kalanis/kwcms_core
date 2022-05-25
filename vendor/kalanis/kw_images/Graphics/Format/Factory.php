@@ -21,6 +21,8 @@ class Factory
         'png' => '\kalanis\kw_images\Graphics\Format\Png',
         'wbmp' => '\kalanis\kw_images\Graphics\Format\Wbmp',
         'webp' => '\kalanis\kw_images\Graphics\Format\Webp',
+        'avif' => '\kalanis\kw_images\Graphics\Format\Avif',
+        'xbm' => '\kalanis\kw_images\Graphics\Format\Xbm',
     ];
 
     /**

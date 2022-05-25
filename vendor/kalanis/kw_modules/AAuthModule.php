@@ -98,7 +98,7 @@ abstract class AAuthModule extends AModule implements IModuleUser
                 $output = new Output\Raw();
                 return $output->setContent('Authorize first');
             } else {
-                $link = new ExternalLink(Config::getPath());
+                $link = new Linking\ExternalLink(Config::getPath());
                 new Redirect($link->linkVariant('login'), Redirect::TARGET_TEMPORARY, 5);
                 $output = new Output\Html();
                 return $output->setContent(sprintf('<h1>%s</h1>', 'Authorize first'));

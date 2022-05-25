@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_modules;
+namespace kalanis\kw_modules\Linking;
 
 
 use kalanis\kw_confs\Config;
@@ -10,7 +10,7 @@ use kalanis\kw_paths\Path;
 
 /**
  * Class InternalLink
- * @package kalanis\kw_paths
+ * @package kalanis\kw_modules\Linking
  * Make links to local sources
  */
 class InternalLink

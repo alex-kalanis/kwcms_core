@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_modules;
+namespace kalanis\kw_modules\Linking;
 
 
 use kalanis\kw_confs\Config;
@@ -11,7 +11,7 @@ use kalanis\kw_paths\Stuff;
 
 /**
  * Class ExternalLink
- * @package kalanis\kw_paths
+ * @package kalanis\kw_modules\Linking
  * Make links to destinations
 # [http://www.example.com]/[vardir/][modestate[/[?path=]]][user/][lang/][path/file.htm]
 # rdir - dir with physical instalation of KWCMS (root)

@@ -8,11 +8,11 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
 
 
 /**
- * Class Webp
+ * Class Avif
+ * AV1 Image File Format
  * @package kalanis\kw_images\Graphics\Format
- * for some strange reason travisci automatic tests cannot use webp format in their GD library
  */
-class Webp extends AFormat
+class Avif extends AFormat
 {
     /**
      * @param IIMTranslations|null $lang
@@ -21,7 +21,7 @@ class Webp extends AFormat
     public function __construct(?IIMTranslations $lang = null)
     {
         $this->setLang($lang);
-        if (!function_exists('imagecreatefromwebp') || !function_exists('imagewebp')) {
+        if (!function_exists('imagecreatefromavif') || !function_exists('imageavif')) {
             // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
         }
@@ -30,7 +30,7 @@ class Webp extends AFormat
 
     public function load(string $path)
     {
-        $result = imagecreatefromwebp($path);
+        $result = imagecreatefromavif($path);
         if (false === $result) {
             // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotCreateFromResource());
@@ -41,7 +41,7 @@ class Webp extends AFormat
 
     public function save(string $path, $resource): void
     {
-        if (!imagewebp($resource, $path)) {
+        if (!imageavif($resource, $path)) {
             // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imCannotSaveResource());
         }
