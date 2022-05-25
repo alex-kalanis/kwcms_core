@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Chsett\Templates;
 
 
-use kalanis\kw_modules\ATemplate;
+use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Chsett\Lib\FormUsers;
 
 

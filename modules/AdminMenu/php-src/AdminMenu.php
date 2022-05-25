@@ -6,7 +6,7 @@ namespace KWCMS\modules\AdminMenu;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_confs\Config;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModuleRecord;
 use kalanis\kw_modules\Interfaces\ISitePart;

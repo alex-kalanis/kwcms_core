@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Map;
 
 
-use kalanis\kw_modules\ATemplate;
+use kalanis\kw_modules\Templates\ATemplate;
 use kalanis\kw_paths\Interfaces\IPaths;
 
 

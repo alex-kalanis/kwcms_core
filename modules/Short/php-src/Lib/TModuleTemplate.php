@@ -5,7 +5,7 @@ namespace KWCMS\modules\Short\Lib;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 
 
 /**

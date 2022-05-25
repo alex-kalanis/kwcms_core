@@ -15,7 +15,7 @@ use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\Search\Search;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\core\Connector\PageLink;

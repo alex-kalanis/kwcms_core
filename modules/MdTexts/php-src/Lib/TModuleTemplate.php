@@ -4,7 +4,7 @@ namespace KWCMS\modules\MdTexts\Lib;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_paths\Path;
 use KWCMS\modules\Texts\Lib\ModuleTemplate;
 

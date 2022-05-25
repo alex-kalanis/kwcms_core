@@ -60,7 +60,13 @@ class Layout extends AModule
         }
 
         $extraParams = ('Page' == $moduleRecord->getModuleName() ? [$this->loader, $this->moduleProcessor] : []);
-        $this->module = $this->subModules->initModule($moduleRecord->getModuleName(), $this->inputs, $extraParams, array_merge(
+        $this->module = $this->loader->load($moduleRecord->getModuleName(), null, $extraParams);
+
+        if (!$this->module) {
+            throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
+        }
+
+        $this->module->init($this->inputs, array_merge(
             Support::paramsIntoArray($moduleRecord->getParams()), $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT]
         ));
         $this->module->process();

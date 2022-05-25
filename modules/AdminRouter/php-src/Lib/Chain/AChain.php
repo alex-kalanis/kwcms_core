@@ -5,10 +5,10 @@ namespace KWCMS\modules\AdminRouter\Lib\Chain;
 
 use kalanis\kw_input\Entries\Entry;
 use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\SubModules;
 use kalanis\kw_paths\Path;
 
 
@@ -25,8 +25,8 @@ abstract class AChain
     protected $inputs = null;
     /** @var IModule|null */
     protected $module = null;
-    /** @var SubModules */
-    protected $subModules = null;
+    /** @var ILoader */
+    protected $loader = null;
     /** @var Path */
     protected $path = null;
     /** @var string[]|Entry[] */
@@ -34,9 +34,9 @@ abstract class AChain
     /** @var int */
     protected $keyLevel = 0;
 
-    public function __construct(SubModules $subModules, Path $path, int $keyLevel = ISitePart::SITE_ROUTED)
+    public function __construct(ILoader $loader, Path $path, int $keyLevel = ISitePart::SITE_ROUTED)
     {
-        $this->subModules = $subModules;
+        $this->loader = $loader;
         $this->path = $path;
         $this->keyLevel = $keyLevel;
     }
@@ -73,14 +73,13 @@ abstract class AChain
      */
     protected function moduleInit(string $name, ?string $pathToController): IModule
     {
-        return $this->subModules->initModule(
-            $name,
-            $this->inputs,
-            [],
-            array_merge(
-                $this->params, [ISitePart::KEY_LEVEL => $this->keyLevel]
-            ),
-            $pathToController
-        );
+        $module = $this->loader->load($name, $pathToController);
+        if (!$module) {
+            throw new ModuleException(sprintf('Controller for wanted module *%s* not found!', $name));
+        }
+        $module->init($this->inputs, array_merge(
+            $this->params, [ISitePart::KEY_LEVEL => $this->keyLevel]
+        ));
+        return $module;
     }
 }

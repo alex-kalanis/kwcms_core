@@ -8,7 +8,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output;

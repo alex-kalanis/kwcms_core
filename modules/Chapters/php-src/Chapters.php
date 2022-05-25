@@ -5,8 +5,8 @@ namespace KWCMS\modules\Chapters;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\ExternalLink;
-use kalanis\kw_modules\InternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\DirectoryListing;
 use kalanis\kw_paths\Stuff;

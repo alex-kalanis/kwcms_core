@@ -56,6 +56,11 @@ class Core extends AModule
         $this->module = $this->loader->load($moduleRecord->getModuleName(), null,
             (in_array($moduleRecord->getModuleName(), $this->modulesWithPassingParams()) ? [$this->loader, $this->moduleProcessor] : [])
         );
+
+        if (!$this->module) {
+            throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
+        }
+
         $this->module->init($this->inputs, array_merge(
             Support::paramsIntoArray($moduleRecord->getParams()),
             $this->params,

@@ -14,7 +14,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 

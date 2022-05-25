@@ -4,7 +4,7 @@ namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\ATemplate;
+use kalanis\kw_modules\Templates\ATemplate;
 
 
 /**

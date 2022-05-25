@@ -8,7 +8,7 @@ use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\InternalLink;
+use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\DumpingCallback;

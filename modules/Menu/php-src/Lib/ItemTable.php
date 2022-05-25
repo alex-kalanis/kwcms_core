@@ -8,7 +8,7 @@ use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\MetaProcessor;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
