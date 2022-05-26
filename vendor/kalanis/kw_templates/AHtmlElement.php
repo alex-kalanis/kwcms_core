@@ -58,6 +58,7 @@ abstract class AHtmlElement implements Interfaces\IHtmlElement, ArrayAccess, Ite
      * @param string|int $offset
      * @return Interfaces\IHtmlElement|null
      */
+    #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
         return $this->__get($offset);

@@ -48,29 +48,30 @@ class FilteringArrays implements ArrayAccess, Countable
         return $this;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->array[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->array[$offset] : null ;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->array[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         if ($this->offsetExists($offset)) {
             unset($this->array[$offset]);
         }
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->array);
     }

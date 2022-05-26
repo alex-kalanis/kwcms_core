@@ -95,18 +95,19 @@ class PrettyTable implements \Iterator
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $this->setLengths();
         return $this->dumpLine($this->table[$this->position], $this->colors);
     }
 
-    public function prev()
+    public function prev(): void
     {
         $this->position--;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
@@ -115,17 +116,18 @@ class PrettyTable implements \Iterator
      * @return int|mixed
      * @codeCoverageIgnore no access inside iterator
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->table[$this->position]);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }

@@ -27,29 +27,30 @@ abstract class AIterator implements \ArrayAccess, \IteratorAggregate, \Countable
         return new \ArrayIterator($this->{$this->getIterableName()});
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->{$this->getIterableName()}[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->{$this->getIterableName()}[$offset] : null ;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->{$this->getIterableName()}[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         if ($this->offsetExists($offset)) {
             unset($this->{$this->getIterableName()}[$offset]);
         }
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->{$this->getIterableName()});
     }

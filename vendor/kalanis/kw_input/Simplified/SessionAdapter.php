@@ -35,21 +35,25 @@ class SessionAdapter implements ArrayAccess
         $this->offsetUnset($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public final function offsetExists($offset)
     {
         return isset($_SESSION[$this->removeNullBytes($offset)]);
     }
 
+    #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
         return $_SESSION[$this->removeNullBytes($offset)];
     }
 
+    #[\ReturnTypeWillChange]
     public final function offsetSet($offset, $value)
     {
         $_SESSION[$this->removeNullBytes($offset)] = $value;
     }
 
+    #[\ReturnTypeWillChange]
     public final function offsetUnset($offset)
     {
         unset($_SESSION[$this->removeNullBytes($offset)]);

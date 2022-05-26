@@ -39,6 +39,7 @@ class InputVarsAdapter extends VarsAdapter
         return $this->current()->getValue();
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->valid()) {

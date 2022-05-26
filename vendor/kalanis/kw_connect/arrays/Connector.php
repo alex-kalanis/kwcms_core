@@ -105,7 +105,7 @@ class Connector extends AConnector implements IConnector
 
         foreach (array_reverse($this->ordering) as list($columnName, $direction)) {
             $toSort = $this->indexedArray($filtered, $columnName);
-            if (IOrder::ORDER_DESC == $direction) {
+            if (IOrder::ORDER_ASC == $direction) {
                 asort($toSort);
             } else {
                 arsort($toSort);

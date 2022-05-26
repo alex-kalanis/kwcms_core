@@ -185,7 +185,7 @@ class AdminMenu extends AModule
         if (!empty($module->parsedParams['image'])) {
             $styleArray['background-image'] = sprintf("url('%s')", $this->externalLink->linkVariant($module->parsedParams['image'], 'sysimage', true));
         }
-        return strtr(urldecode(http_build_query($styleArray, null, ';')), ['=' => ':']); // restore to CSS
+        return strtr(urldecode(http_build_query($styleArray, '', ';')), ['=' => ':']); // restore to CSS
     }
 
     protected function parseParams(string $params): array

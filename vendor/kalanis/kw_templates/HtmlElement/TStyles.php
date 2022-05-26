@@ -43,7 +43,7 @@ trait TStyles
     private function readCss(): array
     {
         $attrStyle = $this->getAttribute(IAttributes::ATTR_NAME_STYLE);
-        $parts = explode(IAttributes::ATTR_SEP_STYLE, $attrStyle);
+        $parts = explode(IAttributes::ATTR_SEP_STYLE, strval($attrStyle));
 
         $styles = [];
         foreach ($parts as $part) {
@@ -65,7 +65,7 @@ trait TStyles
         return $this;
     }
 
-    abstract public function getAttribute(string $name);
+    abstract public function getAttribute(string $name): ?string;
 
-    abstract public function setAttribute(string $name, string $value);
+    abstract public function setAttribute(string $name, string $value): void;
 }
