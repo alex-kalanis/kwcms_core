@@ -21,7 +21,7 @@ class Params
 
     public function __construct(array &$inputs)
     {
-        $this->inputs = & $inputs;
+        $this->inputs = array_combine(array_map([$this, 'getKey'], $inputs), $inputs);
     }
 
     /**
@@ -29,6 +29,11 @@ class Params
      */
     private function __clone()
     {
+    }
+
+    public function getKey(IEntry $entry): string
+    {
+        return $entry->getKey();
     }
 
     public function addParam(string $variable, string $cliKey, ?string $match = null, $defaultValue = null, ?string $short = null, string $desc = ''): self

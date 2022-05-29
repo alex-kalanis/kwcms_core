@@ -27,6 +27,11 @@ class Help extends ATask
         $this->writeLn('<yellow><bluebg>|    Help with task    |</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>+======================+</bluebg></yellow>');
 
+        if (empty($this->loader)) {
+            $this->sendErrorMessage('Need any loader to get tasks!');
+            return;
+        }
+
         try {
             $taskName = Useful::getNthParam($this->inputs, 2) ?? static::class;
             $task = $this->loader->getTask($taskName);

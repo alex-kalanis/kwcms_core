@@ -46,7 +46,7 @@ class ListNews extends ATask
 
     public function desc(): string
     {
-        return 'Render list of news in preselected file';
+        return 'Render list of news in preselected directory';
     }
 
     /**

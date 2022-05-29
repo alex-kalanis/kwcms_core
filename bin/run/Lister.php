@@ -39,6 +39,11 @@ class Lister extends ATask
         $this->writeLn('<yellow><bluebg>| List all tasks available by lookup |</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>+====================================+</bluebg></yellow>');
 
+        if (empty($this->loader)) {
+            $this->sendErrorMessage('Need any loader to get tasks!');
+            return;
+        }
+
         $this->setTableHeaders(['Task name', 'Call target', 'Description']);
         $this->setTableColors(['lgreen', 'lcyan', '']);
 

@@ -25,7 +25,7 @@ abstract class ATask
 {
     use Output\TWrite;
 
-    /** @var ILoader */
+    /** @var ILoader|null */
     protected $loader = null;
     /** @var Output\AOutput */
     protected $translator = null;
@@ -34,7 +34,12 @@ abstract class ATask
     /** @var IEntry[] */
     protected $inputs = [];
 
-    public final function initTask(Output\AOutput $translator, array $inputs, ILoader $loader): void
+    /**
+     * @param Output\AOutput $translator
+     * @param IEntry[] $inputs
+     * @param ILoader|null $loader
+     */
+    public final function initTask(Output\AOutput $translator, array $inputs, ?ILoader $loader): void
     {
         $this->loader = $loader;
         $this->translator = $translator;
