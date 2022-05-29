@@ -43,7 +43,7 @@ class Command
         }
     }
 
-    protected function isExecFuncAvailable()
+    protected function isExecFuncAvailable(): bool
     {
         if (
             in_array(strtolower(ini_get('safe_mode')), array('on', '1'), true)

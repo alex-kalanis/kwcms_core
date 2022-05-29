@@ -33,7 +33,7 @@ class Option
      * @param string $description
      * @return $this
      */
-    public function setData(string $variable, string $cliKey, ?string $match, $defaultValue = null, ?string $short = null, string $description = '')
+    public function setData(string $variable, string $cliKey, ?string $match, $defaultValue = null, ?string $short = null, string $description = ''): self
     {
         $this->variable = $variable;
         $this->cliKey = $cliKey;

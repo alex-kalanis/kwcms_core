@@ -6,21 +6,19 @@ namespace kalanis\kw_clipr\Clipr;
 use kalanis\kw_clipr\CliprException;
 use kalanis\kw_clipr\Interfaces\ISources;
 
+
 /**
  * Class Paths
  * @package kalanis\kw_clipr\Clipr
  * Paths to accessing tasks/commands somewhere on volumes
- * It's singleton, so it cannot be tested in init parts
+ * It's singleton, because it's passed to different parts of Clipr - loaders and one of modules - and at first needs
+ * to be set outside of the system
  */
 class Paths
 {
     protected static $instance = null;
     protected $paths = [];
 
-    /**
-     * @return Paths
-     * @codeCoverageIgnore pre-loaded somewhere
-     */
     public static function getInstance(): self
     {
         if (empty(static::$instance)) {
@@ -29,9 +27,6 @@ class Paths
         return static::$instance;
     }
 
-    /**
-     * @codeCoverageIgnore pre-loaded somewhere
-     */
     protected function __construct()
     {
     }
@@ -87,7 +82,7 @@ class Paths
     {
         $dirLen = mb_strlen($dir);
         foreach ($this->paths as $namespace => $path) {
-            // something
+            // got some path
             $compLen = min($dirLen, mb_strlen($path));
             $lgPath = mb_substr(Useful::mb_str_pad($path, $compLen, '-'), 0, $compLen);
             $lgDir = mb_substr(Useful::mb_str_pad($dir, $compLen, '-'), 0, $compLen);

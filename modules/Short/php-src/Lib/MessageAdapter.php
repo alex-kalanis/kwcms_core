@@ -52,7 +52,7 @@ class MessageAdapter
         $mapper = $this->record->getMapper();
         /** @var \kalanis\kw_mapper\Mappers\File\ATable $mapper */
         $mapper->setFormat('\KWCMS\modules\Short\Lib\SeparatedElements');
-        $mapper->setFile($path);
+        $mapper->setSource($path);
         return $this->record;
     }
 

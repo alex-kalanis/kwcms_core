@@ -119,8 +119,10 @@ class PrettyTable implements \Iterator
     #[\ReturnTypeWillChange]
     public function key()
     {
+        // @codeCoverageIgnoreStart
         return $this->position;
     }
+    // @codeCoverageIgnoreEnd
 
     public function valid(): bool
     {

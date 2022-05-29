@@ -3,6 +3,10 @@
 namespace kalanis\kw_clipr\Clipr;
 
 
+use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_input\Parsers\Cli;
+
+
 /**
  * Class Useful
  * @package kalanis\kw_clipr\Clipr
@@ -23,5 +27,34 @@ class Useful
     {
         $diff = strlen( $input ) - mb_strlen( $input );
         return str_pad( $input, $pad_length + $diff, $pad_string, $pad_type );
+    }
+
+    /**
+     * get nth param from input array
+     * @param array $inputs
+     * @param int $position
+     * @return string|null
+     */
+    public static function getNthParam(array $inputs, $position = 1): ?string
+    {
+        $nthKey = Cli::UNSORTED_PARAM . $position;
+        foreach ($inputs as $input) {
+            /** @var IEntry $input */
+            if ($input->getKey() == $nthKey) {
+                return $input->getValue();
+            }
+        }
+        return null;
+    }
+
+    public static function sanitizeClass(string $input): string
+    {
+        $input = strtr($input, [':' => '\\', '/' => '\\']);
+        return ('\\' == $input[0]) ? mb_substr($input, 1) : $input ;
+    }
+
+    public static function getTaskCall(object $class): string
+    {
+        return strtr(get_class($class), '\\', '/');
     }
 }

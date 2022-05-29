@@ -1,13 +1,14 @@
 <?php
 
-namespace kalanis\kw_clipr\Tasks;
+namespace kalanis\kw_clipr\Loaders;
 
 
 use kalanis\kw_clipr\Clipr\Paths;
+use kalanis\kw_clipr\Clipr\Useful;
 use kalanis\kw_clipr\CliprException;
+use kalanis\kw_clipr\Interfaces\ILoader;
 use kalanis\kw_clipr\Interfaces\ISources;
-use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_input\Parsers;
+use kalanis\kw_clipr\Tasks\ATask;
 
 
 /**
@@ -17,37 +18,21 @@ use kalanis\kw_input\Parsers;
  * In reality it runs like autoloader of own
  * @codeCoverageIgnore because of that internal autoloader
  */
-class TaskFactory
+class KwLoader implements ILoader
 {
     const EXT_PHP = '.php';
-    /** @var ATask[] */
-    protected $loadedClasses = [];
 
     /**
-     * @param string|null $classFromParam
-     * @param string $defaultTask
+     * @param string $classFromParam
      * @return ATask
      * @throws CliprException
      * For making instances from more than one path
      * Now it's possible to read from different paths as namespace sources
      * Also each class will be loaded only once
      */
-    public function getTask(?string $classFromParam = null, string $defaultTask = 'clipr\Info'): ATask
+    public function getTask(string $classFromParam): ?ATask
     {
-        $classPath = TaskFactory::sanitizeClass($classFromParam ?: $defaultTask);
-        if (empty($this->loadedClasses[$classPath])) {
-            $this->loadedClasses[$classPath] = $this->initTask($classPath);
-        }
-        return $this->loadedClasses[$classPath];
-    }
-
-    /**
-     * @param string $classPath
-     * @return ATask
-     * @throws CliprException
-     */
-    protected function initTask(string $classPath): ATask
-    {
+        $classPath = Useful::sanitizeClass($classFromParam);
         $paths = Paths::getInstance()->getPaths();
         foreach ($paths as $namespace => $path) {
             if ($this->containsPath($classPath, $namespace)) {
@@ -80,28 +65,5 @@ class TaskFactory
             throw new CliprException(sprintf('There is problem with path *%s* - it does not exists!', $setPath));
         }
         return $realPath;
-    }
-
-    public function nthParam(array $inputs, $position = 0): ?string
-    {
-        $nthKey = Parsers\Cli::UNSORTED_PARAM . $position;
-        foreach ($inputs as $input) {
-            /** @var IEntry $input */
-            if ($input->getKey() == $nthKey) {
-                return $input->getValue();
-            }
-        }
-        return null;
-    }
-
-    public static function sanitizeClass(string $input): string
-    {
-        $input = strtr($input, [':' => '\\', '/' => '\\']);
-        return ('\\' == $input[0]) ? mb_substr($input, 1) : $input ;
-    }
-
-    public static function getTaskCall(ATask $class): string
-    {
-        return strtr(get_class($class), '\\', '/');
     }
 }

@@ -3,8 +3,6 @@
 namespace kalanis\kw_clipr;
 
 
-use kalanis\kw_clipr\Interfaces\ISources;
-use kalanis\kw_input\Inputs;
 use kalanis\kw_input\Variables;
 
 
@@ -15,16 +13,18 @@ use kalanis\kw_input\Variables;
  */
 class Clipr
 {
-    protected $inputs = null;
+    /** @var Interfaces\ILoader|null */
+    protected $loader = null;
+    /** @var Variables|null */
     protected $variables = null;
+    /** @var Clipr\Sources|null */
     protected $sources = null;
-    protected $output = null;
 
-    public function __construct()
+    public function __construct(Interfaces\ILoader $loader, Clipr\Sources $sources, Variables $variables)
     {
-        $this->inputs = new Inputs();
-        $this->sources = new Clipr\Sources();
-        $this->variables = new Variables($this->inputs);
+        $this->loader = $loader;
+        $this->sources = $sources;
+        $this->variables = $variables;
     }
 
     /**
@@ -40,26 +40,25 @@ class Clipr
     }
 
     /**
-     * @param array $cliArgs
      * @throws CliprException
      */
-    public function run(array $cliArgs = []): void
+    public function run(): void
     {
-        // void because echo must stay here - we have progress indicator and that needs access to output
-        $this->inputs->setSource($cliArgs)->loadEntries();
-
-        $taskFactory = $this->getTaskFactory();
         // for parsing default params it's necessary to load another task
         $dummy = new Tasks\DummyTask();
-        $dummy->initTask(new Output\Clear(), $this->variables->getInArray(), $taskFactory);
+        $dummy->initTask(new Output\Clear(), $this->variables->getInArray(), $this->loader);
         $this->sources->determineInput((bool)$dummy->webOutput, (bool)$dummy->noColor);
 
         // now we know necessary input data, so we can initialize real task
         $inputs = $this->variables->getInArray(null, $this->sources->getEntryTypes());
-        $task = $taskFactory->getTask($taskFactory->nthParam($inputs));
-        $task->initTask($this->sources->getOutput(), $inputs, $taskFactory);
+        $taskName = Clipr\Useful::getNthParam($inputs) ?? Interfaces\ILoader::DEFAULT_TASK;
+        $task = $this->loader->getTask($taskName);
+        if (!$task) {
+            throw new CliprException(sprintf('Unknown task *%s* - check name, interface or your config paths.', $taskName));
+        }
+        $task->initTask($this->sources->getOutput(), $inputs, $this->loader);
 
-        if (ISources::OUTPUT_STD != $task->outputFile) {
+        if (Interfaces\ISources::OUTPUT_STD != $task->outputFile) {
             ob_start();
         }
 
@@ -73,13 +72,8 @@ class Clipr
             $task->writeFooter();
         }
 
-        if (ISources::OUTPUT_STD != $task->outputFile) {
+        if (Interfaces\ISources::OUTPUT_STD != $task->outputFile) {
             file_put_contents($task->outputFile, ob_get_clean(), (false === $task->noAppend ? FILE_APPEND : 0));
         }
-    }
-
-    public function getTaskFactory(): Tasks\TaskFactory
-    {
-        return new Tasks\TaskFactory();
     }
 }

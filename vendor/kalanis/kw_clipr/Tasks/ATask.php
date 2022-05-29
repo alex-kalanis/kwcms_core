@@ -3,6 +3,7 @@
 namespace kalanis\kw_clipr\Tasks;
 
 
+use kalanis\kw_clipr\Interfaces\ILoader;
 use kalanis\kw_clipr\Interfaces\ISources;
 use kalanis\kw_clipr\Output;
 use kalanis\kw_input\Interfaces\IEntry;
@@ -24,8 +25,8 @@ abstract class ATask
 {
     use Output\TWrite;
 
-    /** @var TaskFactory */
-    protected $taskFactory = null;
+    /** @var ILoader */
+    protected $loader = null;
     /** @var Output\AOutput */
     protected $translator = null;
     /** @var Params */
@@ -33,9 +34,9 @@ abstract class ATask
     /** @var IEntry[] */
     protected $inputs = [];
 
-    public final function initTask(Output\AOutput $translator, array $inputs, TaskFactory $taskFactory): void
+    public final function initTask(Output\AOutput $translator, array $inputs, ILoader $loader): void
     {
-        $this->taskFactory = $taskFactory;
+        $this->loader = $loader;
         $this->translator = $translator;
         $this->params = new Params($inputs);
         $this->inputs = & $inputs;
