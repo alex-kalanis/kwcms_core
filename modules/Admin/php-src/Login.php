@@ -11,7 +11,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\CookieAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_rules\Interfaces\IRules;

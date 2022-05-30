@@ -17,7 +17,7 @@ class Basic extends AParser
             if (is_array($value)) {
                 $trimArray[$this->removeNullBytes($key)] = $this->parseInput($value);
             } else {
-                $trimArray[$this->removeNullBytes($key)] = $this->removeNullBytes(trim($value));
+                $trimArray[$this->removeNullBytes($key)] = $this->removeNullBytes(trim(strval($value)));
             }
         }
         return $trimArray;

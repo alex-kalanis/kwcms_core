@@ -10,7 +10,7 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
 /**
  * Class Webp
  * @package kalanis\kw_images\Graphics\Format
- * @codeCoverageIgnore because for some strange reason automatic tests cannot use webp format in their GD library
+ * for some strange reason travisci automatic tests cannot use webp format in their GD library
  */
 class Webp extends AFormat
 {

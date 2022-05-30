@@ -74,11 +74,11 @@ $server = new \kalanis\kw_input\Simplified\ServerAdapter();
 
 // authorization tree
 $authenticator = new \kalanis\kw_auth\Sources\Files(
+    new \kalanis\kw_auth\Mode\KwOrig(strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))),
     new \kalanis\kw_locks\Methods\FileLock(
         $paths->getDocumentRoot() . $paths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE
     ),
-    $paths->getDocumentRoot() . $paths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web',
-    strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))
+    $paths->getDocumentRoot() . $paths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web'
 );
 \kalanis\kw_auth\Auth::setAuthenticator($authenticator);
 
@@ -142,7 +142,7 @@ try {
         new \kalanis\kw_input\Variables($inputs),'',
         new \kalanis\kw_modules\Processing\Modules($processor)
     );
-    echo $module->process()->get(); // dump output
+    echo $module->process('Core')->get(); // dump output
 } catch (\Exception $ex) {
     echo get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine() . PHP_EOL;
     echo "Stack trace:" . PHP_EOL;

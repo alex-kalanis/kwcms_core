@@ -78,22 +78,23 @@ class ServerAdapter implements ArrayAccess
     }
     // @codeCoverageIgnoreEnd
 
-    public final function offsetExists($offset)
+    public final function offsetExists($offset): bool
     {
         return isset($_SERVER[$this->removeNullBytes($offset)]);
     }
 
+    #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
         return $_SERVER[$this->removeNullBytes($offset)];
     }
 
-    public final function offsetSet($offset, $value)
+    public final function offsetSet($offset, $value): void
     {
         throw new InputException('Cannot write into _SERVER variable');
     }
 
-    public final function offsetUnset($offset)
+    public final function offsetUnset($offset): void
     {
         throw new InputException('Cannot write into _SERVER variable');
     }

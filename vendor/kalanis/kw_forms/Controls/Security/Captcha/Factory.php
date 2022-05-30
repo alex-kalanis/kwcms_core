@@ -22,17 +22,15 @@ class Factory
     const TYPE_COLOUR = 4;
     const TYPE_NOCAPTCHA = 5;
 
-    /** @var string */
-    protected $captchaError;
-
     /** @var ITimeout */
     protected $libTimeout = null;
+    /** @var string */
+    protected $captchaError = 'The CAPTCHA wasn\'t entered correctly. Please try it again.';
 
-    public function __construct(ITimeout $libTimeout = null)
+    public function __construct(ITimeout $libTimeout = null, string $captchaError = '')
     {
         $this->libTimeout = $libTimeout;
-
-        $this->captchaError = 'The CAPTCHA wasn\'t entered correctly. Please try it again.'; //TODO lang
+        $this->captchaError = empty($captchaError) ? $this->captchaError : $captchaError ;
     }
 
     public function getCaptcha(int $type, ArrayAccess &$session, string $alias = 'captcha'): ACaptcha

@@ -14,7 +14,7 @@ use kalanis\kw_paging\Positions;
 use kalanis\kw_paging\Render;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_cli\CliRenderer;
 use kalanis\kw_table\output_json\JsonRenderer;
@@ -51,9 +51,8 @@ class Helper
         $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
-        // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($inputs)));
-        $this->table->addSorter($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\Inputs($inputs))));
 
         // pager
         $pager = new BasicPager();
@@ -82,9 +81,8 @@ class Helper
         $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
-        // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($inputs)));
-        $this->table->addSorter($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\Inputs($inputs))));
 
         // pager
         $pager = new BasicPager();
@@ -113,9 +111,8 @@ class Helper
         $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
-        // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($inputs)));
-        $this->table->addSorter($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\Inputs($inputs))));
 
         // pager
         $pager = new BasicPager();

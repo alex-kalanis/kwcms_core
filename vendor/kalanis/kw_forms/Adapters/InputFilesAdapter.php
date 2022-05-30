@@ -27,6 +27,7 @@ class InputFilesAdapter extends FilesAdapter
         $this->vars = $this->inputs->getInArray(null, [IEntry::SOURCE_FILES]);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->valid()) {

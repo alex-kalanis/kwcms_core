@@ -57,12 +57,13 @@ class CookieAdapter implements ArrayAccess
         $this->offsetUnset($offset);
     }
 
-    public final function offsetExists($offset)
+    public final function offsetExists($offset): bool
     {
         $offset = $this->removeNullBytes($offset);
         return isset($_COOKIE[$offset]) && ('' != $_COOKIE[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
         return $_COOKIE[$this->removeNullBytes($offset)];
@@ -73,7 +74,7 @@ class CookieAdapter implements ArrayAccess
      * @param string|int|float|bool $value
      * @throws InputException
      */
-    public final function offsetSet($offset, $value)
+    public final function offsetSet($offset, $value): void
     {
         $offset = $this->removeNullBytes($offset);
         // access immediately
@@ -108,7 +109,7 @@ class CookieAdapter implements ArrayAccess
      * @param string|int $offset
      * @throws InputException
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($_COOKIE[$this->removeNullBytes($offset)]); // remove immediately
         if (headers_sent()) {

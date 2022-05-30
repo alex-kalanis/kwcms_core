@@ -50,9 +50,12 @@ class Module
      * @return $this
      * @throws ModuleException
      */
-    public function process($defaultModule = 'Core'): self
+    public function process(string $defaultModule): self
     {
         $this->module = $this->loader->load($defaultModule, null, [$this->loader, $this->processor]);
+        if (!$this->module) {
+            throw new ModuleException(sprintf('Controller for wanted default module *%s* not found', $defaultModule));
+        }
         $this->module->init($this->inputs, $this->inputs->getInArray(null, [IEntry::SOURCE_EXTERNAL]));
         return $this;
     }

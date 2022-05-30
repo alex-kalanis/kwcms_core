@@ -4,7 +4,7 @@ namespace KWCMS\modules\Logo;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_modules\ATemplate;
+use kalanis\kw_modules\Templates\ATemplate;
 
 
 /**

@@ -101,9 +101,11 @@ class Properties extends AAuthModule implements IModuleTitle
                 }
             }
             return $out->setContent($this->outModuleTemplate(
-                $this->hasExtra
-                    ? $descPage->setData($this->descForm)->render()
-                    : $extraPage->setData($this->extraForm)->render()
+                empty($this->error) ? (
+                    $this->hasExtra
+                        ? $descPage->setData($this->descForm)->render()
+                        : $extraPage->setData($this->extraForm)->render()
+                ) : ''
             ));
         } catch (FormsException $ex) {
             $this->error = $ex;

@@ -3,6 +3,7 @@
 namespace kalanis\kw_table\output_json;
 
 
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\core\Interfaces\Table\IFilterMulti;
 use kalanis\kw_table\core\Table;
@@ -21,16 +22,24 @@ class JsonRenderer extends Table\AOutput
     public function __construct(Table $table)
     {
         parent::__construct($table);
-        if ($table->getOutputPager() && $table->getOutputPager()->getPager()) {
-            $this->positions = new Positions($table->getOutputPager()->getPager());
+        if ($table->getPager() && $table->getPager()->getPager()) {
+            $this->positions = new Positions($table->getPager()->getPager());
         }
     }
 
+    /**
+     * @return string
+     * @throws ConnectException
+     */
     public function render(): string
     {
         return json_encode($this->renderData());
     }
 
+    /**
+     * @return array
+     * @throws ConnectException
+     */
     public function renderData(): array
     {
         return [
@@ -53,16 +62,16 @@ class JsonRenderer extends Table\AOutput
 
     protected function getSorters(): array
     {
-        $sorter = $this->table->getSorter();
-        if (!$sorter) {
+        $order = $this->table->getOrder();
+        if (!$order) {
             return [];
         }
         $line = [];
         foreach ($this->table->getColumns() as $column) {
-            if ($sorter->isSorted($column)) {
+            if ($order->isInOrder($column)) {
                 $line[$column->getSourceName()] = [
-                    'is_active' => intval($sorter->isActive($column)),
-                    'direction' => $sorter->getDirection($column),
+                    'is_active' => intval($order->isActive($column)),
+                    'direction' => $order->getActiveDirection($column),
                 ];
             }
         }
@@ -90,6 +99,10 @@ class JsonRenderer extends Table\AOutput
         return $line;
     }
 
+    /**
+     * @return array
+     * @throws ConnectException
+     */
     protected function getCells(): array
     {
         $cell = [];

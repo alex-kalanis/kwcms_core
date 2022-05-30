@@ -16,7 +16,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_pedigree\GetEntries;
@@ -24,7 +24,7 @@ use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
@@ -76,9 +76,8 @@ class PedigreeTable
         $this->table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
-        // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $this->table->addSorter($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\Inputs($this->variables))));
 
         // pager
         $pager = new BasicPager();
@@ -88,22 +87,22 @@ class PedigreeTable
 
         $storage = $this->entries->getStorage();
         // now normal code - columns
-        $this->table->setDefaultSorting($storage->getIdKey(), IQueryBuilder::ORDER_DESC);
+        $this->table->addOrdering($storage->getIdKey(), IQueryBuilder::ORDER_DESC);
 
         $this->table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnRecordId = new Columns\Func($storage->getIdKey(), [$this, 'idLink']);
         $columnRecordId->style('width:40px', new Rules\Always());
-        $this->table->addSortedColumn(Lang::get('pedigree.text.id'), $columnRecordId );
+        $this->table->addOrderedColumn(Lang::get('pedigree.text.id'), $columnRecordId );
 
-        $this->table->addSortedColumn(Lang::get('pedigree.text.name'), new Columns\Bold($storage->getNameKey()), new Fields\TextContains());
-        $this->table->addSortedColumn(Lang::get('pedigree.text.family'), new Columns\Basic($storage->getFamilyKey()), new Fields\TextContains());
+        $this->table->addOrderedColumn(Lang::get('pedigree.text.name'), new Columns\Bold($storage->getNameKey()), new Fields\TextContains());
+        $this->table->addOrderedColumn(Lang::get('pedigree.text.family'), new Columns\Basic($storage->getFamilyKey()), new Fields\TextContains());
 
         $columnAdded = new Columns\Basic($storage->getBirthKey());
         $columnAdded->style('width:150px', new Rules\Always());
-        $this->table->addSortedColumn(Lang::get('pedigree.text.birth_date'), $columnAdded);
+        $this->table->addOrderedColumn(Lang::get('pedigree.text.birth_date'), $columnAdded);
 
-        $this->table->addSortedColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Fields\TextContains());
+        $this->table->addOrderedColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'showLink']));
@@ -139,8 +138,8 @@ class PedigreeTable
         $table->addColumn(Lang::get('pedigree.text.birth_date'), new Columns\Basic($storage->getBirthKey()));
         $table->addColumn(Lang::get('pedigree.text.trials'), new Columns\Basic($storage->getTrialsKey()));
 
-        $table->getOutputPager()->getPager()->setLimit(5);
-        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $table->getPager()->getPager()->setLimit(5);
+        $table->addOrdering('id', IQueryBuilder::ORDER_DESC);
         $table->addDataSetConnector(new Connector(new Search($this->entries->getRecord())));
         $table->translateData();
         return $table->getOutput()->renderData();

@@ -6,7 +6,7 @@ namespace KWCMS\modules\AdminMenu;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_confs\Config;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModuleRecord;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -187,7 +187,7 @@ class AdminMenu extends AModule
         if (!empty($module->parsedParams['image'])) {
             $styleArray['background-image'] = sprintf("url('%s')", $this->externalLink->linkVariant($module->parsedParams['image'], 'sysimage', true));
         }
-        return strtr(urldecode(http_build_query($styleArray, null, ';')), ['=' => ':']); // restore to CSS
+        return strtr(urldecode(http_build_query($styleArray, '', ';')), ['=' => ':']); // restore to CSS
     }
 
     protected function parseParams(string $params): array

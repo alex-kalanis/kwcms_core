@@ -56,7 +56,7 @@ trait TCss
         return $this;
     }
 
-    abstract public function getAttribute(string $name);
+    abstract public function getAttribute(string $name): ?string;
 
-    abstract public function setAttribute(string $name, string $value);
+    abstract public function setAttribute(string $name, string $value): void;
 }

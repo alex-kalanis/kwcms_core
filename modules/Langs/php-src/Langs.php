@@ -6,9 +6,9 @@ namespace KWCMS\modules\Langs;
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\InternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 

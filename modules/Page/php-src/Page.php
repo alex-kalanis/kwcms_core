@@ -7,7 +7,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\InternalLink;
+use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Loaders\KwLoader;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;

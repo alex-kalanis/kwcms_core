@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Scripts;
 
 
-use kalanis\kw_modules\ATemplate;
+use kalanis\kw_modules\Templates\ATemplate;
 
 
 /**

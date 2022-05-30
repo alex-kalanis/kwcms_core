@@ -10,7 +10,7 @@ use kalanis\kw_paging\Positions;
 use kalanis\kw_paging\Render;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
 use kalanis\kw_table\form_nette\NetteFilter;
 use kalanis\kw_table\output_latte\LatteRenderer;
 use Nette\Application\UI\Form;
@@ -43,9 +43,8 @@ class Helper
         $form = new Form($container, $alias);
         $this->table->addHeaderFilter(new NetteFilter($form));
 
-        // sorter links
-        $sorter = new Sorter(new Handler(new Sources\ServerRequest()));
-        $this->table->addSorter($sorter);
+        // order links
+        $this->table->addOrder(new Order(new Handler(new Sources\ServerRequest())));
 
         // pager
         $pager = new BasicPager();

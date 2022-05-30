@@ -47,6 +47,7 @@ class FilesAdapter extends AAdapter
         return $result;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->valid()) {

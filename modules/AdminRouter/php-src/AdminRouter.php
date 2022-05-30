@@ -62,11 +62,11 @@ class AdminRouter extends AModule
     protected function orderLookup(): void
     {
         $path = Config::getPath();
-        $this->chainProcessor->addToChain(new Lib\Chain\ModulePath($this->subModules, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\ModuleDashboard($this->subModules, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\ModuleClass($this->subModules, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\AdminModule($this->subModules, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\AdminDashboard($this->subModules, $path, ISitePart::SITE_ROUTED));
+        $this->chainProcessor->addToChain(new Lib\Chain\ModulePath($this->loader, $path, ISitePart::SITE_ROUTED));
+        $this->chainProcessor->addToChain(new Lib\Chain\ModuleDashboard($this->loader, $path, ISitePart::SITE_ROUTED));
+        $this->chainProcessor->addToChain(new Lib\Chain\ModuleClass($this->loader, $path, ISitePart::SITE_ROUTED));
+        $this->chainProcessor->addToChain(new Lib\Chain\AdminModule($this->loader, $path, ISitePart::SITE_ROUTED));
+        $this->chainProcessor->addToChain(new Lib\Chain\AdminDashboard($this->loader, $path, ISitePart::SITE_ROUTED));
     }
 
     public function process(): void

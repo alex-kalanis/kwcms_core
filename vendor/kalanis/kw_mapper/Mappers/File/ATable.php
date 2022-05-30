@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Records;
  * @package kalanis\kw_mapper\Mappers\File
  * Abstract for manipulation with file content as table
  */
-abstract class ATable extends AFile
+abstract class ATable extends AStorage
 {
     use TTranslate;
 
@@ -36,7 +36,7 @@ abstract class ATable extends AFile
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
-        $matches = $this->findMatched($record, true);
+        $matches = $this->findMatched($record, !empty($this->primaryKeys));
         if (!empty($matches)) { // found!!!
             return false;
         }
@@ -70,7 +70,7 @@ abstract class ATable extends AFile
      */
     protected function updateRecord(Records\ARecord $record): bool
     {
-        $matches = $this->findMatched($record, true);
+        $matches = $this->findMatched($record, !empty($this->primaryKeys), true);
         if (empty($matches)) { // nothing found
             return false;
         }
@@ -92,7 +92,7 @@ abstract class ATable extends AFile
      */
     public function countRecord(Records\ARecord $record): int
     {
-        $matches = $this->findMatched($record, true);
+        $matches = $this->findMatched($record);
         return count($matches);
     }
 
@@ -155,10 +155,11 @@ abstract class ATable extends AFile
     /**
      * @param Records\ARecord $record
      * @param bool $usePks
+     * @param bool $wantFromStorage
      * @return string[]|int[]
      * @throws MapperException
      */
-    private function findMatched(Records\ARecord $record, bool $usePks = false): array
+    private function findMatched(Records\ARecord $record, bool $usePks = false, bool $wantFromStorage = false): array
     {
         $this->loadOnDemand($record);
 
@@ -167,11 +168,13 @@ abstract class ATable extends AFile
 
         // through relations
         foreach ($this->relations as $objectKey => $recordKey) {
-            if (!$record->offsetExists($objectKey)) { // nothing with unknown data
+            if (!$record->offsetExists($objectKey)) { // nothing with unknown relation key in record
+                // @codeCoverageIgnoreStart
                 if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
                     return []; // probably error?
                 }
                 continue;
+                // @codeCoverageIgnoreEnd
             }
             if (empty($record->offsetGet($objectKey))) { // nothing with empty data
                 if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
@@ -187,11 +190,16 @@ abstract class ATable extends AFile
                 if ($usePks && !in_array($objectKey, $this->primaryKeys)) { // is not PK
                     continue;
                 }
-                if ( !$knownRecord->offsetExists($objectKey) ) { // unknown is not need to compare
+                if ($wantFromStorage && !$knownRecord->getEntry($objectKey)->isFromStorage()) { // look through only values known in storage
+                    continue;
+                }
+                if ( !$knownRecord->offsetExists($objectKey) ) { // unknown relation key in record is not allowed into compare
+                    // @codeCoverageIgnoreStart
                     unset($toProcess[$knownKey]);
                     continue;
                 }
-                if ( empty($knownRecord->offsetGet($objectKey)) ) { // empty is not need to compare
+                // @codeCoverageIgnoreEnd
+                if ( empty($knownRecord->offsetGet($objectKey)) ) { // empty input is not need to compare
                     unset($toProcess[$knownKey]);
                     continue;
                 }
@@ -206,6 +214,7 @@ abstract class ATable extends AFile
     }
 
     /**
+     * More records on one mapper - reload with correct one
      * @param Records\ARecord $record
      * @throws MapperException
      */
@@ -215,9 +224,11 @@ abstract class ATable extends AFile
             $this->loadSource($record);
         } else {
             $test = reset($this->records);
-            if (get_class($test) != get_class($record)) { // reload other data
+            if (get_class($test) != get_class($record)) { // reload other data - changed record
+                // @codeCoverageIgnoreStart
                 $this->loadSource($record);
             }
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -227,23 +238,16 @@ abstract class ATable extends AFile
      */
     private function loadSource(Records\ARecord $record): void
     {
-        $lines = $this->loadFromRemoteSource();
+        $lines = $this->loadFromStorage();
         $records = [];
         foreach ($lines as &$line) {
 
             $item = clone $record;
-            if (!$this->beforeLoad($item)) {
-                continue;
-            }
 
             foreach ($this->relations as $objectKey => $recordKey) {
                 $entry = $item->getEntry($objectKey);
                 $entry->setData($this->translateTypeFrom($entry->getType(), $line[$recordKey]), true);
             }
-            if (!$this->afterLoad($item)) {
-                continue;
-            }
-
             $records[] = $item;
         }
         $this->records = $records;
@@ -259,27 +263,19 @@ abstract class ATable extends AFile
         foreach ($this->records as &$record) {
             $dataLine = [];
 
-            if (!$this->beforeSave($record)) {
-                continue;
-            }
-
             foreach ($this->relations as $objectKey => $recordKey) {
                 $entry = $record->getEntry($objectKey);
                 $dataLine[$recordKey] = $this->translateTypeTo($entry->getType(), $entry->getData());
             }
 
-            if (!$this->afterSave($record)) {
-                continue;
-            }
-
-            $pk_key = $this->generateKeyFromPks($record);
-            if ($pk_key) {
-                $lines[$pk_key] = $dataLine;
+            $linePk = $this->generateKeyFromPks($record);
+            if ($linePk) {
+                $lines[$linePk] = $dataLine;
             } else {
                 $lines[] = $dataLine;
             }
         }
-        return $this->saveToRemoteSource($lines);
+        return $this->saveToStorage($lines);
     }
 
     /**

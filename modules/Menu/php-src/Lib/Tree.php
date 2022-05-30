@@ -11,7 +11,7 @@ use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MetaProcessor;
 use kalanis\kw_menu\MoreEntries;
 use kalanis\kw_menu\MetaSource;
-use kalanis\kw_modules\InternalLink;
+use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_paths\Stuff;
 
 

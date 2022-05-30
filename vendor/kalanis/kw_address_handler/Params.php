@@ -33,12 +33,13 @@ class Params implements ArrayAccess
         return isset($this->paramsData[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->paramsData[$offset] : null;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->paramsData[$offset] = $value;
     }

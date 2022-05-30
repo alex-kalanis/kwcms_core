@@ -15,14 +15,14 @@ use kalanis\kw_input\Interfaces\IVariables;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\Search\Search;
-use kalanis\kw_modules\ExternalLink;
+use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
-use kalanis\kw_table\core\Table\Sorter;
+use kalanis\kw_table\core\Table\Order;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
@@ -68,9 +68,8 @@ class MessageTable
         $table->addHeaderFilter(new KwFilter($form));
         $form->setInputs($inputVariables, $inputFiles);
 
-        // sorter links
-        $sorter = new Sorter(new Handler(new Sources\Inputs($this->variables)));
-        $table->addSorter($sorter);
+        // order links
+        $table->addOrder(new Order(new Handler(new Sources\Inputs($this->variables))));
 
         // pager
         $pager = new BasicPager();
@@ -79,20 +78,20 @@ class MessageTable
         $table->addPager(new SimplifiedPager(new Positions($pager), $pageLink));
 
         // now normal code - columns
-        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $table->addOrdering('id', IQueryBuilder::ORDER_DESC);
 
         $table->setDefaultHeaderFilterFieldAttributes(['style' => 'width:90%']);
 
         $columnUserId = new Columns\Func('id', [$this, 'idLink']);
         $columnUserId->style('width:40px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('short.id'), $columnUserId );
+        $table->addOrderedColumn(Lang::get('short.id'), $columnUserId );
 
         $columnAdded = new Columns\Date('date', 'Y-m-d H:i:s');
         $columnAdded->style('width:150px', new Rules\Always());
-        $table->addSortedColumn(Lang::get('short.date'), $columnAdded);
+        $table->addOrderedColumn(Lang::get('short.date'), $columnAdded);
 
-        $table->addSortedColumn(Lang::get('short.title'), new Columns\Bold('title'), new Fields\TextContains());
-        $table->addSortedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('short.title'), new Columns\Bold('title'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Fields\TextContains());
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
@@ -131,8 +130,8 @@ class MessageTable
         $table->addColumn(Lang::get('short.title'), new Columns\Basic('title'));
         $table->addColumn(Lang::get('short.message'), new Columns\Basic('content'));
 
-        $table->getOutputPager()->getPager()->setLimit(5);
-        $table->setDefaultSorting('id', IQueryBuilder::ORDER_DESC);
+        $table->getPager()->getPager()->setLimit(5);
+        $table->addOrdering('id', IQueryBuilder::ORDER_DESC);
         $table->addDataSetConnector(new Connector($search));
         $table->translateData();
         return $table->getOutput()->renderData();

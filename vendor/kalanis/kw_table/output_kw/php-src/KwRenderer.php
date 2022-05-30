@@ -3,7 +3,9 @@
 namespace kalanis\kw_table\output_kw;
 
 
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_table\core\Table;
+use kalanis\kw_table\core\TableException;
 
 
 /**
@@ -40,6 +42,11 @@ class KwRenderer extends Table\AOutput
         $this->templateScript = new Html\TableScript();
     }
 
+    /**
+     * @return string
+     * @throws ConnectException
+     * @throws TableException
+     */
     public function render(): string
     {
         $this->renderPagers();
@@ -56,10 +63,10 @@ class KwRenderer extends Table\AOutput
 
     protected function renderPagers(): void
     {
-        if (empty($this->table->getOutputPager())) {
+        if (empty($this->table->getPager())) {
             return;
         }
-        $paging = $this->table->getOutputPager();
+        $paging = $this->table->getPager();
         if ($this->table->showPagerOnHead()) {
             $this->templateBase->addPagerHead($paging->render());
         }
@@ -82,7 +89,7 @@ class KwRenderer extends Table\AOutput
     {
         $headerFilter = $this->table->getHeaderFilter();
         $footerFilter = $this->table->getFooterFilter();
-        $formName = $headerFilter ? $headerFilter->getFormName() : ( $footerFilter ? $footerFilter->getFormName() : '' );
+        $formName = $this->table->getFormName();
         if ($formName && ($headerFilter || $footerFilter)) {
             $this->templateBase->addScript(
                 $this->templateScript->reset()->setData($formName)->render()
@@ -90,6 +97,10 @@ class KwRenderer extends Table\AOutput
         }
     }
 
+    /**
+     * @return string
+     * @throws ConnectException
+     */
     protected function getCells(): string
     {
         $cell = [];
@@ -109,12 +120,12 @@ class KwRenderer extends Table\AOutput
 
     protected function getHeader(): string
     {
-        $sorter = $this->table->getSorter();
+        $order = $this->table->getOrder();
         $this->templateRow->reset()->setData();
         foreach ($this->table->getColumns() as $column) {
-            if ($sorter && $sorter->isSorted($column)) {
+            if ($order && $order->isInOrder($column)) {
                 $this->templateRow->addCell($this->templateHeadSorted->reset()->setData(
-                    $sorter->getHeaderText($column), $sorter->getHref($column)
+                    $order->getHeaderText($column), $order->getHref($column)
                 )->render());
             } else {
                 $this->templateRow->addCell($this->templateHead->reset()->setData(
@@ -125,6 +136,10 @@ class KwRenderer extends Table\AOutput
         return $this->templateRow->render();
     }
 
+    /**
+     * @return string
+     * @throws TableException
+     */
     protected function getHeadFilter(): string
     {
         $headerFilter = $this->table->getHeaderFilter();
@@ -141,6 +156,10 @@ class KwRenderer extends Table\AOutput
         return $this->templateRow->render();
     }
 
+    /**
+     * @return string
+     * @throws TableException
+     */
     protected function getFootFilter(): string
     {
         $footerFilter = $this->table->getFooterFilter();

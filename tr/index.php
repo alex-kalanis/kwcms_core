@@ -85,7 +85,7 @@ try {
         new \kalanis\kw_input\Variables($inputs),'',
         new \kalanis\kw_modules\Processing\Modules($processor)
     );
-    echo $module->process()->get(); // dump output
+    echo $module->process('Core')->get(); // dump output
 } catch (\Exception $ex) {
     echo get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine() . PHP_EOL;
     echo "Stack trace:" . PHP_EOL;

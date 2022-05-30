@@ -26,7 +26,7 @@ interface IConnector
      * @param string $direction
      * @throws ConnectException
      */
-    public function setSorting(string $colName, string $direction): void;
+    public function setOrdering(string $colName, string $direction): void;
 
     /**
      * @param int|null $offset

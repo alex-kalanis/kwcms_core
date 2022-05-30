@@ -13,7 +13,6 @@ use PDOStatement;
  * @package kalanis\kw_mapper\Storage\Database\PDO
  * PHP data object abstraction
  * Uses placeholders, not question marks
- * @codeCoverageIgnore remote connection
  */
 abstract class APDO extends ASQL
 {
@@ -30,6 +29,7 @@ abstract class APDO extends ASQL
 
         $this->connect();
 
+//print_r(['qu', str_split($query, 80), $params]);
         $statement = $this->connection->prepare($query);
         $statement->execute($params);
 
@@ -47,11 +47,11 @@ abstract class APDO extends ASQL
         $this->connect();
 
         $statement = $this->connection->prepare($query);
-        $statement->execute($params);
+        $result = $statement->execute($params);
 
         $this->lastStatement = $statement;
 
-        return $statement->closeCursor();
+        return $result && $statement->closeCursor();
     }
 
     public function connect(): void

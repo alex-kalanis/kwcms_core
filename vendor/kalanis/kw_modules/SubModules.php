@@ -31,14 +31,14 @@ class SubModules
     }
 
     /**
-     * @param ATemplate $template
+     * @param Templates\ATemplate $template
      * @param IVariables $inputs
      * @param int $level
      * @param array $sharedParams
-     * @return ATemplate
+     * @return Templates\ATemplate
      * @throws ModuleException
      */
-    public function fill(ATemplate $template, IVariables $inputs, int $level, array $sharedParams = []): ATemplate
+    public function fill(Templates\ATemplate $template, IVariables $inputs, int $level, array $sharedParams = []): Templates\ATemplate
     {
         $this->moduleProcessor->setLevel($level);
         $modules = $this->moduleProcessor->listing();

@@ -9,7 +9,6 @@ use PDO;
 /**
  * Class SQLite
  * @package kalanis\kw_mapper\Storage\Database\PDO
- * @codeCoverageIgnore remote connection
  */
 class SQLite extends APDO
 {
@@ -34,10 +33,10 @@ class SQLite extends APDO
             $connection->setAttribute($key, $value);
         }
 
-        $connection->exec('PRAGMA main.cache_size = 10000;');
-        $connection->exec('PRAGMA main.temp_store = MEMORY;');
-        $connection->exec('PRAGMA foreign_keys = ON;');
-        $connection->exec('PRAGMA main.journal_mode = WAL;');
+//        $connection->exec('PRAGMA main.cache_size = 10000;');
+//        $connection->exec('PRAGMA main.temp_store = MEMORY;');
+//        $connection->exec('PRAGMA foreign_keys = ON;');
+//        $connection->exec('PRAGMA main.journal_mode = WAL;');
 
         return $connection;
     }

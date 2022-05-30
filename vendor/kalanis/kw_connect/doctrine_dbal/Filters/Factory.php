@@ -3,7 +3,7 @@
 namespace kalanis\kw_connect\doctrine_dbal\Filters;
 
 
-use kalanis\kw_connect\core\Filters\AFilterFactory;
+use kalanis\kw_connect\core\AFilterFactory;
 
 
 /**

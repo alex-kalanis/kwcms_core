@@ -19,7 +19,7 @@ abstract class ASimpleRecord extends ARecord
      * @param mixed $value
      * @throws MapperException
      */
-    final public function offsetSet($offset, $value)
+    final public function offsetSet($offset, $value): void
     {
         $this->offsetCheck($offset);
         $data = & $this->entries[$offset];
@@ -40,7 +40,7 @@ abstract class ASimpleRecord extends ARecord
             default:
                 // @codeCoverageIgnoreStart
                 // happens only when someone is evil enough and change type directly on entry
-                throw new MapperException(sprintf('Unknown type %d', $data->getType()));
+                throw new MapperException(sprintf('Unknown type *%d*', $data->getType()));
                 // @codeCoverageIgnoreEnd
         }
     }

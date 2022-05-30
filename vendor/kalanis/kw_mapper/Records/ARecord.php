@@ -109,34 +109,36 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @return int|ICanFill|string|null
      * @throws MapperException
      */
+    #[\ReturnTypeWillChange]
     final public function current()
     {
         return $this->valid() ? $this->offsetGet($this->key) : null ;
     }
 
-    final public function next()
+    final public function next(): void
     {
         next($this->entries);
         $this->key = key($this->entries);
     }
 
+    #[\ReturnTypeWillChange]
     final public function key()
     {
         return $this->key;
     }
 
-    final public function valid()
+    final public function valid(): bool
     {
         return $this->offsetExists($this->key);
     }
 
-    final public function rewind()
+    final public function rewind(): void
     {
         reset($this->entries);
         $this->key = key($this->entries);
     }
 
-    final public function offsetExists($offset)
+    final public function offsetExists($offset): bool
     {
         return isset($this->entries[$offset]);
     }
@@ -146,6 +148,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @return int|ICanFill|mixed|string|null
      * @throws MapperException
      */
+    #[\ReturnTypeWillChange]
     final public function offsetGet($offset)
     {
         $this->offsetCheck($offset);
@@ -167,7 +170,7 @@ abstract class ARecord implements ArrayAccess, Iterator
             default:
                 // @codeCoverageIgnoreStart
                 // happens only when someone is evil enough and change type directly on entry
-                throw new MapperException(sprintf('Unknown type %d', $data->getType()));
+                throw new MapperException(sprintf('Unknown type *%d*', $data->getType()));
                 // @codeCoverageIgnoreEnd
         }
     }
@@ -176,7 +179,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param mixed $offset
      * @throws MapperException
      */
-    final public function offsetUnset($offset)
+    final public function offsetUnset($offset): void
     {
         throw new MapperException(sprintf('Key %s removal denied', $offset));
     }
@@ -188,7 +191,7 @@ abstract class ARecord implements ArrayAccess, Iterator
     final protected function offsetCheck($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new MapperException(sprintf('Unknown key %s', $offset));
+            throw new MapperException(sprintf('Unknown key *%s*', $offset));
         }
     }
 
@@ -206,7 +209,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param $default
      * @throws MapperException
      */
-    final private function checkDefault(int $type, $default)
+    private function checkDefault(int $type, $default)
     {
         switch ($type) {
             case IEntryType::TYPE_INTEGER:
@@ -223,7 +226,7 @@ abstract class ARecord implements ArrayAccess, Iterator
                 $this->checkObjectInstance($default, $type);
                 return;
             default:
-                throw new MapperException(sprintf('Unknown type %d', $type));
+                throw new MapperException(sprintf('Unknown type *%d*', $type));
         }
     }
 
@@ -232,10 +235,10 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param int $type
      * @throws MapperException
      */
-    final private function checkLengthNumeric($value, int $type)
+    private function checkLengthNumeric($value, int $type)
     {
         if (!is_numeric($value)) {
-            throw new MapperException(sprintf('You must set length as number for type %d', $type));
+            throw new MapperException(sprintf('You must set length as number for type *%d*', $type));
         }
     }
 
@@ -244,10 +247,10 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param int $type
      * @throws MapperException
      */
-    final private function checkObjectString($value, int $type)
+    private function checkObjectString($value, int $type)
     {
         if (!is_string($value)) {
-            throw new MapperException(sprintf('You must set available string representing object for type %d', $type));
+            throw new MapperException(sprintf('You must set available string representing object for type *%d*', $type));
         }
     }
 
@@ -256,11 +259,11 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param int $type
      * @throws MapperException
      */
-    final private function checkObjectInstance($value, int $type)
+    private function checkObjectInstance($value, int $type)
     {
         $classForTest = new $value();
         if (!$classForTest instanceof ICanFill) {
-            throw new MapperException(sprintf('When you set string representing object for type %d, it must be stdClass or have ICanFill interface', $type));
+            throw new MapperException(sprintf('When you set string representing object for type *%d*, it must be stdClass or have ICanFill interface', $type));
         }
     }
 

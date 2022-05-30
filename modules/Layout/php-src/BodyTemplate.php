@@ -5,7 +5,7 @@ namespace KWCMS\modules\Layout;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\ATemplate;
+use kalanis\kw_modules\Templates\ATemplate;
 
 
 /**

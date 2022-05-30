@@ -15,6 +15,7 @@ use kalanis\kw_mapper\Storage;
  * Connect LDAP as datasource
  * Lightweight Directory Access Protocol
  * LDAP is in reality a tree. So it's similar to normal volume and its content. The key is path and value is content.
+ * @codeCoverageIgnore for now - external source
  */
 class Ldap extends AConnector
 {
@@ -32,14 +33,12 @@ class Ldap extends AConnector
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
-        $alias = $record->getMapper()->getAlias();
-        $this->records[$alias] = $record;
-        $this->childTree[$alias] = [$alias => $alias];
+        $this->initRecordLookup($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->dialect = new Storage\Database\Dialects\LdapQueries();
         $this->queryBuilder = new Storage\Shared\QueryBuilder();
-        $this->queryBuilder->setBaseTable($alias);
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
     }
 
     public function getCount(): int

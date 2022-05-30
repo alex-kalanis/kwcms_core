@@ -89,6 +89,7 @@ class Input implements ArrayAccess, IteratorAggregate, Countable
      * @param string|int $offset
      * @return Interfaces\IEntry|null
      */
+    #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->inputs[$offset] : null;

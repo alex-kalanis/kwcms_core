@@ -4,6 +4,7 @@ namespace kalanis\kw_table\output_cli;
 
 
 use kalanis\kw_clipr\Output\PrettyTable;
+use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_table\core\Table;
 
 
@@ -24,11 +25,19 @@ class CliRenderer extends Table\AOutput
         $this->prettyTable = new PrettyTable();
     }
 
+    /**
+     * @return string
+     * @throws ConnectException
+     */
     public function render(): string
     {
         return implode(PHP_EOL, $this->renderData());
     }
 
+    /**
+     * @return array
+     * @throws ConnectException
+     */
     public function renderData(): array
     {
         $this->fillHeaders();
@@ -48,27 +57,24 @@ class CliRenderer extends Table\AOutput
 
     protected function fillHeaders(): void
     {
-        $sorter = $this->table->getSorter();
-        $headerFilter = $this->table->getHeaderFilter();
+        $order = $this->table->getOrder();
         $line = [];
         foreach ($this->table->getColumns() as $column) {
-            if ($headerFilter) {
-                $line[] = $this->withSortDirection($sorter, $column) . $this->withFilter($column) . static::HEADER_PARAM_SEPARATOR . $column->getHeaderText();
+            if ($order && $order->isInOrder($column)) {
+                $line[] = $this->withOrderDirection($order, $column) . $this->withFilter($column) . static::HEADER_PARAM_SEPARATOR . $column->getHeaderText();
             } else {
                 $line[] = $this->withFilter($column) . static::HEADER_PARAM_SEPARATOR . $column->getHeaderText();
-            }
-            if ($sorter && $sorter->isSorted($column)) {
-                $line[] = $this->withSortDirection($sorter, $column) . static::HEADER_PARAM_SEPARATOR . $column->getHeaderText();
-            } else {
-                $line[] = $column->getHeaderText();
             }
         }
         $this->prettyTable->setHeaders($line);
     }
 
-    protected function withSortDirection(Table\Sorter $sorter, Table\Columns\AColumn $column): string
+    protected function withOrderDirection(Table\Order $order, Table\Columns\AColumn $column): string
     {
-        return ($sorter->isActive($column) ? '*' : '') . ($sorter->getDirection($column) == Table\Sorter::ORDER_ASC ? '^' : 'v');
+        return $order->getActiveDirection($column) == Table\Order::ORDER_ASC
+            ? ($order->isActive($column) ? '*^' : 'v')
+            : ($order->isActive($column) ? '*v' : '^')
+        ;
     }
 
     protected function withFilter(Table\Columns\AColumn $column): string
@@ -76,6 +82,9 @@ class CliRenderer extends Table\AOutput
         return ($column->hasHeaderFilterField() ? '>' : '');
     }
 
+    /**
+     * @throws ConnectException
+     */
     protected function fillCells(): void
     {
         foreach ($this->table->getTableData() as $row) {
@@ -90,6 +99,11 @@ class CliRenderer extends Table\AOutput
 
     protected function getPager(): string
     {
-        return $this->table->getOutputPager() ? $this->table->getOutputPager()->render() : '' ;
+        return $this->table->getPager() ? PHP_EOL . $this->table->getPager()->render() . PHP_EOL : '' ;
+    }
+
+    public function getTableEngine(): PrettyTable
+    {
+        return $this->prettyTable;
     }
 }
