@@ -22,7 +22,7 @@ abstract class AIterator implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     abstract protected function getIterableName(): string;
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->{$this->getIterableName()});
     }
