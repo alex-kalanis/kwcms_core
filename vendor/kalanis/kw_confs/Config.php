@@ -5,7 +5,6 @@ namespace kalanis\kw_confs;
 
 use kalanis\kw_confs\Interfaces\IConf;
 use kalanis\kw_confs\Interfaces\ILoader;
-use kalanis\kw_paths\Path;
 
 
 /**
@@ -17,29 +16,12 @@ class Config
 {
     /** @var ILoader */
     protected static $loader = null;
-    /** @var null|Path */
-    protected static $paths = null;
     /** @var string[][] */
     protected static $configs = [];
 
-    public static function init(Path $path, ?ILoader $loader = null): void
+    public static function init(ILoader $loader): void
     {
-        static::$paths = $path;
-        if (empty($loader) && empty(static::$loader)) {
-            $loader = new Loaders\PhpLoader();
-            $loader->setPathLib($path);
-        }
         static::$loader = $loader;
-    }
-
-    public static function getPath(): Path
-    {
-        return clone static::$paths;
-    }
-
-    public static function getOriginalPath(): Path
-    {
-        return static::$paths;
     }
 
     public static function load(string $module, string $conf = ''): void
@@ -63,11 +45,6 @@ class Config
     public static function get(string $module, string $key, $defaultValue = null)
     {
         return (static::$configs[$module] && isset(static::$configs[$module][$key])) ? static::$configs[$module][$key] : $defaultValue ;
-    }
-
-    public static function set(string $module, string $key, $defaultValue = null): void
-    {
-        isset(static::$configs[$module]) ? static::$configs[$module][$key] = $defaultValue : null ;
     }
 
     public static function getLoader(): ?ILoader

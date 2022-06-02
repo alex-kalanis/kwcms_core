@@ -11,6 +11,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
@@ -49,7 +50,7 @@ class Upload extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        $pathArray = Stuff::pathToArray(Config::getPath()->getPath());
+        $pathArray = Stuff::pathToArray(Stored::getPath()->getPath());
         if ('steps' == reset($pathArray)) {
             $this->inSteps = next($pathArray);
         }

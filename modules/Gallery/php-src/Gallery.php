@@ -5,6 +5,7 @@ namespace KWCMS\modules\Gallery;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Dirlist\Dirlist;
 
@@ -25,7 +26,7 @@ class Gallery extends Dirlist
     {
         return !empty($this->params['path'])
             ? Stuff::fileBase(Stuff::arrayToPath(Stuff::linkToArray($this->params['path'])))
-            : Stuff::fileBase(Config::getPath()->getPath()) ; # use dir path
+            : Stuff::fileBase(Stored::getPath()->getPath()) ; # use dir path
     }
 
     public function isUsable(string $file): bool

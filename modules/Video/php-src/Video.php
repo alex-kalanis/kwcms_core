@@ -8,6 +8,7 @@ use kalanis\kw_address_handler\Sources;
 use kalanis\kw_confs\Config;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Dirlist\Dirlist;
 
@@ -63,7 +64,7 @@ class Video extends Dirlist
     {
         return !empty($this->params['path'])
             ? Stuff::fileBase(Stuff::arrayToPath(Stuff::linkToArray($this->params['path'])))
-            : Stuff::fileBase(Config::getPath()->getPath()) ; # use dir path
+            : Stuff::fileBase(Stored::getPath()->getPath()) ; # use dir path
     }
 
     public function isUsable(string $file): bool

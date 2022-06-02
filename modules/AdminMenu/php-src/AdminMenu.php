@@ -17,6 +17,7 @@ use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -54,7 +55,7 @@ class AdminMenu extends AModule
     {
         Config::load('Core', 'page');
         Config::load('Menu');
-        $this->externalLink = new ExternalLink(Config::getPath());
+        $this->externalLink = new ExternalLink(Stored::getPath());
         $this->moduleProcessor = $processor ?: new Modules($this->getCorrectProcessor());
         $this->tmplLine = new Lib\LineTemplate();
         $this->tmplSep = new Lib\SeparatorTemplate();
@@ -68,7 +69,7 @@ class AdminMenu extends AModule
 
     protected function getCorrectConfPath(): string
     {
-        return Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot();
+        return Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot();
     }
 
     public function process(): void

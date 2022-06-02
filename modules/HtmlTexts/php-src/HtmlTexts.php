@@ -4,10 +4,10 @@ namespace KWCMS\modules\HtmlTexts;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Texts\TextsException;
 
@@ -28,7 +28,7 @@ class HtmlTexts extends AAuthModule
 
     public function run(): void
     {
-        $target = Stuff::pathToArray(Config::getPath()->getPath());
+        $target = Stuff::pathToArray(Stored::getPath()->getPath());
         $type = reset($target);
         $page = end($target);
         if (empty($type) || empty($page)) {

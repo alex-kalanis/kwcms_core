@@ -11,7 +11,7 @@ use kalanis\kw_auth\TTranslate;
 use kalanis\kw_bans\Bans;
 use kalanis\kw_bans\BanException;
 use kalanis\kw_bans\Sources\File;
-use kalanis\kw_confs\Config;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -72,7 +72,7 @@ class Banned extends AMethods
 
     protected function getBanPath(): string
     {
-        $path = Config::getPath();
+        $path = Stored::getPath();
         return $path->getDocumentRoot() . DIRECTORY_SEPARATOR . 'conf';
     }
 

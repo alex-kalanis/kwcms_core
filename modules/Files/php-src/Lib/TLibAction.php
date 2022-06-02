@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Files\Lib;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Files\Interfaces;
 
@@ -36,7 +36,7 @@ trait TLibAction
 
     protected function getUserDirLib(): UserDir
     {
-        $userDir = new UserDir(Config::getPath());
+        $userDir = new UserDir(Stored::getPath());
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return $userDir;

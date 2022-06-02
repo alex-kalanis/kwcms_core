@@ -16,8 +16,8 @@ interface ILoader
     /**
      * @param string $module which module it will be looked for
      * @param string $conf which conf name will be looked for
-     * @return string[] config array
+     * @return string[]|null config array, null when not found
      * @throws ConfException
      */
-    public function load(string $module, string $conf = ''): array;
+    public function load(string $module, string $conf = ''): ?array;
 }

@@ -12,6 +12,7 @@ use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_modules\Output\Raw;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -29,8 +30,8 @@ class Logo extends AModule
     {
         Config::load(static::getClassName(static::class));
         $this->mime = new MimeType(true);
-        $this->extLink = new ExternalLink(Config::getPath());
-        $this->intLink = new InternalLink(Config::getPath());
+        $this->extLink = new ExternalLink(Stored::getPath());
+        $this->intLink = new InternalLink(Stored::getPath());
     }
 
     public function process(): void

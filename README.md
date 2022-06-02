@@ -24,7 +24,8 @@ This is only example of work with KWCMS3, it should be treated that way.
 
 * vanilla php7.3 (my virtual machine limit now), possible php8
 * Tiny core, most things outside in modules and libraries
-* Object-oriented code, precisely defined code tree ( \{author}{\project}\{module}\{paths\to\libraries} ) simplifying autoloading
+* Object-oriented code, precisely defined code tree ( \{author}{\project}\{module}\{paths\to\libraries} )
+  simplifying autoloading
 * Well-defined inputs and outputs
 * Deep testing of libraries, possible for modules too
 * Tree-oriented, filesystem-oriented data storage as default
@@ -64,3 +65,16 @@ similar thing like _SingleModule_ .
 It also can run many subsites on one code - just with different bootstraps. And that also means
 multiply code reusability and allowing manage them by just one administration. Yet it has different
 users with different responsibilities on subsites as seen in this example.
+
+### Kubernetes, AWS or similar services
+
+KWCMS is based on files. It behaves like the older Unixes. For do the same thing like with other
+distributed services or "serverless solutions" you need to set user directory as mountpoint somewhere
+into NAS-like storage to behave like the usual external database. Then you need to set paths for
+dynamic files there. That's all.
+
+It is possible to run some parts of KWCMS on AWS or similar services, but still the main limit
+here is need of file access. It's on your developer to choose which parts will be used and their
+limits. Some parts like caches can stay on each node without problems, some need to be shared
+across the all instances. Then some things might to be problematic - nearly all loaders are
+filesystem-dependent.

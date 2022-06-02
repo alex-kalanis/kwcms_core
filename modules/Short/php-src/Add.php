@@ -18,6 +18,7 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\TWhereDir;
 
 
@@ -49,7 +50,7 @@ class Add extends AAuthModule implements IModuleTitle
         $this->form = new Lib\MessageForm('editMessage');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->userDir = new UserDir(Config::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
     }
 
     public function allowedAccessClasses(): array

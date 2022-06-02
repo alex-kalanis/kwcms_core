@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces;
 
@@ -19,7 +19,7 @@ trait TLibAction
 {
     protected function getLibFileAction(): Interfaces\IProcessFiles
     {
-        $userDir = new UserDir(Config::getPath());
+        $userDir = new UserDir(Stored::getPath());
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessFile(
@@ -30,7 +30,7 @@ trait TLibAction
 
     protected function getLibDirAction(): Interfaces\IProcessDirs
     {
-        $userDir = new UserDir(Config::getPath());
+        $userDir = new UserDir(Stored::getPath());
         $userDir->setUserPath($this->getUserDir());
         $userDir->process();
         return new ProcessDir(

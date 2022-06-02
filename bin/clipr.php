@@ -28,7 +28,7 @@ $paths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
 $paths->setPathToSystemRoot('/..');
 
 // init config
-\kalanis\kw_confs\Config::init($paths);
+\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($paths));
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
 \kalanis\kw_confs\Config::load('Admin'); // autoload admin config
@@ -38,10 +38,17 @@ $virtualDir = \kalanis\kw_confs\Config::get('Core', 'site.fake_dir', 'dir_from_c
 $params = new \kalanis\kw_paths\Params\Request();
 $params->setData($argv[0], $virtualDir)->process();
 $paths->setData($params->getParams());
+\kalanis\kw_paths\Stored::init($paths);
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
-$defaultLang = \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk');
-\kalanis\kw_langs\Lang::init($paths, $defaultLang);
+\kalanis\kw_langs\Lang::init(
+    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    \kalanis\kw_langs\Support::fillFromPaths(
+        $paths,
+        \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
+        false
+    )
+);
 \kalanis\kw_langs\Lang::load('Core'); // autoload core lang
 
 # set base for searching the files

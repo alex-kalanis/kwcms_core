@@ -4,13 +4,13 @@ namespace KWCMS\modules\Admin;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\Adapters\ArrayAdapter;
 use kalanis\kw_tree\Filters\DirFilter;
 use kalanis\kw_tree\Tree;
@@ -41,8 +41,8 @@ abstract class ChDir extends AAuthModule
     public function __construct()
     {
         Lang::load('Admin');
-        $this->userDir = new UserDir(Config::getPath());
-        $this->tree = new Tree(Config::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
+        $this->tree = new Tree(Stored::getPath());
         $this->filter = new DirFilter();
         $this->chDirForm = new Forms\ChDirForm('chdirForm');
     }

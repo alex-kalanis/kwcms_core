@@ -13,6 +13,7 @@ use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\FileNode;
 use kalanis\kw_tree\Tree;
 
@@ -34,9 +35,9 @@ class MediaRss extends AModule
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->userDir = new UserDir(Config::getPath());
-        $this->libExternal = new ExternalLink(Config::getPath());
-        $this->libInternal = new InternalLink(Config::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
+        $this->libExternal = new ExternalLink(Stored::getPath());
+        $this->libInternal = new InternalLink(Stored::getPath());
     }
 
     public function process(): void
@@ -61,9 +62,9 @@ class MediaRss extends AModule
         Config::load('Logo');
         $out = new Output\Raw();
         try {
-            $libUserDir = new UserDir(Config::getPath());
+            $libUserDir = new UserDir(Stored::getPath());
             $libFiles = FilesHelper::get($libUserDir->getWebRootDir());
-            $libTree = new Tree(Config::getPath());
+            $libTree = new Tree(Stored::getPath());
 
             $tmpl = new Lib\MainTemplate();
             return $out->setContent($tmpl->setData(
@@ -94,7 +95,7 @@ class MediaRss extends AModule
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $passedPath = Config::getPath()->getPath();
+        $passedPath = Stored::getPath()->getPath();
         $realPath = $this->libInternal->shortContent($passedPath);
         if (empty($realPath)) {
             return $messages;
@@ -130,6 +131,6 @@ class MediaRss extends AModule
      */
     protected function getDesc(Files $libFiles): string
     {
-        return $libFiles->getLibDirDesc()->get((string)$this->libInternal->shortContent(Config::getPath()->getPath()));
+        return $libFiles->getLibDirDesc()->get((string)$this->libInternal->shortContent(Stored::getPath()->getPath()));
     }
 }

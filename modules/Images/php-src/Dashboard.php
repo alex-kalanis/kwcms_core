@@ -4,7 +4,6 @@ namespace KWCMS\modules\Images;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\FilesHelper;
@@ -15,6 +14,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree\Tree;
@@ -41,8 +41,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new Tree(Config::getPath());
-        $this->userDir = new UserDir(Config::getPath());
+        $this->tree = new Tree(Stored::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
     }
 
     public function allowedAccessClasses(): array

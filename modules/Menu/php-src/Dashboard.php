@@ -4,7 +4,6 @@ namespace KWCMS\modules\Menu;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -12,6 +11,7 @@ use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
@@ -34,8 +34,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Config::getPath());
-        $this->initTMenu(Config::getPath());
+        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTMenu(Stored::getPath());
         $this->editPropsForm = new Forms\EditPropsForm('editPropsForm');
     }
 

@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Files\Lib;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -21,7 +21,7 @@ trait TModuleTemplate
     {
         Lang::load('Files');
         Lang::load('Admin');
-        $this->links = new ExternalLink(Config::getPath());
+        $this->links = new ExternalLink(Stored::getPath());
     }
 
     protected function outModuleTemplate(string $content): string

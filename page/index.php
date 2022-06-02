@@ -30,7 +30,7 @@ $paths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
 $paths->setPathToSystemRoot('/..');
 
 // init config
-\kalanis\kw_confs\Config::init($paths);
+\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($paths));
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
 \kalanis\kw_confs\Config::set('Core', 'site.default_display_module', 'Layout');
@@ -42,13 +42,19 @@ $params->set($virtualDir)->process();
 $paths->setData($params->getParams());
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
-$defaultLang = \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk');
-\kalanis\kw_langs\Lang::init($paths, $defaultLang);
+\kalanis\kw_langs\Lang::init(
+    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    \kalanis\kw_langs\Support::fillFromPaths(
+        $paths,
+        \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
+        false
+    )
+);
 \kalanis\kw_langs\Lang::load('Core'); // autoload core lang
 
 // init styles and scripts
-\kalanis\kw_scripts\Scripts::init($paths);
-\kalanis\kw_styles\Styles::init($paths);
+\kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($paths));
+\kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($paths));
 
 // pass parsed params as external source
 $argv = isset($argv) ? $argv : [] ;
@@ -56,6 +62,7 @@ $source = new \kalanis\kw_input\Sources\Basic();
 $source->setCli($argv)->setExternal($params->getParams()); // argv is for params from cli
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
+\kalanis\kw_paths\Stored::init($paths);
 
 
 class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
@@ -76,7 +83,7 @@ class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
 try {
     $processor = new ExProcessor(
         new \kalanis\kw_modules\Processing\ModuleRecord(),
-        \kalanis\kw_confs\Config::getPath()->getDocumentRoot() . \kalanis\kw_confs\Config::getPath()->getPathToSystemRoot()
+        $paths->getDocumentRoot() . $paths->getPathToSystemRoot()
     );
     $module = new \kalanis\kw_modules\Module(
         new \kalanis\kw_input\Variables($inputs),'',

@@ -50,7 +50,6 @@ class ListNews extends ATask
     }
 
     /**
-     * @throws ShortException
      * @throws ConnectException
      * @throws MapperException
      * @throws TableException

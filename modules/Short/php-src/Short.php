@@ -10,6 +10,7 @@ use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 
 
@@ -30,7 +31,7 @@ class Short extends AModule
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->userDir = new UserDir(Config::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
     }
 
     public function process(): void
