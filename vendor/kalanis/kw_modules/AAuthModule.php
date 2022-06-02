@@ -9,7 +9,6 @@ use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuthTree;
 use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\Output;

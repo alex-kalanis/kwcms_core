@@ -117,6 +117,7 @@ $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handl
             $handler,
             $server
         ),
+        $paths,
         $server
     )
 );
