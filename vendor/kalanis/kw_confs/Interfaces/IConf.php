@@ -11,6 +11,11 @@ namespace kalanis\kw_confs\Interfaces;
 interface IConf
 {
     /**
+     * @param  string $part
+     */
+    public function setPart(string $part): void;
+
+    /**
      * @return string
      */
     public function getConfName(): string;

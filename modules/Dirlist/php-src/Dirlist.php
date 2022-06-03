@@ -19,6 +19,7 @@ use kalanis\kw_paging\Positions;
 use kalanis\kw_paging\Render\SimplifiedPager;
 use kalanis\kw_paths\Extras\DirectoryListing;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 
 
@@ -60,9 +61,9 @@ class Dirlist extends AModule
         $this->templateMain = new Templates\Main();
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
-        $this->linkInternal = new InternalLink(Config::getPath());
-        $this->linkExternal = new ExternalLink(Config::getPath());
-        $this->libFiles = FilesHelper::get(Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot());
+        $this->linkInternal = new InternalLink(Stored::getPath());
+        $this->linkExternal = new ExternalLink(Stored::getPath());
+        $this->libFiles = FilesHelper::get(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
         $this->dirList = new DirectoryListing();
     }
 
@@ -95,7 +96,7 @@ class Dirlist extends AModule
     {
         return !empty($this->params['path'])
             ? Stuff::arrayToPath(Stuff::linkToArray($this->params['path']))
-            : Config::getPath()->getPath() ; # use dir path
+            : Stored::getPath()->getPath() ; # use dir path
     }
 
     protected function actualPageLookup(): int

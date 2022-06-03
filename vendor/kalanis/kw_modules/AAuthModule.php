@@ -9,10 +9,10 @@ use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuthTree;
 use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -98,7 +98,7 @@ abstract class AAuthModule extends AModule implements IModuleUser
                 $output = new Output\Raw();
                 return $output->setContent('Authorize first');
             } else {
-                $link = new Linking\ExternalLink(Config::getPath());
+                $link = new Linking\ExternalLink(Stored::getPath());
                 new Redirect($link->linkVariant('login'), Redirect::TARGET_TEMPORARY, 5);
                 $output = new Output\Html();
                 return $output->setContent(sprintf('<h1>%s</h1>', 'Authorize first'));

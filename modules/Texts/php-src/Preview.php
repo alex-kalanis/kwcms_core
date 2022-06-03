@@ -4,12 +4,12 @@ namespace KWCMS\modules\Texts;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\StorageException;
 
@@ -33,8 +33,8 @@ class Preview extends AAuthModule
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Config::getPath());
-        $this->initTTexts(Config::getPath());
+        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTTexts(Stored::getPath());
         $this->mime = new MimeType(true);
     }
 

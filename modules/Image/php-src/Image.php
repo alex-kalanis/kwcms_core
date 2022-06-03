@@ -15,6 +15,7 @@ use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_modules\Output\Raw;
 use kalanis\kw_modules\Processing\Modules;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Layout\Layout;
 
@@ -42,8 +43,8 @@ class Image extends AModule
         $this->loader = $loader;
         $this->processor = $processor;
         $this->mime = new MimeType(true);
-        $this->extLink = new ExternalLink(Config::getPath());
-        $this->intLink = new InternalLink(Config::getPath());
+        $this->extLink = new ExternalLink(Stored::getPath());
+        $this->intLink = new InternalLink(Stored::getPath());
     }
 
     public function process(): void
@@ -52,8 +53,8 @@ class Image extends AModule
 
     public function output(): AOutput
     {
-        $path = Config::getPath()->getPath();
-        return (Config::getPath()->isSingle())
+        $path = Stored::getPath()->getPath();
+        return (Stored::getPath()->isSingle())
             ? $this->outImage($path)
             : (($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_RESPONSE)
                 ? $this->outLayout($this->outTemplate($path))

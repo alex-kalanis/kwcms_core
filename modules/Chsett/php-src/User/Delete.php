@@ -10,13 +10,13 @@ use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Sources\Files;
-use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -44,7 +44,7 @@ class Delete extends AAuthModule
         Lang::load('Chsett');
         Lang::load('Admin');
         $this->libAuth = Auth::getAuthenticator();
-        $this->links = new ExternalLink(Config::getPath());
+        $this->links = new ExternalLink(Stored::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }

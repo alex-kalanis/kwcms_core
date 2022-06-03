@@ -15,6 +15,7 @@ use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -37,14 +38,14 @@ class Core extends AModule
         Config::load(static::getClassName(static::class), 'site');
         Lang::load(static::getClassName(static::class));
         $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
+        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() ));
     }
 
     public function process(): void
     {
         $this->moduleProcessor->setLevel(ISitePart::SITE_RESPONSE);
         $defaultModuleName = Config::get('Core', 'site.default_display_module', 'Layout');
-        $wantModuleName = Config::getPath()->getModule() ;
+        $wantModuleName = Stored::getPath()->getModule() ;
         $moduleRecord = $wantModuleName ? $this->moduleProcessor->readNormalized($wantModuleName) : $this->moduleProcessor->readDirect($defaultModuleName);
         $moduleRecord = $moduleRecord ?: $this->moduleProcessor->readNormalized($defaultModuleName);
         $moduleRecord = $moduleRecord ?: $this->moduleProcessor->readDirect($defaultModuleName);

@@ -18,6 +18,7 @@ use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
@@ -51,7 +52,7 @@ class Edit extends AAuthModule implements IModuleTitle
         Config::load('Pedigree');
         $this->initTModuleTemplate();
         $this->form = new Lib\MessageForm('editPedigree');
-        $this->extLink = new ExternalLink(Config::getPath());
+        $this->extLink = new ExternalLink(Stored::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }

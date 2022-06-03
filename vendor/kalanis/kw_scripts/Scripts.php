@@ -3,7 +3,6 @@
 namespace kalanis\kw_scripts;
 
 
-use kalanis\kw_paths\Path;
 use kalanis\kw_scripts\Interfaces\ILoader;
 
 
@@ -19,21 +18,9 @@ class Scripts
     /** @var string[][] */
     protected static $scripts = [];
 
-    public static function init(Path $path, ?ILoader $loader = null): void
+    public static function init(ILoader $loader): void
     {
-        if (empty($loader) && empty(static::$loader)) {
-            $loader = new Loaders\PhpLoader();
-            $loader->setPathLib($path);
-            static::$loader = $loader;
-        } elseif ($loader) {
-            static::$loader = $loader;
-        }
-    }
-
-    public static function reset(Path $path, ?ILoader $loader = null): void
-    {
-        static::$loader = null;
-        static::init($path, $loader);
+        static::$loader = $loader;
     }
 
     public static function want(string $module, string $path): void

@@ -3,12 +3,12 @@
 namespace KWCMS\modules\Errors;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\JsonError;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 
 
@@ -41,7 +41,7 @@ class Errors extends AModule
         } elseif (!empty($codesFromError)) {
             $code = reset($codesFromError);
         } else {
-            $code = Stuff::fileBase(Stuff::filename(Config::getPath()->getPath()));
+            $code = Stuff::fileBase(Stuff::filename(Stored::getPath()->getPath()));
         }
 
         $this->code = in_array($code, static::$acceptable_errors) ? $code : '403' ;

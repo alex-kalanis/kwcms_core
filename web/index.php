@@ -29,7 +29,7 @@ $paths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
 $paths->setPathToSystemRoot('/..');
 
 // init config
-\kalanis\kw_confs\Config::init($paths);
+\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($paths));
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
 \kalanis\kw_confs\Config::load('Admin'); // autoload admin config
@@ -39,10 +39,17 @@ $virtualDir = \kalanis\kw_confs\Config::get('Core', 'site.fake_dir', 'dir_from_c
 $params = new \kalanis\kw_paths\Params\Request\Server();
 $params->set($virtualDir)->process();
 $paths->setData($params->getParams());
+\kalanis\kw_paths\Stored::init($paths);
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
-$defaultLang = \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk');
-\kalanis\kw_langs\Lang::init($paths, $defaultLang);
+\kalanis\kw_langs\Lang::init(
+    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    \kalanis\kw_langs\Support::fillFromPaths(
+        $paths,
+        \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
+        false
+    )
+);
 \kalanis\kw_langs\Lang::load('Core'); // autoload core lang
 
 session_start();
@@ -69,8 +76,8 @@ $server = new \kalanis\kw_input\Simplified\ServerAdapter();
 );
 
 // init styles and scripts
-\kalanis\kw_scripts\Scripts::init($paths);
-\kalanis\kw_styles\Styles::init($paths);
+\kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($paths));
+\kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($paths));
 
 // authorization tree
 $authenticator = new \kalanis\kw_auth\Sources\Files(
@@ -86,7 +93,7 @@ class ExBanned extends \kalanis\kw_auth\Methods\Banned
 {
     protected function getBanPath(): string
     {
-        $path = \kalanis\kw_confs\Config::getPath();
+        $path = \kalanis\kw_paths\Stored::getPath();
         return $path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web';
     }
 }
@@ -110,6 +117,7 @@ $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handl
             $handler,
             $server
         ),
+        $paths,
         $server
     )
 );
@@ -136,7 +144,7 @@ class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
 try {
     $processor = new ExProcessor(
         new \kalanis\kw_modules\Processing\ModuleRecord(),
-        \kalanis\kw_confs\Config::getPath()->getDocumentRoot() . \kalanis\kw_confs\Config::getPath()->getPathToSystemRoot()
+        $paths->getDocumentRoot() . $paths->getPathToSystemRoot()
     );
     $module = new \kalanis\kw_modules\Module(
         new \kalanis\kw_input\Variables($inputs),'',

@@ -13,6 +13,7 @@ use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_modules\Processing\Modules;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
@@ -45,7 +46,7 @@ class Pedigree extends AModule
     public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
         Config::load(static::getClassName(static::class));
-        $this->externalLink = new ExternalLink(Config::getPath());
+        $this->externalLink = new ExternalLink(Stored::getPath());
         $this->loader = $loader;
         $this->processor = $processor;
         Lang::load(static::getClassName(static::class));

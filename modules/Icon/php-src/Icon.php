@@ -3,7 +3,6 @@
 namespace KWCMS\modules\Icon;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -11,6 +10,7 @@ use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -32,9 +32,9 @@ class Icon extends AModule
     public function __construct()
     {
         $this->mime = new MimeType(true);
-        $this->userDir = new UserDir(Config::getPath());
-        $this->libExternal = new ExternalLink(Config::getPath());
-        $this->libInternal = new InternalLink(Config::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
+        $this->libExternal = new ExternalLink(Stored::getPath());
+        $this->libInternal = new InternalLink(Stored::getPath());
     }
 
     public function process(): void
@@ -56,8 +56,7 @@ class Icon extends AModule
 
     protected function outResponse(): Output\AOutput
     {
-        $path = Config::getPath();
-        $imagePath = $this->libInternal->userContent($path->getPath());
+        $imagePath = $this->libInternal->userContent(Stored::getPath()->getPath());
         if (!$imagePath) {
             $imagePath = realpath(implode(DIRECTORY_SEPARATOR, [
                 __DIR__, '..', 'images', 'no_image_available.png'

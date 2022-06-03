@@ -13,6 +13,7 @@ use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\DumpingCallback;
 use kalanis\kw_modules\Output\Raw;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 
 
@@ -34,7 +35,7 @@ class Watermark extends AModule
     {
         Config::load(static::getClassName(static::class));
         $this->mime = new MimeType(true);
-        $this->link = new InternalLink(Config::getPath());
+        $this->link = new InternalLink(Stored::getPath());
     }
 
     public function process(): void
@@ -43,7 +44,7 @@ class Watermark extends AModule
             IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
         ]);
         $this->repeat = !empty($repeat);
-        $this->imagePath = Config::getPath()->getPath();
+        $this->imagePath = Stored::getPath()->getPath();
     }
 
     public function output(): AOutput

@@ -12,6 +12,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\TWhereDir;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Templates;
@@ -45,7 +46,7 @@ abstract class AEdit extends AAuthModule
         Config::load('Images');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->userDir = new UserDir(Config::getPath());
+        $this->userDir = new UserDir(Stored::getPath());
     }
 
     public function allowedAccessClasses(): array

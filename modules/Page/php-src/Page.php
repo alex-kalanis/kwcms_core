@@ -16,6 +16,7 @@ use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\SubModules;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -38,10 +39,10 @@ class Page extends AModule
     {
         Config::load('Core', 'page');
         $loader = $loader ?: new KwLoader();
-        $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
+        $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() ));
         $moduleProcessor->setLevel(ISitePart::SITE_CONTENT);
         $this->subModules = new SubModules($loader, $moduleProcessor);
-        $this->link = new InternalLink(Config::getPath());
+        $this->link = new InternalLink(Stored::getPath());
     }
 
     public function process(): void
@@ -52,7 +53,7 @@ class Page extends AModule
         }
         $content = @file_get_contents($path);
         if (false === $content) {
-            throw new ModuleException(sprintf('Cannot load content on path *%s*', Config::getPath()->getPath()));
+            throw new ModuleException(sprintf('Cannot load content on path *%s*', Stored::getPath()->getPath()));
         }
         $this->content = strval($content);
     }

@@ -16,6 +16,7 @@ use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\SubModules;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -38,10 +39,10 @@ class SinglePage extends AModule
     {
         Config::load('Core', 'page');
         $loader = $loader ?: new KwLoader();
-        $path = Config::getPath();
+        $path = Stored::getPath();
         $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), $path->getDocumentRoot() . $path->getPathToSystemRoot() ));
         $this->subModules = new SubModules($loader, $moduleProcessor);
-        $this->link = new InternalLink(Config::getPath());
+        $this->link = new InternalLink(Stored::getPath());
     }
 
     public function process(): void

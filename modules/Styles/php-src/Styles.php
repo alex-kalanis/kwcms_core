@@ -3,7 +3,6 @@
 namespace KWCMS\modules\Styles;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -11,6 +10,7 @@ use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_styles\Styles as ExStyles;
 
@@ -39,8 +39,8 @@ class Styles extends AModule
     {
         $this->mime = new MimeType(true);
         $this->template = new StylesTemplate();
-        $this->libIntLink = new InternalLink(Config::getPath());
-        $this->libExtLink = new ExternalLink(Config::getPath(), false, false);
+        $this->libIntLink = new InternalLink(Stored::getPath());
+        $this->libExtLink = new ExternalLink(Stored::getPath(), false, false);
     }
 
     public function process(): void

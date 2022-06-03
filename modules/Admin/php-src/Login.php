@@ -5,7 +5,6 @@ namespace KWCMS\modules\Admin;
 
 use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\CookieAdapter;
@@ -14,6 +13,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
@@ -65,7 +65,7 @@ class Login extends AAuthModule implements IModuleTitle
         }
 
         if ($this->user) { // logged in
-            $link = new ExternalLink(Config::getPath());
+            $link = new ExternalLink(Stored::getPath());
             if ($this->isJson()) {
                 // create json with status info
                 $out = new Output\Json();

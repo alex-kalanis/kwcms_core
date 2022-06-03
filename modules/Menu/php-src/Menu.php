@@ -12,6 +12,7 @@ use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_storage\Storage;
@@ -37,8 +38,8 @@ class Menu extends AModule
     {
         Config::load('Menu');
         $this->canCache = (bool)Config::get('Menu', 'use_cache', false);
-        $this->externalLink = new ExternalLink(Config::getPath());
-        $this->internalLink = new InternalLink(Config::getPath());
+        $this->externalLink = new ExternalLink(Stored::getPath());
+        $this->internalLink = new InternalLink(Stored::getPath());
         $this->tree = new Lib\Tree($this->internalLink);
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
@@ -47,7 +48,7 @@ class Menu extends AModule
 
     protected function getCache(): ICache
     {
-        $cachePath = Config::getPath()->getDocumentRoot() . DIRECTORY_SEPARATOR . IPaths::DIR_TEMP;
+        $cachePath = Stored::getPath()->getDocumentRoot() . DIRECTORY_SEPARATOR . IPaths::DIR_TEMP;
         Storage\Key\DirKey::setDir($cachePath. DIRECTORY_SEPARATOR);
         $storage = new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory());
         $cache = new CacheStorage\Semaphore($storage->getStorage('volume'), $this->getSemaphore());

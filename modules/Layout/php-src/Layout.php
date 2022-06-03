@@ -19,6 +19,7 @@ use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\Processing\Support;
 use kalanis\kw_modules\SubModules;
+use kalanis\kw_paths\Stored;
 
 
 /**
@@ -43,7 +44,7 @@ class Layout extends AModule
     {
         Config::load('Core', 'page');
         $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot() ));
+        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() ));
         $this->subModules = new SubModules($this->loader, $this->moduleProcessor);
     }
 
@@ -51,7 +52,7 @@ class Layout extends AModule
     {
         $this->moduleProcessor->setLevel(ISitePart::SITE_LAYOUT);
         $defaultModuleName = Config::get('Core', 'page.default_display_module', 'Page');
-        $wantModuleName = Config::getPath()->getModule() ?: $defaultModuleName ;
+        $wantModuleName = Stored::getPath()->getModule() ?: $defaultModuleName ;
         $moduleRecord = $this->moduleProcessor->readNormalized($wantModuleName);
         $moduleRecord = $moduleRecord ?? $this->moduleProcessor->readNormalized($defaultModuleName);
 
@@ -78,7 +79,7 @@ class Layout extends AModule
         if ($this->inputIsOnlyHead()) {
             return new Raw(); // empty body for HEAD
         }
-        $isSolo = Config::getPath()->isSingle() || $this->inputWantBeSingle();
+        $isSolo = Stored::getPath()->isSingle() || $this->inputWantBeSingle();
         return ($result->canWrap() && !$isSolo) ? $this->wrapped($result) : $result ;
     }
 

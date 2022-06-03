@@ -3,7 +3,6 @@
 namespace KWCMS\modules\Scripts;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -11,6 +10,7 @@ use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts as ExScripts;
 
@@ -39,8 +39,8 @@ class Scripts extends AModule
     {
         $this->mime = new MimeType(true);
         $this->template = new ScriptsTemplate();
-        $this->libIntLink = new InternalLink(Config::getPath());
-        $this->libExtLink = new ExternalLink(Config::getPath(), false, false);
+        $this->libIntLink = new InternalLink(Stored::getPath());
+        $this->libExtLink = new ExternalLink(Stored::getPath(), false, false);
     }
 
     public function process(): void

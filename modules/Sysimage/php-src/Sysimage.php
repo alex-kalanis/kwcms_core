@@ -3,13 +3,13 @@
 namespace KWCMS\modules\Sysimage;
 
 
-use kalanis\kw_confs\Config;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
 use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 
 
@@ -30,7 +30,7 @@ class Sysimage extends AModule
 
     public function process(): void
     {
-        $path = Config::getPath();
+        $path = Stored::getPath();
         $pathArray = Stuff::pathToArray($path->getPath());
         $module = array_shift($pathArray);
         $this->imagePath = realpath(implode(DIRECTORY_SEPARATOR, [

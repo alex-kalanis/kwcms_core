@@ -9,6 +9,7 @@ use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\DirectoryListing;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 
 
@@ -38,15 +39,15 @@ class Chapters extends AModule
     public function __construct()
     {
         Config::load('Chapters');
-        $this->linkInternal = new InternalLink(Config::getPath());
-        $this->linkExternal = new ExternalLink(Config::getPath());
+        $this->linkInternal = new InternalLink(Stored::getPath());
+        $this->linkExternal = new ExternalLink(Stored::getPath());
         $this->tmplPage = new Lib\PageTemplate();
         $this->dirList = new DirectoryListing();
     }
 
     public function process(): void
     {
-        $this->path = Config::getPath()->getPath();
+        $this->path = Stored::getPath()->getPath();
         $fullPath = $this->linkInternal->userContent($this->path);
         $this->dir = Stuff::directory($fullPath);
         $this->file = Stuff::filename($fullPath);
@@ -97,7 +98,7 @@ class Chapters extends AModule
             return $out;
         }
         $content = '';
-        $currentDir = Stuff::directory(Config::getPath()->getPath());
+        $currentDir = Stuff::directory(Stored::getPath()->getPath());
         if (isset($this->availableFiles[$this->position - 1])) {
             $content .= $this->tmplPage->reset()
                 ->setTemplateName('prev_page')

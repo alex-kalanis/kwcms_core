@@ -20,6 +20,7 @@ use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\SubModules;
+use kalanis\kw_paths\Stored;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 
@@ -52,7 +53,7 @@ class AdminRouter extends AModule
         $this->loader = $loader ?: new KwLoader();
         $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(
             new ModuleRecord(),
-            Config::getPath()->getDocumentRoot() . Config::getPath()->getPathToSystemRoot()
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         ));
         $this->subModules = new SubModules($this->loader, $this->moduleProcessor);
         $this->chainProcessor = new Lib\Chain\Processor();
@@ -61,7 +62,7 @@ class AdminRouter extends AModule
 
     protected function orderLookup(): void
     {
-        $path = Config::getPath();
+        $path = Stored::getPath();
         $this->chainProcessor->addToChain(new Lib\Chain\ModulePath($this->loader, $path, ISitePart::SITE_ROUTED));
         $this->chainProcessor->addToChain(new Lib\Chain\ModuleDashboard($this->loader, $path, ISitePart::SITE_ROUTED));
         $this->chainProcessor->addToChain(new Lib\Chain\ModuleClass($this->loader, $path, ISitePart::SITE_ROUTED));
@@ -83,7 +84,7 @@ class AdminRouter extends AModule
         if ($this->inputIsOnlyHead()) {
             return new Raw(); // empty body for HEAD
         }
-        $isSolo = Config::getPath()->isSingle() || $this->inputWantBeSingle();
+        $isSolo = Stored::getPath()->isSingle() || $this->inputWantBeSingle();
         return ($result->canWrap() && !$isSolo) ? $this->wrapped($result) : $result ;
     }
 

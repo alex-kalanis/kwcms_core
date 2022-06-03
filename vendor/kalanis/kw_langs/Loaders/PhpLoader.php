@@ -29,18 +29,18 @@ class PhpLoader implements ILoader
         '%2$s%1$s%7$s%1$s%7$s%9$s', # in lang root as single file
     ];
 
-    /** @var null|Path */
+    /** @var Path */
     protected $pathLib = null;
 
-    public function setPathLib(?Path $pathLib): void
+    public function __construct(Path $pathLib)
     {
         $this->pathLib = $pathLib;
     }
 
-    public function load(string $module, string $lang): array
+    public function load(string $module, string $lang): ?array
     {
         $path = $this->contentPath($module, $lang);
-        return (!empty($path)) ? $this->includedLang($path) : [];
+        return (!empty($path)) ? $this->includedLang($path) : null;
     }
 
     /**
@@ -51,9 +51,6 @@ class PhpLoader implements ILoader
      */
     public function contentPath(string $module, string $lang): ?string
     {
-        if (empty($this->pathLib)) {
-            throw new LangException('Need to set Path library first!');
-        }
         $basicLookupDir = $this->pathLib->getDocumentRoot() . $this->pathLib->getPathToSystemRoot();
         foreach ($this->pathMasks as $pathMask) {
             $unmasked = sprintf( $pathMask,
