@@ -52,6 +52,7 @@ class EditTemplate extends ATemplate
         $this->addInput('{INPUT_RESET}');
         $this->addInput('{FORM_END}');
         $this->addInput('{BIRTH_DATE_FORM}', Lang::get('pedigree.text.birth_format'));
+        $this->addInput('{PART_OF_NAME}', Lang::get('pedigree.text.part_of_name'));
     }
 
     /**

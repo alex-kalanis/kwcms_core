@@ -47,6 +47,11 @@ class Config
         return (static::$configs[$module] && isset(static::$configs[$module][$key])) ? static::$configs[$module][$key] : $defaultValue ;
     }
 
+    public static function set(string $module, string $key, $defaultValue = null): void
+    {
+        isset(static::$configs[$module]) ? static::$configs[$module][$key] = $defaultValue : null ;
+    }
+
     public static function getLoader(): ?ILoader
     {
         return static::$loader;

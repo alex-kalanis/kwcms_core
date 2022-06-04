@@ -75,9 +75,10 @@ class Add extends AAuthModule implements IModuleTitle
                     $record = $adapter->getRecord();
                 }
                 $ex = new DataExchange($record);
-                $ex->import($this->form->getValues());
-                $record->date = time();
-                $this->isProcessed = $record->save(true);
+                if ((bool)$ex->import($this->form->getValues())) {
+                    $record->date = time();
+                    $this->isProcessed = $record->save(true);
+                }
             }
         } catch (MapperException | FormsException | ShortException $ex) {
             $this->error = $ex;

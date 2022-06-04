@@ -42,6 +42,7 @@ $lang = [
         "pedigree.text.contact" => "Contact",
         "pedigree.text.id_prop" => "ID length",
         "pedigree.text.long_info" => "Full info",
+        "pedigree.text.part_of_name" => "Part of wanted name",
 
         "pedigree.{PARAMS}" => "Parameters",
         "pedigree.{BEGIN}" => "Begin",
@@ -82,6 +83,7 @@ $lang = [
 
         "pedigree.show_table" => "Lister",
         "pedigree.add_record" => "Ajouter",
+        "pedigree.actions" => "Actions",
         "pedigree.show" => "Se d&#x00E9;poser",
         "pedigree.update" => "Actualiser",
         "pedigree.remove" => "Supprimer",
@@ -95,6 +97,7 @@ $lang = [
         "pedigree.text.birth_date" => "Naissance",
         "pedigree.text.birth_format" => "Form (an-mois-jour)",
         "pedigree.text.basic_info" => "Base informations",
+        "pedigree.text.trials" => "Examens",
         "pedigree.text.photo" => "Photo",
         "pedigree.text.father" => "P&#x00E8;re",
         "pedigree.text.mother" => "M&#x00E8;re",
@@ -102,6 +105,7 @@ $lang = [
         "pedigree.text.contact" => "Contact",
         "pedigree.text.id_prop" => "ID dur&#x00E9;e",
         "pedigree.text.long_info" => "Info compl&#x00E8;te",
+        "pedigree.text.part_of_name" => "Part of wanted name",
 
         "pedigree.{PARAMS}" => "Param&#x00E8;tres",
         "pedigree.{BEGIN}" => "Ouvrir",
@@ -164,6 +168,7 @@ $lang = [
         "pedigree.text.contact" => "Adresa",
         "pedigree.text.id_prop" => "D&#x00E9;lka ID",
         "pedigree.text.long_info" => "&#x00DA;pln&#x00E9; info",
+        "pedigree.text.part_of_name" => "&#x010C;&#x00E1;st hledan&#x00E9;ho jm&#x00E9;na",
 
         "pedigree.{PARAMS}" => "Vlastnosti",
         "pedigree.{BEGIN}" => "Za&#x010D;&#x00E1;tek",

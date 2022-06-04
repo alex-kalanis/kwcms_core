@@ -292,6 +292,10 @@
         float: left; height: 1.7em; width: 10em; text-align: center; text-transform: uppercase; padding: 0px 0.3em; margin-top: -10px;
     }
 
+    .rowmenu>ul.longer>li {
+        width: 20em;
+    }
+
     .rowmenu>ul.nowrap>li {
         float: initial;
     }
