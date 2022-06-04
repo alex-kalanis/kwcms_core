@@ -3,6 +3,7 @@
 namespace kalanis\kw_pedigree\Storage\MultiTable;
 
 
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pedigree\Interfaces\IEntry;
 use kalanis\kw_pedigree\Storage\AEntryAdapter;
@@ -14,17 +15,33 @@ use kalanis\kw_pedigree\Storage\AEntryAdapter;
  */
 class EntryAdapter extends AEntryAdapter
 {
-    public function setFatherId(string $fatherId): bool
+    /**
+     * @param string $fatherId
+     * @return bool|null
+     * @throws MapperException
+     */
+    public function setFatherId(string $fatherId): ?bool
     {
         return $this->setParentId($fatherId, IEntry::SEX_MALE);
     }
 
-    public function setMotherId(string $motherId): bool
+    /**
+     * @param string $motherId
+     * @return bool|null
+     * @throws MapperException
+     */
+    public function setMotherId(string $motherId): ?bool
     {
         return $this->setParentId($motherId, IEntry::SEX_FEMALE);
     }
 
-    protected function setParentId(string $parentId, string $sex): bool
+    /**
+     * @param string $parentId
+     * @param string $sex
+     * @return bool|null
+     * @throws MapperException
+     */
+    protected function setParentId(string $parentId, string $sex): ?bool
     {
         $result = $this->parentLookup($sex);
         if (!empty($result) && !empty($parentId)) {
@@ -33,7 +50,7 @@ class EntryAdapter extends AEntryAdapter
                 $result->parentId = $parentId;
                 return $result->save();
             }
-            return true;
+            return null;
         } elseif (!empty($parentId)) {
             // new one
             /** @var PedigreeRelateRecord $record */
@@ -47,22 +64,40 @@ class EntryAdapter extends AEntryAdapter
         }
     }
 
+    /**
+     * @return string
+     * @throws MapperException
+     */
     public function getFatherId(): string
     {
         return $this->getParentId(IEntry::SEX_MALE);
     }
 
+    /**
+     * @return string
+     * @throws MapperException
+     */
     public function getMotherId(): string
     {
         return $this->getParentId(IEntry::SEX_FEMALE);
     }
 
+    /**
+     * @param string $sex
+     * @return string
+     * @throws MapperException
+     */
     protected function getParentId(string $sex): string
     {
         $results = $this->parentLookup($sex);
         return empty($results) ? '' : strval($results->parentId);
     }
 
+    /**
+     * @param string $sex
+     * @return PedigreeRelateRecord|null
+     * @throws MapperException
+     */
     protected function parentLookup(string $sex): ?PedigreeRelateRecord
     {
         $search = new Search(new PedigreeRelateRecord());
@@ -87,7 +122,7 @@ class EntryAdapter extends AEntryAdapter
         return strval($record->childId);
     }
 
-    public function saveFamily(string $fatherId, string $motherId): bool
+    public function saveFamily(string $fatherId, string $motherId): ?bool
     {
         return $this->setFatherId($fatherId) && $this->setMotherId($motherId);
     }

@@ -72,8 +72,9 @@ class Edit extends AAuthModule implements IModuleTitle
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
                 $ex = new DataExchange($record);
-                $ex->import($this->form->getValues());
-                $this->isProcessed = $record->save();
+                if ((bool)$ex->import($this->form->getValues())) {
+                    $this->isProcessed = $record->save();
+                }
             }
         } catch (MapperException | FormsException | ShortException $ex) {
             $this->error = $ex;

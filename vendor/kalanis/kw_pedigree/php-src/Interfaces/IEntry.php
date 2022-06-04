@@ -63,11 +63,19 @@ interface IEntry
 
     public function getBirth(): string;
 
-    public function setFatherId(string $fatherId): bool;
+    /**
+     * @param string $fatherId
+     * @return bool|null bool if changed, null if nothing happens
+     */
+    public function setFatherId(string $fatherId): ?bool;
 
     public function getFatherId(): string;
 
-    public function setMotherId(string $motherId): bool;
+    /**
+     * @param string $motherId
+     * @return bool|null bool if changed, null if nothing happens
+     */
+    public function setMotherId(string $motherId): ?bool;
 
     public function getMotherId(): string;
 

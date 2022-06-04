@@ -7,15 +7,19 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\Interfaces;
+use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
 /**
  * Class MessageForm
  * @package KWCMS\modules\Pedigree\Lib
+ * @property Controls\Select fatherId
+ * @property Controls\Select motherId
  * @property Controls\Submit postRecord
  * @property Controls\Reset clearRecord
  */
@@ -24,6 +28,13 @@ class MessageForm extends Form
     /** @var GetEntries|null */
     protected $entry = null;
 
+    /**
+     * @param GetEntries $entry
+     * @param string $targetHelper
+     * @return MessageForm
+     * @throws MapperException
+     * @throws RuleException
+     */
     public function composeForm(GetEntries $entry, string $targetHelper): self
     {
         $this->entry = $entry;
@@ -60,11 +71,21 @@ class MessageForm extends Form
         return $this;
     }
 
+    /**
+     * @param ARecord $record
+     * @return string
+     * @throws MapperException
+     */
     public function getRecordKey(ARecord $record): string
     {
         return strval($record->offsetGet($this->entry->getStorage()->getKeyKey()));
     }
 
+    /**
+     * @param ARecord $record
+     * @return string
+     * @throws MapperException
+     */
     public function getRecordName(ARecord $record): string
     {
         return strval($record->offsetGet($this->entry->getStorage()->getNameKey())) . ' ' . strval($record->offsetGet($this->entry->getStorage()->getFamilyKey()));
@@ -75,6 +96,10 @@ class MessageForm extends Form
         return intval(preg_match('#^([0-2][0-9]{3})-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$#', $value));
     }
 
+    /**
+     * @return MessageForm
+     * @throws RuleException
+     */
     public function addIdentifier(): self
     {
         $ident = $this->addText($this->entry->getStorage()->getKeyKey(), Lang::get('pedigree.text.key'), $this->entry->getStorage()->getKey());
@@ -84,6 +109,11 @@ class MessageForm extends Form
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return bool
+     * @throws MapperException
+     */
     public function checkKey($value): bool
     {
         return empty($this->entry->getByKey($value)->offsetGet($this->entry->getStorage()->getNameKey()));

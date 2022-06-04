@@ -102,7 +102,10 @@ class PedigreeTable
         $columnAdded->style('width:150px', new Rules\Always());
         $this->table->addOrderedColumn(Lang::get('pedigree.text.birth_date'), $columnAdded);
 
-        $this->table->addOrderedColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Fields\TextContains());
+        $this->table->addColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Fields\Multiple([
+            new Fields\MultipleValue(new Fields\TextContains()),
+            new Fields\MultipleValue(new Fields\TextContains()),
+        ]));
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'showLink']));

@@ -3,6 +3,7 @@
 namespace kalanis\kw_pedigree\Storage;
 
 
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pedigree\Interfaces\IEntry;
@@ -84,12 +85,13 @@ abstract class AEntryAdapter implements IEntry
         return strval($this->record->birth);
     }
 
-    public function setFatherId(string $fatherId): bool
+    public function setFatherId(string $fatherId): ?bool
     {
         if ($this->record->fatherId != $fatherId) {
             $this->record->fatherId = $fatherId;
+            return true;
         }
-        return true;
+        return null;
     }
 
     public function getFatherId(): string
@@ -97,12 +99,13 @@ abstract class AEntryAdapter implements IEntry
         return strval($this->record->fatherId);
     }
 
-    public function setMotherId(string $motherId): bool
+    public function setMotherId(string $motherId): ?bool
     {
         if ($this->record->motherId != $motherId) {
             $this->record->motherId = $motherId;
+            return true;
         }
-        return true;
+        return null;
     }
 
     public function getMotherId(): string
@@ -110,6 +113,10 @@ abstract class AEntryAdapter implements IEntry
         return strval($this->record->motherId);
     }
 
+    /**
+     * @return array
+     * @throws MapperException
+     */
     public function getChildren(): array
     {
         $search = new Search($this->record);
@@ -119,11 +126,18 @@ abstract class AEntryAdapter implements IEntry
         return $search->getResults();
     }
 
-    public function saveFamily(string $fatherId, string $motherId): bool
+    /**
+     * @param string $fatherId
+     * @param string $motherId
+     * @return bool|null
+     * @throws MapperException
+     */
+    public function saveFamily(string $fatherId, string $motherId): ?bool
     {
-        $this->setFatherId($fatherId);
-        $this->setMotherId($motherId);
-        return $this->record->save();
+        if ((bool)$this->setFatherId($fatherId) || (bool)$this->setMotherId($motherId)) {
+            return $this->record->save();
+        }
+        return null;
     }
 
     public function setTrials(string $trials): IEntry

@@ -42,14 +42,18 @@ let Names = function () {
 			// nothing
 			return;
 		}
+		let placeholder = ajx_pos.getAttribute('data-title');
+		if (null == placeholder) {
+			placeholder = 'Part of wanted name';
+		}
 		let inp = document.createElement('input');
 		inp.setAttribute('type', 'text');
 		inp.setAttribute('id', inputId);
-		inp.setAttribute('placeholder', 'Part of wanted name');
+		inp.setAttribute('placeholder', placeholder);
 		inp.setAttribute('onKeyUp', 'names.updateHelper(\'' + inputId + '\',\'' + type + '\',\'' + inputListing + '\',\'' + inputSelect + '\')');
 		let lst = document.createElement('ul');
 		lst.setAttribute('id', inputListing);
-		lst.setAttribute('class', 'menu submenu nowrap');
+		lst.setAttribute('class', 'menu submenu nowrap longer');
 		ajx_pos.appendChild(inp);
 		ajx_pos.appendChild(lst);
 	};

@@ -3,25 +3,18 @@
 namespace KWCMS\modules\Pedigree;
 
 
-use kalanis\kw_address_handler\Forward;
-use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_confs\Config;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Records\ARecord;
-use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
-use kalanis\kw_pedigree\Storage;
+use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_scripts\Scripts;
 
 
@@ -30,18 +23,10 @@ use kalanis\kw_scripts\Scripts;
  * @package KWCMS\modules\Pedigree
  * Site's Pedigree - add form
  */
-class Add extends AAuthModule implements IModuleTitle
+class Add extends APedigree
 {
-    use Lib\TModuleTemplate;
-
     /** @var Lib\MessageForm|null */
     protected $form = null;
-    /** @var MapperException|null */
-    protected $error = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
     /** @var GetEntries */
     protected $entry = null;
     /** @var ExternalLink */
@@ -49,17 +34,9 @@ class Add extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        Config::load('Pedigree');
-        $this->initTModuleTemplate();
+        parent::__construct();
         $this->form = new Lib\MessageForm('editPedigree');
         $this->extLink = new ExternalLink(Stored::getPath());
-        $this->forward = new Forward();
-        $this->forward->setSource(new ServerRequest());
-    }
-
-    public function allowedAccessClasses(): array
-    {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
     }
 
     public function run(): void
@@ -71,39 +48,29 @@ class Add extends AAuthModule implements IModuleTitle
             $this->form->addIdentifier();
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
+                $processEntry = false;
                 $ex = new DataExchange($this->entry->getRecord());
                 $ex->addExclude('fatherId');
                 $ex->addExclude('motherId');
-                $ex->import($this->form->getValues());
-                if ($this->entry->getRecord()->save(true)) {
-                    $this->entry->getRecord()->load();
-                    $this->entry->getStorage()->setRecord($this->entry->getRecord());
-                    $this->isProcessed = $this->entry->getStorage()->saveFamily(
-                        $this->form->getControl('fatherId')->getValue(),
-                        $this->form->getControl('motherId')->getValue()
-                    );
-                };
+                if ((bool)$ex->import($this->form->getValues())) {
+                    if ($this->entry->getRecord()->save(true)) {
+                        $this->entry->getRecord()->load();
+                        $this->entry->getStorage()->setRecord($this->entry->getRecord());
+                        $processEntry = true;
+                    }
+                }
+                $processFamily = $this->entry->getStorage()->saveFamily(
+                    $this->form->getControl('fatherId')->getValue(),
+                    $this->form->getControl('motherId')->getValue()
+                );
+                $this->isProcessed = $processEntry || (true === $processFamily);
             }
-        } catch (MapperException | FormsException | PedigreeException | \PDOException $ex) {
+        } catch (MapperException | FormsException | RuleException | PedigreeException | \PDOException $ex) {
             $this->error = $ex;
         }
     }
 
-    protected function getRecord(): ARecord
-    {
-        \kalanis\kw_pedigree\Config::init();
-        return new Storage\SingleTable\PedigreeRecord();
-//        return new Storage\MultiTable\PedigreeItemRecord();
-    }
-
-    public function result(): Output\AOutput
-    {
-        return $this->isJson()
-            ? $this->outJson()
-            : $this->outHtml();
-    }
-
-    public function outHtml(): Output\AOutput
+    protected function outHtml(): Output\AOutput
     {
         $out = new Output\Html();
         try {
@@ -122,7 +89,7 @@ class Add extends AAuthModule implements IModuleTitle
         }
     }
 
-    public function outJson(): Output\AOutput
+    protected function outJson(): Output\AOutput
     {
         if ($this->error) {
             $out = new Output\JsonError();
