@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Admin\Templates;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Admin\Forms\LoginForm;
@@ -30,15 +31,23 @@ class LoginTemplate extends ATemplate
         $this->addInput('{TITLE_PASS}', Lang::get('login.pass'));
         $this->addInput('{TITLE_LANG}', Lang::get('system.use_lang'));
         $this->addInput('{LOGIN_STAT}', '');
+        $this->addInput('{CHANGE_LANG_LINK}', '');
     }
 
-    public function setData(LoginForm $form): self
+    /**
+     * @param LoginForm $form
+     * @param string $langLink
+     * @return $this
+     * @throws RenderException
+     */
+    public function setData(LoginForm $form, string $langLink = ''): self
     {
         $this->updateItem('{INPUT_NAME}', $form->getControl('user')->renderInput());
         $this->updateItem('{INPUT_PASS}', $form->getControl('pass')->renderInput());
-//        $this->updateItem('{INPUT_LANG}', $form->getControl('lang')->renderInput());
+        $this->updateItem('{INPUT_LANG}', $form->getControl('lang') ? $form->getControl('lang')->renderInput() : '');
         $this->updateItem('{INPUT_BUTTON}', $form->getControl('login')->renderInput());
         $this->updateItem('{FORM_ERROR}', $form->renderErrors());
+        $this->updateItem('{CHANGE_LANG_LINK}', $langLink);
         return $this;
     }
 }

@@ -41,17 +41,6 @@ $params->set($virtualDir)->process();
 $paths->setData($params->getParams());
 \kalanis\kw_paths\Stored::init($paths);
 
-// init langs - the similar way like configs, but it's necessary to already have loaded params
-\kalanis\kw_langs\Lang::init(
-    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
-    \kalanis\kw_langs\Support::fillFromPaths(
-        $paths,
-        \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
-        false
-    )
-);
-\kalanis\kw_langs\Lang::load('Core'); // autoload core lang
-
 session_start();
 
 // pass parsed params as external source
@@ -65,6 +54,20 @@ $server = new \kalanis\kw_input\Simplified\ServerAdapter();
 
 // init cookies
 \kalanis\kw_input\Simplified\CookieAdapter::init('', '/', 3600);
+
+// init langs - the similar way like configs, but it's necessary to already have loaded params
+\kalanis\kw_langs\Lang::init(
+    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    \kalanis\kw_langs\Support::fillFromPaths(
+        $paths,
+        \kalanis\kw_langs\Support::fillFromArray(
+            $session,
+            \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk')
+        ),
+        false
+    )
+);
+\kalanis\kw_langs\Lang::load('Core'); // autoload core lang
 
 // init notifications
 \kalanis\kw_notify\Notification::init(

@@ -8,13 +8,16 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\CookieAdapter;
+use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\Support;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_rules\Interfaces\IRules;
+use kalanis\kw_scripts\Scripts;
 
 
 /**
@@ -25,17 +28,21 @@ use kalanis\kw_rules\Interfaces\IRules;
 class Login extends AAuthModule implements IModuleTitle
 {
     protected $form = null;
+    protected $cookieAdapter = null;
+    protected $sessionAdapter = null;
 
     public function __construct()
     {
-        Lang::load('Admin');
+        $this->cookieAdapter = new CookieAdapter();
+        $this->sessionAdapter = new SessionAdapter();
         $this->form = new Forms\LoginForm('login');
     }
 
     public function process(): void
     {
         try {
-            $this->form->fill(new CookieAdapter());
+            Lang::load('Admin');
+            $this->form->fill($this->cookieAdapter, $this->sessionAdapter);
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->form->process()) {
                 parent::process();
@@ -47,7 +54,7 @@ class Login extends AAuthModule implements IModuleTitle
 
     protected function run(): void
     {
-        // not used, just for api
+        Support::setToArray(new SessionAdapter(), $this->form->getControl('lang')->getValue());
     }
 
     public function allowedAccessClasses(): array
@@ -64,13 +71,13 @@ class Login extends AAuthModule implements IModuleTitle
             $this->form->process('login');
         }
 
+        $link = new ExternalLink(Stored::getPath());
         if ($this->user) { // logged in
-            $link = new ExternalLink(Stored::getPath());
             if ($this->isJson()) {
                 // create json with status info
                 $out = new Output\Json();
                 return $out->setContent([
-                    'message' => 'Logged in!',
+                    'message' => Lang::get('login.success'),
                     'name' => $this->user->getDisplayName(),
                     'dir' => $this->user->getDir(),
                     'class' => $this->user->getClass(),
@@ -81,19 +88,23 @@ class Login extends AAuthModule implements IModuleTitle
             } else {
                 new Redirect($link->linkVariant(''), Redirect::TARGET_TEMPORARY, 5);
                 $out = new Output\Html();
-                return $out->setContent('Logged in!');
+                return $out->setContent(Lang::get('login.success'));
             }
         } else {
             if ($this->isJson()) {
                 $out = new Output\Json();
                 return $out->setContent([
-                    'message' => 'Login fail',
+                    'message' => Lang::get('login.fail'),
                     'errors' => $this->form->renderErrorsArray(),
                 ]);
             } else {
                 $tmpl = new Templates\LoginTemplate();
+                Scripts::want('Admin', 'langchange.js');
                 $out = new Output\Html();
-                return $out->setContent($tmpl->setData($this->form)->render());
+                return $out->setContent($tmpl->setData(
+                    $this->form,
+                    $link->linkVariant('lang-change', '', true)
+                )->render());
             }
         }
     }
