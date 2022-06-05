@@ -3,6 +3,7 @@
 namespace kalanis\kw_langs;
 
 
+use ArrayAccess;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
 
@@ -14,6 +15,22 @@ use kalanis\kw_paths\Stuff;
  */
 class Support
 {
+    const LANG_KEY = 'lang';
+
+    public static function fillFromArray(ArrayAccess $array, ?string $defaultLang): ?string
+    {
+        return $array->offsetExists(static::LANG_KEY)
+            && !empty($array->offsetGet(static::LANG_KEY))
+            && is_string($array->offsetGet(static::LANG_KEY))
+            ? $array->offsetGet(static::LANG_KEY)
+            : $defaultLang ;
+    }
+
+    public static function setToArray(ArrayAccess $array, string $lang): void
+    {
+        $array->offsetSet(static::LANG_KEY, $lang);
+    }
+
     public static function fillFromPaths(Path $path, string $defaultLang, bool $moreLangs): string
     {
         if ($path->getLang()) {

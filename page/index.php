@@ -40,18 +40,6 @@ $virtualDir = \kalanis\kw_confs\Config::get('Core', 'site.fake_dir', 'dir_from_c
 $params = new \kalanis\kw_paths\Params\Request\Server();
 $params->set($virtualDir)->process();
 $paths->setData($params->getParams());
-
-// init langs - the similar way like configs, but it's necessary to already have loaded params
-\kalanis\kw_langs\Lang::init(
-    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
-    \kalanis\kw_langs\Support::fillFromPaths(
-        $paths,
-        \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
-        false
-    )
-);
-\kalanis\kw_langs\Lang::load('Core'); // autoload core lang
-
 // init styles and scripts
 \kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($paths));
 \kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($paths));
@@ -63,6 +51,17 @@ $source->setCli($argv)->setExternal($params->getParams()); // argv is for params
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
 \kalanis\kw_paths\Stored::init($paths);
+
+// init langs - the similar way like configs, but it's necessary to already have loaded params
+\kalanis\kw_langs\Lang::init(
+    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    \kalanis\kw_langs\Support::fillFromPaths(
+        $paths,
+        \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
+        false
+    )
+);
+\kalanis\kw_langs\Lang::load('Core'); // autoload core lang
 
 
 class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
