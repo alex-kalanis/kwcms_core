@@ -21,10 +21,10 @@ class Errors extends AModule
 {
     /** @var AOutput */
     protected $out = null;
-    /** @var string */
-    protected $code = '';
+    /** @var int */
+    protected $code = 0;
 
-    protected static $acceptable_errors = ["400","401","403","404","405","406","407","408","409","410","411","413","414","415","500","501","502","503","504","505"];
+    protected static $acceptable_errors = [400,401,403,404,405,406,407,408,409,410,411,413,414,415,500,501,502,503,504,505];
 
     public function __construct()
     {
@@ -44,7 +44,7 @@ class Errors extends AModule
             $code = Stuff::fileBase(Stuff::filename(Stored::getPath()->getPath()));
         }
 
-        $this->code = in_array($code, static::$acceptable_errors) ? $code : '403' ;
+        $this->code = in_array((int)$code, static::$acceptable_errors) ? $code : 403 ;
     }
 
     public function output(): AOutput
@@ -54,7 +54,7 @@ class Errors extends AModule
             return $out->setContent($this->code, Lang::get('error.desc.' . $this->code));
         } else {
             $out = new Lib\OutHtml();
-            return $out->setContent($this->code);
+            return $out->setContent((string)$this->code);
         }
     }
 }

@@ -91,7 +91,7 @@ class Preview extends AAuthModule
 
     public function outRaw(): Output\AOutput
     {
-        header("Content-Type: " . $this->mime->mimeByExt($this->ext));
+        header('Content-Type: ' . $this->mime->mimeByExt($this->ext));
         $out = new Output\Raw();
         return $out->setContent($this->displayContent);
     }

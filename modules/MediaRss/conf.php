@@ -8,6 +8,6 @@
 ######################################
 
 $config = [
-    "accept_types" => ["jpg","jpeg","gif","png","bmp","flv","fla","swf","ogg","mp3","mp4","mpg","avi"],
-    "watermark"=>true, //TF;help=use watermark#
+    'accept_types' => ['jpg','jpeg','gif','png','bmp','flv','fla','swf','ogg','mp3','mp4','mpg','avi'],
+    'watermark'=>true, //TF;help=use watermark#
 ];

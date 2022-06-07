@@ -8,8 +8,8 @@
 ######################################
 
 $config = [
-    "name"=>'index', //STRING;help=name#
-    "suff"=>'.short', //STRING;help=extension#
-    "use_image"=>true, //BOOLEAN;help=use web image#
-    "count"=>4 //INT;min=1;max=11;help=count of items#
+    'name'=>'index', //STRING;help=name#
+    'suff'=>'.short', //STRING;help=extension#
+    'use_image'=>true, //BOOLEAN;help=use web image#
+    'count'=>4 //INT;min=1;max=11;help=count of items#
 ];

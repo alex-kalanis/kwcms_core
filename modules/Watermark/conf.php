@@ -9,6 +9,6 @@
 ######################################
 
 $config = [
-    "accept_types" => array(".jpg",".jpeg",".gif",".png",".bmp"),
-    "df_watermark" => "modules/Watermark/watermark.png" //STRING;help=path to watermark#
+    'accept_types' => array('.jpg','.jpeg','.gif','.png','.bmp'),
+    'df_watermark' => 'modules/Watermark/watermark.png' //STRING;help=path to watermark#
 ];

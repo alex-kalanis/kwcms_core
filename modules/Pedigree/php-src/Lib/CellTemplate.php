@@ -18,10 +18,10 @@ class CellTemplate extends ATemplate
 
     /* Which styles are available */
     protected static $styles = [
-        "first",
-        "norm",
-        "ext",
-        "no_info",
+        'first',
+        'norm',
+        'ext',
+        'no_info',
     ];
 
     public function setTemplateName(string $name): self

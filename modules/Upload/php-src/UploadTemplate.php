@@ -18,12 +18,12 @@ class UploadTemplate extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{INIT_PATH}', "//upload-file/init/");
-        $this->addInput('{CHECK_PATH}', "//upload-file/check/");
-        $this->addInput('{CANCEL_PATH}', "//upload-file/cancel/");
-        $this->addInput('{TRIM_PATH}', "//upload-file/trim/");
-        $this->addInput('{FILE_PATH}', "//upload-file/file/");
-        $this->addInput('{DONE_PATH}', "//upload-file/done/");
+        $this->addInput('{INIT_PATH}', '//upload-file/init/');
+        $this->addInput('{CHECK_PATH}', '//upload-file/check/');
+        $this->addInput('{CANCEL_PATH}', '//upload-file/cancel/');
+        $this->addInput('{TRIM_PATH}', '//upload-file/trim/');
+        $this->addInput('{FILE_PATH}', '//upload-file/file/');
+        $this->addInput('{DONE_PATH}', '//upload-file/done/');
 
         $this->addInput('{BUTTON_START}', Lang::get('upload.button.start'));
         $this->addInput('{BUTTON_ABORT}', Lang::get('upload.button.abort'));

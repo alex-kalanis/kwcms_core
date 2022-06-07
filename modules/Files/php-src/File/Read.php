@@ -131,7 +131,7 @@ class Read extends AAuthModule implements IModuleTitle
             return $out->setContent($this->error->getMessage());
         } else {
             if ($this->fileContent && $this->fileMime) {
-                header("Content-Type: " . $this->fileMime);
+                header('Content-Type: ' . $this->fileMime);
             }
             return $out->setContent($this->fileContent);
         }

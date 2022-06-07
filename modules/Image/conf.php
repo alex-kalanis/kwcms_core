@@ -8,7 +8,7 @@
 ######################################
 
 $config = [
-    "watermark"=>true, //TF;help=use watermark#
-    "desc"=>'.txt', //STRING;help=dir with desc#
-    "accept_watermark" => ["jpg","jpeg","gif","png","bmp"],
+    'watermark'=>true, //TF;help=use watermark#
+    'desc'=>'.txt', //STRING;help=dir with desc#
+    'accept_watermark' => ['jpg','jpeg','gif','png','bmp'],
 ];

@@ -23,8 +23,8 @@ class Player extends ATemplate
 
     /* Which styles are available and if they want solo rows */
     protected static $styles = [ # usage of one line - one file (for count cols)
-        "player" => false,
-        "nothing" => false,
+        'player' => false,
+        'nothing' => false,
     ];
 
     public function setTemplateName(string $name): self

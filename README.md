@@ -11,7 +11,7 @@ A many things has been ported from KWCMS1 and used here and many are brand new a
 calls.
 
 The main thing about KWCMS framework is the orientation on file tree and controller tree.
-I already has too many problems with usual frameworks which did not acknowledged these two
+I already had too many problems with usual frameworks which did not acknowledged these two
 important parts of web life. Another thing is a hard way structured inputs and outputs.
 Usually you get only output in format which results plaintext and input in PHP vars. Not here.
 Here you get larger control over the input and output. Object way. This makes testing process
@@ -22,7 +22,7 @@ This is only example of work with KWCMS3, it should be treated that way.
 
 ### So what is that
 
-* vanilla php7.3 (my virtual machine limit now), possible php8
+* vanilla php7.4, php8.1 (my virtual machines now)
 * Tiny core, most things outside in modules and libraries
 * Object-oriented code, precisely defined code tree ( \{author}{\project}\{module}\{paths\to\libraries} )
   simplifying autoloading
@@ -39,7 +39,7 @@ to access modules or presentation layer with all necessities for front-end.
 
 ### Setup
 
-You need just kw_autoloader, kw_inputs and kw_modules. And then init and bootstrap. That's all. The
+You just need kw_autoloader, kw_inputs and kw_modules. And then init and bootstrap. That's all. The
 rest is just helping libraries and modules. That depends on your needs. 
 
 Usual paths are __/modules__ for accessed modules, __/user__ for user data, __/web__ as primary dir

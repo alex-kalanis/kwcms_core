@@ -12,15 +12,15 @@
 
 $lang = [
     'eng' => [
-      "image.loaded" => "Uploaded:",
-      "image.click_close" => "Click to close",
+      'image.loaded' => 'Uploaded:',
+      'image.click_close' => 'Click to close',
     ],
     'fra' => [
-      "image.loaded" => "Enregister&#x00E9;:",
-      "image.click_close" => "Click pour ferm&#x00E9;",
+      'image.loaded' => 'Enregister&#x00E9;:',
+      'image.click_close' => 'Click pour ferm&#x00E9;',
     ],
     'cze' => [
-      "image.loaded" => "Nahr&#x00E1;no:",
-      "image.click_close" => "Kliknut&#x00ED;m zav&#x0159;&#x00ED;t",
+      'image.loaded' => 'Nahr&#x00E1;no:',
+      'image.click_close' => 'Kliknut&#x00ED;m zav&#x0159;&#x00ED;t',
     ],
 ];

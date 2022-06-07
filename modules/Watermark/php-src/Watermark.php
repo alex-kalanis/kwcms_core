@@ -85,8 +85,8 @@ class Watermark extends AModule
                 }
             }
 
-            header("Last-Modified: " . gmdate('D, d M Y H:i:s T', filemtime($image)) );
-            header("Content-Type: " . $this->mime->mimeByPath($this->imagePath));
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', filemtime($image)) );
+            header('Content-Type: ' . $this->mime->mimeByPath($this->imagePath));
             header('Content-Disposition: filename="' . Stuff::filename($this->imagePath). '"');
 
             $this->dumpImage($rImage, $image);

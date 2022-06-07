@@ -74,7 +74,7 @@ class Transcode extends AModule
 
     protected function getSelector(): string
     {
-        $r = "";
+        $r = '';
         $indexInfo = new Templates\IndexMenuTemplate();
         $linksInfo = new Templates\IndexLinkTemplate();
         foreach ($this->libFactory->getList() as $name) {

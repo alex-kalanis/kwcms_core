@@ -8,5 +8,5 @@
 ######################################
 
 $config = [
-    "use_cache"=>true, //BOOLEAN;help=use cache or regenerate menu every time#
+    'use_cache'=>true, //BOOLEAN;help=use cache or regenerate menu every time#
 ];

@@ -17,9 +17,9 @@ class Display extends ATemplate
 
     /* Which styles are available */
     protected static $styles = [
-        "free",
-        "head",
-        "item",
+        'free',
+        'head',
+        'item',
     ];
 
     public function setTemplateName(string $name): self

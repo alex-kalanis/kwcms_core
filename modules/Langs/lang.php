@@ -13,15 +13,15 @@
 
 $lang = [
     'eng' => [
-        'name' => "English",
-        'hint' => "These pages has language-selected content. Please, choose your language.",
+        'name' => 'English',
+        'hint' => 'These pages has language-selected content. Please, choose your language.',
     ],
     'fra' => [
-        'name' => "Fran&#x00E7;ais",
-        'hint' => "Cette pages sont sortir par le langue. Choisi vote langue, s'il vous pla&#x00EE;t.",
+        'name' => 'Fran&#x00E7;ais',
+        'hint' => 'Cette pages sont sortir par le langue. Choisi vote langue, s\'il vous pla&#x00EE;t.',
     ],
     'cze' => [
-        'name' => "&#x010C;e&#x0161;tina",
-        'hint' => "Tyto str&#x00E1;nky maj&#x00ED; jazykov&#x011B; rozd&#x011B;len&#x00FD; obsah. Pros&#x00ED;m, vyberte sv&#x016F;j jazyk.",
+        'name' => '&#x010C;e&#x0161;tina',
+        'hint' => 'Tyto str&#x00E1;nky maj&#x00ED; jazykov&#x011B; rozd&#x011B;len&#x00FD; obsah. Pros&#x00ED;m, vyberte sv&#x016F;j jazyk.',
     ],
 ];

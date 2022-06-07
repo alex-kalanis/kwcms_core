@@ -228,14 +228,14 @@ class Dirlist extends AModule
             }
         }
         if (empty($detailContent)) {
-            return "";
+            return '';
         }
 
         $descMaxLen = (int)Config::get($this->module, 'desc_maxlen', 1000);
         if ((strlen($detailContent) > $descMaxLen) && !empty($this->templateDisplay->getStyles()[$renderStyle])) {
             $detailContent = substr($detailContent, 0, ($descMaxLen + 5));
-            $detailContent = substr($detailContent, 0, strrpos($detailContent," "));
-            $detailContent .= "...";
+            $detailContent = substr($detailContent, 0, strrpos($detailContent,' '));
+            $detailContent .= '...';
         };
         return $detailContent;
     }

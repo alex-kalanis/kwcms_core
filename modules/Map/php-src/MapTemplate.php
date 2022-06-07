@@ -19,9 +19,9 @@ class MapTemplate extends ATemplate
 
     /* Which styles are available and if they want solo rows */
     protected static $maps = [ # usage of one line - one file (for count cols)
-        "google" => false,
-        "osm" => false,
-//        "seznam" => true,
+        'google' => false,
+        'osm' => false,
+//        'seznam' => true,
     ];
 
     public function setIfImage(bool $isStaticImage): self

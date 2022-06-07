@@ -12,18 +12,18 @@
 
 $lang = [
     'eng' => [
-        'iframe.not_supported' => "Your browser doesn't support this kind of frame.",
-        'iframe.alternative_link' => "Alternative link",
-        'iframe.link_not_set' => "Link is not set.",
+        'iframe.not_supported' => 'Your browser doesn\'t support this kind of frame.',
+        'iframe.alternative_link' => 'Alternative link',
+        'iframe.link_not_set' => 'Link is not set.',
     ],
     'fra' => [
-        'iframe.not_supported' => "Votre navigateur ne supporte pas ce genre de cadre.",
-        'iframe.alternative_link' => "Link alternative",
-        'iframe.link_not_set' => "Link n'est pas r&#x00E9;gl&#x00E9;.",
+        'iframe.not_supported' => 'Votre navigateur ne supporte pas ce genre de cadre.',
+        'iframe.alternative_link' => 'Link alternative',
+        'iframe.link_not_set' => 'Link n\'est pas r&#x00E9;gl&#x00E9;.',
     ],
     'cze' => [
-        'iframe.not_supported' => "V&#x00E1;&#x0161; prohl&#x00ED;&#x017e;e&#x010D; nen&#x00ED; schopen zobrazit tento r&#x00E1;m",
-        'iframe.alternative_link' => "Alternativn&#x00ED; odkaz",
-        'iframe.link_not_set' => "Cesta nen&#x00ED; pou&#x017e;iteln&#x00E1;.",
+        'iframe.not_supported' => 'V&#x00E1;&#x0161; prohl&#x00ED;&#x017e;e&#x010D; nen&#x00ED; schopen zobrazit tento r&#x00E1;m',
+        'iframe.alternative_link' => 'Alternativn&#x00ED; odkaz',
+        'iframe.link_not_set' => 'Cesta nen&#x00ED; pou&#x017e;iteln&#x00E1;.',
     ],
 ];

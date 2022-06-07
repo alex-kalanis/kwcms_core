@@ -18,9 +18,9 @@ class PageTemplate extends ATemplate
 
     /* Which styles are available and if they want solo rows */
     protected static $styles = [ # usage of one line - one file (for count cols)
-        "prev_page",
-        "actual_page",
-        "next_page",
+        'prev_page',
+        'actual_page',
+        'next_page',
     ];
 
     public function setTemplateName(string $name): self

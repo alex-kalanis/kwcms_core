@@ -66,7 +66,7 @@ class Icon extends AModule
         $out = new Output\Raw();
         $content = @file_get_contents($imagePath);
         if ($content) {
-            header("Content-Type: " . $this->mime->mimeByPath($this->imagePath));
+            header('Content-Type: ' . $this->mime->mimeByPath($this->imagePath));
         } else {
             $content = 'Problem with selected image and its backup!';
         }

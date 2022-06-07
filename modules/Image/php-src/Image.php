@@ -73,7 +73,7 @@ class Image extends AModule
         }
         $content = @file_get_contents($imagePath);
         if ($content) {
-            header("Content-Type: " . $this->mime->mimeByPath($imagePath));
+            header('Content-Type: ' . $this->mime->mimeByPath($imagePath));
         } else {
             $content = 'Problem with selected image and its backup!';
         }
