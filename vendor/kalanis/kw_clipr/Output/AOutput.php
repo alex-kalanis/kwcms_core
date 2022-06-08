@@ -10,8 +10,8 @@ namespace kalanis\kw_clipr\Output;
  */
 abstract class AOutput
 {
-    protected $closeSequence = "";
-    protected $formatBackSequence = "";
+    protected $closeSequence = '';
+    protected $formatBackSequence = '';
     protected $eolSequence = PHP_EOL;
     /** @var string[] */
     protected $tags = [];
@@ -24,52 +24,52 @@ abstract class AOutput
     protected function setTags(): void
     {
         # format style
-        $this->addTranslation('normal', "");
-        $this->addTranslation('bold', "");
-        $this->addTranslation('under', "");
-        $this->addTranslation('blink', "");
+        $this->addTranslation('normal', '');
+        $this->addTranslation('bold', '');
+        $this->addTranslation('under', '');
+        $this->addTranslation('blink', '');
 
         # default ones
         # foreground colors
-        $this->addTranslation('black', "");
-        $this->addTranslation('red', "");
-        $this->addTranslation('green', "");
-        $this->addTranslation('brown', "");
-        $this->addTranslation('blue', "");
-        $this->addTranslation('purple', "");
-        $this->addTranslation('cyan', "");
-        $this->addTranslation('gray', "");
+        $this->addTranslation('black', '');
+        $this->addTranslation('red', '');
+        $this->addTranslation('green', '');
+        $this->addTranslation('brown', '');
+        $this->addTranslation('blue', '');
+        $this->addTranslation('purple', '');
+        $this->addTranslation('cyan', '');
+        $this->addTranslation('gray', '');
 
         # background colors
-        $this->addTranslation('blackbg', "");
-        $this->addTranslation('redbg', "");
-        $this->addTranslation('greenbg', "");
-        $this->addTranslation('brownbg', "");
-        $this->addTranslation('bluebg', "");
-        $this->addTranslation('purplebg', "");
-        $this->addTranslation('cyanbg', "");
-        $this->addTranslation('graybg', "");
+        $this->addTranslation('blackbg', '');
+        $this->addTranslation('redbg', '');
+        $this->addTranslation('greenbg', '');
+        $this->addTranslation('brownbg', '');
+        $this->addTranslation('bluebg', '');
+        $this->addTranslation('purplebg', '');
+        $this->addTranslation('cyanbg', '');
+        $this->addTranslation('graybg', '');
 
         # stronger ones
         # foreground colors
-        $this->addTranslation('dgray', "");
-        $this->addTranslation('lred', "");
-        $this->addTranslation('lgreen', "");
-        $this->addTranslation('yellow', "");
-        $this->addTranslation('lblue', "");
-        $this->addTranslation('magenta', "");
-        $this->addTranslation('lcyan', "");
-        $this->addTranslation('white', "");
+        $this->addTranslation('dgray', '');
+        $this->addTranslation('lred', '');
+        $this->addTranslation('lgreen', '');
+        $this->addTranslation('yellow', '');
+        $this->addTranslation('lblue', '');
+        $this->addTranslation('magenta', '');
+        $this->addTranslation('lcyan', '');
+        $this->addTranslation('white', '');
 
         # background colors
-        $this->addTranslation('dgraybg', "");
-        $this->addTranslation('lredbg', "");
-        $this->addTranslation('lgreenbg', "");
-        $this->addTranslation('yellowbg', "");
-        $this->addTranslation('lbluebg', "");
-        $this->addTranslation('magentabg', "");
-        $this->addTranslation('lcyanbg', "");
-        $this->addTranslation('whitebg', "");
+        $this->addTranslation('dgraybg', '');
+        $this->addTranslation('lredbg', '');
+        $this->addTranslation('lgreenbg', '');
+        $this->addTranslation('yellowbg', '');
+        $this->addTranslation('lbluebg', '');
+        $this->addTranslation('magentabg', '');
+        $this->addTranslation('lcyanbg', '');
+        $this->addTranslation('whitebg', '');
     }
 
     protected function addTranslation(string $tag, string $translation): void

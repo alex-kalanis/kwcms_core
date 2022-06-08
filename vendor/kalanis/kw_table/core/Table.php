@@ -260,7 +260,7 @@ class Table
     public function getClassesInString(): string
     {
         if (!empty($this->classes)) {
-            return implode(" ", $this->classes);
+            return implode(' ', $this->classes);
         } else {
             return '';
         }

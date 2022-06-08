@@ -30,8 +30,8 @@ class Thumb extends AFiles
     {
         parent::__construct($libExtendDir, $lang);
         $this->libGraphics = $libGraphics;
-        $this->maxWidth = !empty($params["tmb_width"]) ? strval($params["tmb_width"]) : $this->maxWidth;
-        $this->maxHeight = !empty($params["tmb_height"]) ? strval($params["tmb_height"]) : $this->maxHeight;
+        $this->maxWidth = !empty($params['tmb_width']) ? strval($params['tmb_width']) : $this->maxWidth;
+        $this->maxHeight = !empty($params['tmb_height']) ? strval($params['tmb_height']) : $this->maxHeight;
     }
 
     /**

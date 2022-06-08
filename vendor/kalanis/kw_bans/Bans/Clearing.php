@@ -7,6 +7,6 @@ class Clearing extends Basic
 {
     public function setLookedFor(string $lookedFor): void
     {
-        parent::setLookedFor(strtr($lookedFor, ["*" => "", "?" => "", ":" => "", ";" => "", "\\" => "", "/" => ""]));
+        parent::setLookedFor(strtr($lookedFor, ['*' => '', '?' => '', ':' => '', ';' => '', '\\' => '', '/' => '']));
     }
 }

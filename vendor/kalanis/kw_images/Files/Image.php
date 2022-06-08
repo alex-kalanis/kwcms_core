@@ -28,9 +28,9 @@ class Image extends AFiles
     {
         parent::__construct($libExtendDir, $lang);
         $this->libGraphics = $libGraphics;
-        $this->maxWidth = !empty($params["max_width"]) ? strval($params["max_width"]) : $this->maxWidth;
-        $this->maxHeight = !empty($params["max_height"]) ? strval($params["max_height"]) : $this->maxHeight;
-        $this->maxFileSize = !empty($params["max_size"]) ? strval($params["max_size"]) : $this->maxFileSize;
+        $this->maxWidth = !empty($params['max_width']) ? strval($params['max_width']) : $this->maxWidth;
+        $this->maxHeight = !empty($params['max_height']) ? strval($params['max_height']) : $this->maxHeight;
+        $this->maxFileSize = !empty($params['max_size']) ? strval($params['max_size']) : $this->maxFileSize;
     }
 
     public function getCreated(string $path, string $format = 'Y-m-d H:i:s'): ?string

@@ -86,7 +86,7 @@ abstract class AIP extends ABan
     protected function compareAsString(string $known, string $tested): bool
     {
         // direct for *
-        if ("*" == $known[0]) {
+        if ('*' == $known[0]) {
             return true;
         }
         if (strlen($known) != strlen($tested)) {

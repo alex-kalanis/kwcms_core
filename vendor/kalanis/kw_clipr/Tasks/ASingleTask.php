@@ -94,7 +94,7 @@ abstract class ASingleTask extends ATask
             }
             return true;
         } catch (LockException $ex) {
-            $this->writeLn("Removing stale lock file.");
+            $this->writeLn('Removing stale lock file.');
             $this->lock->delete(true);
             return false;
         }

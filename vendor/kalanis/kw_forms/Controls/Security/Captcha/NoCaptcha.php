@@ -8,8 +8,8 @@ use kalanis\kw_rules\Interfaces\IRules;
 /**
  * The NOCAPTCHA server URL's
  */
-define("NOCAPTCHA_API_SERVER", "https://www.google.com/recaptcha/api.js");
-define("NOCAPTCHA_API_SECURE_SERVER", "https://www.google.com/recaptcha/api/siteverify");
+define('NOCAPTCHA_API_SERVER', 'https://www.google.com/recaptcha/api.js');
+define('NOCAPTCHA_API_SECURE_SERVER', 'https://www.google.com/recaptcha/api/siteverify');
 
 
 /**
@@ -47,9 +47,9 @@ class NoCaptcha extends ACaptcha
     public function checkNoCaptcha($value): bool
     {
         // entry has key: g-recaptcha-response
-        $response = file_get_contents(NOCAPTCHA_API_SECURE_SERVER . "?secret=" . static::$privateKey . "&response=" . $value);
+        $response = file_get_contents(NOCAPTCHA_API_SECURE_SERVER . '?secret=' . static::$privateKey . '&response=' . $value);
         $responseStructure = json_decode($response, true);
-        return !empty($responseStructure["success"]) && $responseStructure["success"] === true;
+        return !empty($responseStructure['success']) && $responseStructure['success'] === true;
     }
 
     public function renderInput($attributes = null): string

@@ -35,19 +35,19 @@ class REval extends ARule implements IRule
     protected function compare($value, $expression, $against): bool
     {
         switch ($expression) {
-            case "<":
+            case '<':
                 return $value < $against;
-            case ">":
+            case '>':
                 return $value > $against;
-            case "<=":
+            case '<=':
                 return $value <= $against;
-            case ">=":
+            case '>=':
                 return $value >= $against;
-            case "=":
+            case '=':
                 return $value == $against;
-            case "!=":
+            case '!=':
                 return $value != $against;
-            case "==":
+            case '==':
                 return $value === $against;
             default:
                 throw new TableException('Unrecognized expression sign');

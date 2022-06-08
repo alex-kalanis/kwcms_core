@@ -26,7 +26,7 @@ class DirThumb extends AFiles
     {
         parent::__construct($libExtendDir, $lang);
         $this->libGraphics = $libGraphics;
-        $this->thumbExt = !empty($params["tmb_ext"]) ? strval($params["tmb_ext"]) : $this->thumbExt;
+        $this->thumbExt = !empty($params['tmb_ext']) ? strval($params['tmb_ext']) : $this->thumbExt;
     }
 
     /**

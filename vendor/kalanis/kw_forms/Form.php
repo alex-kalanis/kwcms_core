@@ -384,18 +384,18 @@ class Form implements IHtmlElement
         if (($layoutName == 'inlineTable') || ($layoutName == 'tableInline')) {
             $this->resetWrappers();
             $this->addWrapperChildren('tr')
-                ->addWrapperChildren('table', ['class' => "form"])
+                ->addWrapperChildren('table', ['class' => 'form'])
                 ->addWrapperLabel('td')
                 ->addWrapperInput('td')
-                ->addWrapperErrors('div', ['class' => "errors"])
+                ->addWrapperErrors('div', ['class' => 'errors'])
                 ->addWrapperError('div');
         } elseif ($layoutName == 'table') {
             $this->resetWrappers();
-            $this->addWrapperChildren('table', ['class' => "form"])
+            $this->addWrapperChildren('table', ['class' => 'form'])
                 ->addWrapperChild('tr')
                 ->addWrapperLabel('td')
                 ->addWrapperInput('td')
-                ->addWrapperErrors('div', ['class' => "errors"])
+                ->addWrapperErrors('div', ['class' => 'errors'])
                 ->addWrapperError('div');
         }
 

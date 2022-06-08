@@ -48,7 +48,7 @@ class ExternalLink
     const PT2 = '&path='; # path is in the middle
     const PT3 = 'index.php?path='; # path goes first
     const PT4 = 'index.php/'; # rewrite by php
-    const PT5 = 'web/'; # rewrite rule by apache // 'web/' - $settings["site"]["fake_dir"]
+    const PT5 = 'web/'; # rewrite rule by apache // 'web/' - $settings['site']['fake_dir']
 
     private $connectBy = self::PT1;
 
@@ -66,12 +66,12 @@ class ExternalLink
         Returns:
           Correct path
     */
-    public function linkVariant(?string $path=null, string $module="", bool $single=false, string $lang=null): string
+    public function linkVariant(?string $path=null, string $module='', bool $single=false, string $lang=null): string
     {
-        $renderUser = $this->moreUsers ? $this->path->getUser() : "" ;
+        $renderUser = $this->moreUsers ? $this->path->getUser() : '' ;
         $renderPath = (is_null($path)) ? $this->path->getPath() : $path ;
         $renderLang = ($this->moreLangs && (is_null($path) || !is_null($lang))) ? ($lang ?: $this->path->getLang()) : '' ;
-        $renderModule = "";
+        $renderModule = '';
         if (strlen($module) > 0) {
             $renderModule = ($single) ? self::MOD_SINGLE : self::MOD_NORMAL ;
             $renderModule .= $module.IPaths::SPLITTER_SLASH;

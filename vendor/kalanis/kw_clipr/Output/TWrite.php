@@ -19,7 +19,7 @@ trait TWrite
 
     public function sendOk(): void
     {
-        $this->write(" .... [ <green>OK</green> ]");
+        $this->write(' .... [ <green>OK</green> ]');
     }
 
     public function sendSkipped(): void
@@ -34,35 +34,35 @@ trait TWrite
 
     public function sendFail(): void
     {
-        $this->write(" .... [ <red>FAIL</red> ]");
+        $this->write(' .... [ <red>FAIL</red> ]');
     }
 
     public function sendCustom(string $message): void
     {
-        $this->write(" .... [ $message ]");
+        $this->write(' .... [ $message ]');
     }
 
     public function sendFailExplain(string $message): void
     {
         $this->sendFail();
-        $this->write(" " . $message);
+        $this->write(' ' . $message);
     }
 
     public function sendErrorMessage(string $message): void
     {
         $this->writeLn();
-        $this->writeLn(" <redbg>  " . str_repeat(' ', mb_strlen($message)) . "  </redbg>");
-        $this->writeLn(" <redbg>  " . $message . "  </redbg>");
-        $this->writeLn(" <redbg>  " . str_repeat(' ', mb_strlen($message)) . "  </redbg>");
+        $this->writeLn(' <redbg>  ' . str_repeat(' ', mb_strlen($message)) . '  </redbg>');
+        $this->writeLn(' <redbg>  ' . $message . '  </redbg>');
+        $this->writeLn(' <redbg>  ' . str_repeat(' ', mb_strlen($message)) . '  </redbg>');
         $this->writeLn();
     }
 
     public function sendSuccessMessage(string $message): void
     {
         $this->writeLn();
-        $this->writeLn(" <greenbg>  " . str_repeat(' ', mb_strlen($message)) . "  </greenbg>");
-        $this->writeLn(" <greenbg>  " . $message . "  </greenbg>");
-        $this->writeLn(" <greenbg>  " . str_repeat(' ', mb_strlen($message)) . "  </greenbg>");
+        $this->writeLn(' <greenbg>  ' . str_repeat(' ', mb_strlen($message)) . '  </greenbg>');
+        $this->writeLn(' <greenbg>  ' . $message . '  </greenbg>');
+        $this->writeLn(' <greenbg>  ' . str_repeat(' ', mb_strlen($message)) . '  </greenbg>');
         $this->writeLn();
     }
 

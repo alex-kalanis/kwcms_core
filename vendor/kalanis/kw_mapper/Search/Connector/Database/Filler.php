@@ -23,7 +23,7 @@ class Filler
     use TFill;
 
     protected $hashDelimiter = "--::\e::--";
-    protected $columnDelimiter = "____";
+    protected $columnDelimiter = '____';
     /** @var ARecord|null */
     protected $basicRecord = null;
     /** @var RecordsInJoin[] */

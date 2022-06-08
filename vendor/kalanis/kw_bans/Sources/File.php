@@ -36,7 +36,7 @@ class File extends ASources
 
         // last clearing
         $this->knownRecords = array_map(function ($row) {
-            return strtr($row, ["\r" => "", "\n" => ""]);
+            return strtr($row, ["\r" => '', "\n" => '']);
         }, $rows);
 
     }
