@@ -5,6 +5,7 @@ namespace kalanis\kw_auth\Methods;
 
 use ArrayAccess;
 use kalanis\kw_auth\Interfaces\IAuth;
+use SessionHandlerInterface;
 
 
 /**
@@ -27,17 +28,23 @@ class Sessions extends AMethods
     protected $session = null;
     /** @var ArrayAccess */
     protected $server = null;
+    /** @var SessionHandlerInterface */
+    protected $externalHandler = null;
 
-    public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, ArrayAccess $server)
+    public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, ArrayAccess $server, ?SessionHandlerInterface $externalHandler = null)
     {
         parent::__construct($authenticator, $nextOne);
         $this->session = $session;
         $this->server = $server;
+        $this->externalHandler = $externalHandler;
     }
 
     public function process(ArrayAccess $credentials): void
     {
         if (PHP_SESSION_NONE == session_status()) {
+            if ($this->externalHandler) {
+                session_set_save_handler($this->externalHandler, true);
+            }
             session_start();
         }
         if ($this->tryLogged()) {

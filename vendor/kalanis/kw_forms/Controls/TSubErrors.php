@@ -13,11 +13,11 @@ use kalanis\kw_rules\Exceptions\RuleException;
  */
 trait TSubErrors
 {
-    /** @var RuleException[][] */
+    /** @var array<string, array<int, RuleException>> */
     protected $errors = [];
 
     /**
-     * @return RuleException[][]
+     * @return array<string, array<int, RuleException>>
      */
     public function getValidatedErrors(): array
     {

@@ -15,6 +15,7 @@ use kalanis\kw_input\Interfaces\IVariables;
  */
 class InputFilesAdapter extends FilesAdapter
 {
+    /** @var IVariables */
     protected $inputs = null;
 
     public function __construct(IVariables $inputs)

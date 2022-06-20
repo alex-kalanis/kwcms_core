@@ -16,22 +16,23 @@ class Cli extends AParser
     const DELIMITER_PARAM_VALUE = '=';
     const UNSORTED_PARAM = 'param_';
 
+    /** @var string[] */
     protected static $availableLetters = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
                                           'n','o','p','q','r','s','t','u','v','w','x','y','z'];
 
     /**
-     * @param array $input is $argv in boot time
-     * @return array
+     * @param int[]|string[] $input is $argv in boot time
+     * @return array<string|int, string|int|bool>|array<string|int, array<int, string|int|bool>>
      */
-    public function &parseInput(&$input): array
+    public function parseInput(array $input): array
     {
         $clearArray = [];
         $unsorted = 0;
         foreach ($input as &$posted) {
-            if (0 === strpos($posted, static::DELIMITER_LONG_ENTRY)) {
+            if (0 === strpos(strval($posted), static::DELIMITER_LONG_ENTRY)) {
                 // large params
-                $entry = substr($posted, strlen(static::DELIMITER_LONG_ENTRY));
-                if (false !== strpos($posted, static::DELIMITER_PARAM_VALUE)) {
+                $entry = substr(strval($posted), strlen(static::DELIMITER_LONG_ENTRY));
+                if (false !== strpos(strval($posted), static::DELIMITER_PARAM_VALUE)) {
                     // we have got some value, so prepare it
                     list($key, $value) = explode(static::DELIMITER_PARAM_VALUE, $entry, 2);
                     $addKey = $this->removeNullBytes($key);
@@ -51,9 +52,9 @@ class Cli extends AParser
                 } else { // otherwise simple add
                     $clearArray[$addKey] = $addValue;
                 }
-            } elseif (0 === strpos($posted, static::DELIMITER_SHORT_ENTRY)) {
+            } elseif (0 === strpos(strval($posted), static::DELIMITER_SHORT_ENTRY)) {
                 // just by letters
-                $entry = $this->removeNullBytes(substr($posted, strlen(static::DELIMITER_SHORT_ENTRY)));
+                $entry = $this->removeNullBytes(substr(strval($posted), strlen(static::DELIMITER_SHORT_ENTRY)));
                 for ($i=0; $i<strlen($entry); $i++) {
                     if (in_array(strtolower($entry[$i]), static::$availableLetters)) {
                         $clearArray[$entry[$i]] = true;
@@ -62,7 +63,7 @@ class Cli extends AParser
             } else {
                 // rest of the world
                 $key = static::UNSORTED_PARAM . $unsorted;
-                $clearArray[$key] = $this->removeNullBytes($posted);
+                $clearArray[$key] = $this->removeNullBytes(strval($posted));
                 $unsorted++;
             }
         }

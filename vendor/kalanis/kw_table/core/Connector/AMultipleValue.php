@@ -3,7 +3,7 @@
 namespace kalanis\kw_table\core\Connector;
 
 
-use kalanis\kw_connect\core\Interfaces\IConnector;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_forms\Exceptions\RenderException;
 
 
@@ -14,8 +14,11 @@ use kalanis\kw_forms\Exceptions\RenderException;
  */
 abstract class AMultipleValue
 {
+    /** @var string */
     protected $alias = '';
+    /** @var string|null */
     protected $label = null;
+    /** @var string */
     protected $columnName = '';
 
     public function setColumn(string $columnName): void
@@ -40,13 +43,13 @@ abstract class AMultipleValue
         return $this->label;
     }
 
-    abstract public function setDataSourceConnector(IConnector $dataSource): void;
+    abstract public function setDataSourceConnector(IIterableConnector $dataSource): void;
 
     abstract public function add(): void;
 
     /**
-     * @return string
      * @throws RenderException
+     * @return string
      */
     abstract public function renderContent(): string;
 }

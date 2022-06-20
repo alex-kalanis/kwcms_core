@@ -20,11 +20,13 @@ class IsPostCode extends ARule
 {
     use TCheckString;
 
+    /** @var array<string, array<string, string>> */
     protected static $codes = [];
 
     public static function loadCodes(string $pathToCodes): void
     {
-        $codeFile = file_get_contents($pathToCodes);
+        $codeFile = strval(file_get_contents($pathToCodes));
+        /** @var array<int, array<string, string>> $codes */
         $codes = json_decode($codeFile, true);
         static::$codes = array_combine(
             array_column($codes, 'ISO'),

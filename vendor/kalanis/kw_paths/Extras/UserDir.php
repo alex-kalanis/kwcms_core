@@ -21,14 +21,23 @@ class UserDir
 {
     use TRemoveCycle;
 
+    /** @var string */
     protected $userName = ''; # obtained user's name (when need)
+    /** @var string */
     protected $userPath = ''; # system path to user's home dir
+    /** @var string */
     protected $webRootDir = ''; # system path to web root dir
+    /** @var string */
     protected $workDir = ''; # relative path to user's work dir (from web dir)
+    /** @var string */
     protected $homeDir = ''; # relative path to user's home dir (from web dir)
+    /** @var string */
     protected $realPath = ''; # real path as derived from user path - without added slashes
+    /** @var bool */
     protected $canUseHomeDir = true; # if use sub dirs or is it directly in user's home dir
+    /** @var bool */
     protected $canUseDataDir = true; # if use user dir or is it anywhere else directly from web root
+    /** @var IPATranslations */
     protected $lang = null;
 
     public function __construct(Path $path, ?IPATranslations $lang = null)
@@ -74,8 +83,8 @@ class UserDir
     /**
      * Set username as base for generating user dir
      * @param string $name
-     * @return UserDir
      * @throws InvalidArgumentException
+     * @return UserDir
      */
     public function setUserName(string $name): self
     {
@@ -184,8 +193,8 @@ class UserDir
 
     /**
      * Create inner path tree
-     * @return string with inner path
      * @throws PathsException
+     * @return string with inner path
      */
     public function createTree(): string
     {
@@ -208,8 +217,8 @@ class UserDir
 
     /**
      * Remove data in user's work dir
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function wipeWorkDir(): bool
     {
@@ -225,8 +234,8 @@ class UserDir
 
     /**
      * Remove everything in user's special sub dirs
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function wipeConfDirs(): bool
     {
@@ -236,7 +245,7 @@ class UserDir
         if (!$this->canUseDataDir) {
             return false;
         }
-        if (strlen($this->homeDir) < 3) {
+        if (3 > strlen($this->homeDir)) {
             return false; # urcite se najde i blbec, co bude chtit cistku roota
         }
         $this->removeCycle($this->webRootDir . $this->homeDir . IPaths::DIR_CONF);
@@ -246,15 +255,15 @@ class UserDir
 
     /**
      * Remove everything in user's home dir and that home dir itself
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function wipeHomeDir(): bool
     {
         if (empty($this->homeDir)) {
             throw new PathsException($this->lang->paCannotDetermineUserDir());
         }
-        if (strlen($this->workDir) < 4) {
+        if (4 > strlen($this->workDir)) {
             return false; # urcite se najde i blbec, co bude chtit wipe roota (jeste blbejsi napad, nez jsme doufali) - tudy se odinstalace fakt nedela!
         }
         $this->removeCycle($this->webRootDir . $this->homeDir);

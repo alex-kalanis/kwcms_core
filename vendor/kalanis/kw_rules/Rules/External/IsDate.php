@@ -21,7 +21,7 @@ class IsDate extends ARule
     public function validate(IValidate $entry): void
     {
         $dtInfo = date_parse($entry->getValue());
-        if($dtInfo['warning_count'] == 0 && $dtInfo['error_count'] == 0 ){
+        if (0 == $dtInfo['warning_count'] && 0 == $dtInfo['error_count']) {
             return;
         }
         throw new RuleException($this->errorText);

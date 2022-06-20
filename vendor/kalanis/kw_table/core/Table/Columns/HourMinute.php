@@ -20,12 +20,12 @@ class HourMinute extends AColumn
 
     public function getValue(IRow $source)
     {
-        $minutes = parent::getValue($source);
+        $minutes = intval(parent::getValue($source));
 
         if (empty($minutes)) {
             return '0:00';
         } else {
-            $addMinus = ($minutes < 0) ? '- ' : '';
+            $addMinus = (0 > $minutes) ? '- ' : '';
             $hours = floor(abs($minutes) / 60);
             $minutes = abs($minutes) - ($hours * 60);
             return sprintf('%s%01d:%02d', $addMinus, $hours, $minutes);

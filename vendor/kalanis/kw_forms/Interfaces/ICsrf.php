@@ -17,7 +17,7 @@ interface ICsrf
      * @param ArrayAccess $cookie
      * @param int         $expire
      */
-    public function init(ArrayAccess &$cookie, int $expire = 3600);
+    public function init(ArrayAccess &$cookie, int $expire = 3600): void;
 
     /**
      * Remove known token

@@ -16,10 +16,14 @@ use Nette\Utils\DateTime;
  */
 class DateRange extends TextInput
 {
+    /** @var string */
     protected $inputFormat = 'd.m.Y H:i:s';
+    /** @var string */
     protected $searchFormat = 'Y-m-d H:i:s';
 
+    /** @var Html|null */
     protected $start;
+    /** @var Html|null */
     protected $end;
     /** @var  DateTime | null */
     protected $startValue;
@@ -134,9 +138,9 @@ class DateRange extends TextInput
         Container::extensionMethod('addTbDateRange', function ($container, $name, $label = null, $maxLength = null) use ($inputFormat, $searchFormat) {
             $picker = $container[$name] = new DateRange($name, $label, $maxLength);
 
-            if ($inputFormat !== null)
+            if (null !== $inputFormat)
                 $picker->setInputFormat($inputFormat);
-            if ($searchFormat !== null)
+            if (null !== $searchFormat)
                 $picker->setSearchFormat($searchFormat);
 
             return $picker;

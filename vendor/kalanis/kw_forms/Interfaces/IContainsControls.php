@@ -22,17 +22,20 @@ interface IContainsControls extends IMultiValue
     public function getControl(string $key): ?AControl;
 
     /**
-     * @return string[]
+     * @return array<string, string|null>
      */
     public function getLabels(): array;
 
+    /**
+     * @param array<string, string|null> $array
+     */
     public function setLabels(array $array = []): void;
 
     /**
-     * @param string[] $passedErrors
-     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrappersError
-     * @return array
+     * @param array<string, array<int, RuleException>> $passedErrors
+     * @param array<string|IHtmlElement> $wrappersError
      * @throws RenderException
+     * @return array<string, string>
      */
     public function getErrors(array $passedErrors, array $wrappersError): array;
 
@@ -43,7 +46,7 @@ interface IContainsControls extends IMultiValue
     public function validateControls(Validate $validate): bool;
 
     /**
-     * @return RuleException[][]
+     * @return array<string, array<int, RuleException>>
      */
     public function getValidatedErrors(): array;
 }

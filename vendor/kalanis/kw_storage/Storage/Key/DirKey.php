@@ -8,7 +8,8 @@ use kalanis\kw_storage\Interfaces\IKey;
 
 class DirKey implements IKey
 {
-    protected static $dir = '/var/cache/wwwcache/';
+    /** @var string */
+    protected static $dir= '/var/cache/wwwcache/';
 
     public static function setDir(string $dir): void
     {

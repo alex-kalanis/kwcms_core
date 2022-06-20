@@ -11,5 +11,8 @@ namespace kalanis\kw_forms\Interfaces;
  */
 interface IOriginalValue
 {
+    /**
+     * @return string|int|float|bool|null
+     */
     public function getOriginalValue();
 }

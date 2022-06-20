@@ -14,16 +14,16 @@ use kalanis\UploadPerPartes\Exceptions\UploadException;
 abstract class AFormat
 {
     /**
-     * @param mixed $content
-     * @return Data
+     * @param string $content
      * @throws UploadException
+     * @return Data
      */
     abstract public function fromFormat(string $content): Data;
 
     /**
      * @param Data $data
-     * @return string
      * @throws UploadException
+     * @return string
      */
     abstract public function toFormat(Data $data): string;
 }

@@ -21,7 +21,7 @@ class Format implements IFormat
         if (is_bool($content)) {
             return $content;
         }
-        $encodeResult = json_decode($content, true);
+        $encodeResult = json_decode(strval($content), true);
         if (is_null($encodeResult)) {
             // problems with decoding - return original string
             return $content;
@@ -40,6 +40,6 @@ class Format implements IFormat
         if (is_string($data)) {
             return $data;
         }
-        return json_encode($data);
+        return strval(json_encode($data));
     }
 }

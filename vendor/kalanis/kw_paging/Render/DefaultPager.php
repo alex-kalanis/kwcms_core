@@ -20,13 +20,21 @@ class DefaultPager implements IOutput
 {
     use TDisplayPages;
 
+    /** @var ILink */
     protected $link = null;
+    /** @var DefaultPager\Pager */
     protected $pager = null;
+    /** @var DefaultPager\PrevPage */
     protected $prevPage = null;
+    /** @var DefaultPager\PrevPageDisabled */
     protected $prevPageDis = null;
+    /** @var DefaultPager\CurrentPage */
     protected $currentPage = null;
+    /** @var DefaultPager\AnotherPage */
     protected $anotherPage = null;
+    /** @var DefaultPager\NextPage */
     protected $nextPage = null;
+    /** @var DefaultPager\NextPageDisabled */
     protected $nextPageDis = null;
 
     public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)

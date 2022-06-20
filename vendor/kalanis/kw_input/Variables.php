@@ -15,7 +15,7 @@ use kalanis\kw_input\Interfaces\IInputs;
  */
 class Variables implements IVariables
 {
-    /** @var Inputs */
+    /** @var IInputs */
     protected $inputs = null;
 
     public function __construct(IInputs $inputs)
@@ -34,8 +34,8 @@ class Variables implements IVariables
     }
 
     /**
-     * @param iterable $entries
-     * @return Interfaces\IEntry[]
+     * @param iterable<Interfaces\IEntry> $entries
+     * @return array<int|string, Interfaces\IEntry>
      */
     protected function intoKeyObjectArray(iterable $entries): array
     {

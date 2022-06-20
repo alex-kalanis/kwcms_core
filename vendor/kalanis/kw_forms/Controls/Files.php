@@ -3,8 +3,10 @@
 namespace kalanis\kw_forms\Controls;
 
 
+use kalanis\kw_forms\Exceptions\EntryException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_forms\Interfaces\IMultiValue;
+use kalanis\kw_input\Interfaces\IFileEntry;
 
 
 /**
@@ -39,6 +41,13 @@ class Files extends AControl implements IMultiValue
     protected $templateLabel = '<label>%2$s</label>';
     protected $templateInput = '%3$s';
 
+    /**
+     * @param string $alias
+     * @param iterable<string|int, string> $items
+     * @param string $label
+     * @param array<string, string|array<string>>|string $attributes
+     * @return $this
+     */
     public function set(string $alias, iterable $items = [], string $label = '', $attributes = []): self
     {
         $this->alias = $alias;
@@ -54,15 +63,18 @@ class Files extends AControl implements IMultiValue
      * Add File input
      * @param string $label
      * @param string $key
-     * @param string|string[] $attributes
+     * @param array<string, string|array<string>>|string $attributes
      */
-    public function addFile(string $key, string $label = '', $attributes = [])
+    public function addFile(string $key, string $label = '', $attributes = []): void
     {
         $formFile = new File();
         $formFile->set($key, $label)->setAttributes($attributes);
         $this->addChild($formFile);
     }
 
+    /**
+     * @param array<string, string|int|float|IFileEntry|null> $array
+     */
     public function setValues(array $array = []): void
     {
         foreach ($this->children as $child) {
@@ -83,6 +95,10 @@ class Files extends AControl implements IMultiValue
         }
     }
 
+    /**
+     * @throws EntryException
+     * @return array<string, IFileEntry>
+     */
     public function getValues(): array
     {
         $result = [];
@@ -96,8 +112,8 @@ class Files extends AControl implements IMultiValue
 
     /**
      * Render all sub-controls and wrap it all
-     * @return string
      * @throws RenderException
+     * @return string
      */
     public function renderChildren(): string
     {

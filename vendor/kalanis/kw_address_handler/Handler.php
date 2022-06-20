@@ -18,6 +18,7 @@ class Handler
 
     public function __construct(?Sources\Sources $address = null)
     {
+        $this->params = new Params();
         $this->setSource($address);
     }
 
@@ -26,7 +27,6 @@ class Handler
         if (empty($sources)) {
             return $this;
         }
-        $this->params = new Params();
         $this->source = $sources;
         $this->parse();
         return $this;
@@ -34,12 +34,14 @@ class Handler
 
     protected function parse(): void
     {
-        $parts = parse_url($this->source->getAddress());
-        $this->source->setPath($parts['path']);
-        if (!isset($parts['query'])) {
-            $parts['query'] = '';
+        $parts = parse_url($this->source->/** @scrutinizer ignore-call */getAddress());
+        if ((false !== $parts) && isset($parts['path'])) {
+            $this->source->/** @scrutinizer ignore-call */setPath($parts['path']);
+            if (!isset($parts['query'])) {
+                $parts['query'] = '';
+            }
+            $this->params->setParamsData(static::http_parse_query($parts['query']));
         }
-        $this->params->setParamsData(static::http_parse_query($parts['query']));
     }
 
     /**
@@ -53,9 +55,9 @@ class Handler
 
     /**
      * Returns object accessing parsed params inside the address
-     * @return Params|null
+     * @return Params
      */
-    public function getParams(): ?Params
+    public function getParams(): Params
     {
         return $this->params;
     }
@@ -66,26 +68,28 @@ class Handler
      */
     public function getAddress(): ?string
     {
-        return $this->source ? $this->rebuild()->source->getAddress() : null ;
+        return $this->source ? $this->rebuild()->source->/** @scrutinizer ignore-call */getAddress() : null;
     }
 
     protected function rebuild(): self
     {
-        $parts = parse_url($this->source->getAddress());
-        if (!isset($parts['query'])) {
-            $parts['query'] = '';
-        }
-        $queryArray = static::http_parse_query($parts['query']);
-        foreach ($this->params->getParamsData() as $paramName => $paramValue) {
-            $queryArray[$paramName] = $paramValue;
-        }
-        foreach ($queryArray as $paramName => $paramValue) {
-            if (!$this->params->offsetExists($paramName)) {
-                unset($queryArray[$paramName]);
+        $parts = parse_url($this->source->/** @scrutinizer ignore-call */getAddress());
+        if (false !== $parts) {
+            if (!isset($parts['query'])) {
+                $parts['query'] = '';
             }
+            $queryArray = static::http_parse_query($parts['query']);
+            foreach ($this->params->getParamsData() as $paramName => $paramValue) {
+                $queryArray[$paramName] = $paramValue;
+            }
+            foreach ($queryArray as $paramName => $paramValue) {
+                if (!$this->params->offsetExists($paramName)) {
+                    unset($queryArray[$paramName]);
+                }
+            }
+            $parts['query'] = http_build_query($queryArray);
+            $this->source->/** @scrutinizer ignore-call */setAddress($this->buildAddress($parts));
         }
-        $parts['query'] = http_build_query($queryArray);
-        $this->source->setAddress($this->buildAddress($parts));
         return $this;
     }
 
@@ -95,68 +99,68 @@ class Handler
      * @author Alxcube <alxcube@gmail.com>
      *
      * @param string $queryString String to parse
-     * @param string $argSeparator Query arguments separator
+     * @param non-empty-string $argSeparator Query arguments separator
      * @param integer $decType Decoding type
-     * @return array
+     * @return array<int, string>
      * @codeCoverageIgnore for now - external source
      */
     public static function http_parse_query(string $queryString, string $argSeparator = '&', int $decType = PHP_QUERY_RFC1738): array
     {
         if (empty($queryString)) { return []; }
-        $result             = [];
-        $parts              = explode($argSeparator, $queryString);
+        $result = [];
+        $parts  = explode($argSeparator, $queryString);
 
         foreach ($parts as $part) {
-            list($paramName, $paramValue)   = array_pad(explode('=', $part, 2), 2, '');
+            list($paramName, $paramValue) = array_pad(explode('=', $part, 2), 2, '');
 
             switch ($decType) {
                 case PHP_QUERY_RFC3986:
-                    $paramName      = rawurldecode($paramName);
-                    $paramValue     = rawurldecode($paramValue);
+                    $paramName  = rawurldecode($paramName);
+                    $paramValue = rawurldecode($paramValue);
                     break;
 
                 case PHP_QUERY_RFC1738:
                 default:
-                    $paramName      = urldecode($paramName);
-                    $paramValue     = urldecode($paramValue);
+                    $paramName  = urldecode($paramName);
+                    $paramValue = urldecode($paramValue);
                     break;
             }
 
 
             if (preg_match_all('/\[([^\]]*)\]/m', $paramName, $matches)) {
-                $paramName      = substr($paramName, 0, strpos($paramName, '['));
-                $keys           = array_merge([$paramName], $matches[1]);
+                $paramName = substr($paramName, 0, intval(strpos($paramName, '[')));
+                $keys = array_merge([$paramName], $matches[1]);
             } else {
-                $keys           = [$paramName];
+                $keys = [$paramName];
             }
 
-            $target         = &$result;
+            $target = &$result;
 
             foreach ($keys as $index) {
-                if ($index === '') {
+                if ('' === $index) {
                     if (isset($target)) {
                         if (is_array($target)) {
-                            $intKeys        = array_filter(array_keys($target), 'is_int');
-                            $index  = count($intKeys) ? max($intKeys)+1 : 0;
+                            $intKeys = array_filter(array_keys($target), 'is_int');
+                            $index   = count($intKeys) ? max($intKeys)+1 : 0;
                         } else {
                             $target = [$target];
                             $index  = 1;
                         }
                     } else {
-                        $target         = [];
-                        $index          = 0;
+                        $target = [];
+                        $index  = 0;
                     }
                 } elseif (isset($target[$index]) && !is_array($target[$index])) {
                     $target[$index] = [$target[$index]];
                 }
 
-                $target         = &$target[$index];
+                $target = &$target[$index];
             }
 
             if (is_array($target)) {
-                $target[]   = $paramValue;
+                $target[] = $paramValue;
             } else {
-                $target     = $paramValue;
+                $target = $paramValue;
             }
         }
 
@@ -165,7 +169,7 @@ class Handler
 
     /**
      * Build an address from parse_url parts. The generated address will be a relative address if a scheme or host are not provided.
-     * @param string[] $parts array of parse_url parts
+     * @param array<string, int|string> $parts array of parse_url parts
      * @return string
      * @codeCoverageIgnore for now
      */
@@ -192,16 +196,16 @@ class Handler
 
             // Only include the port if it is not the default port of the scheme
             if (isset($parts['port'])
-                && !(($scheme == 'http' && $parts['port'] == 80) || ($scheme == 'https' && $parts['port'] == 443))
+                && !(('http' == $scheme && 80 == $parts['port']) || ('https' == $scheme && 443 == $parts['port']))
             ) {
                 $url .= ':' . $parts['port'];
             }
         }
 
         // Add the path component if present
-        if (isset($parts['path']) && 0 !== strlen($parts['path'])) {
+        if (isset($parts['path']) && (0 !== strlen(strval($parts['path'])))) {
             // Always ensure that the path begins with '/' if set and something is before the path
-            if ($url && $parts['path'][0] != '/' && substr($url, -1) != '/') {
+            if ($url && strval($parts['path'])[0] != '/' && '/' != substr($url, -1)) {
                 $url .= '/';
             }
             $url .= $parts['path'];

@@ -18,10 +18,11 @@ use kalanis\kw_rules\Rules;
 class File extends AControl implements Interfaces\IValidateFile
 {
     protected $templateInput = '<input type="file"%2$s />';
+    /** @var string */
     protected $errorEntryNotFile = 'Entry %s does not contain a file';
 
     /** @var IFileEntry|null */
-    protected $value = null;
+    protected $entry = null;
 
     protected function whichFactory(): Interfaces\IRuleFactory
     {
@@ -42,52 +43,82 @@ class File extends AControl implements Interfaces\IValidateFile
         return $this->wrapIt(sprintf($this->templateInput, null, $this->renderAttributes()), $this->wrappersInput);
     }
 
+    /**
+     * @param bool|float|int|string|IFileEntry|null $value
+     */
     public function setValue($value): void
     {
         if ($value instanceof IFileEntry) {
-            $this->value = $value;
+            $this->entry = $value;
         }
     }
 
+    /**
+     * @throws EntryException
+     * @return bool|float|int|mixed|string|null
+     */
     public function getValue()
     {
         $this->checkFile();
-        return $this->value->getValue();
+        return $this->entry->/** @scrutinizer ignore-call */getValue();
     }
 
+    /**
+     * @throws EntryException
+     * @return string
+     */
     public function getMimeType(): string
     {
         $this->checkFile();
-        return $this->value->getMimeType();
+        return $this->entry->/** @scrutinizer ignore-call */getMimeType();
     }
 
+    /**
+     * @throws EntryException
+     * @return string
+     */
     public function getTempName(): string
     {
         $this->checkFile();
-        return $this->value->getTempName();
+        return $this->entry->/** @scrutinizer ignore-call */getTempName();
     }
 
+    /**
+     * @throws EntryException
+     * @return int
+     */
     public function getError(): int
     {
         $this->checkFile();
-        return $this->value->getError();
+        return $this->entry->/** @scrutinizer ignore-call */getError();
     }
 
+    /**
+     * @throws EntryException
+     * @return int
+     */
     public function getSize(): int
     {
         $this->checkFile();
-        return $this->value->getSize();
+        return $this->entry->/** @scrutinizer ignore-call */getSize();
     }
 
+    /**
+     * @throws EntryException
+     * @return IFileEntry
+     */
     public function getFile(): IFileEntry
     {
         $this->checkFile();
-        return $this->value;
+        return $this->entry;
     }
 
+    /**
+     * @throws EntryException
+     */
     protected function checkFile(): void
     {
-        if (empty($this->value)) {
+        if (empty($this->entry)) {
             throw new EntryException(sprintf($this->errorEntryNotFile, $this->getKey()));
         }
     }

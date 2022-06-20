@@ -3,8 +3,8 @@
 namespace kalanis\kw_table\form_kw\Fields;
 
 
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_table\core\Interfaces\Table\IFilterMulti;
@@ -30,11 +30,12 @@ class Multiple extends AField implements IFilterRender, IFilterMulti
 {
     /** @var MultipleValue[] */
     protected $fields = [];
+    /** @var string */
     protected $separator = '<br />';
 
     /**
      * @param MultipleValue[] $fields
-     * @param string[] $attributes
+     * @param array<string, string> $attributes
      * @throws TableException
      */
     public function __construct(array $fields = [], array $attributes = [])
@@ -60,7 +61,7 @@ class Multiple extends AField implements IFilterRender, IFilterMulti
         }
     }
 
-    public function setDataSourceConnector(IConnector $dataSource): void
+    public function setDataSourceConnector(IIterableConnector $dataSource): void
     {
         parent::setDataSourceConnector($dataSource);
         foreach ($this->fields as &$field) {
@@ -101,19 +102,22 @@ class Multiple extends AField implements IFilterRender, IFilterMulti
 
     /**
      * @param MultipleValue $field
-     * @return string
      * @throws RenderException
+     * @return string
      */
     public function renderField(MultipleValue $field): string
     {
         return $field->renderContent();
     }
 
+    /**
+     * @return array<int, array<int, float|int|string|true>>
+     */
     public function getPairs(): array
     {
         $values = [];
         foreach ($this->fields as $field) {
-            $control = $this->form->getControl($field->getAlias());
+            $control = $this->form->/** @scrutinizer ignore-call */getControl($field->getAlias());
             if (!empty($control->getValue())) {
                 $values[] = [$field->getField()->getFilterAction(), $control->getValue()];
             }

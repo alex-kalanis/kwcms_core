@@ -14,7 +14,7 @@ use kalanis\kw_storage\Interfaces;
 class Factory
 {
     /**
-     * @param object|array|string|null $params
+     * @param mixed|object|array|string|null $params
      * @return Interfaces\IStorage|null storage adapter or empty for no storage set
      */
     public function getStorage($params): ?Interfaces\IStorage

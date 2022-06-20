@@ -72,7 +72,7 @@ class Lister extends ATask
         if (!is_dir($path)) {
             throw new CliprException(sprintf('<redbg> !!! </redbg> Path leads to something unreadable. Path: <yellow>%s</yellow>', $path));
         }
-        $allFiles = array_diff((array)scandir($path), [false, '', '.', '..']);
+        $allFiles = array_diff((array) scandir($path), [false, '', '.', '..']);
         $files = array_filter($allFiles, [$this, 'onlyPhp']);
         if (empty($files) && !$skipEmpty) {
             throw new CliprException(sprintf('<redbg> !!! </redbg> No usable files returned. Path: <yellow>%s</yellow>', $path));
@@ -80,6 +80,7 @@ class Lister extends ATask
         foreach ($files as $fileName) {
             $className = Paths::getInstance()->realFileToClass($path, $fileName);
             if ($className) {
+                /** @scrutinizer ignore-call */
                 $task = $this->loader->getTask($className);
                 if (!$task) {
                     continue;

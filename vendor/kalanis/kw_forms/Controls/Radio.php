@@ -17,7 +17,14 @@ class Radio extends AControl implements IOriginalValue
 
     public $templateInput = '<input type="radio" value="%1$s"%2$s />';
 
-    public function set(string $alias, $value = null, string $label = '', $checked = '')
+    /**3
+     * @param string $alias
+     * @param string|int|float|null $value
+     * @param string $label
+     * @param string $checked
+     * @return $this
+     */
+    public function set(string $alias, $value = null, string $label = '', $checked = ''): self
     {
         $this->setEntry($alias, $value, $label);
         $this->setChecked($checked);
@@ -54,7 +61,7 @@ class Radio extends AControl implements IOriginalValue
     protected function fillParent(): void
     {
         if ($this->parent instanceof RadioSet) {
-            $this->setAttribute('name', $this->parent->getAttribute('name'));
+            $this->setAttribute('name', strval($this->parent->getAttribute('name')));
             $this->setAttribute('id', $this->parent->getKey() . '_' . strval($this->getOriginalValue()));
         }
     }

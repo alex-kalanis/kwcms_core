@@ -16,8 +16,8 @@ class ProcessCallback extends ARule
 {
     /**
      * @param mixed $againstValue
-     * @return array
      * @throws RuleException
+     * @return callable
      */
     protected function checkValue($againstValue)
     {
@@ -29,7 +29,7 @@ class ProcessCallback extends ARule
 
     public function validate(IValidate $entry): void
     {
-        if (!call_user_func($this->againstValue, $entry->getValue())) {
+        if (!call_user_func(/** @scrutinizer ignore-type */ $this->againstValue, $entry->getValue())) {
             throw new RuleException($this->errorText);
         }
     }

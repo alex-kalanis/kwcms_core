@@ -16,6 +16,11 @@ trait TCheckEntry
 {
     use TRule;
 
+    /**
+     * @param mixed|null $againstValue
+     * @throws RuleException
+     * @return IValidate
+     */
     protected function checkValue($againstValue)
     {
         if (!is_object($againstValue)) {

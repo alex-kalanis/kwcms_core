@@ -20,7 +20,7 @@ class Contains extends AType
     public function setFiltering($colName, $value)
     {
         $this->dataSource->setArray(array_filter($this->dataSource->getArray(), function (IRow $item) use ($colName, $value) {
-            return preg_match('#' . preg_quote($value, '#') . '#', $item->getValue($colName));
+            return preg_match('#' . preg_quote(strval($value), '#') . '#', $item->getValue($colName));
         }));
         return $this;
     }

@@ -10,7 +10,9 @@ namespace kalanis\kw_address_handler\Sources;
  */
 class Sources
 {
+    /** @var string */
     protected $address = '';
+    /** @var string */
     protected $path = '';
 
     public function __toString()
@@ -21,7 +23,7 @@ class Sources
     public function setAddress(string $address): void
     {
         // address which begins on two and more slashes might can be understand as relative one with FQDN
-        $this->address = preg_replace('#^(//+)#', '/', $address);
+        $this->address = strval(preg_replace('#^(//+)#', '/', $address));
     }
 
     public function getAddress(): string

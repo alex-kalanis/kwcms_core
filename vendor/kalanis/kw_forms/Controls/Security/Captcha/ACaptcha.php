@@ -18,7 +18,7 @@ abstract class ACaptcha extends AControl
     /** @var ITimeout|null */
     protected $libTimeout = null;
 
-    public function addRules(iterable $rules = []): void
+    public function addRules(/** @scrutinizer ignore-unused */ iterable $rules = []): void
     {
         // no adding external rules applicable
     }

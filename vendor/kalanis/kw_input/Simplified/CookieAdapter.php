@@ -18,12 +18,19 @@ class CookieAdapter implements ArrayAccess
 {
     use TNullBytes;
 
+    /** @var string */
     protected static $domain = '';
+    /** @var string */
     protected static $path = '';
+    /** @var int|null */
     protected static $expire = null;
+    /** @var bool */
     protected static $secure = false;
+    /** @var bool */
     protected static $httpOnly = false;
+    /** @var bool */
     protected static $sameSite = false;
+    /** @var bool */
     protected static $dieOnSent = false;
 
     public static function init(string $domain, string $path, ?int $expire = null, bool $secure = false, bool $httpOnly = false, bool $sameSite = false, bool $dieOnSent = false): void
@@ -37,46 +44,63 @@ class CookieAdapter implements ArrayAccess
         static::$dieOnSent = $dieOnSent;
     }
 
+    /**
+     * @param string|int $offset
+     * @return mixed
+     */
     public final function __get($offset)
     {
         return $this->offsetGet($offset);
     }
 
-    public final function __set($offset, $value)
+    /**
+     * @param string|int $offset
+     * @param mixed|null $value
+     * @throws InputException
+     */
+    public final function __set($offset, $value): void
     {
         $this->offsetSet($offset, $value);
     }
 
-    public final function __isset($offset)
+    /**
+     * @param string|int $offset
+     * @return bool
+     */
+    public final function __isset($offset): bool
     {
         return $this->offsetExists($offset);
     }
 
-    public final function __unset($offset)
+    /**
+     * @param string|int $offset
+     * @throws InputException
+     */
+    public final function __unset($offset): void
     {
         $this->offsetUnset($offset);
     }
 
     public final function offsetExists($offset): bool
     {
-        $offset = $this->removeNullBytes($offset);
+        $offset = $this->removeNullBytes(strval($offset));
         return isset($_COOKIE[$offset]) && ('' != $_COOKIE[$offset]);
     }
 
     #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
-        return $_COOKIE[$this->removeNullBytes($offset)];
+        return $_COOKIE[$this->removeNullBytes(strval($offset))];
     }
 
     /**
      * @param string|int $offset
-     * @param string|int|float|bool $value
+     * @param mixed|null $value
      * @throws InputException
      */
     public final function offsetSet($offset, $value): void
     {
-        $offset = $this->removeNullBytes($offset);
+        $offset = $this->removeNullBytes(strval($offset));
         // access immediately
         $_COOKIE[$offset] = $value;
 
@@ -91,16 +115,24 @@ class CookieAdapter implements ArrayAccess
         $expire = is_null(static::$expire) ? null : time() + static::$expire;
         // TODO: php 7.3 required for 'samesite'
         if (73000 < PHP_VERSION_ID) {
-            setcookie($offset, $value, [
-                'expires'  => $expire,
-                'path'     => static::$path,
-                'domain'   => static::$domain,
-                'secure'   => (bool)static::$secure,
-                'httponly' => (bool)static::$httpOnly,
+            setcookie($offset, strval($value), [
+                'expires'  => intval($expire),
+                'path'     => strval(static::$path),
+                'domain'   => strval(static::$domain),
+                'secure'   => boolval(static::$secure),
+                'httponly' => boolval(static::$httpOnly),
                 'samesite' => static::$sameSite ? 'Strict' : 'Lax', // not in usual config
             ]);
         } else {
-            setcookie($offset, $value, $expire, static::$path, static::$domain, (bool)static::$secure, (bool)static::$httpOnly);
+            setcookie(
+                $offset,
+                strval($value),
+                intval($expire),
+                strval(static::$path),
+                strval(static::$domain),
+                boolval(static::$secure),
+                boolval(static::$httpOnly)
+            );
         }
     }
     // @codeCoverageIgnoreEnd
@@ -111,7 +143,7 @@ class CookieAdapter implements ArrayAccess
      */
     public function offsetUnset($offset): void
     {
-        unset($_COOKIE[$this->removeNullBytes($offset)]); // remove immediately
+        unset($_COOKIE[strval($this->removeNullBytes(strval($offset)))]); // remove immediately
         if (headers_sent()) {
             if (static::$dieOnSent) {
                 throw new InputException('Cannot modify header information - headers already sent');
@@ -119,7 +151,7 @@ class CookieAdapter implements ArrayAccess
             return;
         }
         // @codeCoverageIgnoreStart
-        setcookie($this->removeNullBytes($offset), '', (time() - 3600), static::$path, static::$domain);
+        setcookie(strval($this->removeNullBytes(strval($offset))), '', (time() - 3600), static::$path, static::$domain);
     }
     // @codeCoverageIgnoreEnd
 }

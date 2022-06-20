@@ -11,12 +11,12 @@ namespace kalanis\kw_input\Parsers;
  */
 class Files extends AParser
 {
-    public function &parseInput(&$input): array
+    public function parseInput(array $input): array
     {
         $trimArray = [];
         foreach ($input as $key => &$posted) {
             $posted['name'] = $this->clear($posted['name']);
-            $trimArray[$this->removeNullBytes(trim($key))] = $posted;
+            $trimArray[$this->removeNullBytes(trim(strval($key)))] = $posted;
         }
         return $trimArray;
     }
@@ -26,7 +26,7 @@ class Files extends AParser
         if (is_array($value)) {
             return array_map([$this, 'clear'], $value);
         } else {
-            return $this->removeNullBytes(trim($value));
+            return $this->removeNullBytes(trim(strval($value)));
         }
     }
 }

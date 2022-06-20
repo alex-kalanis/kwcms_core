@@ -3,7 +3,7 @@
 namespace kalanis\kw_connect\dibi;
 
 
-use Dibi;
+use Dibi\Row as DRow;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 
@@ -13,9 +13,10 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class Row implements IRow
 {
+    /** @var DRow */
     protected $row;
 
-    public function __construct(Dibi\Row $row)
+    public function __construct(DRow $row)
     {
         $this->row = $row;
     }

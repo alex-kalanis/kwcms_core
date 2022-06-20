@@ -16,16 +16,16 @@ class Entry extends ALoader
     /**
      * Transform input values to something more reliable
      * @param string $source
-     * @param array $array
+     * @param array<string|int, string|int|bool|string[]|int[]> $array
      * @return Entries\Entry[]
      */
-    public function loadVars(string $source, &$array): array
+    public function loadVars(string $source, $array): array
     {
         $result = [];
         $entries = new Entries\Entry();
         foreach ($array as $postedKey => $posted) {
             $entry = clone $entries;
-            $entry->setEntry($source, $postedKey, $posted);
+            $entry->setEntry($source, strval($postedKey), $posted);
             $result[] = $entry;
         }
         return $result;

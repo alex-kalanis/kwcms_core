@@ -15,6 +15,7 @@ use kalanis\kw_rules\Exceptions\RuleException;
  */
 class Factory implements IRuleFactory
 {
+    /** @var array<string, string> */
     protected static $map = [
         IRules::MATCH_ALL              => '\kalanis\kw_rules\Rules\MatchAll',
         IRules::MATCH_ANY              => '\kalanis\kw_rules\Rules\MatchAny',
@@ -60,14 +61,17 @@ class Factory implements IRuleFactory
 
     /**
      * @param string $ruleName
-     * @return ARule
      * @throws RuleException
+     * @return ARule
      */
     public function getRule(string $ruleName): ARule
     {
         if (isset(static::$map[$ruleName])) {
             $rule = static::$map[$ruleName];
-            return new $rule();
+            $class = new $rule();
+            if ($class instanceof ARule) {
+                return $class;
+            }
         }
         throw new RuleException(sprintf('Unknown rule %s', $ruleName));
     }

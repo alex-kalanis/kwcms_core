@@ -15,14 +15,14 @@ use kalanis\kw_clipr\Tasks\ATask;
  */
 class CacheLoader implements ILoader
 {
-    /** @var ILoader|null */
+    /** @var ILoader */
     protected $loader = null;
     /** @var ATask[] */
     protected $loadedClasses = [];
 
     public static function init(ILoader $loader): self
     {
-        return new static($loader);
+        return new self($loader);
     }
 
     public function __construct(ILoader $loader)

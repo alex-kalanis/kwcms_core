@@ -17,7 +17,9 @@ class PidLock implements IPassedKey
 {
     /** @var IKLTranslations */
     protected $lang = null;
+    /** @var string */
     protected $tempPath = '';
+    /** @var string */
     protected $specialKey = '';
 
     /**
@@ -55,7 +57,7 @@ class PidLock implements IPassedKey
     public function has(): bool
     {
         if (file_exists($this->getLockFileName())) {
-            $lockingPid = trim(file_get_contents($this->getLockFileName()));
+            $lockingPid = trim(strval(file_get_contents($this->getLockFileName())));
             $otherOnes = explode(PHP_EOL, trim(`ps -e | awk '{print $1}'`));
             if (in_array($lockingPid, $otherOnes)) {
                 return true;
@@ -70,7 +72,7 @@ class PidLock implements IPassedKey
         if (!$force && $this->has()) {
             return false;
         }
-        $result = @file_put_contents($this->getLockFileName(), getmypid() . PHP_EOL);
+        $result = @file_put_contents($this->getLockFileName(), strval(getmypid()) . PHP_EOL);
         return (false !== $result);
     }
 
@@ -82,7 +84,7 @@ class PidLock implements IPassedKey
         return @unlink($this->getLockFileName());
     }
 
-    protected function getLockFileName()
+    protected function getLockFileName(): string
     {
         return $this->tempPath . DIRECTORY_SEPARATOR . $this->specialKey . '.lock';
     }

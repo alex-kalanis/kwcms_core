@@ -18,10 +18,15 @@ class ExtendDir
 {
     use TRemoveCycle;
 
+    /** @var string */
     protected $webRootDir = ''; # system path to web root dir
+    /** @var string */
     protected $descDir = '.txt'; # description dir
+    /** @var string */
     protected $descFile = 'index'; # description index filename
+    /** @var string */
     protected $descExt = '.dsc'; # description file's extension - add to original name
+    /** @var string */
     protected $thumbDir = '.tmb'; # thumbnail dir
     /** @var IPATranslations */
     protected $lang = null;
@@ -65,8 +70,8 @@ class ExtendDir
      * @param string $path the path inside the web root dir
      * @param string $name
      * @param bool $makeExtra
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function createDir(string $path, string $name, bool $makeExtra = false): bool
     {
@@ -85,8 +90,8 @@ class ExtendDir
     /**
      * Make dir with extended properties
      * @param string $path
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function makeExtended(string $path): bool
     {
@@ -107,8 +112,8 @@ class ExtendDir
 
     /**
      * @param string $path
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function removeExtended(string $path): bool
     {
@@ -125,8 +130,8 @@ class ExtendDir
 
     /**
      * @param string $path
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function isReadable(string $path): bool
     {
@@ -138,8 +143,8 @@ class ExtendDir
 
     /**
      * @param string $path
-     * @return bool
      * @throws PathsException
+     * @return bool
      */
     public function isWritable(string $path): bool
     {

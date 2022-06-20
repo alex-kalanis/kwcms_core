@@ -5,6 +5,7 @@ namespace kalanis\kw_forms\Controls;
 
 class DateRange extends AControl
 {
+    /** @var int */
     protected static $uniqid = 0;
     protected $templateLabel = '<label>%2$s</label>';
     protected $templateInput = '%3$s';

@@ -15,7 +15,7 @@ interface IInputs
 {
     /**
      * Setting the variable sources - from cli (argv), _GET, _POST, _SERVER, ...
-     * @param ISource|array|null $source
+     * @param ISource|string[]|int[]|null $source
      * @return $this
      */
     public function setSource($source = null): self;
@@ -32,7 +32,7 @@ interface IInputs
      * Get iterator of local entries, filter them on way
      * @param string|null $entryKey
      * @param string[] $entrySources array of constants from Entries\IEntry::SOURCE_*
-     * @return Traversable iterator for foreach
+     * @return Traversable<int|string, IEntry> iterator for foreach
      * @see IEntry::SOURCE_CLI
      * @see IEntry::SOURCE_GET
      * @see IEntry::SOURCE_POST

@@ -17,6 +17,7 @@ class AnyControl extends AControl implements IContainsControls
     use TSubControls;
     use TSubErrors;
 
+    /** @var bool */
     protected $needAll = false;
 
     protected $templateLabel = '';
@@ -44,13 +45,13 @@ class AnyControl extends AControl implements IContainsControls
         $validation = true;
         foreach ($this->controls as &$child) {
             if ($child instanceof IContainsControls) {
-                $result = $child->validateControls($validate);
+                $result = $child->/** @scrutinizer ignore-call */validateControls($validate);
                 if ($result && !$this->needAll) {
                     $this->errors = [];
                     return true;
                 }
                 $validation &= $result;
-                $this->errors += $child->getValidatedErrors();
+                $this->errors += $child->/** @scrutinizer ignore-call */getValidatedErrors();
             } elseif ($child instanceof AControl) {
                 $result = $validate->validate($child);
                 if ($result && !$this->needAll) {
@@ -61,7 +62,7 @@ class AnyControl extends AControl implements IContainsControls
                 $this->errors += $validate->getErrors();
             }
         }
-        return $validation;
+        return boolval($validation);
     }
 
     public function render(): string
@@ -84,7 +85,7 @@ class AnyControl extends AControl implements IContainsControls
         return '';
     }
 
-    public function setLabel(?string $value): void
+    public function setLabel(/** @scrutinizer ignore-unused */?string $value): void
     {
     }
 
@@ -93,7 +94,7 @@ class AnyControl extends AControl implements IContainsControls
         return null;
     }
 
-    public function setValue($value): void
+    public function setValue(/** @scrutinizer ignore-unused */$value): void
     {
     }
 

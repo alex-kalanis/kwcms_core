@@ -17,22 +17,22 @@ interface IFilterType
 
     /**
      * @param mixed $dataSource
-     * @return mixed
      * @throws ConnectException
+     * @return mixed
      */
     public function setDataSource($dataSource);
 
     /**
-     * @return mixed
      * @throws ConnectException
+     * @return mixed
      */
     public function getDataSource();
 
     /**
      * @param string $colName
      * @param mixed $value
-     * @return mixed
      * @throws ConnectException
+     * @return mixed
      */
     public function setFiltering(string $colName, $value);
 }

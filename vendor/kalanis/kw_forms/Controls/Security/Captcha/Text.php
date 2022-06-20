@@ -26,11 +26,15 @@ class Text extends AGraphical
         return $this;
     }
 
-    public function addRule(string $ruleName, string $errorText, ...$args): void
+    public function addRule(/** @scrutinizer ignore-unused */ string $ruleName, /** @scrutinizer ignore-unused */ string $errorText, /** @scrutinizer ignore-unused */ ...$args): void
     {
         // no additional rules applicable
     }
 
+    /**
+     * @param mixed $value
+     * @return bool
+     */
     public function checkFillCaptcha($value): bool
     {
         $formName = $this->getKey() . '_last';

@@ -24,8 +24,8 @@ class KwLoader implements ILoader
 
     /**
      * @param string $classFromParam
-     * @return ATask
      * @throws CliprException
+     * @return ATask|null
      * For making instances from more than one path
      * Now it's possible to read from different paths as namespace sources
      * Also each class will be loaded only once
@@ -40,7 +40,9 @@ class KwLoader implements ILoader
                 $realPath = $this->makeRealFilePath($path, $translatedPath);
                 require_once $realPath;
                 $class = new $classPath();
-                return $class;
+                if ($class instanceof ATask) {
+                    return $class;
+                }
             }
         }
         throw new CliprException(sprintf('Unknown class *%s* - check name, interface or your config paths.', $classPath));
@@ -54,8 +56,8 @@ class KwLoader implements ILoader
     /**
      * @param string $namespacePath
      * @param string $classPath
-     * @return string
      * @throws CliprException
+     * @return string
      */
     protected function makeRealFilePath(string $namespacePath, string $classPath): string
     {

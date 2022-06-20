@@ -16,10 +16,14 @@ use Nette\Utils\DateTime;
  */
 class Range extends TextInput
 {
+    /** @var string */
     protected $inputFormat = 'd.m.Y H:i:s';
+    /** @var string */
     protected $searchFormat = 'Y-m-d H:i:s';
 
+    /** @var Html|null */
     protected $start;
+    /** @var Html|null */
     protected $end;
     /** @var  DateTime | null */
     protected $startValue;
@@ -115,9 +119,9 @@ class Range extends TextInput
         Container::extensionMethod('addRange', function ($container, $name, $label = null, $maxLength = null) use ($inputFormat, $searchFormat) {
             $picker = $container[$name] = new Range($name, $label, $maxLength);
 
-            if ($inputFormat !== null)
+            if (null !== $inputFormat)
                 $picker->setInputFormat($inputFormat);
-            if ($searchFormat !== null)
+            if (null !== $searchFormat)
                 $picker->setSearchFormat($searchFormat);
 
             return $picker;

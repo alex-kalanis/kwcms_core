@@ -4,7 +4,6 @@ namespace kalanis\kw_rules;
 
 
 use kalanis\kw_rules\Interfaces;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Rules;
 
 
@@ -24,7 +23,6 @@ trait TRules
      * @param string $ruleName
      * @param string $errorText
      * @param mixed ...$args
-     * @throws RuleException
      */
     public function addRule(string $ruleName, string $errorText, ...$args): void
     {
@@ -35,7 +33,10 @@ trait TRules
         $this->rules[] = $rule;
     }
 
-    public function addRules(iterable $rules = []): void
+    /**
+     * @param array<Rules\ARule|Rules\File\AFileRule> $rules
+     */
+    public function addRules(array $rules = []): void
     {
         foreach ($rules as $rule) {
             if ($rule instanceof Rules\ARule) {
@@ -47,6 +48,9 @@ trait TRules
         }
     }
 
+    /**
+     * @return array<Rules\ARule|Rules\File\AFileRule>
+     */
     public function getRules(): array
     {
         return $this->rules;
@@ -59,6 +63,7 @@ trait TRules
 
     protected function setFactory(): void
     {
+        // @phpstan-ignore-next-line
         if (empty($this->rulesFactory)) {
             $this->rulesFactory = $this->whichFactory();
         }

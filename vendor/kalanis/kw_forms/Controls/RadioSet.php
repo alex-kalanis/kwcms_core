@@ -29,9 +29,9 @@ class RadioSet extends AControl
     /**
      * Add group of elements of form entries Radio
      * @param string $key
-     * @param mixed $value
-     * @param mixed $label
-     * @param array $children
+     * @param string|int|float|null $value
+     * @param string $label
+     * @param iterable<string, string|int|Radio> $children
      * @return $this
      */
     public function set(string $key, $value = null, string $label = '', iterable $children = [])
@@ -65,7 +65,7 @@ class RadioSet extends AControl
 
     /**
      * Set checked for selected alias; rest will be unchecked
-     * @param string $value
+     * @param string|int|float|bool|null $value
      */
     public function setValue($value): void
     {
@@ -78,7 +78,7 @@ class RadioSet extends AControl
 
     /**
      * Returns value of selected radio from set
-     * @return string
+     * @return string|int|float|bool|null
      */
     public function getValue()
     {

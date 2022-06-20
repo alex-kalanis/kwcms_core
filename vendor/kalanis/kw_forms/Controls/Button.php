@@ -19,7 +19,7 @@ class Button extends AControl
         if (empty($title) && !empty($alias)) {
             $title = $alias;
         }
-        $title = empty($title) ? $this->originalValue : $title ;
+        $title = empty($title) ? strval($this->originalValue) : $title ;
         if (empty($alias)) {
             $alias = $title;
         }

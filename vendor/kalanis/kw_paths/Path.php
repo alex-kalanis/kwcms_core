@@ -25,16 +25,29 @@ namespace kalanis\kw_paths;
  */
 class Path
 {
+    /** @var string */
     protected $documentRoot = ''; // document root as set from server
+    /** @var string */
     protected $pathToSystemRoot = ''; // because document root could not be every time that dir in which are user data dir
+    /** @var string */
     protected $staticalPath = ''; // in browser the path which stay the same and targets the document root from the outside
+    /** @var string */
     protected $virtualPrefix = ''; // in browser the separation value between static part and virtual one
+    /** @var string */
     protected $user = ''; // user whom content is looked for
+    /** @var string */
     protected $lang = ''; // in which language will be content provided, also affects path
+    /** @var string */
     protected $path = ''; // the rest of path
+    /** @var string */
     protected $module = ''; // basic module which will be used as default one to present the content
+    /** @var bool */
     protected $isSingle = false; // is module the master of page and should be there another as wrapper?
 
+    /**
+     * @param array<string, string|int|bool> $params
+     * @return $this
+     */
     public function setData(array $params): self
     {
         $this->user = strval($params['user'] ?? $this->user );

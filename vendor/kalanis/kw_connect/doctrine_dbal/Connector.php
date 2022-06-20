@@ -6,9 +6,9 @@ namespace kalanis\kw_connect\doctrine_dbal;
 use Doctrine\DBAL\Query\QueryBuilder;
 use kalanis\kw_connect\arrays\Row;
 use kalanis\kw_connect\core\AConnector;
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
@@ -18,17 +18,17 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  * @package kalanis\kw_connect\doctrine_dbal
  * Data source is Doctrine DBAL
  */
-class Connector extends AConnector implements IConnector
+class Connector extends AConnector implements IIterableConnector
 {
     /** @var QueryBuilder */
     protected $queryBuilder;
     /** @var string */
     protected $primaryKey;
-    /** @var array */
+    /** @var array<int, array<string>> */
     protected $ordering;
-    /** @var int */
+    /** @var int|null */
     protected $limit;
-    /** @var int */
+    /** @var int|null */
     protected $offset;
     /** @var bool */
     protected $dataFetched = false;
@@ -94,14 +94,22 @@ class Connector extends AConnector implements IConnector
         }
     }
 
+    /**
+     * @param array<int|string, bool|float|int|string|null> $data
+     * @return IRow
+     */
     protected function getTranslated($data): IRow
     {
         return new Row($data);
     }
 
+    /**
+     * @param array<mixed> $data
+     * @return string
+     */
     protected function getPrimaryKey($data): string
     {
-        return $data[$this->primaryKey];
+        return strval($data[$this->primaryKey]);
     }
 
     public function getFilterFactory(): IFilterFactory

@@ -13,8 +13,11 @@ use kalanis\kw_clipr\CliprException;
  */
 trait TWrite
 {
+    /** @var string[] */
     protected $progressIndicator = ['|', '/', '-', '\\'];
+    /** @var bool */
     protected $workingSent = false;
+    /** @var int */
     protected $lastOutputLength = 0;
 
     public function sendOk(): void
@@ -39,7 +42,7 @@ trait TWrite
 
     public function sendCustom(string $message): void
     {
-        $this->write(' .... [ $message ]');
+        $this->write(" .... [ $message ]");
     }
 
     public function sendFailExplain(string $message): void
@@ -93,7 +96,7 @@ trait TWrite
             $op = current($this->progressIndicator);
         }
         $this->write($this->getTranslator()->getStepsBack());
-        $this->write($op);
+        $this->write(strval($op));
     }
 
     public function resetWorking(): void
@@ -134,7 +137,7 @@ trait TWrite
     /**
      * @codeCoverageIgnore because it contains timestamp and most of it is already covered
      */
-    public function writeHeader()
+    public function writeHeader(): void
     {
         $this->write('<green>' . str_repeat('*', 20) . '</green>');
         $this->write('<green> ' . get_called_class() . ' - Start Time ' . date('Y-m-d H:i:s') . ' </green>');
@@ -144,7 +147,7 @@ trait TWrite
     /**
      * @codeCoverageIgnore because it contains timestamp and most of it is already covered
      */
-    public function writeFooter()
+    public function writeFooter(): void
     {
         $this->write('<green>' . str_repeat('*', 40) . '</green>');
         $this->write('<green> End Time ' . date('Y-m-d H:i:s') . ' </green>');
@@ -152,7 +155,7 @@ trait TWrite
         $this->writeLn();
     }
 
-    public function removeLastOutput()
+    public function removeLastOutput(): void
     {
         if (0 < $this->lastOutputLength) {
             $this->write(

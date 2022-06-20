@@ -4,9 +4,9 @@ namespace kalanis\kw_connect\search;
 
 
 use kalanis\kw_connect\core\AConnector;
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -20,7 +20,7 @@ use kalanis\kw_mapper\Search\Search as MapperSearch;
  * @package kalanis\kw_table\Connector\Sources
  * Data source is kw_mapper/Search
  */
-class Connector extends AConnector implements IConnector
+class Connector extends AConnector implements IIterableConnector
 {
     /** @var MapperSearch */
     public $dataSource;
@@ -53,8 +53,8 @@ class Connector extends AConnector implements IConnector
 
     /**
      * @param ARecord $record
-     * @return string
      * @throws MapperException
+     * @return string
      */
     protected function getPrimaryKey(ARecord $record): string
     {
@@ -96,8 +96,8 @@ class Connector extends AConnector implements IConnector
     }
 
     /**
-     * @return int
      * @throws MapperException
+     * @return int
      */
     public function getTotalCount(): int
     {

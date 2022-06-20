@@ -3,22 +3,21 @@
 namespace kalanis\kw_forms\Controls;
 
 
+/**
+ * Trait TTemplateError
+ * @package kalanis\kw_forms\Controls
+ */
 trait TTemplateError
 {
     // 1 text
+    /** @var string */
     protected $templateError = '%s';
 
-    /**
-     * @return string
-     */
     public function getTemplateError(): string
     {
         return $this->templateError;
     }
 
-    /**
-     * @param string $templateError
-     */
     public function setTemplateError(string $templateError): void
     {
         $this->templateError = $templateError;

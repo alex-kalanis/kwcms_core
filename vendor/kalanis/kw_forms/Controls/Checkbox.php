@@ -15,9 +15,16 @@ class Checkbox extends AControl implements IOriginalValue
 {
     use TChecked;
 
+    /** @var int */
     private static $uniqid = 0;
     protected $templateInput = '<input type="checkbox" value="%1$s"%2$s />';
 
+    /**
+     * @param string $alias
+     * @param string|int|float|null $value
+     * @param string $label
+     * @return $this
+     */
     public function set(string $alias, $value = null, string $label = '')
     {
         $this->setEntry($alias, $value, $label);

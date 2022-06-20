@@ -16,8 +16,8 @@ abstract class ALoader
     /**
      * Transform input values to something more reliable
      * @param string $source
-     * @param array $array
+     * @param array<string|int, string|int|bool|string[]|int[]>|array<string|int, array<string, string>|array<string, array<string, string>>> $array
      * @return Entries\Entry[]
      */
-    abstract public function loadVars(string $source, &$array): array;
+    abstract public function loadVars(string $source, $array): array;
 }

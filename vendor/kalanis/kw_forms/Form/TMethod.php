@@ -16,9 +16,8 @@ trait TMethod
     /**
      * Set transfer method of form
      * @param string $param
-     * @return void
      */
-    public function setMethod(string $param)
+    public function setMethod(string $param): void
     {
         if (in_array($param, [IEntry::SOURCE_GET, IEntry::SOURCE_POST])) {
             $this->setAttribute('method', $param);
@@ -29,9 +28,9 @@ trait TMethod
      * Get that method
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
-        return $this->getAttribute('method');
+        return strval($this->getAttribute('method'));
     }
 
     abstract public function setAttribute(string $name, string $value): void;

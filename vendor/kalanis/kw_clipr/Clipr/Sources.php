@@ -16,8 +16,6 @@ class Sources
 {
     /** @var string */
     protected $sourceType = '';
-    /** @var array */
-    protected $sources = [];
 
     public function determineInput(bool $isWeb = false, bool $noColor = false): self
     {
@@ -78,6 +76,9 @@ class Sources
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function getEntryTypes(): array
     {
         switch ($this->sourceType) {

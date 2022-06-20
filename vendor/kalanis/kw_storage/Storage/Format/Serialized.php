@@ -15,7 +15,7 @@ class Serialized implements IFormat
 {
     public function decode($content)
     {
-        return unserialize($content);
+        return unserialize(strval($content));
     }
 
     public function encode($data)

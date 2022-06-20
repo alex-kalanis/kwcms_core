@@ -15,9 +15,9 @@ class Select extends AControl
     /**
      * Create element of form entry Select
      * @param string $alias
-     * @param mixed $value
+     * @param string|int|float|null $value
      * @param string $label
-     * @param array $children
+     * @param iterable<string, string|int|float|SelectOptgroup|SelectOption|iterable<string, string|SelectOption>> $children
      * @return $this
      */
     public function set(string $alias, $value = null, string $label = '', iterable $children = [])
@@ -43,7 +43,7 @@ class Select extends AControl
     /**
      * Add group into select
      * @param string $alias
-     * @param iterable $values
+     * @param iterable<string, string|SelectOption> $values
      * @param string $label
      * @return SelectOptgroup
      */

@@ -8,6 +8,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 
 class Factory
 {
+    /** @var array<string, string> */
     protected static $map = [
         'input' => '\kalanis\kw_forms\Controls\Input',
         'text' => '\kalanis\kw_forms\Controls\Text',
@@ -50,15 +51,18 @@ class Factory
     /**
      * Factory for getting classes of each input available by kw_forms
      * @param string $type
-     * @return AControl
      * @throws FormsException
+     * @return AControl
      */
     public function getControl(string $type): AControl
     {
         $type = strtolower($type);
         if (isset(static::$map[$type])) {
             $class = static::$map[$type];
-            return new $class();
+            $lib = new $class();
+            if ($lib instanceof AControl) {
+                return $lib;
+            }
         }
         throw new FormsException(sprintf('Unknown type %s ', $type));
     }

@@ -16,7 +16,7 @@ use Redis as lib;
  */
 class Redis extends AStorage
 {
-    /** @var null|lib */
+    /** @var lib */
     protected $redis = null;
     /** @var int */
     protected $timeout = 0;
@@ -47,7 +47,7 @@ class Redis extends AStorage
      */
     public function load(string $key): string
     {
-        return (string)$this->redis->get($key);
+        return strval($this->redis->get($key));
     }
 
     /**

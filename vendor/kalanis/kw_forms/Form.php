@@ -7,6 +7,7 @@ use kalanis\kw_forms\Adapters\AAdapter;
 use kalanis\kw_forms\Adapters\FilesAdapter;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_rules\Validate;
+use kalanis\kw_storage\StorageException;
 use kalanis\kw_templates\Interfaces\IHtmlElement;
 use kalanis\kw_templates\HtmlElement\THtmlElement;
 
@@ -30,10 +31,10 @@ class Form implements IHtmlElement
     protected $controlFactory = null;
     /** @var Validate */
     protected $validate = null;
-    /** @var AAdapter|array */
-    protected $entries = [];
-    /** @var FilesAdapter|array */
-    protected $files = [];
+    /** @var AAdapter|null */
+    protected $entries = null;
+    /** @var FilesAdapter|null */
+    protected $files = null;
     /** @var string Form label */
     protected $label = '';
 
@@ -79,8 +80,8 @@ class Form implements IHtmlElement
     /**
      * @param AAdapter $entries
      * @param FilesAdapter|null $files
-     * @return $this
      * @throws Exceptions\FormsException
+     * @return $this
      */
     public function setInputs(AAdapter $entries, ?FilesAdapter $files = null): self
     {
@@ -120,7 +121,7 @@ class Form implements IHtmlElement
     /**
      * Set value of object or child
      * @param string $key
-     * @param mixed $value
+     * @param string|int|float|bool|null $value
      */
     public function setValue(string $key, $value = null): void
     {
@@ -133,7 +134,7 @@ class Form implements IHtmlElement
     /**
      * Get value of object or child
      * @param string $key
-     * @return string|string[]|null
+     * @return string|int|float|bool|null
      */
     public function getValue(string $key)
     {
@@ -168,7 +169,7 @@ class Form implements IHtmlElement
     public function setLabel(?string $value = null, ?string $key = null)
     {
         if (is_null($key)) {
-            $this->label = $value;
+            $this->label = strval($value);
         } else {
             $control = $this->getControl($key);
             if ($control) {
@@ -223,11 +224,16 @@ class Form implements IHtmlElement
         if ($this->entries) $this->setValues($this->setValuesToFill($this->entries));
     }
 
+    /**
+     * @param AAdapter $adapter
+     * @param bool $raw
+     * @return array<string, string|int|float|null>
+     */
     protected function setValuesToFill(AAdapter $adapter, bool $raw = false): array
     {
         $result = [];
         foreach ($adapter as $key => $entry) {
-            $result[$key] = is_object($entry) && !$raw
+            $result[strval($key)] = is_object($entry) && !$raw
                 ? ( method_exists($entry, 'getValue')
                     ? $entry->getValue()
                     : strval($entry)
@@ -248,43 +254,45 @@ class Form implements IHtmlElement
         $validation = true;
         foreach ($this->controls as &$child) {
             if ($child instanceof Interfaces\IContainsControls) {
-                $validation &= $child->validateControls($this->validate);
-                $this->errors += $child->getValidatedErrors();
+                $validation &= $child->/** @scrutinizer ignore-call */validateControls($this->validate);
+                $this->errors += $child->/** @scrutinizer ignore-call */getValidatedErrors();
             } elseif ($child instanceof Controls\AControl) {
                 $validation &= $this->validate->validate($child);
                 $this->errors += $this->validate->getErrors();
             }
         }
 
-        return $validation;
+        return boolval($validation);
     }
 
-    public function setTemplate($string): void
+    public function setTemplate(string $string): void
     {
         $this->template = $string;
     }
 
     /**
      * Save current form data in storage
+     * @throws StorageException
      */
     public function store(): void
     {
-        $this->storage->store($this->getValues(), 86400); # day
+        if ($this->storage) $this->storage->store($this->getValues(), 86400); # day
     }
 
     /**
      * Load data from storage into form
+     * @throws StorageException
      */
     public function loadStored(): void
     {
-        $this->setValues($this->storage->load());
+        if ($this->storage) $this->setValues($this->storage->load());
     }
 
     /**
      * Render whole form
      * @param string|string[] $attributes
-     * @return string
      * @throws Exceptions\RenderException
+     * @return string
      */
     public function render($attributes = []): string
     {
@@ -296,8 +304,8 @@ class Form implements IHtmlElement
 
     /**
      * Render all errors from controls
-     * @return string
      * @throws Exceptions\RenderException
+     * @return string
      */
     public function renderErrors(): string
     {
@@ -313,8 +321,8 @@ class Form implements IHtmlElement
 
     /**
      * Get all errors from controls and return them as indexed array
-     * @return string[]
      * @throws Exceptions\RenderException
+     * @return array<string, string>
      */
     public function renderErrorsArray()
     {
@@ -323,13 +331,13 @@ class Form implements IHtmlElement
 
     /**
      * @param string $key
-     * @return string
      * @throws Exceptions\RenderException
+     * @return string
      */
     public function renderControlErrors(string $key): string
     {
         $control = $this->getControl($key);
-        if (isset($this->errors[$control->getKey()])) {
+        if ($control && isset($this->errors[$control->getKey()])) {
             return $control->renderErrors($this->errors[$control->getKey()]);
         }
         return '';
@@ -337,8 +345,8 @@ class Form implements IHtmlElement
 
     /**
      * Render all form controls, add missing wrappers
-     * @return string
      * @throws Exceptions\RenderException
+     * @return string
      */
     public function renderChildren(): string
     {
@@ -363,9 +371,10 @@ class Form implements IHtmlElement
                 } else {
                     $return .= $child->render() . PHP_EOL;
                 }
+                // @phpstan-ignore-next-line
             } else {
                 // @codeCoverageIgnoreStart
-                // How to make this one? Only by extending.
+                // How to make this one? Only by extending. Then all the security fly outside the window
                 $return .= strval($child);
                 // @codeCoverageIgnoreEnd
             }
@@ -381,22 +390,22 @@ class Form implements IHtmlElement
      */
     public function setLayout(string $layoutName = '')
     {
-        if (($layoutName == 'inlineTable') || ($layoutName == 'tableInline')) {
+        if (('inlineTable' == $layoutName) || ('tableInline' == $layoutName)) {
             $this->resetWrappers();
-            $this->addWrapperChildren('tr')
-                ->addWrapperChildren('table', ['class' => 'form'])
-                ->addWrapperLabel('td')
-                ->addWrapperInput('td')
-                ->addWrapperErrors('div', ['class' => 'errors'])
-                ->addWrapperError('div');
-        } elseif ($layoutName == 'table') {
+            $this->addWrapperChildren('tr');
+            $this->addWrapperChildren('table', ['class' => 'form']);
+            $this->addWrapperLabel('td');
+            $this->addWrapperInput('td');
+            $this->addWrapperErrors('div', ['class' => 'errors']);
+            $this->addWrapperError('div');
+        } elseif ('table' == $layoutName) {
             $this->resetWrappers();
-            $this->addWrapperChildren('table', ['class' => 'form'])
-                ->addWrapperChild('tr')
-                ->addWrapperLabel('td')
-                ->addWrapperInput('td')
-                ->addWrapperErrors('div', ['class' => 'errors'])
-                ->addWrapperError('div');
+            $this->addWrapperChildren('table', ['class' => 'form']);
+            $this->addWrapperChild('tr');
+            $this->addWrapperLabel('td');
+            $this->addWrapperInput('td');
+            $this->addWrapperErrors('div', ['class' => 'errors']);
+            $this->addWrapperError('div');
         }
 
         return $this;
@@ -404,10 +413,10 @@ class Form implements IHtmlElement
 
     /**
      * Render Start tag and hidden attributes
-     * @param array $attributes
+     * @param string|string[] $attributes
      * @param bool $noChildren
-     * @return string
      * @throws Exceptions\RenderException
+     * @return string
      */
     public function renderStart($attributes = [], bool $noChildren = false): string
     {

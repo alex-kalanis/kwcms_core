@@ -15,10 +15,14 @@ use kalanis\kw_input\Interfaces;
  */
 class Entry implements Interfaces\IEntry
 {
+    /** @var string */
     protected $key = '';
+    /** @var mixed|null */
     protected $value = '';
+    /** @var string */
     protected $source = '';
 
+    /** @var string[] */
     protected static $availableSources = [
         self::SOURCE_CLI,
         self::SOURCE_GET,
@@ -31,6 +35,12 @@ class Entry implements Interfaces\IEntry
         self::SOURCE_EXTERNAL,
     ];
 
+    /**
+     * @param string $source
+     * @param string $key
+     * @param mixed|null $value
+     * @return Entry
+     */
     public function setEntry(string $source, string $key, $value = null): self
     {
         $this->key = $key;
@@ -54,6 +64,9 @@ class Entry implements Interfaces\IEntry
         return $this->key;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getValue()
     {
         return $this->value;

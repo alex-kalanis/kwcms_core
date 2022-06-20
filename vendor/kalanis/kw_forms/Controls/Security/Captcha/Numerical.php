@@ -14,7 +14,7 @@ use kalanis\kw_rules\Interfaces\IRules;
  */
 class Numerical extends AGraphical
 {
-    public function set(string $alias, ArrayAccess &$session, string $errorMessage, string $font = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'): parent
+    public function set(string $alias, ArrayAccess &$session, string $errorMessage, string $font = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'): AGraphical
     {
         $this->font = $font;
 
@@ -29,11 +29,15 @@ class Numerical extends AGraphical
         return $this;
     }
 
-    public function addRule(string $ruleName, string $errorText, ...$args): void
+    public function addRule(/** @scrutinizer ignore-unused */ string $ruleName, /** @scrutinizer ignore-unused */ string $errorText, /** @scrutinizer ignore-unused */ ...$args): void
     {
         // no additional rules applicable
     }
 
+    /**
+     * @param mixed $value
+     * @return bool
+     */
     public function checkFillCaptcha($value): bool
     {
         $formName = $this->getKey() . '_last';

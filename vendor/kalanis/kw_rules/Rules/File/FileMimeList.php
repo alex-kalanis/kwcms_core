@@ -22,7 +22,7 @@ class FileMimeList extends AFileRule
     {
         $filename = $entry->getTempName();
         $finfo = new finfo(FILEINFO_MIME_TYPE);
-        if (!empty($filename) && $finfo) {
+        if (!empty($filename)) {
             foreach ($this->againstValue as $argumentValue) {
                 if ($finfo->file($filename) == $argumentValue) {
                     return;
@@ -32,6 +32,11 @@ class FileMimeList extends AFileRule
         throw new RuleException($this->errorText);
     }
 
+    /**
+     * @param mixed|null $singleRule
+     * @throws RuleException
+     * @return string
+     */
     protected function checkRule($singleRule): string
     {
         if (!is_string($singleRule)) {

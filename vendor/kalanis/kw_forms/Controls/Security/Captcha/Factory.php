@@ -22,7 +22,7 @@ class Factory
     const TYPE_COLOUR = 4;
     const TYPE_NOCAPTCHA = 5;
 
-    /** @var ITimeout */
+    /** @var ITimeout|null */
     protected $libTimeout = null;
     /** @var string */
     protected $captchaError = 'The CAPTCHA wasn\'t entered correctly. Please try it again.';

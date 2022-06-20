@@ -10,8 +10,8 @@ namespace kalanis\kw_rules\Rules;
  */
 class IsDomain extends MatchesPattern
 {
-    protected function checkValue($againstValue)
+    protected function checkValue(/** @scrutinizer ignore-unused */ $againstValue)
     {
-        return '/^([0-9a-z][-]?){0,63}[.][a-z]{2,8}$/'; # simple domain regex
+        return '/^([0-9a-z][-]?){0,63}[.][a-z]{2,9}$/'; # simple domain regex
     }
 }

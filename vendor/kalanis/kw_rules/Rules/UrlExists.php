@@ -21,6 +21,6 @@ class UrlExists extends ARule
         if (!empty($headers) && (false !== mb_strpos($headers[0], '200') )) {
             return;
         }
-        throw new RuleException($this->errorText, $entry->getKey());
+        throw new RuleException(sprintf($this->errorText, $entry->getKey()));
     }
 }

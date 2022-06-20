@@ -14,10 +14,13 @@ use Countable;
  */
 class FilteringArrays implements ArrayAccess, Countable
 {
+    /**
+     * @var array<string|int, string|int|float|bool|null|Row>
+     */
     protected $array;
 
     /**
-     * @param string[]|int[]|bool[]|Row[] $array
+     * @param array<string|int, string|int|float|bool|null|Row> $array
      */
     public function __construct(array &$array)
     {
@@ -25,7 +28,7 @@ class FilteringArrays implements ArrayAccess, Countable
     }
 
     /**
-     * @return string[]|int[]|bool[]|Row[]
+     * @return array<string|int, string|int|float|bool|null|Row>
      */
     public function &getArray()
     {
@@ -33,37 +36,52 @@ class FilteringArrays implements ArrayAccess, Countable
     }
 
     /**
-     * @param string[]|int[]|bool[] $array
+     * @param array<string|int, string|int|float|bool|null|Row> $array
      * @return $this
      */
-    public function setArray($array)
+    public function setArray($array): self
     {
         $this->array = $array;
         return $this;
     }
 
-    public function resetArray()
+    public function resetArray(): self
     {
         $this->array = [];
         return $this;
     }
 
+    /**
+     * @param string|int $offset
+     * @return bool
+     */
     public function offsetExists($offset): bool
     {
         return isset($this->array[$offset]);
     }
 
+    /**
+     * @param string|int $offset
+     * @return string|int|float|bool|null|Row
+     */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->array[$offset] : null ;
     }
 
+    /**
+     * @param string|int $offset
+     * @param string|int|float|bool|null|Row $value
+     */
     public function offsetSet($offset, $value): void
     {
         $this->array[$offset] = $value;
     }
 
+    /**
+     * @param string|int $offset
+     */
     public function offsetUnset($offset): void
     {
         if ($this->offsetExists($offset)) {

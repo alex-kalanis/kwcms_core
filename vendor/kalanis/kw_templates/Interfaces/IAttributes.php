@@ -18,19 +18,19 @@ interface IAttributes
 
     /**
      * Add array of attributes into current object attributes
-     * @param string|string[] $attributes
+     * @param string|array<string, string|int|array<string>>|null $attributes
      */
     public function addAttributes($attributes): void;
 
     /**
      * Set attributes, leave nothing from previous ones
-     * @param array $attributes
+     * @param string|array<string, string|int|array<string>>|null $attributes
      */
-    public function setAttributes(array $attributes): void;
+    public function setAttributes($attributes): void;
 
     /**
      * Get all available attributes
-     * @return string[]
+     * @return array<string, string>
      */
     public function getAttributes(): array;
 }

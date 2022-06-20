@@ -18,8 +18,8 @@ interface ILoader
 
     /**
      * @param string $classFromParam
-     * @return ATask|null
      * @throws CliprException
+     * @return ATask|null
      */
     public function getTask(string $classFromParam): ?ATask;
 }

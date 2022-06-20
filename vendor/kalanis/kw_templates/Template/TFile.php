@@ -15,8 +15,8 @@ trait TFile
 {
 
     /**
-     * @return string
      * @throws TemplateException
+     * @return string
      */
     protected function loadTemplate(): string
     {

@@ -15,7 +15,7 @@ abstract class ExternalTemplate extends ATemplate
         return '';
     }
 
-    public function setTemplate(string $content): parent
+    public function setTemplate(string $content): ATemplate
     {
         return parent::setTemplate($content);
     }

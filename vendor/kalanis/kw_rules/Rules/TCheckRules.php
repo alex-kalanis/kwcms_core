@@ -15,6 +15,11 @@ trait TCheckRules
 {
     use TRule;
 
+    /**
+     * @param mixed|null $againstValue
+     * @throws RuleException
+     * @return array<ARule|File\AFileRule>
+     */
     protected function checkValue($againstValue)
     {
         if (!is_array($againstValue)) {
@@ -24,9 +29,9 @@ trait TCheckRules
     }
 
     /**
-     * @param mixed $singleRule
-     * @return ARule|File\AFileRule
+     * @param mixed|null $singleRule
      * @throws RuleException
+     * @return ARule|File\AFileRule
      */
     protected function checkRule($singleRule)
     {

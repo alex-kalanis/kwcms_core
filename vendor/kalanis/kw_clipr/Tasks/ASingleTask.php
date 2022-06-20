@@ -13,10 +13,11 @@ use kalanis\kw_locks\Methods\PidLock;
 /**
  * Class ASingleTask
  * @package kalanis\kw_clipr\Tasks
- * @property bool singleInstance
+ * @property bool $singleInstance
  */
 abstract class ASingleTask extends ATask
 {
+    /** @var ILock */
     protected $lock = null;
 
     /**
@@ -29,15 +30,15 @@ abstract class ASingleTask extends ATask
         if ($this->lock instanceof IPassedKey) {
             $this->lock->setKey(str_replace('/', ':', get_class($this)) . ILock::LOCK_FILE);
         } elseif (method_exists($this->lock, 'setClass')) {
-            $this->lock->setClass($this);
+            $this->lock->/** @scrutinizer ignore-call */setClass($this);
         }
         // temp dir path must go via lock's constructor
         // when it comes via IStorage (StorageLock), it's possible to connect it into Redis or Memcache and then that path might not be necessary
     }
 
     /**
-     * @return ILock
      * @throws LockException
+     * @return ILock
      */
     protected function getPresetLock(): ILock
     {
@@ -78,12 +79,12 @@ abstract class ASingleTask extends ATask
 
     protected function isSingleInstance(): bool
     {
-        return (true == $this->singleInstance);
+        return (true === $this->singleInstance);
     }
 
     /**
-     * @return bool
      * @throws LockException
+     * @return bool
      */
     protected function isFileLocked(): bool
     {

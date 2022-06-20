@@ -15,6 +15,11 @@ trait TCheckArrayRange
 {
     use TRule;
 
+    /**
+     * @param mixed|null $againstValue
+     * @throws RuleException
+     * @return array<array<int>>
+     */
     protected function checkValue($againstValue)
     {
         if (!is_array($againstValue)) {
@@ -24,9 +29,9 @@ trait TCheckArrayRange
     }
 
     /**
-     * @param mixed $againstValue
-     * @return array
+     * @param mixed|null $againstValue
      * @throws RuleException
+     * @return array<int>
      */
     protected function checkRule($againstValue): array
     {

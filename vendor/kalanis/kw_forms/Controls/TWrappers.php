@@ -32,14 +32,15 @@ trait TWrappers
     protected $wrappersError = [];
     /** @var IHtmlElement[] */
     protected $wrappersErrors = [];
+    /** @var string */
     protected $errorMustBeAnInstance = 'Wrapper must be an instance of IHtmlElement or array of its instances';
 
     /**
      * Pack string into preset html element
      * @param string $string
      * @param IHtmlElement|IHtmlElement[] $wrappers
-     * @return string
      * @throws RenderException
+     * @return string
      */
     protected function wrapIt(string $string, $wrappers): string
     {
@@ -62,7 +63,7 @@ trait TWrappers
      * Add wrapper into predefined stack
      * @param IHtmlElement[] $stack
      * @param IHtmlElement|IHtmlElement[]|string|string[] $wrapper
-     * @param mixed $attributes
+     * @param array<string, string> $attributes
      */
     protected function addWrapperToStack(&$stack, $wrapper, array $attributes = []): void
     {
@@ -73,7 +74,7 @@ trait TWrappers
         } else {
             if (!($wrapper instanceof IHtmlElement)) {
                 $wrapper = HtmlElement::init($wrapper, $attributes);
-            } else if ($attributes !== null) {
+            } elseif (!empty($attributes)) {
                 $wrapper->setAttributes($attributes);
             }
             if (!in_array($wrapper, $stack)) {
@@ -85,130 +86,137 @@ trait TWrappers
     /**
      * Add wrapper for the whole object
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::render
      */
-    public function addWrapper($wrapper, array $attributes = []): self
+    public function addWrapper($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappers, $wrapper, $attributes);
-        return $this;
     }
 
     /**
      * Add wrapper for each child
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::renderChild
      */
-    public function addWrapperChild($wrapper, array $attributes = []): self
+    public function addWrapperChild($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappersChild, $wrapper, $attributes);
-        return $this;
     }
 
     /**
      * Add wrapper for labels
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::renderLabel
      */
-    public function addWrapperLabel($wrapper, array $attributes = []): self
+    public function addWrapperLabel($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappersLabel, $wrapper, $attributes);
-        return $this;
     }
 
     /**
      * Add wrapper for inputs
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::renderInput
      */
-    public function addWrapperInput($wrapper, array $attributes = []): self
+    public function addWrapperInput($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappersInput, $wrapper, $attributes);
-        return $this;
     }
 
     /**
      * Add wrapper for content of children
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::renderChildren
      */
-    public function addWrapperChildren($wrapper, array $attributes = []): self
+    public function addWrapperChildren($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappersChildren, $wrapper, $attributes);
-        return $this;
     }
 
     /**
      * Add wrapper for error messages
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param string|array $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::renderErrors
      */
-    public function addWrapperError($wrapper, array $attributes = []): self
+    public function addWrapperError($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappersError, $wrapper, $attributes);
-        return $this;
     }
 
     /**
      * Add wrapper for error messages
      * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
-     * @param string|array $attributes
-     * @return $this
+     * @param array<string, string> $attributes
      * @see AControl::renderErrors
      */
-    public function addWrapperErrors($wrapper, array $attributes = []): self
+    public function addWrapperErrors($wrapper, array $attributes = []): void
     {
         $this->addWrapperToStack($this->wrappersErrors, $wrapper, $attributes);
-        return $this;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappers(): array
     {
         return $this->wrappers;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappersLabel(): array
     {
         return $this->wrappersLabel;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappersInput(): array
     {
         return $this->wrappersInput;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappersChild(): array
     {
         return $this->wrappersChild;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappersChildren(): array
     {
         return $this->wrappersChildren;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappersError(): array
     {
         return $this->wrappersError;
     }
 
+    /**
+     * @return IHtmlElement[]
+     */
     public function wrappersErrors(): array
     {
         return $this->wrappersErrors;
     }
 
-    public function resetWrappers(): self
+    public function resetWrappers(): void
     {
         $this->wrappers = [];
         $this->wrappersLabel = [];
@@ -217,6 +225,5 @@ trait TWrappers
         $this->wrappersChildren = [];
         $this->wrappersError = [];
         $this->wrappersErrors = [];
-        return $this;
     }
 }

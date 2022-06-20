@@ -14,7 +14,7 @@ use kalanis\kw_input\Entries;
  */
 class File extends ALoader
 {
-    public function loadVars(string $source, &$array): array
+    public function loadVars(string $source, $array): array
     {
         $entries = new Entries\FileEntry();
         $result = [];

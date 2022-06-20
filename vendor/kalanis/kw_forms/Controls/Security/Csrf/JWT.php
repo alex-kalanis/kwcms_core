@@ -22,16 +22,16 @@ class JWT implements ICsrf
     /** @var int */
     protected $expire = 3600;
 
-    /** @var array Token cache */
+    /** @var array<string, string> Token cache */
     protected $tokens = [];
 
-    public function init(ArrayAccess &$cookie, int $expire = 3600)
+    public function init(ArrayAccess &$cookie, int $expire = 3600): void
     {
         if (empty($cookie['csrf_token'])) {
             $cookie['csrf_token'] = uniqid('csrf', true);
         }
 
-        $this->sessionToken = $cookie['csrf_token'];
+        $this->sessionToken = strval($cookie['csrf_token']);
         $this->expire = $expire;
     }
 

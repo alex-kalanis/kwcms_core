@@ -36,8 +36,8 @@ interface IConnector
     public function setPagination(?int $offset, ?int $limit): void;
 
     /**
-     * @return int
      * @throws ConnectException
+     * @return int
      */
     public function getTotalCount(): int;
 

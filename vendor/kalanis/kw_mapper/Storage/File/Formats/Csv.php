@@ -15,6 +15,7 @@ class Csv implements IFileFormat
 {
     use TNl;
 
+    /** @var string */
     protected $delimitLines = PHP_EOL;
 
     public function setDelimiters(string $lines = PHP_EOL): self
@@ -41,6 +42,7 @@ class Csv implements IFileFormat
     {
         $lines = [];
         foreach ($records as &$record) {
+            $record = (array) $record;
             ksort($record);
             $record[] = ''; // separator on end
             $lines[] = $this->str_putcsv(array_map([$this, 'escapeNl'], $record));
@@ -49,7 +51,7 @@ class Csv implements IFileFormat
     }
 
     /**
-     * @param $array
+     * @param array<string|int, string|int|float|array<string|int, string|int>> $array
      * @param string $delimiter
      * @param string $enclosure
      * @param string $terminator
@@ -59,7 +61,10 @@ class Csv implements IFileFormat
      */
     protected function str_putcsv($array, $delimiter = ',', $enclosure = '"', $terminator = "\n") {
         # First convert associative array to numeric indexed array
-        foreach ($array as $key => $value) $workArray[] = $value;
+        $workArray = [];
+        foreach ($array as $key => $value) {
+            $workArray[] = $value;
+        }
 
         $returnString = '';                 # Initialize return string
         $arraySize = count($workArray);     # Get size of array
@@ -72,7 +77,7 @@ class Csv implements IFileFormat
                 switch (gettype($workArray[$i])) {
                     # Manually set some strings
                     case "NULL":     $_spFormat = ''; break;
-                    case "boolean":  $_spFormat = ($workArray[$i] == true) ? 'true': 'false'; break;
+                    case "boolean":  $_spFormat = (true == $workArray[$i]) ? 'true': 'false'; break;
                     # Make sure sprintf has a good datatype to work with
                     case "integer":  $_spFormat = '%i'; break;
                     case "double":   $_spFormat = '%0.2f'; break;

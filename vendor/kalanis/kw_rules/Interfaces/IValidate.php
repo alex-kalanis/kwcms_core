@@ -21,7 +21,7 @@ interface IValidate
 
     /**
      * Value to validate
-     * @return string|string[]
+     * @return mixed
      */
     public function getValue();
 

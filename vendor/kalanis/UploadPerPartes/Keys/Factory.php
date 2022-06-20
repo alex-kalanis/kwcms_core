@@ -19,6 +19,7 @@ class Factory
     const VARIANT_RANDOM = 2;
     const VARIANT_REDIS = 3;
 
+    /** @var array<int, string> */
     protected static $map = [
         self::VARIANT_VOLUME => '\kalanis\UploadPerPartes\Keys\SimpleVolume',
         self::VARIANT_RANDOM => '\kalanis\UploadPerPartes\Keys\Random',
@@ -29,8 +30,8 @@ class Factory
      * @param IUPPTranslations $lang
      * @param TargetSearch $target
      * @param int $variant
-     * @return AKey
      * @throws UploadException
+     * @return AKey
      */
     public static function getVariant(IUPPTranslations $lang, TargetSearch $target, int $variant): AKey
     {
@@ -38,6 +39,10 @@ class Factory
             throw new UploadException($lang->uppKeyVariantNotSet());
         }
         $class = static::$map[$variant];
-        return new $class($lang, $target);
+        $lib = new $class($lang, $target);
+        if (!$lib instanceof AKey) {
+            throw new UploadException($lang->uppKeyVariantIsWrong($class));
+        }
+        return $lib;
     }
 }

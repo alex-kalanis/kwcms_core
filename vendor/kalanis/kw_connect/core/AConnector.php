@@ -24,7 +24,7 @@ abstract class AConnector extends AIterator
 
     /**
      * Get row with data by preset key
-     * @param $key
+     * @param int|string $key
      * @return IRow
      */
     public function getByKey($key): ?IRow

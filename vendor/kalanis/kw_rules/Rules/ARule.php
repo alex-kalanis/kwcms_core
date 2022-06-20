@@ -18,8 +18,8 @@ abstract class ARule
 
     /**
      * @param IValidate $entry
-     * @return void
      * @throws RuleException
+     * @return void
      */
     abstract public function validate(IValidate $entry): void;
 }

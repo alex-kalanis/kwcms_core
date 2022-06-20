@@ -3,7 +3,7 @@
 namespace kalanis\kw_table\form_kw\Fields;
 
 
-use kalanis\kw_connect\core\Interfaces\IConnector;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_forms\Form;
 use kalanis\kw_table\core\Connector\AMultipleValue;
 
@@ -14,6 +14,7 @@ use kalanis\kw_table\core\Connector\AMultipleValue;
  */
 class MultipleValue extends AMultipleValue
 {
+    /** @var AField */
     protected $field = null;
 
     public function __construct(AField $field, ?string $label = null, string $alias = '')
@@ -37,7 +38,7 @@ class MultipleValue extends AMultipleValue
         return $this->field;
     }
 
-    public function setDataSourceConnector(IConnector $dataSource): void
+    public function setDataSourceConnector(IIterableConnector $dataSource): void
     {
         $this->field->setDataSourceConnector($dataSource);
     }
@@ -55,7 +56,7 @@ class MultipleValue extends AMultipleValue
 
     public function renderContent(): string
     {
-        $control = $this->field->getForm()->getControl($this->getAlias());
+        $control = $this->field->getForm()->/** @scrutinizer ignore-call */getControl($this->getAlias());
         $control->setLabel($this->getLabel());
         return $control->render();
     }

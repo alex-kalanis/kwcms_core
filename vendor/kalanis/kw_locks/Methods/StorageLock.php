@@ -20,7 +20,9 @@ class StorageLock implements IPassedKey
     protected $storage = null;
     /** @var IKLTranslations */
     protected $lang = null;
+    /** @var string */
     protected $specialKey = '';
+    /** @var string */
     protected $checkContent = '';
 
     public function __construct(Storage $storage, ?IKLTranslations $lang = null)
@@ -42,7 +44,7 @@ class StorageLock implements IPassedKey
     public function setKey(string $key, string $checkContent = ''): void
     {
         $this->specialKey = $key;
-        $this->checkContent = empty($checkContent) ? getmypid() : $checkContent ;
+        $this->checkContent = empty($checkContent) ? strval(getmypid()) : $checkContent ;
     }
 
     public function has(): bool
@@ -51,7 +53,7 @@ class StorageLock implements IPassedKey
             if (!$this->storage->exists($this->specialKey)) {
                 return false;
             }
-            if ($this->checkContent == $this->storage->get($this->specialKey)) {
+            if ($this->checkContent == strval($this->storage->get($this->specialKey))) {
                 return true;
             }
             throw new LockException($this->lang->iklLockedByOther());

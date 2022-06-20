@@ -49,7 +49,7 @@ class Help extends ATask
             $this->setTableHeaders(['Variable', 'Cli key', 'Short key', 'Current value', 'Description']);
             foreach ($task->getParams()->getAvailableOptions() as $param) {
                 /** @var Params\Option $param */
-                $this->setTableDataLine([$param->getVariable(), $param->getCliKey(), (string)$param->getShort(), (string)$param->getValue(), $param->getDescription()]);
+                $this->setTableDataLine([$param->getVariable(), $param->getCliKey(), (string) $param->getShort(), (string) $param->getValue(), $param->getDescription()]);
             }
             $this->dumpTable();
 

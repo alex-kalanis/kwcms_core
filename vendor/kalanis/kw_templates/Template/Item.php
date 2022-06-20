@@ -25,6 +25,10 @@ class Item
         return $this;
     }
 
+    /**
+     * @param bool|float|int|string|null ...$arg
+     * @return $this
+     */
     public function updateValue(...$arg): self
     {
         $this->value = sprintf($this->getValue(), ...$arg);

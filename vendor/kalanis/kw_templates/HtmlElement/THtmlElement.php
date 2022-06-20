@@ -69,7 +69,7 @@ trait THtmlElement
     /**
      * Add child on stack end or replace the current one (if they have same alias)
      * @param IHtmlElement|string $child
-     * @param string|null $alias - key for lookup; beware of empty strings
+     * @param int|string|null $alias - key for lookup; beware of empty strings
      * @param bool $merge merge with original element if already exists
      * @param bool $inherit inherit properties from current element
      */
@@ -83,17 +83,25 @@ trait THtmlElement
             $alias = $this->checkAlias($alias) ? strval($alias) : null ;
             $child = new Text(strval($child), $alias);
         }
-        $child->setParent($this);
+        if (method_exists($child, 'setParent') && $this instanceof IHtmlElement) {
+            $child->setParent($this);
+        }
 
         if ($this->checkAlias($alias)) {
-            $child = $merge && $this->__isset($alias) ? $this->children[$alias]->merge($child) : $child ;
-            $this->children[$alias] = $inherit ? $this->inherit($child) : $child ;
+            if ($merge && $this->__isset(strval($alias))) {
+                $this->children[strval($alias)]->merge($child);
+            }
+            $this->children[strval($alias)] = $inherit ? $this->inherit($child) : $child ;
         } else {
             $this->children[] = $child;
         }
 
     }
 
+    /**
+     * @param mixed $alias
+     * @return bool
+     */
     protected function checkAlias($alias): bool
     {
         return !(is_null($alias) || ('' === $alias) || (is_object($alias)) || is_resource($alias) );
@@ -140,7 +148,7 @@ trait THtmlElement
     public function lastChild(): ?IHtmlElement
     {
         $last = end($this->children);
-        return $last === false ? null : $last ;
+        return (false === $last) ? null : $last ;
     }
 
     /**
@@ -150,16 +158,20 @@ trait THtmlElement
     public function setChildren(iterable $children = []): void
     {
         foreach ($children as $alias => $child) {
+            $xChild = $child instanceof IHtmlElement
+                ? $child->getAlias()
+                : strval($child)
+            ;
             $this->addChild(
                 $child,
-                is_numeric($alias) && $this->checkAlias($child->getAlias()) ? $child->getAlias() : $alias
+                is_numeric($alias) && $this->checkAlias($xChild) ? $xChild : $alias
             );
         }
     }
 
     /**
      * Return all children as iterator
-     * @return Traversable IHtmlElement
+     * @return Traversable<IHtmlElement>
      */
     public function getChildren(): Traversable
     {
@@ -171,7 +183,7 @@ trait THtmlElement
      * @param string|int $alias
      * @return IHtmlElement|null
      */
-    public function __get($alias)
+    public function __get($alias): ?IHtmlElement
     {
         return $this->__isset($alias) ? $this->children[$alias] : null ;
     }
@@ -179,9 +191,9 @@ trait THtmlElement
     /**
      * Set child directly by setting a property of this class
      * @param string|int $alias
-     * @param mixed $value
+     * @param IHtmlElement|string $value
      */
-    public function __set($alias, $value)
+    public function __set($alias, $value): void
     {
         $this->addChild($value, $alias);
     }
@@ -191,7 +203,7 @@ trait THtmlElement
      * @param string|int $alias
      * @return bool
      */
-    public function __isset($alias)
+    public function __isset($alias): bool
     {
         return isset($this->children[$alias]);
     }
@@ -201,17 +213,22 @@ trait THtmlElement
      * @param string|int $alias
      * @return bool
      */
-    public function __empty($alias)
+    public function __empty($alias): bool
     {
         return empty($this->children[$alias]);
     }
 
+    /**
+     * @param string $method
+     * @param array<string, string> $args
+     * @return mixed
+     */
     public function __call($method, $args)
     {
-        if (count($args) == 1) {
-            $this->setAttribute($method, $args[0]);
-        } elseif (count($args) == 0) {
-            return $this->getAttribute($method);
+        if (0 == count($args)) {
+            return $this->getAttribute(strval($method));
+        } elseif (1 == count($args)) {
+            $this->setAttribute(strval($method), strval(reset($args)));
         }
         return $this;
     }

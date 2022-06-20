@@ -10,6 +10,7 @@ namespace kalanis\kw_paths;
  */
 class KwPath
 {
+    /** @var string[] */
     protected $path = [];
 
     public function __toString()
@@ -28,6 +29,9 @@ class KwPath
         return Stuff::arrayToPath($this->path);
     }
 
+    /**
+     * @return string[]
+     */
     public function getArray(): array
     {
         return array_merge($this->path, []); // remove indexes

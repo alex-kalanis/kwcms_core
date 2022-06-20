@@ -10,7 +10,7 @@ namespace kalanis\kw_rules\Rules;
  */
 class IsEmail extends MatchesPattern
 {
-    protected function checkValue($againstValue)
+    protected function checkValue(/** @scrutinizer ignore-unused */ $againstValue)
     {
         return '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,11}$/'; # simple email regex
     }

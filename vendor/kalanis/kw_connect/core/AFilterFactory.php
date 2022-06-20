@@ -16,7 +16,7 @@ abstract class AFilterFactory implements IFilterFactory
 {
     /**
      * In child only fill this map
-     * @var string[]
+     * @var array<string, string>
      */
     protected static $map = [];
 
@@ -25,14 +25,14 @@ abstract class AFilterFactory implements IFilterFactory
         return new static();
     }
 
-    protected function __construct()
+    final protected function __construct()
     {
     }
 
     /**
      * @param string $action
-     * @return IFilterType
      * @throws ConnectException
+     * @return IFilterType
      */
     public function getFilter(string $action): IFilterType
     {
@@ -40,6 +40,10 @@ abstract class AFilterFactory implements IFilterFactory
             throw new ConnectException(sprintf('Unknown filter action *%s*!', $action));
         }
         $class = static::$map[$action];
-        return new $class();
+        $lib = new $class();
+        if (!$lib instanceof IFilterType) {
+            throw new ConnectException(sprintf('Bad filter class *%s*!', $class));
+        }
+        return $lib;
     }
 }

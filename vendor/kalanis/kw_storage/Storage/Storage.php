@@ -5,7 +5,6 @@ namespace kalanis\kw_storage\Storage;
 
 use kalanis\kw_storage\StorageException;
 use kalanis\kw_storage\Interfaces;
-use Traversable;
 
 
 /**
@@ -43,8 +42,8 @@ class Storage
      * @param string $sharedKey
      * @param mixed $data
      * @param int|null $timeout
-     * @return bool
      * @throws StorageException
+     * @return bool
      */
     public function write(string $sharedKey, $data, ?int $timeout = null): bool
     {
@@ -54,8 +53,8 @@ class Storage
     /**
      * Read storage record
      * @param string $sharedKey
-     * @return mixed
      * @throws StorageException
+     * @return mixed
      */
     public function read(string $sharedKey)
     {
@@ -65,8 +64,8 @@ class Storage
     /**
      * Delete storage record - usually on finish or discard
      * @param string $sharedKey
-     * @return bool
      * @throws StorageException
+     * @return bool
      */
     public function remove(string $sharedKey): bool
     {
@@ -86,10 +85,10 @@ class Storage
     /**
      * What data is in storage?
      * @param string $mask
-     * @return Traversable
      * @throws StorageException
+     * @return string[]
      */
-    public function lookup(string $mask): Traversable
+    public function lookup(string $mask): iterable
     {
         return $this->storage->lookup($this->key->fromSharedKey($mask));
     }
@@ -97,8 +96,8 @@ class Storage
     /**
      * Increment index in key
      * @param string $key
-     * @return bool
      * @throws StorageException
+     * @return bool
      */
     public function increment(string $key): bool
     {
@@ -108,8 +107,8 @@ class Storage
     /**
      * Decrement index in key
      * @param string $key
-     * @return bool
      * @throws StorageException
+     * @return bool
      */
     public function decrement(string $key): bool
     {
@@ -119,15 +118,15 @@ class Storage
     /**
      * Remove multiple keys
      * @param string[] $keys
-     * @return string[]
      * @throws StorageException
+     * @return array<int|string, bool>
      */
     public function removeMulti(array $keys): array
     {
         return $this->storage->removeMulti(array_map([$this, 'multiKey'], $keys));
     }
 
-    protected function multiKey(string $key)
+    protected function multiKey(string $key): string
     {
         return $this->key->fromSharedKey($key);
     }

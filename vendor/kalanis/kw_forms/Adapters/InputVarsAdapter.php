@@ -15,6 +15,7 @@ use kalanis\kw_input\Interfaces\IVariables;
  */
 class InputVarsAdapter extends VarsAdapter
 {
+    /** @var IVariables */
     protected $inputs = null;
 
     public function __construct(IVariables $inputs)
@@ -34,6 +35,10 @@ class InputVarsAdapter extends VarsAdapter
         $this->inputType = $inputType;
     }
 
+    /**
+     * @throws FormsException
+     * @return mixed|string|null
+     */
     public function getValue()
     {
         return $this->current()->getValue();

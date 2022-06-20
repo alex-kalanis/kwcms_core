@@ -54,6 +54,11 @@ class Inputs implements Interfaces\IInputs
         );
     }
 
+    /**
+     * @param string $source
+     * @param array<string|int, string|int|bool|string[]|int[]>|array<string|int, array<string, string>|array<string, array<string, string>>>|null $inputArray
+     * @return Interfaces\IEntry[]
+     */
     protected function loadInput(string $source, ?array $inputArray = null): array
     {
         if (empty($inputArray)) {
@@ -61,9 +66,15 @@ class Inputs implements Interfaces\IInputs
         }
         $parser = $this->parserFactory->getLoader($source);
         $loader = $this->loaderFactory->getLoader($source);
+        // @phpstan-ignore-next-line
         return $loader->loadVars($source, $parser->parseInput($inputArray));
     }
 
+    /**
+     * @param string|null $entryKey
+     * @param string[] $entrySources
+     * @return Traversable<string|int, Interfaces\IEntry>
+     */
     public function getIn(?string $entryKey = null, array $entrySources = []): Traversable
     {
         foreach ($this->entries as $entry) {

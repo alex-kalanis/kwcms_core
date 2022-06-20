@@ -18,10 +18,10 @@ class Redirect
 
     public function __construct(string $redirectTo, int $targetMethod = self::TARGET_MOVED, ?int $step = null)
     {
-        if (strncmp('cli', PHP_SAPI, 3) !== 0) {
-            if (headers_sent() !== true) {
-                if ($step) {
-                    header( 'Refresh:' . $step . ';url=' . $this->removeNullBytes($redirectTo) );
+        if (0 !== strncmp('cli', PHP_SAPI, 3)) {
+            if (true !== headers_sent()) {
+                if (!is_null($step) && (0 !== $step)) {
+                    header('Refresh:' . $step . ';url=' . $this->removeNullBytes($redirectTo));
                 } else {
                     header('Location: ' . $this->removeNullBytes($redirectTo), true, $targetMethod);
                     exit(0);
@@ -30,8 +30,8 @@ class Redirect
         }
     }
 
-    protected function removeNullBytes($string, $nullTo = '')
+    protected function removeNullBytes(string $string, string $nullTo = ''): string
     {
-        return str_replace(chr(0), $nullTo, $string);
+        return strval(str_replace(chr(0), $nullTo, $string));
     }
 }

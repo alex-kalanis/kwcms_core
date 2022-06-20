@@ -13,6 +13,7 @@ namespace kalanis\kw_paths\Params;
  */
 abstract class AParams
 {
+    /** @var array<string|int, mixed|null> */
     protected $params = [];
 
     public function process(): self
@@ -20,11 +21,17 @@ abstract class AParams
         return $this;
     }
 
+    /**
+     * @return array<string|int, mixed|null>
+     */
     public function getParams(): array
     {
         return $this->params;
     }
 
+    /**
+     * @param array<string|int, mixed|null> $params
+     */
     protected function preset(array $params): void
     {
         $this->params = $params;

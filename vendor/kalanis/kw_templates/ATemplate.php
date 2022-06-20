@@ -31,6 +31,8 @@ abstract class ATemplate
      */
     protected function loadItem(): void
     {
+        // due init...
+        // @phpstan-ignore-next-line
         if (empty(static::$item)) {
             static::$item = new Template\Item();
         }
@@ -95,7 +97,7 @@ abstract class ATemplate
     {
         $map = [];
         foreach ($this->items as $item) {
-            $map[(string)$item->getKey()] = (string)$item->getValue();
+            $map[(string) $item->getKey()] = (string) $item->getValue();
         }
         $this->template = strtr($this->template, $map);
     }
@@ -106,7 +108,7 @@ abstract class ATemplate
      * @param string $which
      * @param string $to
      */
-    public function change(string $which, string $to)
+    public function change(string $which, string $to): void
     {
         $this->template = str_replace($which, $to, $this->template);
     }
@@ -115,12 +117,12 @@ abstract class ATemplate
      * get part of template
      *
      * @param int $begin where may begin
-     * @param int $length how long it is
+     * @param int|null $length how long it is
      * @return string
      */
     public function getSubstring(int $begin, ?int $length = null): string
     {
-        return substr($this->template, $begin, $length);
+        return is_null($length) ? substr($this->template, $begin) : substr($this->template, $begin, $length);
     }
 
     /**
@@ -128,15 +130,15 @@ abstract class ATemplate
      *
      * @param string $what looking for
      * @param int $begin after...
-     * @return int
      * @throws TemplateException
+     * @return int
      */
     public function position(string $what, int $begin = 0): int
     {
         $w = $this->template;
         $w = substr($w, $begin);
         $p = strpos($w, $what);
-        if ($p === false) {
+        if (false === $p) {
             throw new TemplateException('Not found');
         }
         return $p;
@@ -149,11 +151,11 @@ abstract class ATemplate
      * @param int $fromBeing in original string
      * @param int $skip in original string
      */
-    public function paste(string $newString, int $fromBeing, int $skip = 0)
+    public function paste(string $newString, int $fromBeing, int $skip = 0): void
     {
         # prepare
-        $fromBeing = abs($fromBeing);
-        $skip = abs($skip);
+        $fromBeing = intval(abs($fromBeing));
+        $skip = intval(abs($skip));
         # run
         $leftFromBegin = substr($this->template, 0, $fromBeing);
         $leftFromEnd = (0 == $skip) ? substr($this->template, $fromBeing) : substr($this->template, $fromBeing + $skip);

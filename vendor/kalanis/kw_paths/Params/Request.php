@@ -14,7 +14,9 @@ use kalanis\kw_paths\Interfaces\IPaths;
  */
 class Request extends AParams
 {
+    /** @var string */
     protected $requestUri = '';
+    /** @var string|null */
     protected $virtualDir = '';
 
     /**
@@ -53,11 +55,20 @@ class Request extends AParams
         return $this;
     }
 
+    /**
+     * @param string $uri
+     * @return string[]
+     */
     protected function explodeInput(string $uri): array
     {
         return (false !== strpos($uri, IPaths::SPLITTER_QUOTE)) ? explode(IPaths::SPLITTER_QUOTE, $uri, 2) : [$uri, ''];
     }
 
+    /**
+     * @param string $path
+     * @param string|null $fakeDir
+     * @return array<string|null>
+     */
     protected function pathToSegments(string $path, ?string $fakeDir): array
     {
         if (!empty($fakeDir)) {
@@ -90,12 +101,20 @@ class Request extends AParams
         return [$statical, $mask, $virtual];
     }
 
+    /**
+     * @param string $param
+     * @return array<string|int, string|int|bool>
+     */
     protected function parseParamsToArray(string $param): array
     {
         parse_str(html_entity_decode($param, ENT_QUOTES | ENT_HTML5, 'UTF-8'), $result);
         return $result;
     }
 
+    /**
+     * @param string|null $path
+     * @return array<string|int, mixed>
+     */
     protected function parseVirtualPath(?string $path): array
     {
         $params = [];
@@ -122,8 +141,8 @@ class Request extends AParams
     }
 
     /**
-     * @param array $params
-     * @return array
+     * @param array<string|int, mixed> $params
+     * @return array<string|int, mixed>
     // U:user
     // M:module
     // MS:solo_module
@@ -133,7 +152,7 @@ class Request extends AParams
     {
         $result = [];
         foreach ($params as $key => $param) {
-            switch (strtolower($key)) {
+            switch (strtolower(strval($key))) {
                 case 'ms':
                     $result['module'] = $param;
                     $result['single'] = true;

@@ -17,24 +17,24 @@ interface ILock
 
     /**
      * Already has lock
-     * @return bool
      * @throws LockException
+     * @return bool
      */
     public function has(): bool;
 
     /**
      * Create new one
      * @param bool $force forced creation
-     * @return bool
      * @throws LockException
+     * @return bool
      */
     public function create(bool $force = false): bool;
 
     /**
      * Remove current one
      * @param bool $force forced removal
-     * @return bool
      * @throws LockException
+     * @return bool
      */
     public function delete(bool $force = false): bool;
 }

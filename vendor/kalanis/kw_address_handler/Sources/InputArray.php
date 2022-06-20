@@ -16,7 +16,7 @@ class InputArray extends Sources
     public function __construct(ArrayAccess $inputs, string $entry = 'REQUEST_URI')
     {
         if ($inputs->offsetExists($entry) && '' != $inputs->offsetGet($entry)) {
-            $this->setAddress($inputs->offsetGet($entry));
+            $this->setAddress(strval($inputs->offsetGet($entry)));
         }
     }
 }

@@ -10,8 +10,11 @@ namespace kalanis\kw_clipr\Output;
  */
 abstract class AOutput
 {
+    /** @var string */
     protected $closeSequence = '';
+    /** @var string */
     protected $formatBackSequence = '';
+    /** @var string */
     protected $eolSequence = PHP_EOL;
     /** @var string[] */
     protected $tags = [];
@@ -81,10 +84,10 @@ abstract class AOutput
     {
         foreach ($this->tags as $color => $translation) {
             $endSequence = empty($translation) ? '' : $this->closeSequence;
-            $message = preg_replace('/\<' . $color . '\>(.*?)\<\/' . $color . '\>/i', $translation . '\1' . $endSequence, $message);
+            $message = preg_replace('/\<' . $color . '\>(.*?)\<\/' . $color . '\>/i', $translation . '\1' . $endSequence, strval($message));
         }
 
-        return $message;
+        return strval($message);
     }
 
     public function getStepsBack(int $len = 1): string

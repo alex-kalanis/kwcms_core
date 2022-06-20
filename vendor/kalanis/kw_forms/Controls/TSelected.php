@@ -10,6 +10,9 @@ namespace kalanis\kw_forms\Controls;
  */
 trait TSelected
 {
+    /**
+     * @param string|int|float|bool|null $value
+     */
     public function setValue($value): void
     {
         if ($this->originalValue == $value) {
@@ -26,12 +29,12 @@ trait TSelected
 
     /**
      * Set if option is selected
-     * @param string $value
+     * @param string|int|float|bool|null $value
      * @return $this
      */
     protected function setSelected($value): self
     {
-        if (!empty($value) && (strval($value) !== 'none')) {
+        if (!empty($value) && ('none' !== strval($value))) {
             $this->setAttribute('selected', 'selected');
         } else {
             $this->removeAttribute('selected');

@@ -27,7 +27,7 @@ class Forward
 
     public function getLink(): string
     {
-        return $this->urlHandler->getAddress();
+        return strval($this->urlHandler->getAddress());
     }
 
     public function setSource(Sources\Sources $sources): self

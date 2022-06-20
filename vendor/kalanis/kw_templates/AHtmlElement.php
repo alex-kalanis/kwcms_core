@@ -3,7 +3,7 @@
 namespace kalanis\kw_templates;
 
 
-use ArrayAccess, IteratorAggregate, Traversable, Countable, ArrayIterator;
+use ArrayAccess, IteratorAggregate, Traversable, ArrayIterator;
 
 
 /**
@@ -11,7 +11,7 @@ use ArrayAccess, IteratorAggregate, Traversable, Countable, ArrayIterator;
  * @author Adam Dornak original
  * @author Petr Plsek refactored
  */
-abstract class AHtmlElement implements Interfaces\IHtmlElement, ArrayAccess, IteratorAggregate, Countable
+abstract class AHtmlElement implements Interfaces\IHtmlElement, ArrayAccess, IteratorAggregate
 {
     use HtmlElement\THtmlElement;
 
@@ -27,7 +27,7 @@ abstract class AHtmlElement implements Interfaces\IHtmlElement, ArrayAccess, Ite
     /**
      * Implementing ArrayAccess
      * @param string|int|null $offset
-     * @param mixed $value
+     * @param Interfaces\IHtmlElement|string $value
      */
     public final function offsetSet($offset, $value): void
     {
@@ -67,7 +67,7 @@ abstract class AHtmlElement implements Interfaces\IHtmlElement, ArrayAccess, Ite
     /**
      * Implementing IteratorAggregate
      * Return all children as array iterator
-     * @return Traversable
+     * @return Traversable<Interfaces\IHtmlElement>
      */
     public function getIterator(): Traversable
     {

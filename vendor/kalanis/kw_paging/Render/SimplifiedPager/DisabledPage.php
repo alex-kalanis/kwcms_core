@@ -22,7 +22,7 @@ class DisabledPage extends ATemplate
         $this->addInput('{PAGE_NUMBER}');
     }
 
-    public function setData(ILink $link, string $pageNumber): self
+    public function setData(/** @scrutinizer ignore-unused */ ILink $link, string $pageNumber): self
     {
         $this->updateItem('{PAGE_NUMBER}', $pageNumber);
         return $this;

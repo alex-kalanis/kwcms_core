@@ -4,7 +4,7 @@ namespace kalanis\kw_table\core;
 
 
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Interfaces\IConnector;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_paging\Interfaces\IOutput;
 use kalanis\kw_table\core\Interfaces\Form\IField;
 use kalanis\kw_table\core\Interfaces\Form\IFilterForm;
@@ -21,7 +21,7 @@ class Table
 {
     const PAGER_LIMIT_DEFAULT = 30;
 
-    /** @var IConnector|null */
+    /** @var IIterableConnector|null */
     protected $dataSetConnector = null;
 
     /** @var IColumn[] */
@@ -51,10 +51,10 @@ class Table
     /** @var Table\Internal\Row[]|Table[] */
     protected $tableData = [];
 
-    /** @var string[] */
+    /** @var array<string, string> */
     protected $defaultHeaderFilterFieldAttributes = [];
 
-    /** @var array  */
+    /** @var array<string, string>  */
     protected $defaultFooterFilterFieldAttributes = [];
 
     /** @var bool */
@@ -64,9 +64,9 @@ class Table
     protected $showPagerOnFoot = true;
 
     /**
-     * @param IConnector|null $dataSetConnector
+     * @param IIterableConnector|null $dataSetConnector
      */
-    public function __construct(IConnector $dataSetConnector = null)
+    public function __construct(IIterableConnector $dataSetConnector = null)
     {
         if (!is_null($dataSetConnector)) {
             $this->addDataSetConnector($dataSetConnector);
@@ -77,6 +77,7 @@ class Table
      * Add external function to row for processing data
      * @param string $function
      * @param string[] $arguments
+     * @return mixed|null|void
      */
     public function __call($function, $arguments)
     {
@@ -91,7 +92,7 @@ class Table
      * @param IRule  $rule
      * @param string $cell
      */
-    public function rowClass(string $class, IRule $rule, $cell)
+    public function rowClass(string $class, IRule $rule, $cell): void
     {
         $this->callRows[] = new Table\Rows\ClassRow($class, $rule, $cell);
     }
@@ -114,12 +115,20 @@ class Table
         return $this;
     }
 
+    /**
+     * @param array<string, string> $attributes
+     * @return $this
+     */
     public function setDefaultHeaderFilterFieldAttributes(array $attributes): self
     {
         $this->defaultHeaderFilterFieldAttributes = $attributes;
         return $this;
     }
 
+    /**
+     * @param array<string, string> $attributes
+     * @return $this
+     */
     public function setDefaultFooterFilterFieldAttributes(array $attributes): self
     {
         $this->defaultFooterFilterFieldAttributes = $attributes;
@@ -136,13 +145,13 @@ class Table
      * Basic order
      * @param string $columnName
      * @param string $order
-     * @return $this
      * @throws TableException
+     * @return $this
      */
     public function addOrdering(string $columnName, string $order = Table\Order::ORDER_ASC): self
     {
         $this->checkOrder();
-        $this->order->addOrdering($columnName, $order);
+        $this->order->/** @scrutinizer ignore-call */addOrdering($columnName, $order);
         return $this;
     }
 
@@ -150,13 +159,13 @@ class Table
      * More important order when some is already set
      * @param string $columnName
      * @param string $order
-     * @return $this
      * @throws TableException
+     * @return $this
      */
     public function addPrimaryOrdering(string $columnName, string $order = Table\Order::ORDER_ASC): self
     {
         $this->checkOrder();
-        $this->order->addPrependOrdering($columnName, $order);
+        $this->order->/** @scrutinizer ignore-call */addPrependOrdering($columnName, $order);
         return $this;
     }
 
@@ -195,7 +204,7 @@ class Table
         return $this->headerFilter ? $this->headerFilter->getFormName() : ( $this->footerFilter ? $this->footerFilter->getFormName() : '' );
     }
 
-    public function setOutput(Table\AOutput $output)
+    public function setOutput(Table\AOutput $output): void
     {
         $this->output = $output;
     }
@@ -207,16 +216,16 @@ class Table
 
     /**
      * Change data source
-     * @param IConnector $dataSetConnector
+     * @param IIterableConnector $dataSetConnector
      * @return $this
      */
-    public function addDataSetConnector(IConnector $dataSetConnector): self
+    public function addDataSetConnector(IIterableConnector $dataSetConnector): self
     {
         $this->dataSetConnector = $dataSetConnector;
         return $this;
     }
 
-    public function getDataSetConnector(): ?IConnector
+    public function getDataSetConnector(): ?IIterableConnector
     {
         return $this->dataSetConnector;
     }
@@ -271,14 +280,14 @@ class Table
      * @param IColumn $column
      * @param IField|null $headerFilterField
      * @param IField|null $footerFilterField
-     * @return $this
      * @throws TableException
+     * @return $this
      */
     public function addOrderedColumn(string $headerText, IColumn $column, ?IField $headerFilterField = null, ?IField $footerFilterField = null): self
     {
         if ($column->canOrder()) {
             $this->checkOrder();
-            $this->order->addColumn($column);
+            $this->order->/** @scrutinizer ignore-call */addColumn($column);
         }
 
         $this->addColumn($headerText, $column, $headerFilterField, $footerFilterField);
@@ -291,8 +300,8 @@ class Table
      * @param IColumn $column
      * @param IField|null $headerFilterField
      * @param IField|null $footerFilterField
-     * @return $this
      * @throws TableException
+     * @return $this
      */
     public function addColumn(string $headerText, IColumn $column, ?IField $headerFilterField = null, ?IField $footerFilterField = null): self
     {
@@ -343,9 +352,9 @@ class Table
 
     /**
      * Render complete table - just helper method
-     * @return string
      * @throws ConnectException
      * @throws TableException
+     * @return string
      */
     public function render(): string
     {
@@ -375,7 +384,7 @@ class Table
         $this->applyOrder();
         $this->applyPager();
 
-        $this->dataSetConnector->fetchData();
+        $this->dataSetConnector->/** @scrutinizer ignore-call */fetchData();
 
         foreach ($this->dataSetConnector as $source) {
             $rowData = new Table\Internal\Row();
@@ -395,10 +404,10 @@ class Table
     }
 
     /**
-     * @return $this
      * @throws ConnectException
+     * @return $this
      */
-    public function applyFilter(): self
+    protected function applyFilter(): self
     {
         if (empty($this->headerFilter)) {
             return $this;
@@ -411,8 +420,8 @@ class Table
 
                 $filterField = $column->getHeaderFilterField();
                 if ($filterField) {
-                    $filterField->setDataSourceConnector($this->dataSetConnector);
-                    $this->dataSetConnector->setFiltering(
+                    $filterField->setDataSourceConnector(/** @scrutinizer ignore-type */$this->dataSetConnector);
+                    $this->dataSetConnector->/** @scrutinizer ignore-call */setFiltering(
                         $column->getSourceName(),
                         $filterField->getFilterAction(),
                         $this->headerFilter->getValue($column)
@@ -424,36 +433,37 @@ class Table
     }
 
     /**
-     * @return $this
      * @throws ConnectException
+     * @return $this
      */
-    public function applyOrder(): self
+    protected function applyOrder(): self
     {
         if (empty($this->order)) {
             return $this;
         }
 
         $this->order->process();
-        foreach ($this->order->getOrdering() as list($columnName, $direction)) {
-            $this->dataSetConnector->setOrdering($columnName, $direction);
+        foreach ($this->order->getOrdering() as $attributes) {
+            /** @var Table\Internal\Attributes $attributes */
+            $this->dataSetConnector->/** @scrutinizer ignore-call */setOrdering($attributes->getColumnName(), $attributes->getProperty());
         }
         return $this;
     }
 
     /**
-     * @return $this
      * @throws ConnectException
+     * @return $this
      */
-    public function applyPager(): self
+    protected function applyPager(): self
     {
         if (empty($this->pager)) {
             return $this;
         }
 
         if (empty($this->pager->getPager()->getMaxResults())) {
-            $this->pager->getPager()->setMaxResults($this->dataSetConnector->getTotalCount());
+            $this->pager->getPager()->setMaxResults($this->dataSetConnector->/** @scrutinizer ignore-call */getTotalCount());
         }
-        $this->dataSetConnector->setPagination(
+        $this->dataSetConnector->/** @scrutinizer ignore-call */setPagination(
             $this->pager->getPager()->getOffset(),
             $this->pager->getPager()->getLimit()
         );

@@ -15,7 +15,9 @@ use kalanis\kw_locks\LockException;
  */
 class ClassLock implements ILock
 {
+    /** @var string */
     protected $lockFilename = '';
+    /** @var IPassedKey */
     protected $parentClass = null;
 
     public function __construct(IPassedKey $parentClass)
@@ -27,9 +29,9 @@ class ClassLock implements ILock
      * @param object $lockedClass
      * @throws LockException
      */
-    public function setClass(object $lockedClass)
+    public function setClass(object $lockedClass): void
     {
-        $this->parentClass->setKey(str_replace('/', ':', get_class($lockedClass)) . ILock::LOCK_FILE);
+        $this->parentClass->setKey(strval(str_replace('/', ':', get_class($lockedClass)) . ILock::LOCK_FILE));
     }
 
     public function has(): bool

@@ -6,8 +6,8 @@ namespace kalanis\kw_connect\records;
 use kalanis\kw_connect\arrays\Filters;
 use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_mapper\Records\ARecord;
@@ -18,11 +18,11 @@ use kalanis\kw_mapper\Records\ARecord;
  * @package kalanis\kw_connect\records
  * Data source is kw_mapper/Record
  */
-class Connector extends AConnector implements IConnector
+class Connector extends AConnector implements IIterableConnector
 {
     /** @var ARecord[] */
     protected $dataSource;
-    /** @var array */
+    /** @var array<IRow> */
     protected $filteredData = [];
     /** @var string */
     protected $orderDirection = IOrder::ORDER_ASC;
@@ -30,13 +30,16 @@ class Connector extends AConnector implements IConnector
     protected $orderColumn = '';
     /** @var string|null */
     protected $filterByColumn = null;
-    /** @var string|null */
+    /** @var string|int|null */
     protected $filterByNamePart = null;
     /** @var int|null */
     protected $offset = null;
     /** @var int|null */
     protected $limit = null;
 
+    /**
+     * @param array<ARecord> $records
+     */
     public function __construct(array $records)
     {
         $this->dataSource = $records;
@@ -50,7 +53,7 @@ class Connector extends AConnector implements IConnector
         $this->translatedData = array_slice($filtered, intval($this->offset), $this->limit);
     }
 
-    public function getTranslated($data): IRow
+    public function getTranslated(ARecord $data): IRow
     {
         return new Row($data);
     }
@@ -58,7 +61,7 @@ class Connector extends AConnector implements IConnector
     public function setFiltering(string $colName, string $filterType, $value): void
     {
         $this->filterByColumn = $colName;
-        $this->filterByNamePart = $value;
+        $this->filterByNamePart = is_array($value) ? strval(reset($value)) : strval($value);
     }
 
     public function setOrdering(string $colName, string $direction): void
@@ -91,8 +94,8 @@ class Connector extends AConnector implements IConnector
 
     /**
      * @param IRow $node
-     * @return bool
      * @throws ConnectException
+     * @return bool
      */
     public function filterItems(IRow $node): bool
     {
@@ -112,20 +115,20 @@ class Connector extends AConnector implements IConnector
     /**
      * @param IRow $node
      * @param string $whichColumn
-     * @param string $columnValue
-     * @return bool
+     * @param string|int $columnValue
      * @throws ConnectException
+     * @return bool
      */
-    protected function compareValues(IRow $node, string $whichColumn, string $columnValue): bool
+    protected function compareValues(IRow $node, string $whichColumn, $columnValue): bool
     {
-        return false !== stripos($node->getValue($whichColumn), $columnValue);
+        return false !== stripos(strval($node->getValue($whichColumn)), strval($columnValue));
     }
 
     /**
      * @param IRow $a
      * @param IRow $b
-     * @return int
      * @throws ConnectException
+     * @return int
      */
     public function sortItems(IRow $a, IRow $b)
     {

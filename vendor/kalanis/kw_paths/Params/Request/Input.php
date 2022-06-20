@@ -20,6 +20,7 @@ class Input extends Request
     public function set(IVariables $inputs, ?string $virtualDir = null): parent
     {
         $requestUri = $inputs->getInArray('REQUEST_URI', [IEntry::SOURCE_SERVER, ] );
-        return $this->setData((string)reset($requestUri), $virtualDir);
+        $entry = reset($requestUri);
+        return $this->setData($entry ? strval($entry) : '', $virtualDir);
     }
 }

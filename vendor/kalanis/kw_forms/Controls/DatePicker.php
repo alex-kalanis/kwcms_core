@@ -6,7 +6,9 @@ namespace kalanis\kw_forms\Controls;
 class DatePicker extends AControl
 {
     protected $templateInput = '<input type="text" value="%1$s"%2$s />%3$s';
+    /** @var string */
     protected $dateFormat = 'Y-m-d';
+    /** @var string */
     protected $dateClass = 'datepicker';
 
     public function set(string $alias, ?string $originalValue = null, string $label = ''): self
@@ -33,17 +35,17 @@ class DatePicker extends AControl
         if (is_numeric($value)) {
             $this->value = $value;
         } elseif (!empty($value)) {
-            $this->value = strtotime($value);
+            $this->value = strtotime(strval($value));
         }
     }
 
     public function renderInput($attributes = null): string
     {
         $this->addAttributes($attributes);
-        if (!empty($this->value)) {
-            $value = date($this->getDateFormat(), strval($this->value));
+        if (is_numeric($this->value)) {
+            $value = date($this->getDateFormat(), intval($this->value));
         } else {
-            $value = $this->value;
+            $value = '';
         }
         $this->setAttribute('name', $this->getKey());
         return $this->wrapIt(sprintf($this->templateInput, $this->escaped(strval($value)), $this->renderAttributes(), $this->renderChildren()), $this->wrappersInput);

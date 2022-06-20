@@ -13,11 +13,11 @@ use kalanis\kw_forms\Interfaces\ITimeout;
  */
 class AnyTime implements ITimeout
 {
-    public function updateExpire()
+    public function updateExpire(): void
     {
     }
 
-    public function isRunning()
+    public function isRunning(): bool
     {
         return true;
     }

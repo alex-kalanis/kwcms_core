@@ -18,26 +18,46 @@ class Input implements ArrayAccess, IteratorAggregate, Countable
     /** @var Interfaces\IEntry[] */
     protected $inputs = [];
 
+    /**
+     * @param Interfaces\IEntry[] $inputs
+     */
     public function __construct(array $inputs)
     {
         $this->inputs = &$inputs;
     }
 
+    /**
+     * @param string|int $offset
+     * @return Interfaces\IEntry|string|float|int|bool|null
+     */
     public final function __get($offset)
     {
         return $this->offsetGet($offset);
     }
 
+    /**
+     * @param string|int $offset
+     * @param Interfaces\IEntry|string|float|int|bool $value
+     * @return void
+     */
     public final function __set($offset, $value)
     {
         $this->offsetSet($offset, $value);
     }
 
+    /**
+     * @param string|int $offset
+     * @return bool
+     */
     public final function __isset($offset)
     {
         return $this->offsetExists($offset);
     }
 
+    /**
+     * @param string|int $offset
+     * @return void
+     */
     public final function __unset($offset)
     {
         $this->offsetUnset($offset);
@@ -45,21 +65,23 @@ class Input implements ArrayAccess, IteratorAggregate, Countable
 
     /**
      * Implementing ArrayAccess
-     * @param string|int|null $offset
+     * @param string|int $offset
      * @param Interfaces\IEntry|string|float|int|bool $value
      */
     public final function offsetSet($offset, $value): void
     {
         if ($this->offsetExists($offset)) {
+            $source = $this->offsetGet($offset);
+            $source = $source ?: Interfaces\IEntry::SOURCE_EXTERNAL;
             $entry = new Entry();
-            $entry->setEntry($this->offsetGet($offset)->getSource(), $offset, $value);
-            $this->inputs[$offset] = $entry;
+            $entry->setEntry(strval($source), strval($offset), $value);
+            $this->inputs[strval($offset)] = $entry;
         } elseif ($value instanceof Interfaces\IEntry) {
             $this->inputs[$value->getKey()] = $value;
         } else {
             $entry = new Entry();
-            $entry->setEntry(Interfaces\IEntry::SOURCE_EXTERNAL, $offset, $value);
-            $this->inputs[$offset] = $entry;
+            $entry->setEntry(Interfaces\IEntry::SOURCE_EXTERNAL, strval($offset), $value);
+            $this->inputs[strval($offset)] = $entry;
         }
     }
 
@@ -98,7 +120,7 @@ class Input implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Implementing IteratorAggregate
      * Return all inputs as array iterator
-     * @return Traversable
+     * @return Traversable<string|int, Interfaces\IEntry>
      */
     public function getIterator(): Traversable
     {

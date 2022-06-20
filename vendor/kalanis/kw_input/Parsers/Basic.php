@@ -10,7 +10,7 @@ namespace kalanis\kw_input\Parsers;
  */
 class Basic extends AParser
 {
-    public function &parseInput(&$input): array
+    public function parseInput(array $input): array
     {
         $trimArray = [];
         foreach ($input as $key => $value) {
@@ -20,6 +20,7 @@ class Basic extends AParser
                 $trimArray[$this->removeNullBytes($key)] = $this->removeNullBytes(trim(strval($value)));
             }
         }
+        // @phpstan-ignore-next-line
         return $trimArray;
     }
 }

@@ -3,7 +3,7 @@
 namespace kalanis\kw_templates\Interfaces;
 
 
-use Traversable;
+use Countable, Traversable;
 
 
 /**
@@ -11,7 +11,7 @@ use Traversable;
  * @package kalanis\kw_templates\Interfaces
  * Base of each html element
  */
-interface IHtmlElement extends IAttributes
+interface IHtmlElement extends IAttributes, Countable
 {
     /**
      * Returns object alias
@@ -37,7 +37,6 @@ interface IHtmlElement extends IAttributes
     /**
      * Merge this element with child and its attributes
      * @param IHtmlElement $child
-     * @return $this
      */
     public function merge(IHtmlElement $child): void;
 
@@ -61,7 +60,7 @@ interface IHtmlElement extends IAttributes
 
     /**
      * Return all children as iterator
-     * @return Traversable IHtmlElement
+     * @return Traversable<IHtmlElement>
      */
     public function getChildren(): Traversable;
 }

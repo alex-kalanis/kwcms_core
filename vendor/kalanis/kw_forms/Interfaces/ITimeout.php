@@ -13,13 +13,12 @@ interface ITimeout
 {
     /**
      * Can use?
-     * @return string
+     * @return bool
      */
-    public function isRunning();
+    public function isRunning(): bool;
 
     /**
      * Update expiration
-     * @return void
      */
-    public function updateExpire();
+    public function updateExpire(): void;
 }

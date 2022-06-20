@@ -12,8 +12,12 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class Row implements IRow
 {
+    /** @var array<int|string, int|string|float|bool|null> */
     protected $array;
 
+    /**
+     * @param array<int|string, int|string|float|bool|null> $array
+     */
     public function __construct(array $array)
     {
         $this->array = $array;

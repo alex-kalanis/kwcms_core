@@ -10,6 +10,10 @@ namespace kalanis\kw_paths\Params;
  */
 class Arrays extends AParams
 {
+    /**
+     * @param array<string|int, mixed|null> $params
+     * @return $this
+     */
     public function setData(array $params = []): self
     {
         $this->preset($params);

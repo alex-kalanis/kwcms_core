@@ -13,17 +13,16 @@ namespace kalanis\kw_templates\HtmlElement;
  */
 trait THtml
 {
+    /** @var string */
     protected $innerHtml = '';
 
     /**
      * Set internal content of element
      * @param string $value
-     * @return $this
      */
-    public function addInnerHTML(string $value): self
+    public function addInnerHTML(string $value): void
     {
         $this->innerHtml = $value;
-        return $this;
     }
 
     /**

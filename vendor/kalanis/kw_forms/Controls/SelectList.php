@@ -20,9 +20,8 @@ class SelectList extends AControl implements IMultiValue
     /**
      * Create form element Select - variant for list
      * @param string $alias
-     * @param mixed $value
-     * @param mixed $label
-     * @param array $children
+     * @param string $label
+     * @param iterable<string, string|SelectOption> $children
      * @param int $size
      * @return $this
      */
@@ -36,7 +35,7 @@ class SelectList extends AControl implements IMultiValue
             }
         }
         $this->setEntry($alias, '', $label);
-        if ($size) {
+        if (!is_null($size) && (0 != $size)) {
             $this->setSize($size);
         }
         $this->setAttribute('id', $this->getKey());

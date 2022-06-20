@@ -19,9 +19,8 @@ trait TCss
     /**
      * Add class into attribute class
      * @param string $name
-     * @return $this
      */
-    public function addClass(string $name): self
+    public function addClass(string $name): void
     {
         $class = $this->getAttribute(IAttributes::ATTR_NAME_CLASS);
         if (!empty($class)) {
@@ -33,15 +32,13 @@ trait TCss
         } else {
             $this->setAttribute(IAttributes::ATTR_NAME_CLASS, $name);
         }
-        return $this;
     }
 
     /**
      * Remote class from attribute class
      * @param string $name
-     * @return $this
      */
-    public function removeClass(string $name): self
+    public function removeClass(string $name): void
     {
         $class = $this->getAttribute(IAttributes::ATTR_NAME_CLASS);
         if (!empty ($class)) {
@@ -53,7 +50,6 @@ trait TCss
                 $this->setAttribute(IAttributes::ATTR_NAME_CLASS, implode(IAttributes::ATTR_SEP_CLASS, $class));
             }
         }
-        return $this;
     }
 
     abstract public function getAttribute(string $name): ?string;

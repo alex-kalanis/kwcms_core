@@ -3,7 +3,7 @@
 namespace kalanis\kw_clipr;
 
 
-use kalanis\kw_input\Variables;
+use kalanis\kw_input\Interfaces\IVariables;
 
 
 /**
@@ -13,14 +13,14 @@ use kalanis\kw_input\Variables;
  */
 class Clipr
 {
-    /** @var Interfaces\ILoader|null */
+    /** @var Interfaces\ILoader */
     protected $loader = null;
-    /** @var Variables|null */
+    /** @var IVariables */
     protected $variables = null;
-    /** @var Clipr\Sources|null */
+    /** @var Clipr\Sources */
     protected $sources = null;
 
-    public function __construct(Interfaces\ILoader $loader, Clipr\Sources $sources, Variables $variables)
+    public function __construct(Interfaces\ILoader $loader, Clipr\Sources $sources, IVariables $variables)
     {
         $this->loader = $loader;
         $this->sources = $sources;
@@ -30,8 +30,8 @@ class Clipr
     /**
      * @param string $namespace
      * @param string $path
-     * @return $this
      * @throws CliprException
+     * @return $this
      */
     public function addPath(string $namespace, string $path): self
     {
@@ -47,7 +47,7 @@ class Clipr
         // for parsing default params it's necessary to load another task
         $dummy = new Tasks\DummyTask();
         $dummy->initTask(new Output\Clear(), $this->variables->getInArray(), $this->loader);
-        $this->sources->determineInput((bool)$dummy->webOutput, (bool)$dummy->noColor);
+        $this->sources->determineInput((bool) $dummy->webOutput, (bool) $dummy->noColor);
 
         // now we know necessary input data, so we can initialize real task
         $inputs = $this->variables->getInArray(null, $this->sources->getEntryTypes());

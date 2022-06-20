@@ -13,7 +13,7 @@ class Option
     protected $variable = '';
     /** @var string */
     protected $cliKey = '';
-    /** @var string */
+    /** @var string|null */
     protected $match = '';
     /** @var mixed */
     protected $defaultValue = null;

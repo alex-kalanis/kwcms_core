@@ -38,12 +38,12 @@ class Checkboxes extends AControl implements IMultiValue
     /**
      * Create group of form elements Checkbox
      * @param string $alias
-     * @param string[]|bool[] $value
+     * @param array<string, string|int|float|bool> $value
      * @param string|null $label
-     * @param string[]|Checkbox[] $children
+     * @param iterable<string, string|Checkbox> $children
      * @return $this
      */
-    public function set(string $alias, iterable $value = [], ?string $label = null, iterable $children = array())
+    public function set(string $alias, array $value = [], ?string $label = null, iterable $children = array())
     {
         $this->alias = $alias;
         $this->setLabel($label);
@@ -57,7 +57,7 @@ class Checkboxes extends AControl implements IMultiValue
         }
 
         if (!empty($value)) {
-            $this->setValues((array) $value);
+            $this->setValues($value);
         }
         return $this;
     }
@@ -81,7 +81,7 @@ class Checkboxes extends AControl implements IMultiValue
 
     /**
      * Get statuses of all children
-     * @return array
+     * @return array<string, string|int|float|bool|null>
      */
     public function getValues(): array
     {
@@ -97,7 +97,7 @@ class Checkboxes extends AControl implements IMultiValue
     /**
      * Set values to all children
      * !! UNDEFINED values will be SET too !!
-     * @param string[]|array $array
+     * @param array<string, string|int|float|bool|null> $array
      */
     public function setValues(array $array = []): void
     {
@@ -126,8 +126,8 @@ class Checkboxes extends AControl implements IMultiValue
 
     /**
      * Render all children, add missing prefixes
-     * @return string
      * @throws RenderException
+     * @return string
      */
     public function renderChildren(): string
     {

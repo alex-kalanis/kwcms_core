@@ -13,6 +13,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class Row implements IRow
 {
+    /** @var ARecord */
     protected $record;
 
     public function __construct(ARecord $record)
@@ -22,8 +23,8 @@ class Row implements IRow
 
     public function getValue($property)
     {
-        if (method_exists($this->record, $property)) {
-            return call_user_func([$this->record, $property]);
+        if (method_exists($this->record, strval($property))) {
+            return call_user_func([$this->record, strval($property)]);
         } else {
             return $this->record->__get($property);
         }

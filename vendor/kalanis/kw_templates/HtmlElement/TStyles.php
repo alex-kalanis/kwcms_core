@@ -16,12 +16,11 @@ use kalanis\kw_templates\Interfaces\IAttributes;
  */
 trait TStyles
 {
-    public function addCss(string $name, string $value): self
+    public function addCss(string $name, string $value): void
     {
         $attrStyle = $this->readCss();
         $attrStyle[$name] = $value;
         $this->updateCss($attrStyle);
-        return $this;
     }
 
     public function getCss(string $name): string
@@ -30,16 +29,18 @@ trait TStyles
         return $attrStyle[$name];
     }
 
-    public function removeCss(string $name): self
+    public function removeCss(string $name): void
     {
         $attrStyle = $this->readCss();
         if (isset($attrStyle[$name])) {
             unset($attrStyle[$name]);
         }
         $this->updateCss($attrStyle);
-        return $this;
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function readCss(): array
     {
         $attrStyle = $this->getAttribute(IAttributes::ATTR_NAME_STYLE);
@@ -55,14 +56,16 @@ trait TStyles
         return $styles;
     }
 
-    private function updateCss(array $attrStyle): self
+    /**
+     * @param array<string, string> $attrStyle
+     */
+    private function updateCss(array $attrStyle): void
     {
         $style = '';
         foreach ($attrStyle as $key => $val) {
             $style .= $key . IAttributes::ATTR_SET_STYLE . $val . IAttributes::ATTR_SEP_STYLE;
         }
         $this->setAttribute(IAttributes::ATTR_NAME_STYLE, $style);
-        return $this;
     }
 
     abstract public function getAttribute(string $name): ?string;

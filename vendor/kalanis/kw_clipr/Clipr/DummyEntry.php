@@ -13,9 +13,15 @@ use kalanis\kw_input\Entries\Entry;
  */
 class DummyEntry extends Entry
 {
+    /**
+     * @param string $key
+     * @param mixed|null $value
+     * @param string $source
+     * @return DummyEntry
+     */
     public static function init(string $key, $value, string $source = self::SOURCE_EXTERNAL): self
     {
-        $lib = new static();
+        $lib = new self();
         $lib->setEntry($source, $key, $value);
         return $lib;
     }

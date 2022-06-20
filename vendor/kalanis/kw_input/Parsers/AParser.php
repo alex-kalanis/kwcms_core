@@ -12,10 +12,10 @@ abstract class AParser
 {
     /**
      * Parse input into usable array, remove problematic things
-     * @param array $input
-     * @return array
+     * @param int[]|string[]|int[][]|string[][] $input
+     * @return int[]|string[]|int[][]|string[][]
      */
-    abstract public function &parseInput(&$input): array;
+    abstract public function parseInput(array $input): array;
 
     /**
      * Clear Null bytes

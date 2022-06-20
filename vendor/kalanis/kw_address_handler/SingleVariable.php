@@ -41,6 +41,6 @@ class SingleVariable
 
     public function getVariableValue(): string
     {
-        return (string)$this->params->offsetGet($this->variableName);
+        return strval($this->params->offsetGet($this->variableName));
     }
 }

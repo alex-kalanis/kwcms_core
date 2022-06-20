@@ -15,8 +15,8 @@ interface IRow
 {
     /**
      * @param string|int $property
-     * @return mixed
      * @throws ConnectException
+     * @return mixed
      */
     public function getValue($property);
 

@@ -19,7 +19,7 @@ class Simple implements ICsrf
     /** @var int */
     protected $expire = 3600;
 
-    public function init(ArrayAccess &$session, int $expire = 3600)
+    public function init(ArrayAccess &$session, int $expire = 3600): void
     {
         $this->session = $session;
         $this->expire = $expire;
@@ -38,7 +38,7 @@ class Simple implements ICsrf
             $this->session->offsetSet($codeName, uniqid('csrf', true));
             $this->session->offsetSet($codeName . '_timer', time() + $this->expire);
         }
-        return $this->session->offsetGet($codeName);
+        return strval($this->session->offsetGet($codeName));
     }
 
     public function getExpire(): int

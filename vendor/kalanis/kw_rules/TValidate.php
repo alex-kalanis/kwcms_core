@@ -14,7 +14,7 @@ use kalanis\kw_rules\Exceptions\RuleException;
  */
 trait TValidate
 {
-    /** @var RuleException[] */
+    /** @var RuleException[][] */
     protected $errors = [];
 
     public function validate(Interfaces\IValidate $entry): bool
@@ -28,7 +28,7 @@ trait TValidate
                     $this->errors[$entry->getKey()] = [];
                 }
                 $this->errors[$entry->getKey()][] = $ex;
-                while ($ex = $ex->getPrev()) {
+                while ($ex = $ex->/** @scrutinizer ignore-call */getPrev()) {
                     $this->errors[$entry->getKey()][] = $ex;
                 }
             }

@@ -13,8 +13,12 @@ use Nette\Database\IRow as NetteRow;
  */
 class Row implements IRow
 {
+    /** @var NetteRow<string|int, string|int|float|bool|null> */
     protected $row;
 
+    /**
+     * @param NetteRow<string|int, string|int|float|bool|null> $row
+     */
     public function __construct(NetteRow $row)
     {
         $this->row = $row;

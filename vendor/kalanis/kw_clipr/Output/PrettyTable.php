@@ -30,56 +30,77 @@ use kalanis\kw_clipr\Clipr\Useful;
  */
 class PrettyTable implements \Iterator
 {
-
+    /** @var array<int, string> */
     protected $header = [];
+    /** @var array<int, string> */
     protected $colors = [];
+    /** @var array<int, string> */
     protected $colorsHeader = [];
+    /** @var array<int, array<int, string>> */
     protected $table = [];
+    /** @var int */
     protected $position = 0;
+    /** @var array<int, int> */
     protected $lengths = [];
 
+    /**
+     * @param array<int, string> $values
+     */
     public function setColors($values): void
     {
         $this->colors = $values;
     }
 
-    public function setColor($index, string $value): void
+    public function setColor(int $index, string $value): void
     {
         $this->colors[$index] = $value;
     }
 
+    /**
+     * @param array<int, string> $values
+     */
     public function setColorsHeader($values): void
     {
         $this->colorsHeader = $values;
     }
 
-    public function setColorHeader($index, string $value): void
+    public function setColorHeader(int $index, string $value): void
     {
         $this->colorsHeader[$index] = $value;
     }
 
+    /**
+     * @param array<int, string> $values
+     */
     public function setHeaders($values): void
     {
         $this->header = $values;
     }
 
-    public function setHeader($index, $value): void
+    public function setHeader(int $index, string $value): void
     {
         $this->header[$index] = $value;
     }
 
+    /**
+     * @param array<int, string> $values
+     */
     public function setDataLine($values): void
     {
         $this->table[$this->position] = $values;
         $this->next();
     }
 
-    public function setData($index, $value): void
+    /**
+     * @param int $index
+     * @param string $value
+     */
+    public function setData(int $index, $value): void
     {
         $this->table[$this->position][$index] = $value;
     }
 
-    public function setLengths($force = false): void
+    public function setLengths(bool $force = false): void
     {
         if (empty($this->lengths) || $force) {
             // for correct padding it's necessary to set max lengths for each column
@@ -156,7 +177,12 @@ class PrettyTable implements \Iterator
         return '';
     }
 
-    protected function dumpLine($content, $colors = array()): string
+    /**
+     * @param iterable<int, string> $content
+     * @param array<int, string> $colors
+     * @return string
+     */
+    protected function dumpLine(iterable $content, array $colors = []): string
     {
         $line = array();
         foreach ($content as $index => $item) {

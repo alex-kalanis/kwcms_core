@@ -8,7 +8,7 @@ use kalanis\kw_clipr\Clipr\Useful;
 use kalanis\kw_clipr\CliprException;
 use kalanis\kw_clipr\Interfaces\ILoader;
 use kalanis\kw_clipr\Tasks\ATask;
-use Psr\Container\ContainerInterface;
+use Psr\Container;
 
 
 /**
@@ -20,14 +20,21 @@ use Psr\Container\ContainerInterface;
  */
 class DiLoader implements ILoader
 {
-    /** @var ContainerInterface */
+    /** @var Container\ContainerInterface */
     protected $container = null;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container\ContainerInterface $container)
     {
         $this->container = $container;
     }
 
+    /**
+     * @param string $classFromParam
+     * @throws CliprException
+     * @throws Container\ContainerExceptionInterface
+     * @throws Container\NotFoundExceptionInterface
+     * @return ATask|null
+     */
     public function getTask(string $classFromParam): ?ATask
     {
         $classPath = Useful::sanitizeClass($classFromParam);

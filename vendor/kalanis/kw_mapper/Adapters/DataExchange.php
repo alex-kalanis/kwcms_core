@@ -16,7 +16,7 @@ class DataExchange
 {
     /** @var ARecord **/
     protected $record;
-    /** @var string[] */
+    /** @var array<string|int, bool> */
     protected $excluded = [];
 
     public function __construct(ARecord $record)
@@ -26,9 +26,9 @@ class DataExchange
 
     /**
      * Add property which will be ignored
-     * @param string $property
+     * @param string|int $property
      */
-    public function addExclude(string $property): void
+    public function addExclude($property): void
     {
         $this->excluded[$property] = true;
     }
@@ -40,28 +40,28 @@ class DataExchange
 
     /**
      * Import data into record
-     * @param iterable $data
-     * @return int how much nas been changed
+     * @param iterable<string|int, mixed> $data
      * @throws MapperException
+     * @return int how much nas been imported
      */
     public function import(iterable $data): int
     {
-        $changed = 0;
+        $imported = 0;
         foreach ($data as $property => $value) {
             if (!$this->isExcluded($property)
                 && $this->record->offsetExists($property)
                 && ($this->record->offsetGet($property) != $value)
             ) {
                 $this->record->offsetSet($property, $value);
-                $changed++;
+                $imported++;
             }
         }
-        return $changed;
+        return $imported;
     }
 
     /**
      * Export data from record
-     * @return array
+     * @return array<string|int, mixed>
      */
     public function export(): array
     {
@@ -74,7 +74,11 @@ class DataExchange
         return $returnData;
     }
 
-    protected function isExcluded(string $property): bool
+    /**
+     * @param string|int $property
+     * @return bool
+     */
+    protected function isExcluded($property): bool
     {
         return isset($this->excluded[$property]);
     }

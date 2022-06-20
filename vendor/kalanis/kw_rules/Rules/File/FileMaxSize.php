@@ -33,15 +33,15 @@ class FileMaxSize extends AFileRule
         $posM = stripos($string, 'm');
         $posG = stripos($string, 'g');
         if (false !== $posK) {
-            list($value, $foo) = explode(substr($string, $posK, 1), $string);
+            list($value, ) = (array) explode(strval(substr($string, $posK, 1)), $string);
             $value = floatval($value);
             $size = intval($value * 1024);
         } elseif (false !== $posM) {
-            list($value, $foo) = explode(substr($string, $posM, 1), $string);
+            list($value, ) = (array) explode(strval(substr($string, $posM, 1)), $string);
             $value = floatval($value);
             $size = intval($value * 1024 * 1024);
         } elseif (false !== $posG) {
-            list($value, $foo) = explode(substr($string, $posG, 1), $string);
+            list($value, ) = (array) explode(strval(substr($string, $posG, 1)), $string);
             $value = floatval($value);
             $size = intval($value * 1024 * 1024 * 1024);
         }

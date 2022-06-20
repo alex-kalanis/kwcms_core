@@ -59,7 +59,7 @@ class BasicPager implements Interfaces\IPager
     {
         $lastPageItems = $this->maxResults % $this->limitPerPage;
         $page = intval(floor($this->maxResults / $this->limitPerPage));
-        return ($lastPageItems > 0) ? $page + 1 : $page ;
+        return (0 < $lastPageItems) ? $page + 1 : $page ;
     }
 
     public function pageExists(int $i): bool

@@ -13,6 +13,7 @@ use kalanis\kw_table\core\Table;
  */
 abstract class AOutput
 {
+    /** @var Table */
     protected $table = null;
 
     public function __construct(Table $table)
@@ -20,5 +21,5 @@ abstract class AOutput
         $this->table = $table;
     }
 
-    abstract function render(): string;
+    abstract public function render(): string;
 }

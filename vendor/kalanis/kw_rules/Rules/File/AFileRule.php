@@ -19,8 +19,8 @@ abstract class AFileRule
 
     /**
      * @param IValidateFile $entry
-     * @return void
      * @throws RuleException
+     * @return void
      */
     abstract public function validate(IValidateFile $entry): void;
 }

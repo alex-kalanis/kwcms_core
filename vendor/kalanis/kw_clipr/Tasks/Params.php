@@ -14,11 +14,14 @@ use Traversable;
  */
 class Params
 {
-    /** @var IEntry[] */
+    /** @var array<string, IEntry> */
     protected $inputs = [];
-    /** @var Params\Option[] */
+    /** @var array<string, Params\Option> */
     protected $available = [];
 
+    /**
+     * @param array<IEntry> $inputs
+     */
     public function __construct(array &$inputs)
     {
         $this->inputs = array_combine(array_map([$this, 'getKey'], $inputs), $inputs);
@@ -36,6 +39,15 @@ class Params
         return $entry->getKey();
     }
 
+    /**
+     * @param string $variable
+     * @param string $cliKey
+     * @param string|null $match
+     * @param array|bool|mixed|string|null $defaultValue
+     * @param string|null $short
+     * @param string $desc
+     * @return Params
+     */
     public function addParam(string $variable, string $cliKey, ?string $match = null, $defaultValue = null, ?string $short = null, string $desc = ''): self
     {
         $param = new Params\Option();
@@ -69,7 +81,7 @@ class Params
                     return $param->getDefaultValue();
                 }
             } else {
-                return (is_bool($param->getDefaultValue())) ? (false == $param->getDefaultValue()) : $input->getValue();
+                return (is_bool($param->getDefaultValue())) ? (false === $param->getDefaultValue()) : $input->getValue();
             }
         } elseif (isset($this->inputs[$param->getShort()])) {
             return empty($param->getDefaultValue());
@@ -78,16 +90,27 @@ class Params
         }
     }
 
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
     public function __get($name)
     {
         return $this->__isset($name) ? $this->available[$name]->getValue() : null;
     }
 
-    public function __isset($name)
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name): bool
     {
         return isset($this->available[$name]);
     }
 
+    /**
+     * @return Traversable<string, Params\Option>
+     */
     public function getAvailableOptions(): Traversable
     {
         yield from $this->available;

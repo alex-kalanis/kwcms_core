@@ -3,9 +3,6 @@
 namespace kalanis\kw_rules\Rules;
 
 
-use kalanis\kw_rules\Exceptions\RuleException;
-
-
 /**
  * Trait TRule
  * @package kalanis\kw_rules\Rules
@@ -13,14 +10,13 @@ use kalanis\kw_rules\Exceptions\RuleException;
  */
 trait TRule
 {
+    /** @var mixed|null */
     protected $againstValue = null;
-
+    /** @var string */
     protected $errorText = '';
 
     /**
-     * @param mixed $againstValue
-     * @return self
-     * @throws RuleException
+     * @param mixed|null $againstValue
      */
     public function setAgainstValue($againstValue): void
     {
@@ -28,10 +24,8 @@ trait TRule
     }
 
     /**
-     * @param mixed $againstValue
-     * @return mixed
-     * @throws RuleException
-     * Nothing here, but more in children, especially in their traits
+     * @param mixed|null $againstValue
+     * @return mixed|null
      */
     protected function checkValue($againstValue)
     {

@@ -12,14 +12,14 @@ use kalanis\kw_input\Interfaces\IEntry;
 /**
  * Class ATask
  * @package kalanis\kw_clipr\Tasks
- * @property bool verbose
- * @property bool noHeaders
- * @property bool noColor
- * @property string outputFile
- * @property bool webOutput
- * @property bool noAppend
- * @property bool quiet
- * @property bool help
+ * @property bool $verbose
+ * @property bool $noHeaders
+ * @property bool $noColor
+ * @property string $outputFile
+ * @property bool $webOutput
+ * @property bool $noAppend
+ * @property bool $quiet
+ * @property bool $help
  */
 abstract class ATask
 {
@@ -31,12 +31,12 @@ abstract class ATask
     protected $translator = null;
     /** @var Params */
     protected $params = null;
-    /** @var IEntry[] */
+    /** @var array<string, IEntry> */
     protected $inputs = [];
 
     /**
      * @param Output\AOutput $translator
-     * @param IEntry[] $inputs
+     * @param array<string, IEntry> $inputs
      * @param ILoader|null $loader
      */
     public final function initTask(Output\AOutput $translator, array $inputs, ?ILoader $loader): void
@@ -61,12 +61,20 @@ abstract class ATask
         $this->params->addParam('help', 'help', null, false, 'h', 'Help with task');
     }
 
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
     public function __get($name)
     {
         return $this->params->__get($name);
     }
 
-    public function __isset($name)
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name): bool
     {
         return $this->params->__isset($name);
     }

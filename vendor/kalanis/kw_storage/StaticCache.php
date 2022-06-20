@@ -3,9 +3,6 @@
 namespace kalanis\kw_storage;
 
 
-use Traversable;
-
-
 /**
  * Class StaticCache
  * @package kalanis\kw_storage
@@ -14,10 +11,10 @@ use Traversable;
  */
 class StaticCache
 {
-    /** @var Storage */
+    /** @var Storage|null */
     protected static $storage = null;
 
-    public static function setStorage(?Storage $storage = null)
+    public static function setStorage(?Storage $storage = null): void
     {
         static::$storage = $storage;
     }
@@ -108,9 +105,9 @@ class StaticCache
 
     /**
      * Return all active storage keys
-     * @return Traversable for foreach()
+     * @return string[]
      */
-    public static function getAllKeys(): Traversable
+    public static function getAllKeys(): iterable
     {
         try {
             static::checkStorage();
@@ -138,7 +135,7 @@ class StaticCache
     /**
      * Delete multiple keys from storage
      * @param string[] $keys
-     * @return string[]
+     * @return array<int|string, bool>
      */
     public static function deleteMulti(array $keys)
     {

@@ -12,11 +12,16 @@ class Helper
 {
     public static function initCache(): Storage
     {
-        return new Storage(new Storage\Factory(
+        return new Storage(static::initFactory());
+    }
+
+    public static function initFactory(): Storage\Factory
+    {
+        return new Storage\Factory(
             new Storage\Target\Factory(),
             new Storage\Format\Factory(),
             new Storage\Key\Factory()
-        ));
+        );
     }
 
     public static function initIntoStatic(): void

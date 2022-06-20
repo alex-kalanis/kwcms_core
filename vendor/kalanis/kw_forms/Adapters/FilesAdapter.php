@@ -13,19 +13,23 @@ class FilesAdapter extends AAdapter
         $this->vars = $this->loadVars($_FILES);
     }
 
+    /**
+     * @param array<string|int, array<string, string|int|array<string|int>>> $array
+     * @return array<string, FileEntry>
+     */
     protected function loadVars(&$array): array
     {
         $entry = new FileEntry();
         $result = [];
         foreach ($array as $postedKey => $posted) {
-            if (is_array($posted['name'])) {
+            if (is_array($posted['name']) && is_array($posted['tmp_name']) && is_array($posted['type']) && is_array($posted['error']) && is_array($posted['size'])) {
                 foreach ($posted['name'] as $key => $value) {
                     $data = clone $entry;
                     $data->setData(
-                        sprintf('%s[%s]', $this->removeNullBytes($postedKey), $this->removeNullBytes($key)),
-                        $this->removeNullBytes($value),
-                        $posted['tmp_name'][$key],
-                        $posted['type'][$key],
+                        sprintf('%s[%s]', $this->removeNullBytes(strval($postedKey)), $this->removeNullBytes(strval($key))),
+                        $this->removeNullBytes(strval($value)),
+                        strval($posted['tmp_name'][$key]),
+                        $this->removeNullBytes(strval($posted['type'][$key])),
                         intval($posted['error'][$key]),
                         intval($posted['size'][$key])
                     );
@@ -34,10 +38,10 @@ class FilesAdapter extends AAdapter
             } else {
                 $data = clone $entry;
                 $data->setData(
-                    $this->removeNullBytes($postedKey),
-                    $this->removeNullBytes($posted['name']),
-                    $posted['tmp_name'],
-                    $posted['type'],
+                    $this->removeNullBytes(strval($postedKey)),
+                    $this->removeNullBytes(strval($posted['name'])),
+                    strval($posted['tmp_name']),
+                    $this->removeNullBytes(strval($posted['type'])),
                     intval($posted['error']),
                     intval($posted['size'])
                 );
@@ -47,6 +51,10 @@ class FilesAdapter extends AAdapter
         return $result;
     }
 
+    /**
+     * @throws FormsException
+     * @return mixed|null
+     */
     #[\ReturnTypeWillChange]
     public function current()
     {

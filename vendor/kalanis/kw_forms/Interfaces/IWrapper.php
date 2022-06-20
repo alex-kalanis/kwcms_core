@@ -14,58 +14,51 @@ use kalanis\kw_templates\Interfaces\IHtmlElement;
 interface IWrapper extends ITemplateError
 {
     /**
-     * Prida wrapper pro cely objekt ( v metode render() )
-     * @param string|array $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * Add wrapper for the whole object ( in render() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapper($wrapper, array $attributes = []);
+    public function addWrapper($wrapper, array $attributes = []): void;
 
     /**
-     * Prida wrapper pro jednotlive potomky ( v metode renderChild() )
-     * @param string|array $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * Add wrapper for each child ( in renderChild() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapperChild($wrapper, array $attributes = []);
+    public function addWrapperChild($wrapper, array $attributes = []): void;
 
     /**
-     * Prida wrapper pro labely ( v metode renderLabel() )
-     * @param string|array $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * Add wrapper for labels ( in renderLabel() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapperLabel($wrapper, array $attributes = []);
+    public function addWrapperLabel($wrapper, array $attributes = []): void;
 
     /**
-     * Prida wrapper pro inputy ( v metode renderInput() )
-     * @param string|array $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * Add wrapper for inputs ( in renderInput() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapperInput($wrapper, array $attributes = []);
+    public function addWrapperInput($wrapper, array $attributes = []): void;
 
     /**
-     * Prida wrapper pro obsah potomku ( v metode renderChildren() )
-     * @param string|array $wrapper
-     * @param mixed $attributes
-     * @return $this
+     * Add wrapper for children content ( int renderChildren() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapperChildren($wrapper, array $attributes = []);
+    public function addWrapperChildren($wrapper, array $attributes = []): void;
 
     /**
-     * Prida wrapper pro obsah chybove zpravy ( v metode renderErrors() )
-     * @param IHtmlElement|array|string $wrapper
-     * @param string|array $attributes
-     * @return $this
+     * Add wrapper for error message content ( in renderErrors() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapperError($wrapper, array $attributes = []);
+    public function addWrapperError($wrapper, array $attributes = []): void;
 
     /**
-     * Prida wrapper pro obsah chybove zpravy ( v metode renderErrors() )
-     * @param IHtmlElement|array|string $wrapper
-     * @param string|array $attributes
-     * @return $this
+     * Add wrapper for error message content ( in renderErrors() method )
+     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrapper
+     * @param array<string, string> $attributes
      */
-    public function addWrapperErrors($wrapper, array $attributes = []);
+    public function addWrapperErrors($wrapper, array $attributes = []): void;
 }

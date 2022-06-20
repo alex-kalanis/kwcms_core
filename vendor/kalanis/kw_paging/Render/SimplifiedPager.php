@@ -22,10 +22,15 @@ class SimplifiedPager implements IOutput
     const PREV_PAGE = '&lt;';
     const NEXT_PAGE = '&gt;';
 
+    /** @var ILink */
     protected $link = null;
+    /** @var SimplifiedPager\Pager */
     protected $pager = null;
+    /** @var SimplifiedPager\CurrentPage */
     protected $currentPage = null;
+    /** @var SimplifiedPager\AnotherPage */
     protected $anotherPage = null;
+    /** @var SimplifiedPager\DisabledPage */
     protected $disabledPage = null;
 
     public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)

@@ -5,10 +5,9 @@ namespace kalanis\kw_connect\arrays;
 
 use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\ConnectException;
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
-use kalanis\kw_connect\core\Interfaces\IFilterType;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
@@ -19,41 +18,58 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  * For likes there is a column finder in search mapper.
  * So it's possible to map children for sorting and filtering.
  */
-class Connector extends AConnector implements IConnector
+class Connector extends AConnector implements IIterableConnector
 {
-    /** @var string */
+    /** @var string|int|null */
     protected $primaryKey = null;
-    /** @var array */
+    /** @var array<int|string, array<int|string, string|int|float|bool|null>> */
     protected $dataSource = [];
-    /** @var string[][] */
+    /** @var array<int, array<string>> */
     protected $ordering = [];
-    /** @var array */
+    /** @var array<string|int|bool|Row> */
     protected $filteredData = [];
     /** @var string */
     protected $sortDirection = IOrder::ORDER_ASC;
-    /** @var IFilterType[] */
+    /** @var array<string|int> */
     protected $filtering = [];
     /** @var int|null */
     protected $offset = null;
     /** @var int|null */
     protected $limit = null;
 
+    /**
+     * @param array<int|string, array<int|string, string|int|float|bool|null>> $source
+     * @param string|null $primaryKey
+     */
     public function __construct(array $source, ?string $primaryKey = null)
     {
         $this->dataSource = $source;
         $this->primaryKey = $primaryKey;
     }
 
+    /**
+     * @param string $colName
+     * @param string $filterType
+     * @param string|int $value  cannot use array from range
+     */
     public function setFiltering(string $colName, string $filterType, $value): void
     {
         $this->filtering[] = [$filterType, $colName, $value];
     }
 
+    /**
+     * @param array<IRow> $data
+     * @return FilteringArrays
+     */
     protected function getFiltered(&$data)
     {
         return new FilteringArrays($data);
     }
 
+    /**
+     * @param array<int|string, string|int|float|bool|null> $data
+     * @return IRow
+     */
     public function getTranslated($data): IRow
     {
         return new Row($data);
@@ -116,14 +132,17 @@ class Connector extends AConnector implements IConnector
         $this->filteredData = $filtered->getArray();
         $this->translatedData = array_slice($filtered->getArray(), intval($this->offset), $this->limit);
         if (!empty($this->primaryKey)) {
-            $this->translatedData = array_combine(array_map([$this, 'rowsPk'], $this->translatedData), $this->translatedData);
+            $translatedData = array_combine(array_map([$this, 'rowsPk'], $this->translatedData), $this->translatedData);
+            if (false !== $translatedData) {
+                $this->translatedData = $translatedData;
+            }
         }
     }
 
     /**
      * @param IRow $row
-     * @return string
      * @throws ConnectException
+     * @return string
      */
     public function rowsPk(IRow $row): string
     {
@@ -133,18 +152,23 @@ class Connector extends AConnector implements IConnector
     /**
      * @param FilteringArrays $filtered
      * @param string $columnName
-     * @return array
      * @throws ConnectException
+     * @return array<string|int, int|string|float|bool|null>
      */
     protected function indexedArray(FilteringArrays $filtered, string $columnName): array
     {
         $result = [];
         foreach ($filtered->getArray() as $index => $item) {
+            /** @var IRow $item */
             $result[$index] = $item->getValue($columnName);
         }
         return $result;
     }
 
+    /**
+     * @param FilteringArrays $filtered
+     * @param array<string|int, int|string|float|bool|null> $sorted
+     */
     protected function putItBack(FilteringArrays $filtered, array $sorted): void
     {
         $finalArray = [];

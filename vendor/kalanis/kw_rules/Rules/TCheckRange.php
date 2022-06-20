@@ -15,21 +15,26 @@ trait TCheckRange
 {
     use TRule;
 
+    /**
+     * @param mixed|null $againstValue
+     * @throws RuleException
+     * @return array<int>
+     */
     protected function checkValue($againstValue)
     {
         if (!is_array($againstValue)) {
             throw new RuleException('No array found. Need set both values to compare!');
         }
         $values = array_map([$this, 'checkRule'], $againstValue);
-        $lower = min($values);
-        $higher = max($values);
+        $lower = intval(min($values));
+        $higher = intval(max($values));
         return [$lower, $higher];
     }
 
     /**
-     * @param mixed $againstValue
-     * @return int
+     * @param mixed|null $againstValue
      * @throws RuleException
+     * @return int
      */
     protected function checkRule($againstValue): int
     {

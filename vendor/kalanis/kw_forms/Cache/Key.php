@@ -8,6 +8,7 @@ use kalanis\kw_storage\Interfaces\IKey;
 
 class Key implements IKey
 {
+    /** @var string */
     protected $alias = '';
 
     public function setAlias(string $alias = ''): void

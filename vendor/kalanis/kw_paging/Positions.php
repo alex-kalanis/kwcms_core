@@ -10,6 +10,7 @@ class Positions implements Interfaces\IPositions
 {
     const FIRST_PAGE = 1;
 
+    /** @var IPager */
     protected $pager = null;
 
     public function __construct(IPager $pager)

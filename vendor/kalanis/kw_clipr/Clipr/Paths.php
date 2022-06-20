@@ -16,13 +16,16 @@ use kalanis\kw_clipr\Interfaces\ISources;
  */
 class Paths
 {
+    /** @var self */
     protected static $instance = null;
+    /** @var array<string, string> */
     protected $paths = [];
 
     public static function getInstance(): self
     {
+        // @phpstan-ignore-next-line
         if (empty(static::$instance)) {
-            static::$instance = new static();
+            static::$instance = new self();
         }
         return static::$instance;
     }
@@ -41,8 +44,8 @@ class Paths
     /**
      * @param string $namespace
      * @param string $path
-     * @return $this
      * @throws CliprException
+     * @return $this
      */
     public function addPath(string $namespace, string $path): self
     {
@@ -54,6 +57,9 @@ class Paths
         return $this;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getPaths(): array
     {
         return $this->paths;

@@ -14,36 +14,58 @@ use ArrayAccess;
  */
 class Params implements ArrayAccess
 {
-    /** @var string[] */
+    /** @var array<string|int, string> */
     protected $paramsData = [];
 
-    public function setParamsData(iterable $data): self
+    /**
+     * @param array<string|int, string> $data
+     * @return $this
+     */
+    public function setParamsData(array $data): self
     {
         $this->paramsData = $data;
         return $this;
     }
 
-    public function getParamsData(): iterable
+    /**
+     * @return array<string|int, string>
+     */
+    public function getParamsData(): array
     {
         return $this->paramsData;
     }
 
+    /**
+     * @param string|int $offset
+     * @return bool
+     */
     public function offsetExists($offset): bool
     {
         return isset($this->paramsData[$offset]);
     }
 
+    /**
+     * @param string|int $offset
+     * @return string|null
+     */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->paramsData[$offset] : null;
     }
 
+    /**
+     * @param string|int $offset
+     * @param string $value
+     */
     public function offsetSet($offset, $value): void
     {
-        $this->paramsData[$offset] = $value;
+        $this->paramsData[$offset] = strval($value);
     }
 
+    /**
+     * @param string|int $offset
+     */
     public function offsetUnset($offset): void
     {
         unset($this->paramsData[$offset]);

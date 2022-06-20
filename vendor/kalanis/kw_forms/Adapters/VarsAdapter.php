@@ -9,6 +9,7 @@ use kalanis\kw_input\Interfaces\IEntry;
 
 class VarsAdapter extends AAdapter
 {
+    /** @var string */
     protected $inputType = '';
 
     public function loadEntries(string $inputType): void
@@ -23,12 +24,16 @@ class VarsAdapter extends AAdapter
         $this->inputType = $inputType;
     }
 
+    /**
+     * @param array<string|int, string|int|float|bool|null>|null $array
+     * @return array<string, string>
+     */
     protected function loadVars(&$array): array
     {
         $result = [];
         if (is_array($array)) {
             foreach ($array as $postedKey => $posted) {
-                $result[$this->removeNullBytes($postedKey)] = $this->removeNullBytes($posted);
+                $result[$this->removeNullBytes(strval($postedKey))] = $this->removeNullBytes(strval($posted));
             }
         }
         return $result;

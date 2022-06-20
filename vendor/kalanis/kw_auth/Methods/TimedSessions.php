@@ -5,6 +5,7 @@ namespace kalanis\kw_auth\Methods;
 
 use ArrayAccess;
 use kalanis\kw_auth\Interfaces\IAuth;
+use SessionHandlerInterface;
 
 
 /**
@@ -17,11 +18,12 @@ class TimedSessions extends Sessions
 {
     const INPUT_TIME = 'acc_time';
 
-    protected $loginTimeout = null;
+    /** @var int */
+    protected $loginTimeout = 0;
 
-    public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, ArrayAccess $server, int $loginTimeout = 86400)
+    public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, ArrayAccess $server, int $loginTimeout = 86400, ?SessionHandlerInterface $externalHandler = null)
     {
-        parent::__construct($authenticator, $nextOne, $session, $server);
+        parent::__construct($authenticator, $nextOne, $session, $server, $externalHandler);
         $this->loginTimeout = $loginTimeout;
     }
 

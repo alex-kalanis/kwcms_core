@@ -22,13 +22,11 @@ trait TParent
     /**
      * Set parent element
      * @param IHtmlElement|null $parent
-     * @return $this
      */
-    public function setParent(?IHtmlElement $parent = null): self
+    public function setParent(?IHtmlElement $parent = null): void
     {
         $this->parent = $parent;
         $this->afterParentSet();
-        return $this;
     }
 
     /**
@@ -43,21 +41,19 @@ trait TParent
     /**
      * Change element settings after new parent has been set
      */
-    protected function afterParentSet()
+    protected function afterParentSet(): void
     {
     }
 
     /**
      * Add $element after current one - if there is any parent
-     * @param THtmlElement|string $element
+     * @param IHtmlElement|string $element
      * @param string $alias
-     * @return $this
      */
-    public function append($element, ?string $alias = null): self
+    public function append($element, ?string $alias = null): void
     {
         if ($this->parent instanceof IHtmlElement) {
             $this->parent->addChild($element, $alias);
         }
-        return $this;
     }
 }

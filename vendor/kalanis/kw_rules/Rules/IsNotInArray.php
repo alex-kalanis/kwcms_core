@@ -18,7 +18,7 @@ class IsNotInArray extends ARule
 
     public function validate(IValidate $entry): void
     {
-        if (in_array(strval($entry->getValue()), $this->againstValue)) {
+        if (in_array(strval($entry->getValue()), (array) $this->againstValue)) {
             throw new RuleException($this->errorText);
         }
     }

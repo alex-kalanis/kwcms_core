@@ -25,8 +25,8 @@ interface IFilterFactory
 
     /**
      * @param string $action
-     * @return IFilterType
      * @throws ConnectException
+     * @return IFilterType
      */
     public function getFilter(string $action): IFilterType;
 }

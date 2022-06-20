@@ -23,14 +23,14 @@ class Command
     protected $returnStatus = 0;
     /**
      * Output - what it write to output lines
-     * @var array
+     * @var array<int, string>
      */
     protected $outputLines = [];
 
     /**
      * Run command immediately
      * @param string|null $command
-     * @param array|null $outputLines
+     * @param array<int, string>|null $outputLines
      */
     public function __construct(?string $command = null, ?array &$outputLines = null)
     {
@@ -46,12 +46,12 @@ class Command
     protected function isExecFuncAvailable(): bool
     {
         if (
-            in_array(strtolower(ini_get('safe_mode')), array('on', '1'), true)
+            in_array(strtolower(strval(ini_get('safe_mode'))), array('on', '1'), true)
             || (!function_exists('exec'))
         ) {
             return false;
         }
-        return !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions'))));
+        return !in_array('exec', array_map('trim', explode(',', strval(ini_get('disable_functions')))));
     }
 
     public function setCommand(string $command): void
@@ -77,6 +77,9 @@ class Command
         return $this->returnStatus;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getOutputLines(): array
     {
         return $this->outputLines;
@@ -84,7 +87,7 @@ class Command
 
     /**
      * Run preset command via EXEC
-     * @param array|null $outputLines
+     * @param array<int, string>|null $outputLines
      * @return bool
      */
     public function exec(array &$outputLines = null): bool
@@ -92,15 +95,15 @@ class Command
         exec($this->command, $outputLines, $return);
         $this->outputLines = $outputLines;
         $this->returnStatus = $return;
-        $this->success = ($return === 0);
+        $this->success = (0 === $return);
         return $this->success;
     }
 
     /**
      * Run preset command and return process id
-     * @return int
+     * @return string
      */
-    public function runOnBackground(): int
+    public function runOnBackground(): string
     {
         $this->command .= ' & echo $!';
         $this->exec();
@@ -131,6 +134,7 @@ class Command
                 return true;
             }
         }
+        // @phpstan-ignore-next-line
         return false;
     }
 

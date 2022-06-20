@@ -40,21 +40,31 @@ class DirectoryListing
     public function process(): self
     {
         $preList = ($this->orderDesc)
-            ? (array)scandir($this->path, 1)
-            : (array)scandir($this->path, 0)
+            ? (array) scandir($this->path, 1)
+            : (array) scandir($this->path, 0)
         ;
         $this->files = array_filter($preList);
-        $this->files = array_filter($this->files, $this->usableCallback);
+        if ($this->usableCallback) {
+            $this->files = array_filter($this->files, $this->usableCallback);
+        }
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getFiles(): array
     {
         return $this->files;
     }
 
+    /**
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return string[]
+     */
     public function getFilesSliced(?int $offset, ?int $limit): array
     {
-        return array_slice($this->files, (int)$offset, $limit);
+        return array_slice($this->files, intval($offset), $limit);
     }
 }

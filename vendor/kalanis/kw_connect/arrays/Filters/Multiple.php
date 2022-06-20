@@ -19,9 +19,9 @@ class Multiple extends AType implements IFilterSubs
 
     /**
      * @param string $colName
-     * @param mixed $value
-     * @return $this|mixed
+     * @param array<string|mixed> $value
      * @throws ConnectException
+     * @return $this|mixed
      * must be different - pass data there and back
      */
     public function setFiltering(string $colName, $value)

@@ -3,12 +3,12 @@
 namespace kalanis\kw_connect\dibi;
 
 
-use Dibi;
 use Dibi\Fluent;
+use Dibi\Row as DRow;
 use kalanis\kw_connect\core\AConnector;
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
@@ -18,19 +18,19 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  * @package kalanis\kw_connect\dibi
  * Data source is Dibi\Fluent
  */
-class Connector extends AConnector implements IConnector
+class Connector extends AConnector implements IIterableConnector
 {
     /** @var Fluent */
     protected $dibiFluent;
     /** @var string */
     protected $primaryKey;
-    /** @var array */
+    /** @var array<int, array<string>> */
     protected $sorters;
-    /** @var int */
+    /** @var int|null */
     protected $limit;
-    /** @var int */
+    /** @var int|null */
     protected $offset;
-    /** @var Dibi\Row[] */
+    /** @var DRow[] */
     protected $rawData = [];
     /** @var bool */
     protected $dataFetched = false;
@@ -86,14 +86,14 @@ class Connector extends AConnector implements IConnector
         }
     }
 
-    protected function getTranslated(Dibi\Row $data): IRow
+    protected function getTranslated(DRow $data): IRow
     {
         return new Row($data);
     }
 
-    protected function getPrimaryKey(Dibi\Row $record): string
+    protected function getPrimaryKey(DRow $record): string
     {
-        return $record->offsetGet($this->primaryKey);
+        return strval($record->offsetGet($this->primaryKey));
     }
 
     public function getFilterFactory(): IFilterFactory

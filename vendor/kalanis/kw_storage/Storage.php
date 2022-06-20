@@ -3,9 +3,6 @@
 namespace kalanis\kw_storage;
 
 
-use Traversable;
-
-
 /**
  * Class Storage
  * @package kalanis\kw_storage
@@ -24,9 +21,9 @@ class Storage
     }
 
     /**
-     * @param Interfaces\IStorage|array|string|null $storageParams
+     * @param mixed|Interfaces\IStorage|array|string|null $storageParams
      */
-    public function init($storageParams)
+    public function init($storageParams): void
     {
         $this->storage = $this->storageFactory->getStorage($storageParams);
     }
@@ -34,8 +31,8 @@ class Storage
     /**
      * If entry exists in storage
      * @param string $key
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function exists(string $key): bool
     {
@@ -46,8 +43,8 @@ class Storage
     /**
      * Get data from storage
      * @param string $key
-     * @return mixed
      * @throws StorageException
+     * @return mixed
      */
     public function get(string $key)
     {
@@ -61,8 +58,8 @@ class Storage
      * @param string $key
      * @param mixed $value
      * @param int $expire
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function set(string $key, $value, ?int $expire = 8600): bool
     {
@@ -75,13 +72,13 @@ class Storage
      * @param string $key
      * @param mixed $value
      * @param int $expire
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function add(string $key, $value, ?int $expire = 8600): bool
     {
         $this->checkStorage();
-        // safe add for multi-thread at any system
+        // safeadd for multithread at any system
         if ($this->storage->write($key, $value, $expire)) {
             return ( $value == $this->get($key) );
         }
@@ -91,8 +88,8 @@ class Storage
     /**
      * Increment value by key
      * @param string $key
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function increment(string $key): bool
     {
@@ -103,8 +100,8 @@ class Storage
     /**
      * Decrement value by key
      * @param string $key
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function decrement(string $key): bool
     {
@@ -114,10 +111,10 @@ class Storage
 
     /**
      * Return all active storage keys
-     * @return Traversable for foreach()
      * @throws StorageException
+     * @return string[]
      */
-    public function getAllKeys(): Traversable
+    public function getAllKeys(): iterable
     {
         $this->checkStorage();
         return $this->storage->lookup('');
@@ -126,8 +123,8 @@ class Storage
     /**
      * Delete data by key from storage
      * @param string $key
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function delete(string $key): bool
     {
@@ -138,8 +135,8 @@ class Storage
     /**
      * Delete multiple keys from storage
      * @param string[] $keys
-     * @return string[]
      * @throws StorageException
+     * @return array<int|string, bool>
      */
     public function deleteMulti(array $keys)
     {
@@ -159,7 +156,7 @@ class Storage
         $keysToDelete = [];
         foreach ($this->getAllKeys() as $memKey) {
             $find = strpos($memKey, $prefix);
-            if ((! $inverse && $find === 0) || ($inverse && ($find === false || $find !== 0))) {
+            if ((! $inverse && 0 === $find) || ($inverse && (false === $find || 0 !== $find))) {
                 $keysToDelete[] = $memKey;
             }
         }
@@ -168,8 +165,8 @@ class Storage
 
     /**
      * Check connection status to storage
-     * @return boolean
      * @throws StorageException
+     * @return boolean
      */
     public function isConnected(): bool
     {

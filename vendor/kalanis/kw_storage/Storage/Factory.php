@@ -28,7 +28,7 @@ class Factory
     }
 
     /**
-     * @param Interfaces\IStorage|array|string|null $storageParams
+     * @param mixed|Interfaces\IStorage|array|string|null $storageParams
      * @return Storage|null
      */
     public function getStorage($storageParams): ?Storage

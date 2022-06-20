@@ -3,6 +3,8 @@
 namespace kalanis\kw_forms\JWT;
 
 
+use Firebase\JWT\Key;
+
 /**
  * Class Token
  * @package kalanis\kw_forms\JWT
@@ -32,7 +34,7 @@ class Token
     /**
      * Generate JWT token and user data
      *
-     * @param array $tokenData
+     * @param array<string, string> $tokenData
      * @param int   $ttl
      * @return string
      */
@@ -47,13 +49,13 @@ class Token
     }
 
     /**
-     * @param $token
-     * @return array
+     * @param string $token
+     * @return array<string, string>
      */
-    public static function decodeJWTToken($token): array
+    public static function decodeJWTToken(string $token): array
     {
         try {
-            $decoded = (array)\Firebase\JWT\JWT::decode($token, static::$privateKey, ['HS256']);
+            $decoded = (array) \Firebase\JWT\JWT::decode($token, new Key(static::$privateKey, 'HS256'));
             if (static::$domain != $decoded['iss']) {
                 throw new \Exception('Token was not issued for this site.');
             }

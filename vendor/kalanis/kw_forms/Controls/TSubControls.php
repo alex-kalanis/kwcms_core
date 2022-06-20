@@ -5,6 +5,7 @@ namespace kalanis\kw_forms\Controls;
 
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_forms\Interfaces;
+use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_templates\Interfaces\IHtmlElement;
 
 
@@ -15,7 +16,7 @@ use kalanis\kw_templates\Interfaces\IHtmlElement;
  */
 trait TSubControls
 {
-    /** @var AControl[] */
+    /** @var array<string, AControl> */
     protected $controls = [];
 
     public function addControl(string $key, AControl $control): void
@@ -26,8 +27,8 @@ trait TSubControls
     public function getControl(string $key): ?AControl
     {
         foreach ($this->controls as &$control) {
-            if ($control instanceof Interfaces\IContainsControls && $control->hasControl($key)) {
-                return $control->getControl($key);
+            if ($control instanceof Interfaces\IContainsControls && $control->/** @scrutinizer ignore-call */hasControl($key)) {
+                return $control->/** @scrutinizer ignore-call */getControl($key);
             } elseif ($control instanceof AControl) {
                 if ($control->getKey() == $key) {
                     return $control;
@@ -39,17 +40,17 @@ trait TSubControls
 
     /**
      * Get values of all children
-     * @return string[]
+     * @return array<string, string|int|float|bool|null>
      */
     public function getValues(): array
     {
         $array = [];
-        foreach ($this->controls as $key => &$child) {
-            if ($child instanceof Interfaces\IMultiValue) {
-                $array += $child->getValues();
+        foreach ($this->controls as &$control) {
+            /** @var AControl $control */
+            if ($control instanceof Interfaces\IMultiValue) {
+                $array += $control->/** @scrutinizer ignore-call */getValues();
             } else {
-                $_alias = ($child instanceof AControl) ? $child->getKey() : $key ;
-                $array[$_alias] = $child->getValue();
+                $array[$control->/** @scrutinizer ignore-call */getKey()] = $control->/** @scrutinizer ignore-call */getValue();
             }
         }
         return $array;
@@ -62,17 +63,17 @@ trait TSubControls
      *  $form->setValues($this->context->post) // set values from Post
      *  $form->setValues($mapperObject) // set values from other source
      * </code>
-     * @param string[] $data
+     * @param array<string, string|int|float|bool|null> $data
      */
     public function setValues(array $data = []): void
     {
-        foreach ($this->controls as $key => &$child) {
-            if ($child instanceof Interfaces\IMultiValue) {
-                $child->setValues($data);
+        foreach ($this->controls as &$control) {
+            /** @var AControl $control */
+            if ($control instanceof Interfaces\IMultiValue) {
+                $control->/** @scrutinizer ignore-call */setValues($data);
             } else {
-                $_alias = ($child instanceof AControl) ? $child->getKey() : $key ;
-                if (isset($data[$_alias])) {
-                    $child->setValue($data[$_alias]);
+                if (isset($data[$control->getKey()])) {
+                    $control->setValue($data[$control->getKey()]);
                 }
             }
         }
@@ -80,16 +81,17 @@ trait TSubControls
 
     /**
      * Get labels of all children
-     * @return array
+     * @return array<string, string|null>
      */
     public function getLabels(): array
     {
         $array = [];
-        foreach ($this->controls as &$child) {
-            if ($child instanceof Interfaces\IContainsControls) {
-                $array += $child->getLabels();
+        foreach ($this->controls as &$control) {
+            /** @var AControl $control */
+            if ($control instanceof Interfaces\IContainsControls) {
+                $array += $control->/** @scrutinizer ignore-call */getLabels();
             } else {
-                $array[$child->getKey()] = $child->getLabel();
+                $array[$control->getKey()] = $control->getLabel();
             }
         }
         return $array;
@@ -97,32 +99,32 @@ trait TSubControls
 
     /**
      * Set labels to all children
-     * @param string[] $array
-     * @return void
+     * @param array<string, string|null> $array
      */
     public function setLabels(array $array = []): void
     {
-        foreach ($this->controls as &$child) {
-            if ($child instanceof Interfaces\IContainsControls) {
-                $child->setLabels($array);
-            } elseif (isset($array[$child->getKey()])) {
-                $child->setLabel($array[$child->getKey()]);
+        foreach ($this->controls as &$control) {
+            /** @var AControl $control */
+            if ($control instanceof Interfaces\IContainsControls) {
+                $control->/** @scrutinizer ignore-call */setLabels($array);
+            } elseif (isset($array[$control->getKey()])) {
+                $control->setLabel($array[$control->getKey()]);
             }
         }
     }
 
     /**
-     * @param string[] $passedErrors
-     * @param string|string[]|IHtmlElement|IHtmlElement[] $wrappersError
-     * @return array
+     * @param array<string, array<int, RuleException>> $passedErrors
+     * @param array<string|IHtmlElement> $wrappersError
      * @throws RenderException
+     * @return array<string, string>
      */
     public function getErrors(array $passedErrors, array $wrappersError): array
     {
         $returnErrors = [];
         foreach ($this->controls as &$child) {
             if ($child instanceof Interfaces\IContainsControls) {
-                $returnErrors += $child->getErrors($passedErrors, $wrappersError);
+                $returnErrors += $child->/** @scrutinizer ignore-call */getErrors($passedErrors, $wrappersError);
             } elseif ($child instanceof AControl) {
                 if (isset($passedErrors[$child->getKey()])) {
                     if (!$child->wrappersErrors()) {
@@ -134,5 +136,10 @@ trait TSubControls
         }
 
         return $returnErrors;
+    }
+
+    public function count(): int
+    {
+        return count($this->controls);
     }
 }

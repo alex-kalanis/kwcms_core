@@ -4,9 +4,9 @@ namespace kalanis\kw_connect\nette;
 
 
 use kalanis\kw_connect\core\AConnector;
-use kalanis\kw_connect\core\Interfaces\IConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
+use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use Nette\Database\IRow as NetteRow;
@@ -18,17 +18,17 @@ use Nette\Database\Table\Selection;
  * @package kalanis\kw_connect\nette
  * Data source is Nette\Database
  */
-class Connector extends AConnector implements IConnector
+class Connector extends AConnector implements IIterableConnector
 {
     /** @var Selection */
     protected $netteTable;
     /** @var string */
     protected $primaryKey;
-    /** @var array */
+    /** @var array<int, array<string>> */
     protected $ordering;
-    /** @var int */
+    /** @var int|null */
     protected $limit;
-    /** @var int */
+    /** @var int|null */
     protected $offset;
     /** @var bool */
     protected $dataFetched = false;
@@ -67,12 +67,10 @@ class Connector extends AConnector implements IConnector
 
     public function fetchData(): void
     {
-        $orders = [];
         foreach ($this->ordering as list($colName, $direction)) {
             $dir = IOrder::ORDER_ASC == $direction ? 'ASC' : 'DESC' ;
-            $orders[] = strval($colName) . ' ' . $dir;
+            $this->netteTable->order(strval($colName), $dir);
         }
-        $this->netteTable->order($orders);
         $this->netteTable->limit($this->limit, $this->offset);
         $this->parseData();
     }
@@ -84,14 +82,22 @@ class Connector extends AConnector implements IConnector
         }
     }
 
+    /**
+     * @param NetteRow<string|int, string|int|float|bool|null> $data
+     * @return IRow
+     */
     protected function getTranslated(NetteRow $data): IRow
     {
         return new Row($data);
     }
 
+    /**
+     * @param NetteRow<string|int, string|int|float|bool|null> $record
+     * @return string
+     */
     protected function getPrimaryKey(NetteRow $record): string
     {
-        return $record->offsetGet($this->primaryKey);
+        return strval($record->offsetGet($this->primaryKey));
     }
 
     public function getFilterFactory(): IFilterFactory

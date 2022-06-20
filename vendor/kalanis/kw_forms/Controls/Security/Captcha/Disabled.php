@@ -8,7 +8,7 @@ namespace kalanis\kw_forms\Controls\Security\Captcha;
  */
 class Disabled extends ACaptcha
 {
-    public function addRule(string $ruleName, string $errorText, ...$args): void
+    public function addRule(/** @scrutinizer ignore-unused */ string $ruleName, /** @scrutinizer ignore-unused */ string $errorText, /** @scrutinizer ignore-unused */ ...$args): void
     {
         // no additional rules applicable
     }

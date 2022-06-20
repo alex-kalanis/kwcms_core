@@ -19,7 +19,7 @@ class Inputs extends Sources
     {
         $server = $inputs->getInArray($entry, [IEntry::SOURCE_SERVER]);
         if (isset($server[$entry])) {
-            $this->setAddress($server[$entry]);
+            $this->setAddress(strval($server[$entry]));
         }
     }
 }

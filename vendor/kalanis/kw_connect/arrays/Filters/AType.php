@@ -19,8 +19,8 @@ abstract class AType implements IFilterType
 
     /**
      * @param FilteringArrays $dataSource
-     * @return $this
      * @throws ConnectException
+     * @return $this
      */
     public function setDataSource($dataSource)
     {

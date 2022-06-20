@@ -16,7 +16,10 @@ abstract class AGraphical extends ACaptcha
 {
     protected $templateLabel = '<img src="data:image/png;base64,%2$s" id="%1$s" alt="You need to solve this." />';
     protected $templateInput = '<input type="text" value=""%2$s />';
+    /** @var string */
     protected $font = '';
+    /** @var string */
+    protected $renderError = 'Cannot render captcha image!';
     /** @var ArrayAccess */
     protected $session = null;
 
@@ -32,9 +35,9 @@ abstract class AGraphical extends ACaptcha
 
     /**
      * Render label on form control
-     * @param string|array $attributes
-     * @return string
+     * @param string|array<string, string> $attributes
      * @throws RenderException
+     * @return string
      */
     public function renderLabel($attributes = array()): string
     {
@@ -44,30 +47,42 @@ abstract class AGraphical extends ACaptcha
         return $this->wrapIt(sprintf($this->templateLabel, $this->getAttribute('id'), $this->getImage(strval($this->getLabel())), $this->renderAttributes($attributes)), $this->wrappersLabel);
     }
 
+    /**
+     * @param string $text
+     * @throws RenderException
+     * @return string
+     */
     protected function getImage(string $text): string
     {
         $im = imagecreatetruecolor(160, 25);
 
-        $white = imagecolorallocate($im, 255, 255, 255);
-        $grey = imagecolorallocate($im, 169, 169, 169);
-        $black = imagecolorallocate($im, 0, 0, 0);
+        if (false === $im) {
+            // @codeCoverageIgnoreStart
+            // problems with gd library
+            throw new RenderException($this->renderError);
+        }
+        // @codeCoverageIgnoreEnd
+
+        $white = intval(imagecolorallocate($im, 255, 255, 255));
+        $grey = intval(imagecolorallocate($im, 169, 169, 169));
+        $black = intval(imagecolorallocate($im, 0, 0, 0));
         imagefilledrectangle($im, 0, 0, 160, 25, $white);
 
         imagettftext($im, 20, 0, 9, 19, $black, $this->font, $text);
         imagettftext($im, 20, 0, 11, 21, $black, $this->font, $text);
         imagettftext($im, 20, 0, 10, 20, $black, $this->font, $text);
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; 3 > $i; $i++) {
             imageline($im, 0, $i * 10, 400, $i * 10, $grey);
         }
 
-        for ($i = 0; $i < 16; $i++) {
+        for ($i = 0; 16 > $i; $i++) {
             imageline($im, $i * 10, 0, $i * 10, 30, $grey);
         }
 
         ob_start();
         imagepng($im);
-        $img = ob_get_contents();
+        $img = strval(ob_get_contents());
         ob_end_clean();
 
         imagedestroy($im);
@@ -89,7 +104,7 @@ abstract class AGraphical extends ACaptcha
             $rand = mt_rand(0, count($all) - 1);
             $string .= $all[$rand];
         }
-//print_r(["CPT_>"=>$string]);
+//print_r(['CPT_>'=>$string]);
         return $string;
     }
 }

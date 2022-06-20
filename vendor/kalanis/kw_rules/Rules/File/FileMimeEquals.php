@@ -22,7 +22,7 @@ class FileMimeEquals extends AFileRule
     {
         $filename = $entry->getTempName();
         $finfo =  new finfo(FILEINFO_MIME_TYPE);
-        if (!empty($filename) && $finfo && ($finfo->file($filename) == $this->againstValue)) {
+        if (!empty($filename) && ($finfo->file($filename) == $this->againstValue)) {
             return;
         }
         throw new RuleException($this->errorText);

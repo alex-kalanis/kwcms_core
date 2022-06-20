@@ -11,7 +11,7 @@ namespace kalanis\kw_clipr\Output;
 trait TPrettyTable
 {
     /**
-     * @var PrettyTable|null
+     * @var PrettyTable
      */
     protected $prettyTable = null;
 

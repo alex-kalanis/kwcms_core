@@ -17,7 +17,7 @@ class ArrayAccess extends Request
     public function set(\ArrayAccess $inputs, string $key = 'REQUEST_URI', ?string $virtualDir = null): parent
     {
         if ($inputs->offsetExists($key)) {
-            $this->setData((string)$inputs->offsetGet($key), $virtualDir);
+            $this->setData(strval($inputs->offsetGet($key)), $virtualDir);
         }
         return $this;
     }

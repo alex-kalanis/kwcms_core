@@ -23,27 +23,27 @@ class Timeout implements ITimeout
     /** @var int How log interval is preset after correct response */
     protected $timeout = 0;
 
-    public function __construct(ArrayAccess &$session, $timeout = 0)
+    public function __construct(ArrayAccess &$session, int $timeout = 0)
     {
         $this->session = $session;
         $this->timeout = $timeout;
         $this->time = ($this->session->offsetExists(static::CAPTCHA_TIME))
-            ? (int)$this->session->offsetGet(static::CAPTCHA_TIME)
+            ? intval(strval($this->session->offsetGet(static::CAPTCHA_TIME)))
             : 0 ;
     }
 
-    public function updateExpire()
+    public function updateExpire(): void
     {
         $this->time = time() + $this->timeout; // when it begins
         $this->session->offsetSet(static::CAPTCHA_TIME, $this->time); // set into session
     }
 
-    public function isRunning()
+    public function isRunning(): bool
     {
-        return ($this->timeLeft() > 0);
+        return (0 < $this->timeLeft());
     }
 
-    public function timeLeft()
+    public function timeLeft(): int
     {
         return $this->time - time();
     }

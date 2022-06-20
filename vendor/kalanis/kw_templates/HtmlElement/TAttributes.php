@@ -13,13 +13,13 @@ namespace kalanis\kw_templates\HtmlElement;
  */
 trait TAttributes
 {
-    /** @var string[] */
+    /** @var array<string, string> */
     protected $attributes = [];
 
     /**
      * Returns serialized attributes
      * Use $attributes param if is set
-     * @param string|string[] $attributes
+     * @param string|array<string, string|int|array<string>>|null $attributes
      * @return string
      */
     protected function renderAttributes($attributes = null): string
@@ -36,7 +36,7 @@ trait TAttributes
 
     /**
      * Add array of attributes into current object attributes
-     * @param string|string[] $attributes
+     * @param string|array<string, string|int|array<string>>|null $attributes
      */
     public function addAttributes($attributes): void
     {
@@ -46,8 +46,8 @@ trait TAttributes
     /**
      * Change attributes in variable to 2-dimensional array
      * Expects array, discard rest
-     * @param string|string[] $attributes
-     * @return string[]
+     * @param string|array<string, string|int|array<string>>|null $attributes
+     * @return array<string, string>
      */
     public function attributesParse($attributes): array
     {
@@ -58,8 +58,8 @@ trait TAttributes
     /**
      * Change attributes in variable to 2-dimensional array
      * Expects array, discard rest
-     * @param string[] $attributes
-     * @return string[]
+     * @param array<string|int, string|int|array<string>> $attributes
+     * @return array<string, string>
      */
     public function attributesParseArray(array $attributes): array
     {
@@ -68,11 +68,11 @@ trait TAttributes
             if (is_string($key)) {
                 $key = strtolower($key);
                 if (is_string($val) || is_numeric($val)) {
-                    $val = strtolower($val);
+                    $val = strtolower(strval($val));
                     $array[$key] = $val;
                 } else if (is_array($val)) {
                     foreach ($val as &$_val) {
-                        $_val = strtolower($_val);
+                        $_val = strtolower(strval($_val));
                     }
                     $val = implode(';', $val);
                     $array[$key] = $val;
@@ -87,14 +87,15 @@ trait TAttributes
      * Expects string like: width="100px" height='150px' style="color:red"
      * Discard rest
      * @param string $attributes
-     * @return string[]
+     * @return array<string|int, string|int>
      */
     public function attributesParseString(string $attributes): array
     {
         $array = [];
         $string = trim($attributes);
         if (preg_match_all('/([a-z]+)\=("|\')?(.+?)(?(2)\2)(\s|$)/', $string, $matches)) {
-            for ($i = 0; $i < count($matches[1]); $i++) {
+            $limit = count($matches[1]);
+            for ($i = 0; $i < $limit; $i++) {
                 $array[$matches[1][$i]] = trim($matches[3][$i]);
             }
         }
@@ -103,9 +104,9 @@ trait TAttributes
 
     /**
      * Set attributes, leave nothing from previous ones
-     * @param array $attributes
+     * @param string|array<string, string|int|array<string>>|null $attributes
      */
-    public function setAttributes(array $attributes): void
+    public function setAttributes($attributes): void
     {
         $this->attributes = [];
         $this->addAttributes($attributes);
@@ -113,7 +114,7 @@ trait TAttributes
 
     /**
      * Get all available attributes
-     * @return string[]
+     * @return array<string, string>
      */
     public function getAttributes(): array
     {

@@ -14,7 +14,7 @@ use kalanis\kw_connect\core\Interfaces\IFilterSubs;
  */
 trait TMultiple
 {
-    /** @var IFilterFactory|null */
+    /** @var IFilterFactory */
     protected $filterFactory = null;
 
     public function addFilterFactory(IFilterFactory $factory): void
@@ -24,9 +24,9 @@ trait TMultiple
 
     /**
      * @param string $colName
-     * @param array<string, mixed> $value
-     * @return $this
+     * @param array<string|mixed> $value
      * @throws ConnectException
+     * @return $this
      * @codeCoverageIgnore because need data somewhere in storage
      */
     public function setFiltering(string $colName, $value)

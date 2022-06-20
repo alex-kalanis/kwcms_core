@@ -39,17 +39,21 @@ class NoCaptcha extends ACaptcha
         return $this;
     }
 
-    public function addRule(string $ruleName, string $errorText, ...$args): void
+    public function addRule(/** @scrutinizer ignore-unused */ string $ruleName, /** @scrutinizer ignore-unused */ string $errorText, /** @scrutinizer ignore-unused */ ...$args): void
     {
         // no additional rules applicable
     }
 
+    /**
+     * @param mixed $value
+     * @return bool
+     */
     public function checkNoCaptcha($value): bool
     {
         // entry has key: g-recaptcha-response
-        $response = file_get_contents(NOCAPTCHA_API_SECURE_SERVER . '?secret=' . static::$privateKey . '&response=' . $value);
+        $response = strval(file_get_contents(NOCAPTCHA_API_SECURE_SERVER . '?secret=' . static::$privateKey . '&response=' . strval($value)));
         $responseStructure = json_decode($response, true);
-        return !empty($responseStructure['success']) && $responseStructure['success'] === true;
+        return !is_null($responseStructure) && !empty($responseStructure['success']) && true === $responseStructure['success'];
     }
 
     public function renderInput($attributes = null): string

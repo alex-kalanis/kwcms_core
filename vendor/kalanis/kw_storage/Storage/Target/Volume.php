@@ -5,7 +5,6 @@ namespace kalanis\kw_storage\Storage\Target;
 
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
-use Traversable;
 
 
 /**
@@ -17,7 +16,8 @@ class Volume implements IStorage
 {
     public function check(string $key): bool
     {
-        $path = substr($key, 0, strrpos($key, DIRECTORY_SEPARATOR));
+        $sepPos = strrpos($key, DIRECTORY_SEPARATOR);
+        $path = false === $sepPos ? substr($key, 0) : substr($key, 0, intval($sepPos));
         if (!is_dir($path)) {
             if (file_exists($path)) {
                 unlink($path);
@@ -51,15 +51,18 @@ class Volume implements IStorage
         return @unlink($key);
     }
 
-    public function lookup(string $key): Traversable
+    public function lookup(string $key): iterable
     {
         $path = realpath($key);
         if (false === $path) {
             return;
         }
-        foreach (scandir($path) as $file) {
-            if (is_file($key . $file)) {
-                yield $file;
+        $files = scandir($path);
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                if (is_file($key . $file)) {
+                    yield $file;
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ namespace kalanis\kw_templates;
  */
 abstract class GroupedTemplate extends ATemplate
 {
+    /** @var array<string, string> */
     protected static $knownTemplates;
 
     protected function loadTemplate(): string
@@ -23,7 +24,7 @@ abstract class GroupedTemplate extends ATemplate
     /**
      * Define templates available from this class
      * array key is to select one, value is for content
-     * @return array
+     * @return array<string, string>
      */
     abstract protected function defineAvailableTemplates(): array;
 
@@ -35,8 +36,8 @@ abstract class GroupedTemplate extends ATemplate
 
     /**
      * @param string $key
-     * @return $this
      * @throws TemplateException
+     * @return $this
      * Call only from method in extending class and be prepared for resetting items due unavailability some of them
      */
     protected function selectTemplate(string $key): self

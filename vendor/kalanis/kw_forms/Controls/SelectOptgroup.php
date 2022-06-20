@@ -10,6 +10,7 @@ namespace kalanis\kw_forms\Controls;
  */
 class SelectOptgroup extends AControl
 {
+    /** @var int */
     private static $uniqid = 0;
     protected $templateLabel = '';
     protected $templateInput = '<optgroup label="%1$s">%3$s</optgroup>';
@@ -17,8 +18,8 @@ class SelectOptgroup extends AControl
     /**
      * Create element Optgroup
      * @param string $alias
-     * @param mixed $label
-     * @param array $children
+     * @param string $label
+     * @param iterable<string|int, string|SelectOption> $children
      * @return $this
      */
     public function set(string $alias, string $label = '', iterable $children = [])
@@ -35,7 +36,13 @@ class SelectOptgroup extends AControl
         return $this;
     }
 
-    public function addOption(string $alias, $value, string $label = '')
+    /**
+     * @param string $alias
+     * @param string|int|float|bool|null $value
+     * @param string $label
+     * @return SelectOption
+     */
+    public function addOption(string $alias, $value, string $label = ''): SelectOption
     {
         $option = new SelectOption();
         $option->setEntry($alias, $value, $label);

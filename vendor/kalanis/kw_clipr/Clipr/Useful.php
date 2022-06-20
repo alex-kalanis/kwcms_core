@@ -31,11 +31,11 @@ class Useful
 
     /**
      * get nth param from input array
-     * @param array $inputs
+     * @param iterable<IEntry> $inputs
      * @param int $position
      * @return string|null
      */
-    public static function getNthParam(array $inputs, $position = 1): ?string
+    public static function getNthParam(iterable $inputs, int $position = 1): ?string
     {
         $nthKey = Cli::UNSORTED_PARAM . $position;
         foreach ($inputs as $input) {

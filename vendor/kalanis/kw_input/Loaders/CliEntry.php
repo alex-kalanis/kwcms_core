@@ -15,13 +15,14 @@ use kalanis\kw_input\Interfaces\IEntry;
  */
 class CliEntry extends ALoader
 {
+    /** @var string */
     protected static $basicPath = '';
 
     /**
      * @param string $path
      * @codeCoverageIgnore because must be set before test
      */
-    public static function setBasicPath(string $path)
+    public static function setBasicPath(string $path): void
     {
         static::$basicPath = $path;
     }
@@ -29,10 +30,10 @@ class CliEntry extends ALoader
     /**
      * Transform input values to something more reliable
      * @param string $source
-     * @param array $array
+     * @param array<string|int, string|int> $array
      * @return Entries\Entry[]
      */
-    public function loadVars(string $source, &$array): array
+    public function loadVars(string $source, $array): array
     {
         $result = [];
         $entries = new Entries\Entry();
@@ -41,9 +42,9 @@ class CliEntry extends ALoader
             $fullPath = $this->checkFile($posted);
             if (!is_null($fullPath)) {
                 $entry = clone $fileEntries;
-                $entry->setEntry(IEntry::SOURCE_FILES, $postedKey);
+                $entry->setEntry(IEntry::SOURCE_FILES, strval($postedKey));
                 $entry->setFile(
-                    $posted,
+                    strval($posted),
                     $fullPath,
                     $this->getType($fullPath),
                     UPLOAD_ERR_OK,
@@ -52,24 +53,28 @@ class CliEntry extends ALoader
                 $result[] = $entry;
             } else {
                 $entry = clone $entries;
-                $entry->setEntry($source, $postedKey, $posted);
+                $entry->setEntry($source, strval($postedKey), $posted);
                 $result[] = $entry;
             }
         }
         return $result;
     }
 
+    /**
+     * @param string|int|bool $path
+     * @return string|null
+     */
     protected function checkFile($path): ?string
     {
         if (!is_string($path) || empty($path)) {
             return null;
         }
-        $isFull = $path[0] == DIRECTORY_SEPARATOR;
+        $isFull = DIRECTORY_SEPARATOR == $path[0];
         $known = realpath($isFull ? $path : static::$basicPath . DIRECTORY_SEPARATOR . $path );
         return (false === $known) ? null : $known ;
     }
 
-    protected function getType($path): string
+    protected function getType(string $path): string
     {
         $fType = 'application/octet-stream';
         $fInfo = @new finfo(FILEINFO_MIME_TYPE);
@@ -80,8 +85,8 @@ class CliEntry extends ALoader
         return $fType;
     }
 
-    protected function getSize($path): int
+    protected function getSize(string $path): int
     {
-        return filesize($path);
+        return intval(filesize($path));
     }
 }

@@ -20,7 +20,7 @@ class MultiSend extends Hidden
     /** @var ArrayAccess */
     protected $cookie = null;
 
-    public function setHidden(string $alias, ArrayAccess &$cookie, string $errorMessage): parent
+    public function setHidden(string $alias, ArrayAccess &$cookie, string $errorMessage): self
     {
         $this->cookie = $cookie;
         $this->setEntry($alias);
@@ -30,6 +30,10 @@ class MultiSend extends Hidden
         return $this;
     }
 
+    /**
+     * @param string|int|float $incomingValue
+     * @return bool
+     */
     public function checkMulti($incomingValue): bool
     {
         return $this->removeExistingCheckFromStack(strval($incomingValue));
@@ -53,10 +57,13 @@ class MultiSend extends Hidden
         return false;
     }
 
-    protected function hashStack()
+    /**
+     * @return array<string, string>
+     */
+    protected function hashStack(): array
     {
         $hashStack = $this->cookie->offsetExists($this->getKey() . 'SubmitCheck')
-            ? json_decode($this->cookie->offsetGet($this->getKey() . 'SubmitCheck'), true)
+            ? (array) json_decode($this->cookie->offsetGet($this->getKey() . 'SubmitCheck'), true)
             : null ;
         if (is_null($hashStack)) {
             $hashStack = [];
@@ -64,12 +71,12 @@ class MultiSend extends Hidden
         return $hashStack;
     }
 
-    public function addRule(string $ruleName, string $errorText, ...$args): void
+    public function addRule(/** @scrutinizer ignore-unused */ string $ruleName, /** @scrutinizer ignore-unused */ string $errorText, /** @scrutinizer ignore-unused */ ...$args): void
     {
         // no additional rules applicable
     }
 
-    public function addRules(iterable $rules = []): void
+    public function addRules(/** @scrutinizer ignore-unused */ iterable $rules = []): void
     {
         // no rules add applicable
     }

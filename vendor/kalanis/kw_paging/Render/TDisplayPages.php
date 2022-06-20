@@ -32,7 +32,7 @@ trait TDisplayPages
         $half = floor($whole / 2); // 5
         $tail = $count - $actualPage; // 18
 
-        $i = ($tail > $half) ? ($actualPage - $half) : ($count - $whole + 1); // 3
+        $i = ($tail > $half) ? intval($actualPage - $half) : intval($count - $whole + 1); // 3
         $result = [];
 
         // ++ < 10 && 3 <= 20

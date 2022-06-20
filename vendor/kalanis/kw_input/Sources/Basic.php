@@ -14,9 +14,15 @@ use kalanis\kw_input\Interfaces;
  */
 class Basic implements Interfaces\ISource
 {
+    /** @var string[]|int[]|array<string|int, string|int|bool> */
     protected $cliArgs = [];
+    /** @var string[]|int[]|array<string|int, string|int|bool> */
     protected $externalArgs = [];
 
+    /**
+     * @param array<string|int, string|int> $cliArgs
+     * @return $this
+     */
     public function setCli(array $cliArgs = []): self
     {
         $this->cliArgs = $cliArgs;
@@ -50,7 +56,7 @@ class Basic implements Interfaces\ISource
 
     public function session(): ?array
     {
-        return session_status() == PHP_SESSION_ACTIVE ? $_SESSION : [];
+        return PHP_SESSION_ACTIVE == session_status() ? $_SESSION : [];
     }
 
     public function server(): ?array
@@ -68,6 +74,10 @@ class Basic implements Interfaces\ISource
         return $this->externalArgs;
     }
 
+    /**
+     * @param string[]|int[]|array<string|int, string|int|bool> $externalArgs
+     * @return $this
+     */
     public function setExternal(array $externalArgs = []): self
     {
         $this->externalArgs = $externalArgs;

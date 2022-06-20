@@ -8,6 +8,7 @@ use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuth;
 use kalanis\kw_auth\Interfaces\IKATranslations;
 use kalanis\kw_auth\TTranslate;
+use SessionHandlerInterface;
 
 
 /**
@@ -23,20 +24,28 @@ class CountedSessions extends AMethods
     const INPUT_NAME = 'name';
     const INPUT_COUNTER = 'log_count';
 
+    /** @var int */
     protected $maxTries = 100;
+    /** @var ArrayAccess */
     protected $session = null;
+    /** @var SessionHandlerInterface */
+    protected $externalHandler = null;
 
-    public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, int $maxTries = 100, ?IKATranslations $lang = null)
+    public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, int $maxTries = 100, ?IKATranslations $lang = null, ?SessionHandlerInterface $externalHandler = null)
     {
         parent::__construct($authenticator, $nextOne);
         $this->setLang($lang);
         $this->session = $session;
         $this->maxTries = $maxTries;
+        $this->externalHandler = $externalHandler;
     }
 
     public function process(ArrayAccess $credentials): void
     {
         if (PHP_SESSION_NONE == session_status()) {
+            if ($this->externalHandler) {
+                session_set_save_handler($this->externalHandler, true);
+            }
             session_start();
         }
         if (!empty($credentials->offsetExists(static::INPUT_NAME))) {
