@@ -22,6 +22,11 @@ class Translations implements IKBTranslations
         return 'Unknown datasource format';
     }
 
+    public function ikbBadIpParsingNoDelimiter(): string
+    {
+        return 'Delimiter for parsing not set';
+    }
+
     public function ikbDefinedFileNotFound(string $fileName): string
     {
         return 'Defined file was not found';

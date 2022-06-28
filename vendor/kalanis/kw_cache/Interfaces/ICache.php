@@ -23,21 +23,21 @@ interface ICache
     public function init(string $what): void;
 
     /**
-     * @return bool
      * @throws StorageException
+     * @return bool
      */
     public function exists(): bool;
 
     /**
      * @param string $content
-     * @return bool
      * @throws StorageException
+     * @return bool
      */
     public function set(string $content): bool;
 
     /**
-     * @return string
      * @throws StorageException
+     * @return string
      */
     public function get(): string;
 

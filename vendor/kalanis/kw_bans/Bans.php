@@ -12,7 +12,7 @@ class Bans
     protected $sources = null;
 
     /**
-     * @param mixed ...$sources
+     * @param string|array<string>|array<int, string>|Sources\ASources $sources
      * @throws BanException
      */
     public function __construct(...$sources)
@@ -24,9 +24,9 @@ class Bans
     }
 
     /**
-     * @param mixed ...$toCompare
-     * @return bool
+     * @param string|array<string>|array<int, string>|Sources\ASources ...$toCompare
      * @throws BanException
+     * @return bool
      */
     public function has(...$toCompare): bool
     {

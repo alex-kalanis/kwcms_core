@@ -14,6 +14,8 @@ interface IKBTranslations
 
     public function ikbUnknownFormat(): string;
 
+    public function ikbBadIpParsingNoDelimiter(): string;
+
     public function ikbDefinedFileNotFound(string $fileName): string;
 
     public function ikbInvalidNumOfBlocksTooMany(string $knownIp): string;

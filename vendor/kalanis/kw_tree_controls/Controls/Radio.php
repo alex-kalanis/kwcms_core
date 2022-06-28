@@ -18,7 +18,7 @@ class Radio extends Controls\Radio
     protected $templateLabel = '';
     public $templateInput = '<label><input type="radio" value="%1$s"%2$s /> %3$s</label>';
 
-    public function set(string $alias, $value = null, string $label = '', $checked = '')
+    public function set(string $alias, $value = null, string $label = '', $checked = ''): Controls\Radio
     {
         $this->setEntry($alias, $value, $label);
         $this->setChecked($checked);

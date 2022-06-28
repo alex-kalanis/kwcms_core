@@ -17,10 +17,11 @@ use kalanis\kw_storage\StorageException;
  */
 class Semaphore implements ICache
 {
-    /** @var Storage|null */
+    /** @var Storage */
     protected $storage = null;
-    /** @var ISemaphore|null */
+    /** @var ISemaphore */
     protected $reloadSemaphore = null;
+    /** @var string */
     protected $cachePath = '';
 
     public function __construct(Storage $cacheStorage, ISemaphore $reloadSemaphore)

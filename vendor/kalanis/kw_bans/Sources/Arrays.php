@@ -10,6 +10,9 @@ namespace kalanis\kw_bans\Sources;
  */
 class Arrays extends ASources
 {
+    /**
+     * @param array<int, string> $sources
+     */
     public function __construct(array $sources)
     {
         $this->knownRecords = $sources;

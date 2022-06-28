@@ -8,12 +8,12 @@ use kalanis\kw_langs\Interfaces\ILoader;
 
 /**
  * Class MultiLoader
- * @package kalanis\kw_langs
+ * @package kalanis\kw_langs\Loaders
  * Load lang data from many sources
  */
 class MultiLoader implements ILoader
 {
-    /** @var ILoader[] */
+    /** @var array<string, ILoader> */
     protected $loaders = [];
 
     public function addLoader(ILoader $loader): self

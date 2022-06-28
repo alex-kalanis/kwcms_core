@@ -5,6 +5,7 @@ namespace kalanis\kw_bans\Bans;
 
 use kalanis\kw_bans\BanException;
 use kalanis\kw_bans\Interfaces\IKBTranslations;
+use kalanis\kw_bans\Ip;
 use kalanis\kw_bans\Sources\ASources;
 
 
@@ -12,7 +13,7 @@ abstract class ABan
 {
     /** @var IKBTranslations|null */
     protected $lang = null;
-    /** @var string[] */
+    /** @var array<int, string|int|Ip> */
     protected $foundRecords = [];
 
     abstract public function __construct(ASources $source, ?IKBTranslations $lang = null);

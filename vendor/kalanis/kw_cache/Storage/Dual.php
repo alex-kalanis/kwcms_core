@@ -14,11 +14,13 @@ use kalanis\kw_storage\Storage\Storage;
  */
 class Dual implements ICache
 {
-    /** @var Storage|null */
+    /** @var Storage */
     protected $cacheStorage = null;
-    /** @var Storage|null */
+    /** @var Storage */
     protected $reloadStorage = null;
+    /** @var string */
     protected $cachePath = '';
+    /** @var string */
     protected $reloadPath = '';
 
     public function __construct(Storage $cacheStorage, ?Storage $reloadStorage = null)

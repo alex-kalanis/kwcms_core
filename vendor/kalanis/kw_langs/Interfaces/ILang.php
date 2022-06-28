@@ -17,7 +17,7 @@ interface ILang
     public function setLang(string $lang): self;
 
     /**
-     * @return string[] translations array
+     * @return array<string, string> translations array
      */
     public function getTranslations(): array;
 }

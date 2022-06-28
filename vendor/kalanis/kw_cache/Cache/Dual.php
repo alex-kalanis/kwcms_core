@@ -13,9 +13,9 @@ use kalanis\kw_cache\Interfaces\ICache;
  */
 class Dual implements ICache
 {
-    /** @var ICache|null */
+    /** @var ICache */
     protected $storageCache = null;
-    /** @var ICache|null */
+    /** @var ICache */
     protected $reloadCache = null;
 
     public function __construct(ICache $storageCache, ?ICache $reloadCache = null)

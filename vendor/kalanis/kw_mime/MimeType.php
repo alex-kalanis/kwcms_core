@@ -15,8 +15,10 @@ use kalanis\kw_paths\Stuff;
  */
 class MimeType
 {
+    /** @var bool */
     protected $localAtFirst = false;
     // todo: put this list somewhere in external resource
+    /** @var array<string|int, string> */
     protected $mimeTypes = [
         'atom' => 'application/atom+xml', // Atom XML
         'css' => 'text/css', // Cascading Style Sheets (CSS)
@@ -580,7 +582,7 @@ class MimeType
             return $this->mimeByExt(Stuff::fileExt($path));
         }
         if (function_exists('mime_content_type')) {
-            return mime_content_type($path);
+            return false !== ($mime = mime_content_type($path)) ? strval($mime) : 'application/octet-stream';
         }
         // @codeCoverageIgnoreStart
         // file_content_type and finfo are in the same package - wtf?!
@@ -588,7 +590,7 @@ class MimeType
             $fi = new \finfo(FILEINFO_MIME); # file mimetype
             $mm = $fi->buffer($path);
             unset($fi);
-            return $mm;
+            return (false !== $mm) ? strval($mm) : 'application/octet-stream';
         }
         // @codeCoverageIgnoreEnd
         // @codeCoverageIgnoreStart

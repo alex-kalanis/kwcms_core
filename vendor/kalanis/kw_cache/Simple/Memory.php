@@ -13,6 +13,7 @@ use kalanis\kw_cache\Interfaces\ICache;
  */
 class Memory implements ICache
 {
+    /** @var resource|null */
     protected $resource = null;
 
     public function init(string $what): void
@@ -27,8 +28,14 @@ class Memory implements ICache
     public function set(string $content): bool
     {
         $this->clear();
-        $this->resource = fopen('php://temp', 'rb+');
-        fwrite($this->resource, $content);
+        $resource = fopen('php://temp', 'rb+');
+        if (false === $resource) {
+            // @codeCoverageIgnoreStart
+            return false;
+        }
+        // @codeCoverageIgnoreEnd
+        fwrite($resource, $content);
+        $this->resource = $resource;
         return true;
     }
 
@@ -36,7 +43,7 @@ class Memory implements ICache
     {
         if ($this->exists()) {
             rewind($this->resource);
-            return fgets($this->resource);
+            return strval(stream_get_contents($this->resource, -1, 0));
         } else {
             return '';
         }

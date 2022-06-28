@@ -9,12 +9,12 @@ use kalanis\kw_langs\Interfaces\ILoader;
 
 /**
  * Class ClassLoader
- * @package kalanis\kw_langs
+ * @package kalanis\kw_langs\Loaders
  * Load lang data from class
  */
 class ClassLoader implements ILoader
 {
-    /** @var ILang[] */
+    /** @var array<string, ILang> */
     protected $langs = [];
 
     public function addClass(ILang $lang): self

@@ -17,8 +17,8 @@ abstract class AIP extends ABan
     /** @var Ip[] */
     protected $knownIps = [];
     /** @var Ip */
-    protected $searchIp = '';
-
+    protected $searchIp = null;
+    /** @var int */
     protected $bitsInBlock = 4;
 
     public function __construct(ASources $source, ?IKBTranslations $lang = null)
@@ -44,13 +44,13 @@ abstract class AIP extends ABan
     public function comparedByAddress(Ip $ipAddress): bool
     {
         // compare only parts unaffected by mask, then special bitwise compare for partially affected, cut the rest
-        list($knownToCompare, $leftKnownToBitwiseCompare, $bitsInAffectedPart) = $this->cutPositions($ipAddress->getAddress(), $ipAddress->getAffectedBits());
-        list($searchToCompare, $leftSearchToBitwiseCompare, $bitsInAffectedPart) = $this->cutPositions($this->searchIp->getAddress(), $ipAddress->getAffectedBits());
+        $knownToCompare = $this->cutPositions($ipAddress->getAddress(), $ipAddress->getAffectedBits());
+        $searchToCompare = $this->cutPositions($this->searchIp->getAddress(), $ipAddress->getAffectedBits());
 
 //print_r(['cutted', $knownToCompare, $searchToCompare, $leftKnownToBitwiseCompare, $leftSearchToBitwiseCompare, $bitsInAffectedPart]);
         // now compare only relevant portions
-        foreach ($knownToCompare as $position => $segment) {
-            $forCompare = strval($searchToCompare[$position]);
+        foreach ($knownToCompare->getAddress() as $position => $segment) {
+            $forCompare = strval($searchToCompare->getAddress()[$position]);
             if ($segment == $forCompare) {
                 continue;
             }
@@ -61,9 +61,9 @@ abstract class AIP extends ABan
         }
 
 //print_r(['cmpaddr', $bitsInAffectedPart, $leftKnownToBitwiseCompare, $leftSearchToBitwiseCompare]);
-        if (!empty($bitsInAffectedPart)) {
+        if (!empty($searchToCompare->getBitsInAffectedPart())) {
             // compare bitwise the last segment
-            if (!$this->compareAsBinary($leftKnownToBitwiseCompare, $leftSearchToBitwiseCompare, $bitsInAffectedPart)) {
+            if (!$this->compareAsBinary($knownToCompare, $searchToCompare)) {
                 return false;
             }
         }
@@ -71,7 +71,12 @@ abstract class AIP extends ABan
         return true;
     }
 
-    protected function cutPositions(array $address, int $affectedBits): array
+    /**
+     * @param array<int, string> $address
+     * @param int $affectedBits
+     * @return Cutted
+     */
+    protected function cutPositions(array $address, int $affectedBits): Cutted
     {
         $bitsInAffectedPart = $affectedBits % $this->bitsInBlock;
         $affectedBlocks = intval(ceil($affectedBits / $this->bitsInBlock));
@@ -80,7 +85,7 @@ abstract class AIP extends ABan
         $bitwiseBlock = $bitsInAffectedPart ? $address[count($useAddress)] : '';
 
 //print_r(['cut', $address, $useAddress, $affectedBits, $bitwiseBlock, $bitsInAffectedPart]);
-        return [$useAddress, $bitwiseBlock, $bitsInAffectedPart];
+        return (new Cutted())->setData($useAddress, $bitwiseBlock, $bitsInAffectedPart);
     }
 
     protected function compareAsString(string $known, string $tested): bool
@@ -102,14 +107,14 @@ abstract class AIP extends ABan
         return true;
     }
 
-    protected function compareAsBinary(string $known, string $tested, int $cutBits): bool
+    protected function compareAsBinary(Cutted $knownToCompare, Cutted $searchToCompare): bool
     {
-        $testingBinary = str_pad(decbin($this->toNumber($tested)), $this->bitsInBlock, '0', STR_PAD_LEFT);
-        $knownBinary = str_pad(decbin($this->toNumber($known)), $this->bitsInBlock, '0', STR_PAD_LEFT);
+        $testingBinary = str_pad(decbin($this->toNumber($searchToCompare->getBitwiseBlock())), $this->bitsInBlock, '0', STR_PAD_LEFT);
+        $knownBinary = str_pad(decbin($this->toNumber($knownToCompare->getBitwiseBlock())), $this->bitsInBlock, '0', STR_PAD_LEFT);
 //print_r(['cmpbin', $testingBinary, $knownBinary, $cutBits]);
-        if (0 < $cutBits) {
-            $testingBinary = substr($testingBinary, 0, ((-1) * $cutBits));
-            $knownBinary = substr($knownBinary, 0, ((-1) * $cutBits));
+        if (0 < $searchToCompare->getBitsInAffectedPart()) {
+            $testingBinary = substr($testingBinary, 0, ((-1) * $searchToCompare->getBitsInAffectedPart()));
+            $knownBinary = substr($knownBinary, 0, ((-1) * $searchToCompare->getBitsInAffectedPart()));
         }
 //print_r(['cmpbincut', $testingBinary, $knownBinary, $cutBits]);
         return $testingBinary == $knownBinary;

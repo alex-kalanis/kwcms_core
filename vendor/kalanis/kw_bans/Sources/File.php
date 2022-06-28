@@ -35,9 +35,11 @@ class File extends ASources
         sort($rows);
 
         // last clearing
-        $this->knownRecords = array_map(function ($row) {
-            return strtr($row, ["\r" => '', "\n" => '']);
-        }, $rows);
+        $this->knownRecords = array_map([$this, 'noCrLf'], $rows);
+    }
 
+    public function noCrLf(string $line): string
+    {
+        return strtr($line, ["\r" => '', "\n" => '']);
     }
 }
