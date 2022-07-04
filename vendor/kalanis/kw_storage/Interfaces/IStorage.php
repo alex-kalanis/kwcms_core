@@ -7,6 +7,11 @@ use kalanis\kw_storage\StorageException;
 use Traversable;
 
 
+/**
+ * Interface IStorage
+ * @package kalanis\kw_storage\Interfaces
+ * Basic operations over every storage
+ */
 interface IStorage
 {
     /**
@@ -24,7 +29,7 @@ interface IStorage
     /**
      * @param string $key
      * @throws StorageException
-     * @return string
+     * @return mixed
      */
     public function load(string $key);
 
@@ -46,11 +51,13 @@ interface IStorage
 
     /**
      * Lookup through keys in storage
-     * @param string $key
+     * Passed key is full path
+     * Returns only names
+     * @param string $path parent node name
      * @throws StorageException
-     * @return string[]
+     * @return Traversable<string>
      */
-    public function lookup(string $key): iterable;
+    public function lookup(string $path): Traversable;
 
     /**
      * Increment index in key

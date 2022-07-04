@@ -5,6 +5,7 @@ namespace kalanis\kw_storage\Storage;
 
 use kalanis\kw_storage\StorageException;
 use kalanis\kw_storage\Interfaces;
+use Traversable;
 
 
 /**
@@ -16,15 +17,12 @@ class Storage
 {
     /** @var Interfaces\IStorage */
     protected $storage = null;
-    /** @var Interfaces\IFormat */
-    protected $format = null;
     /** @var Interfaces\IKey */
     protected $key = null;
 
-    public function __construct(Interfaces\IStorage $storage, Interfaces\IFormat $format, Interfaces\IKey $key)
+    public function __construct(Interfaces\IKey $key, Interfaces\IStorage $storage)
     {
         $this->storage = $storage;
-        $this->format = $format;
         $this->key = $key;
     }
 
@@ -47,7 +45,7 @@ class Storage
      */
     public function write(string $sharedKey, $data, ?int $timeout = null): bool
     {
-        return $this->storage->save($this->key->fromSharedKey($sharedKey), $this->format->encode($data), $timeout);
+        return $this->storage->save($this->key->fromSharedKey($sharedKey), $data, $timeout);
     }
 
     /**
@@ -58,7 +56,7 @@ class Storage
      */
     public function read(string $sharedKey)
     {
-        return $this->format->decode($this->storage->load($this->key->fromSharedKey($sharedKey)));
+        return $this->storage->load($this->key->fromSharedKey($sharedKey));
     }
 
     /**
@@ -86,9 +84,9 @@ class Storage
      * What data is in storage?
      * @param string $mask
      * @throws StorageException
-     * @return string[]
+     * @return Traversable<string>
      */
-    public function lookup(string $mask): iterable
+    public function lookup(string $mask): Traversable
     {
         return $this->storage->lookup($this->key->fromSharedKey($mask));
     }
