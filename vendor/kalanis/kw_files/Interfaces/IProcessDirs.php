@@ -23,10 +23,11 @@ interface IProcessDirs
 
     /**
      * @param string $entry
+     * @param bool $loadRecursive
      * @throws FilesException
      * @return array<string>
      */
-    public function readDir(string $entry): array;
+    public function readDir(string $entry, bool $loadRecursive = false): array;
 
     /**
      * @param string $source

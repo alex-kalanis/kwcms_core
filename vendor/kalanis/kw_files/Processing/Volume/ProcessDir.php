@@ -4,10 +4,14 @@ namespace kalanis\kw_files\Processing\Volume;
 
 
 use Error;
+use FilesystemIterator;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessDirs;
 use kalanis\kw_files\Translations;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileObject;
 
 
 /**
@@ -34,13 +38,22 @@ class ProcessDir implements IProcessDirs
         }
     }
 
-    public function readDir(string $entry): array
+    public function readDir(string $entry, bool $loadRecursive = false): array
     {
         try {
-            return scandir($entry);
+            $iter = $loadRecursive
+                ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($entry))
+                : new FilesystemIterator($entry)
+            ;
+            return array_map([$this, 'namesOnly'], iterator_to_array($iter));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
+    }
+
+    public function namesOnly(SplFileObject $file): string
+    {
+        return $file->getPath() . $file->getFilename();
     }
 
     public function copyDir(string $source, string $dest): bool

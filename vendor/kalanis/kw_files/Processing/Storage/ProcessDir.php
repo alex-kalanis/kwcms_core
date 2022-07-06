@@ -28,9 +28,9 @@ class ProcessDir implements IProcessDirs
         return $this->adapter->createDir($entry, $deep);
     }
 
-    public function readDir(string $entry): array
+    public function readDir(string $entry, bool $loadRecursive = false): array
     {
-        return $this->adapter->readDir($entry);
+        return $this->adapter->readDir($entry, $loadRecursive);
     }
 
     public function copyDir(string $source, string $dest): bool

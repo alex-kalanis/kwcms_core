@@ -14,12 +14,19 @@ use kalanis\kw_tree\Interfaces\ITree;
  */
 class FileNode
 {
+    /** @var string */
     protected $path = '';
+    /** @var string */
     protected $dir = '';
+    /** @var string */
     protected $name = '';
+    /** @var string */
     protected $type = ITree::TYPE_UNKNOWN;
+    /** @var int */
     protected $size = 0;
+    /** @var bool */
     protected $readable = false;
+    /** @var bool */
     protected $writable = false;
     /** @var FileNode[] */
     protected $subNodes = [];

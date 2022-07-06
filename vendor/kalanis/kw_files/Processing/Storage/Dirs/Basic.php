@@ -58,7 +58,7 @@ class Basic extends ADirs
         }
     }
 
-    public function readDir(string $entry): array
+    public function readDir(string $entry, bool $loadRecursive = false): array
     {
         try {
             if (!$this->storage->exists($entry) || !$this->isNode($entry)) {
@@ -66,7 +66,9 @@ class Basic extends ADirs
             }
             $entries = [];
             foreach ($this->storage->lookup($entry) as $item) {
-                if (false === mb_strpos($item, self::STORAGE_SEPARATOR)) {
+                if ($loadRecursive) {
+                    $entries[] = $item;
+                } elseif (false === mb_strpos($item, self::STORAGE_SEPARATOR)) {
                     $entries[] = $item;
                 }
             }

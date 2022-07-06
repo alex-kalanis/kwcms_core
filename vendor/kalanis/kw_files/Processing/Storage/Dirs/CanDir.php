@@ -33,10 +33,17 @@ class CanDir extends ADirs
         }
     }
 
-    public function readDir(string $entry): array
+    public function readDir(string $entry, bool $loadRecursive = false): array
     {
         try {
-            return iterator_to_array($this->storage->lookup($entry));
+            $files = [];
+            foreach ($this->storage->lookup($entry) as $item) {
+                $files[] = $item;
+                if ($loadRecursive && $this->storage->isDir($item)) {
+                    $files += $this->readDir($item, $loadRecursive);
+                }
+            }
+            return $files;
         } catch (StorageException $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
