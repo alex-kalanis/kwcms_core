@@ -24,19 +24,25 @@ class CanDir extends AFiles
         $this->storage = $storage;
     }
 
-    public function copyFile(string $source, string $dest): bool
+    public function copyFile(array $source, array $dest): bool
     {
         try {
-            return $this->storage->copy($source, $dest);
+            return $this->storage->copy(
+                $this->compactName($source, $this->getStorageSeparator()),
+                $this->compactName($dest, $this->getStorageSeparator())
+            );
         } catch (StorageException $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function moveFile(string $source, string $dest): bool
+    public function moveFile(array $source, array $dest): bool
     {
         try {
-            return $this->storage->move($source, $dest);
+            return $this->storage->move(
+                $this->compactName($source, $this->getStorageSeparator()),
+                $this->compactName($dest, $this->getStorageSeparator())
+            );
         } catch (StorageException $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }

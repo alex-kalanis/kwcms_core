@@ -4,6 +4,7 @@ namespace kalanis\kw_files\Interfaces;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Node;
 
 
 /**
@@ -14,42 +15,42 @@ use kalanis\kw_files\FilesException;
 interface IProcessDirs
 {
     /**
-     * @param string $entry
+     * @param string[] $entry
      * @param bool $deep
      * @throws FilesException
      * @return bool
      */
-    public function createDir(string $entry, bool $deep = false): bool;
+    public function createDir(array $entry, bool $deep = false): bool;
 
     /**
-     * @param string $entry
+     * @param string[] $entry
      * @param bool $loadRecursive
      * @throws FilesException
-     * @return array<string>
+     * @return array<Node>
      */
-    public function readDir(string $entry, bool $loadRecursive = false): array;
+    public function readDir(array $entry, bool $loadRecursive = false): array;
 
     /**
-     * @param string $source
-     * @param string $dest
+     * @param string[] $source
+     * @param string[] $dest
      * @throws FilesException
      * @return bool
      */
-    public function copyDir(string $source, string $dest): bool;
+    public function copyDir(array $source, array $dest): bool;
 
     /**
-     * @param string $source
-     * @param string $dest
+     * @param string[] $source
+     * @param string[] $dest
      * @throws FilesException
      * @return bool
      */
-    public function moveDir(string $source, string $dest): bool;
+    public function moveDir(array $source, array $dest): bool;
 
     /**
-     * @param string $entry
+     * @param string[] $entry
      * @param bool $deep
      * @throws FilesException
      * @return bool
      */
-    public function deleteDir(string $entry, bool $deep = false): bool;
+    public function deleteDir(array $entry, bool $deep = false): bool;
 }

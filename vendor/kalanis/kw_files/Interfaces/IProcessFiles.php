@@ -16,50 +16,50 @@ interface IProcessFiles
     const FREE_NAME_SEPARATOR = '_';
 
     /**
-     * @param string $name
+     * @param string[] $name
      * @param string $suffix
      * @throws FilesException
      * @return string
      */
-    public function findFreeName(string $name, string $suffix): string;
+    public function findFreeName(array $name, string $suffix): string;
 
     /**
-     * @param string $entry
+     * @param string[] $entry
      * @param string|resource $content
      * @throws FilesException
      * @return bool
      */
-    public function saveFile(string $entry, $content): bool;
+    public function saveFile(array $entry, $content): bool;
 
     /**
-     * @param string $entry
+     * @param string[] $entry
      * @param int|null $offset
      * @param int|null $length
      * @throws FilesException
-     * @return string
+     * @return string|resource
      */
-    public function readFile(string $entry, ?int $offset = null, ?int $length = null): string;
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null);
 
     /**
-     * @param string $source
-     * @param string $dest
+     * @param string[] $source
+     * @param string[] $dest
      * @throws FilesException
      * @return bool
      */
-    public function copyFile(string $source, string $dest): bool;
+    public function copyFile(array $source, array $dest): bool;
 
     /**
-     * @param string $source
-     * @param string $dest
+     * @param string[] $source
+     * @param string[] $dest
      * @throws FilesException
      * @return bool
      */
-    public function moveFile(string $source, string $dest): bool;
+    public function moveFile(array $source, array $dest): bool;
 
     /**
-     * @param string $entry
+     * @param array $entry
      * @throws FilesException
      * @return bool
      */
-    public function deleteFile(string $entry): bool;
+    public function deleteFile(array $entry): bool;
 }

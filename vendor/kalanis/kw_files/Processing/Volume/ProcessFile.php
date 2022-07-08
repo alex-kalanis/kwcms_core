@@ -8,6 +8,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_files\Processing\TNameFinder;
+use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_files\Translations;
 
 
@@ -19,6 +20,7 @@ use kalanis\kw_files\Translations;
 class ProcessFile implements IProcessFiles
 {
     use TNameFinder;
+    use TPathTransform;
 
     /** @var IFLTranslations */
     protected $lang = null;
@@ -33,36 +35,36 @@ class ProcessFile implements IProcessFiles
         return static::FREE_NAME_SEPARATOR;
     }
 
-    protected function targetExists(string $path): bool
+    protected function targetExists(array $path, string $added): bool
     {
-        return file_exists($path);
+        return @file_exists($this->compactName($path) . $added);
     }
 
-    public function readFile(string $entry, ?int $offset = null, ?int $length = null): string
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
     {
         try {
             if (!is_null($length) && is_null($offset)) {
-                $content = @file_get_contents($entry, false, null, 0, $length);
+                $content = @file_get_contents($this->compactName($entry), false, null, 0, $length);
             } elseif (is_null($offset)) {
-                $content = @file_get_contents($entry);
+                $content = @file_get_contents($this->compactName($entry));
             } else {
-                $content = @file_get_contents($entry, false, null, $offset, $length);
+                $content = @file_get_contents($this->compactName($entry), false, null, $offset, $length);
             }
             if (false !== $content) {
                 return $content;
             }
-            throw new FilesException($this->lang->flCannotLoadFile($entry));
+            throw new FilesException($this->lang->flCannotLoadFile($this->compactName($entry)));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function saveFile(string $entry, $content): bool
+    public function saveFile(array $entry, $content): bool
     {
         try {
-            $result = @file_put_contents($entry, $content);
+            $result = @file_put_contents($this->compactName($entry), $content);
             if (false === $result) {
-                throw new FilesException($this->lang->flCannotSaveFile($entry));
+                throw new FilesException($this->lang->flCannotSaveFile($this->compactName($entry)));
             }
             return true;
         } catch (Error $ex) {
@@ -70,28 +72,28 @@ class ProcessFile implements IProcessFiles
         }
     }
 
-    public function copyFile(string $source, string $dest): bool
+    public function copyFile(array $source, array $dest): bool
     {
         try {
-            return copy($source, $dest);
+            return @copy($this->compactName($source), $this->compactName($dest));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function moveFile(string $source, string $dest): bool
+    public function moveFile(array $source, array $dest): bool
     {
         try {
-            return rename($source, $dest);
+            return @rename($this->compactName($source), $this->compactName($dest));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function deleteFile(string $entry): bool
+    public function deleteFile(array $entry): bool
     {
         try {
-            return unlink($entry);
+            return @unlink($this->compactName($entry));
         } catch (Error $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }

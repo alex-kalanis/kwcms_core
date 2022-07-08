@@ -4,6 +4,7 @@ namespace kalanis\kw_files\Processing\Storage\Dirs;
 
 
 use kalanis\kw_files\Interfaces\IProcessDirs;
+use kalanis\kw_files\Processing\TPathTransform;
 
 
 /**
@@ -13,4 +14,10 @@ use kalanis\kw_files\Interfaces\IProcessDirs;
  */
 abstract class ADirs implements IProcessDirs
 {
+    use TPathTransform;
+
+    protected function getStorageSeparator(): string
+    {
+        return DIRECTORY_SEPARATOR;
+    }
 }

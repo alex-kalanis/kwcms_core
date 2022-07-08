@@ -47,11 +47,19 @@ interface IPassDirs
     public function copy(string $source, string $dest): bool;
 
     /**
-     * move dirs and files
+     * Move dirs and files
      * @param string $source
      * @param string $dest
      * @throws StorageException
      * @return bool
      */
     public function move(string $source, string $dest): bool;
+
+    /**
+     * Get node size
+     * @param string $key
+     * @throws StorageException
+     * @return int
+     */
+    public function size(string $key): int;
 }

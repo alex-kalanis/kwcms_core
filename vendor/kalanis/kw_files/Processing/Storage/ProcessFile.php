@@ -3,11 +3,8 @@
 namespace kalanis\kw_files\Processing\Storage;
 
 
-use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Processing\TNameFinder;
 use kalanis\kw_storage\Interfaces\IStorage;
-use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -17,67 +14,42 @@ use kalanis\kw_storage\StorageException;
  */
 class ProcessFile implements IProcessFiles
 {
-    use TNameFinder;
-
-    /** @var IStorage */
-    protected $storage = null;
+    /** @var IProcessFiles */
+    protected $adapter = null;
 
     public function __construct(IStorage $storage)
     {
-        $this->storage = $storage;
+        $factory = new Files\Factory();
+        $this->adapter = $factory->getClass($storage);
     }
 
-    public function saveFile(string $targetName, $content): bool
+    public function findFreeName(array $name, string $suffix): string
     {
-        try {
-            return $this->storage->save($targetName, $content);
-        } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        return $this->adapter->findFreeName($name, $suffix);
     }
 
-    protected function getSeparator(): string
+    public function saveFile(array $entry, $content): bool
     {
-        return static::FREE_NAME_SEPARATOR;
+        return $this->adapter->saveFile($entry, $content);
     }
 
-    protected function targetExists(string $path): bool
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
     {
-        return $this->storage->exists($path);
+        return $this->adapter->readFile($entry, $offset, $length);
     }
 
-    public function readFile(string $entry, ?int $offset = null, ?int $length = null): string
+    public function copyFile(array $source, array $dest): bool
     {
-        try {
-            $content = $this->storage->load($entry);
-            return $content;
-        } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        return $this->adapter->copyFile($source, $dest);
     }
 
-    public function copyFile(string $source, string $dest): bool
+    public function moveFile(array $source, array $dest): bool
     {
-        try {
-            return $this->storage->save($dest, $this->storage->load($source));
-        } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        return $this->adapter->moveFile($source, $dest);
     }
 
-    public function moveFile(string $source, string $dest): bool
+    public function deleteFile(array $entry): bool
     {
-        $this->copyFile($source, $dest);
-        $this->deleteFile($source);
-        return true;
-    }
-
-    public function deleteFile(string $entry): bool
-    {
-        try {
-            return $this->storage->remove($entry);
-        } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        return $this->adapter->deleteFile($entry);
     }
 }

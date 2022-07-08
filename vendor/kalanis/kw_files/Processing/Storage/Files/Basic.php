@@ -20,16 +20,27 @@ class Basic extends AFiles
         $this->storage = $storage;
     }
 
-    public function copyFile(string $source, string $dest): bool
+    public function copyFile(array $source, array $dest): bool
     {
         try {
-            return $this->storage->save($dest, $this->storage->load($source));
+            return $this->storage->save(
+                $this->compactName(
+                    $dest,
+                    $this->getStorageSeparator()
+                ),
+                $this->storage->load(
+                    $this->compactName(
+                        $source,
+                        $this->getStorageSeparator()
+                    )
+                )
+            );
         } catch (StorageException $ex) {
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
-    public function moveFile(string $source, string $dest): bool
+    public function moveFile(array $source, array $dest): bool
     {
         $this->copyFile($source, $dest);
         $this->deleteFile($source);

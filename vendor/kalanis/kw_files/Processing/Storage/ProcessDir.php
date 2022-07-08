@@ -23,27 +23,27 @@ class ProcessDir implements IProcessDirs
         $this->adapter = $factory->getClass($storage);
     }
 
-    public function createDir(string $entry, bool $deep = false): bool
+    public function createDir(array $entry, bool $deep = false): bool
     {
         return $this->adapter->createDir($entry, $deep);
     }
 
-    public function readDir(string $entry, bool $loadRecursive = false): array
+    public function readDir(array $entry, bool $loadRecursive = false): array
     {
         return $this->adapter->readDir($entry, $loadRecursive);
     }
 
-    public function copyDir(string $source, string $dest): bool
+    public function copyDir(array $source, array $dest): bool
     {
         return $this->adapter->copyDir($source, $dest);
     }
 
-    public function moveDir(string $source, string $dest): bool
+    public function moveDir(array $source, array $dest): bool
     {
         return $this->adapter->moveDir($source, $dest);
     }
 
-    public function deleteDir(string $entry, bool $deep = false): bool
+    public function deleteDir(array $entry, bool $deep = false): bool
     {
         return $this->adapter->deleteDir($entry, $deep);
     }
