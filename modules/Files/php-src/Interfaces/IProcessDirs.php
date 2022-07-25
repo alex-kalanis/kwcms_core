@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Files\Interfaces;
 
 
-use KWCMS\modules\Files\FilesException;
+use kalanis\kw_files\FilesException;
 
 
 /**

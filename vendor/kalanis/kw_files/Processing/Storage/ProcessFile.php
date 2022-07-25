@@ -3,6 +3,7 @@
 namespace kalanis\kw_files\Processing\Storage;
 
 
+use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_storage\Interfaces\IStorage;
 
@@ -17,10 +18,10 @@ class ProcessFile implements IProcessFiles
     /** @var IProcessFiles */
     protected $adapter = null;
 
-    public function __construct(IStorage $storage)
+    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $factory = new Files\Factory();
-        $this->adapter = $factory->getClass($storage);
+        $this->adapter = $factory->getClass($storage, $lang);
     }
 
     public function findFreeName(array $name, string $suffix): string

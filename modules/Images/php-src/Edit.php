@@ -6,6 +6,7 @@ namespace KWCMS\modules\Images;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -70,7 +71,7 @@ class Edit extends AAuthModule implements IModuleTitle
         $this->copyForm = new Forms\FileActionForm('fileCopyForm');
         $this->primaryForm = new Forms\FileThumbForm('filePrimaryForm');
         $this->deleteForm = new Forms\FileDeleteForm('fileDeleteForm');
-        $this->tree = new Tree(Stored::getPath());
+        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
         $this->userDir = new UserDir(Stored::getPath());
         $this->forward = new Forward();
     }

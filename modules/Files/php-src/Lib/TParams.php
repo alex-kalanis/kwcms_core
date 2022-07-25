@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Files\Lib;
 
 
-use SplFileInfo;
+use kalanis\kw_files\Node;
 
 
 /**
@@ -13,12 +13,12 @@ use SplFileInfo;
  */
 trait TParams
 {
-    public function filterFiles(SplFileInfo $info): bool
+    public function filterFiles(Node $info): bool
     {
         return $info->isFile();
     }
 
-    public function filterDirs(SplFileInfo $info): bool
+    public function filterDirs(Node $info): bool
     {
         return $info->isDir();
     }

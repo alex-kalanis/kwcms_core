@@ -46,7 +46,8 @@ class KwDiLoader implements ILoader
 
     public function load(string $module, ?string $constructPath = null, array $constructParams = []): IModule
     {
-        $classPath = empty($constructPath) ? $module : sprintf('%s\%s', $module, $constructPath);
+//        $classPath = sprintf('%s\Presenters\%s', $module, empty($constructPath) ? $module : $constructPath);
+        $classPath = sprintf('%s\%s', $module, empty($constructPath) ? $module : $constructPath);
         if ($this->container->has($classPath)) {
             $module = $this->container->get($classPath);
             if (!$module instanceof IModule) {

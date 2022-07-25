@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -31,7 +32,7 @@ class Copy extends AEdit
     {
         parent::__construct();
         $this->copyForm = new Forms\FileActionForm('fileCopyForm');
-        $this->tree = new Tree(Stored::getPath());
+        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
     }
 
     public function run(): void

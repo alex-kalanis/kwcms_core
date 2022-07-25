@@ -3,15 +3,15 @@
 namespace kalanis\kw_tree\Adapters;
 
 
+use kalanis\kw_files\Node;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\FileNode;
-use SplFileInfo;
 
 
 /**
  * Class NodeAdapter
  * @package kalanis\kw_tree\Adapters
- * Create tree node from SplFileInfo
+ * Create tree node from kw_files\Node
 
 Normal file
 path - the whole path against cutDir
@@ -43,7 +43,7 @@ class NodeAdapter
         return $this;
     }
 
-    public function process(SplFileInfo $info): FileNode
+    public function process(Node $info): FileNode
     {
         $pathToCut = $this->shortRealPath($info);
         $path = $this->cutPath($pathToCut);
@@ -66,20 +66,14 @@ class NodeAdapter
             $dir,
             $name,
             $info->getSize(),
-            $info->getType(),
-            $info->isReadable(),
-            $info->isWritable()
+            $info->getType()
         );
         return $node;
     }
 
-    protected function shortRealPath(SplFileInfo $info): string
+    protected function shortRealPath(Node $info): string
     {
-        $path = $info->getRealPath();
-        return $info->isDir() && (false === mb_strpos($path, $this->cutDir))
-            ? Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR
-            : $path
-        ;
+        return implode(DIRECTORY_SEPARATOR, $info->getPath());
     }
 
     protected function cutPath(string $path): string

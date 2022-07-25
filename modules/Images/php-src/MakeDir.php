@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -44,7 +45,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         $this->createForm = new Forms\DirNewForm('dirNewForm');
-        $this->tree = new Tree(Stored::getPath());
+        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
         $this->userDir = new UserDir(Stored::getPath());
     }
 

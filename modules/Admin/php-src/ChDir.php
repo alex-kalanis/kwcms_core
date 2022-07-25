@@ -4,6 +4,7 @@ namespace KWCMS\modules\Admin;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -42,7 +43,7 @@ abstract class ChDir extends AAuthModule
     {
         Lang::load('Admin');
         $this->userDir = new UserDir(Stored::getPath());
-        $this->tree = new Tree(Stored::getPath());
+        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
         $this->filter = new DirFilter();
         $this->chDirForm = new Forms\ChDirForm('chdirForm');
     }

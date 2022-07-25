@@ -4,8 +4,10 @@ namespace kalanis\kw_files\Processing\Storage\Dirs;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
+use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -19,12 +21,15 @@ class Basic extends ADirs
 {
     const STORAGE_NODE_KEY = "\eNODE\e";
 
+    /** @var IFLTranslations */
+    protected $lang = null;
     /** @var IStorage */
     protected $storage = null;
 
-    public function __construct(IStorage $storage)
+    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
+        $this->lang = $lang ?? new Translations();
     }
 
     public function createDir(array $entry, bool $deep = false): bool
@@ -55,14 +60,14 @@ class Basic extends ADirs
             }
             return $this->storage->save($entryPath, static::STORAGE_NODE_KEY);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotCreateDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
     public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
     {
+        $entryPath = $this->compactName($entry, $this->getStorageSeparator());
         try {
-            $entryPath = $this->compactName($entry, $this->getStorageSeparator());
             if (!$this->storage->exists($entryPath) || !$this->isNode($entryPath)) {
                 return [];
             }
@@ -97,68 +102,68 @@ class Basic extends ADirs
             }
             return $files;
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotReadDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
     public function copyDir(array $source, array $dest): bool
     {
+        $src = $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->compactName($dest, $this->getStorageSeparator());
         try {
-            $source = $this->compactName($source, $this->getStorageSeparator());
-            $dest = $this->compactName($dest, $this->getStorageSeparator());
-            if (!$this->isNode($source)) {
+            if (!$this->isNode($src)) {
                 return false;
             }
-            if ($this->storage->exists($dest)) {
+            if ($this->storage->exists($dst)) {
                 return false;
             }
-            $paths = $this->storage->lookup($source);
-            $this->storage->save($dest, self::STORAGE_NODE_KEY);
+            $paths = $this->storage->lookup($src);
+            $this->storage->save($dst, self::STORAGE_NODE_KEY);
             foreach ($paths as $path) {
-                $updName = $dest . mb_substr($path, 0, mb_strlen($source));
+                $updName = $dest . mb_substr($path, 0, mb_strlen($src));
                 $this->storage->save($updName, $this->storage->load($path));
             }
             return true;
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
     public function moveDir(array $source, array $dest): bool
     {
+        $src = $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->compactName($dest, $this->getStorageSeparator());
         try {
-            $source = $this->compactName($source, $this->getStorageSeparator());
-            $dest = $this->compactName($dest, $this->getStorageSeparator());
-            if (!$this->isNode($source)) {
+            if (!$this->isNode($src)) {
                 return false;
             }
-            if ($this->storage->exists($dest)) {
+            if ($this->storage->exists($dst)) {
                 return false;
             }
-            $paths = $this->storage->lookup($source);
-            $this->storage->save($dest, self::STORAGE_NODE_KEY);
+            $paths = $this->storage->lookup($src);
+            $this->storage->save($dst, self::STORAGE_NODE_KEY);
             foreach ($paths as $path) {
-                $updName = $dest . mb_substr($path, 0, mb_strlen($source));
+                $updName = $dest . mb_substr($path, 0, mb_strlen($src));
                 $this->storage->save($updName, $this->storage->load($path));
                 $this->storage->remove($path);
             }
-            return $this->storage->remove($source);
+            return $this->storage->remove($src);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
     public function deleteDir(array $entry, bool $deep = false): bool
     {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
         try {
-            $entry = $this->compactName($entry, $this->getStorageSeparator());
-            if (!$this->storage->exists($entry)) {
+            if (!$this->storage->exists($path)) {
                 return true;
             }
-            if (!$this->isNode($entry)) {
+            if (!$this->isNode($path)) {
                 return false;
             }
-            $paths = $this->storage->lookup($entry);
+            $paths = $this->storage->lookup($path);
             if (!$deep && !empty($path)) {
                 return false;
             }
@@ -167,9 +172,9 @@ class Basic extends ADirs
                     $this->storage->remove($path);
                 }
             }
-            return $this->storage->remove($entry);
+            return $this->storage->remove($path);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
     }
 
@@ -198,7 +203,7 @@ class Basic extends ADirs
             rewind($content);
             $size = stream_copy_to_stream($content, $tempStream, -1, 0);
             if (false === $size) {
-                throw new FilesException('Cannot copy streams, cannot get sizes');
+                throw new FilesException($this->lang->flCannotGetSize($file));
             }
             return intval($size);
         } else {

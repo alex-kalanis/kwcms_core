@@ -4,6 +4,8 @@ namespace KWCMS\modules\Files\Dir;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
@@ -14,7 +16,6 @@ use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree\TWhereDir;
-use KWCMS\modules\Files\FilesException;
 use KWCMS\modules\Files\Lib;
 
 
@@ -42,7 +43,7 @@ abstract class ADir extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new Tree(Stored::getPath());
+        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
         $this->userDir = new UserDir(Stored::getPath());
         $this->dirForm = new Lib\DirForm($this->getFormAlias());
     }

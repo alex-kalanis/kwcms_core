@@ -21,8 +21,6 @@ class ArrayAdapter
             'name' => $node->getName(),
             'size' => $node->getSize(),
             'type' => $node->getType(),
-            'read' => intval($node->isReadable()),
-            'write' => intval($node->isWritable()),
             'sub' => array_map([$this, 'pack'], $node->getSubNodes()),
         ];
     }
@@ -35,9 +33,7 @@ class ArrayAdapter
             $array['dir'],
             $array['name'],
             intval($array['size']),
-            $array['type'],
-            boolval($array['read']),
-            boolval($array['write'])
+            $array['type']
         );
         foreach ($array['sub'] as $item) {
             $node->addSubNode($this->unpack($item));

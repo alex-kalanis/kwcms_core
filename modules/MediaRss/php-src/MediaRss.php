@@ -4,6 +4,9 @@ namespace KWCMS\modules\MediaRss;
 
 
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Node;
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
@@ -14,6 +17,7 @@ use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\FileNode;
 use kalanis\kw_tree\Tree;
 
@@ -64,7 +68,7 @@ class MediaRss extends AModule
         try {
             $libUserDir = new UserDir(Stored::getPath());
             $libFiles = FilesHelper::get($libUserDir->getWebRootDir());
-            $libTree = new Tree(Stored::getPath());
+            $libTree = new Tree(Stored::getPath(), new ProcessDir());
 
             $tmpl = new Lib\MainTemplate();
             return $out->setContent($tmpl->setData(
@@ -76,7 +80,7 @@ class MediaRss extends AModule
                 implode('', $this->getItems($libTree, $libFiles))
             )->render()
             );
-        } catch (ImagesException $ex) {
+        } catch (ImagesException | FilesException $ex) {
             $error = $ex;
         }
         if (isset($error)) {
@@ -90,6 +94,7 @@ class MediaRss extends AModule
      * @param Files $libFiles
      * @return string[]
      * @throws ImagesException
+     * @throws FilesException
      */
     protected function getItems(Tree $libTree, Files $libFiles): array
     {
@@ -119,9 +124,11 @@ class MediaRss extends AModule
         return $messages;
     }
 
-    public function filterImages(\SplFileInfo $info): bool
+    public function filterImages(Node $info): bool
     {
-        return in_array($info->getExtension(), (array)Config::get(static::getClassName(static::class), 'accept_types', []));
+        $name = array_slice($info->getPath(), -1, 1);
+        $name = reset($name);
+        return in_array(Stuff::fileExt($name), (array)Config::get(static::getClassName(static::class), 'accept_types', []));
     }
 
     /**

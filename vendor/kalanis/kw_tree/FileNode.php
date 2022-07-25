@@ -3,7 +3,7 @@
 namespace kalanis\kw_tree;
 
 
-use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_files\Interfaces\ITypes;
 
 
 /**
@@ -21,25 +21,19 @@ class FileNode
     /** @var string */
     protected $name = '';
     /** @var string */
-    protected $type = ITree::TYPE_UNKNOWN;
+    protected $type = ITypes::TYPE_UNKNOWN;
     /** @var int */
     protected $size = 0;
-    /** @var bool */
-    protected $readable = false;
-    /** @var bool */
-    protected $writable = false;
     /** @var FileNode[] */
     protected $subNodes = [];
 
-    public function setData(string $path, string $dir, string $name, int $size, string $type, bool $readable, bool $writable): self
+    public function setData(string $path, string $dir, string $name, int $size, string $type): self
     {
         $this->path = $path;
         $this->dir = $dir;
         $this->name = $name;
         $this->size = $size;
         $this->type = $type;
-        $this->readable = $readable;
-        $this->writable = $writable;
         return $this;
     }
 
@@ -82,28 +76,18 @@ class FileNode
         return $this->type;
     }
 
-    public function isWritable(): bool
-    {
-        return $this->writable;
-    }
-
-    public function isReadable(): bool
-    {
-        return $this->readable;
-    }
-
     public function isFile(): bool
     {
-        return ITree::TYPE_FILE == $this->type;
+        return ITypes::TYPE_FILE == $this->type;
     }
 
     public function isDir(): bool
     {
-        return ITree::TYPE_DIR == $this->type;
+        return ITypes::TYPE_DIR == $this->type;
     }
 
     public function isLink(): bool
     {
-        return ITree::TYPE_LINK == $this->type;
+        return ITypes::TYPE_LINK == $this->type;
     }
 }

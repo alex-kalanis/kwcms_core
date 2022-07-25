@@ -25,9 +25,7 @@ class DirFilter
             $baseNode->getDir(),
             $baseNode->getName(),
             $baseNode->getSize(),
-            $baseNode->getType(),
-            $baseNode->isReadable(),
-            $baseNode->isWritable()
+            $baseNode->getType()
         );
 
         foreach ($baseNode->getSubNodes() as $subNode) {

@@ -40,6 +40,7 @@ class KwLoader implements ILoader
     public function load(string $module, ?string $constructPath = null, array $constructParams = []): IModule
     {
         $constructPath = $constructPath ?: $module ;
+        // $className = sprintf('\KWCMS\modules\%s\Presenters\%s', $module, $constructPath);
         $className = sprintf('\KWCMS\modules\%s\%s', $module, $constructPath);
         return new $className(...$constructParams);
     }

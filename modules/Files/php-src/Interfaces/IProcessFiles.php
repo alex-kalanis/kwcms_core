@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Files\Interfaces;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
-use KWCMS\modules\Files\FilesException;
 
 
 /**

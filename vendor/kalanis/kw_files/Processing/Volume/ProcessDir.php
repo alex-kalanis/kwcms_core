@@ -10,6 +10,7 @@ use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessDirs;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
+use kalanis\kw_files\Processing\TPath;
 use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Extras\TRemoveCycle;
@@ -26,6 +27,7 @@ use SplFileObject;
  */
 class ProcessDir implements IProcessDirs
 {
+    use TPath;
     use TPathTransform;
     use TRemoveCycle;
     use TVolumeCopy;
@@ -33,27 +35,29 @@ class ProcessDir implements IProcessDirs
     /** @var IFLTranslations */
     protected $lang = null;
 
-    public function __construct(?IFLTranslations $lang = null)
+    public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
         $this->lang = $lang ?? new Translations();
+        $this->setPath($path);
     }
 
     public function createDir(array $entry, bool $deep = false): bool
     {
+        $path = $this->fullPath($entry);
         try {
-            return mkdir($this->compactName($entry), 0777, $deep);
+            return mkdir($path, 0777, $deep);
         } catch (Error $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotCreateDir($path), $ex->getCode(), $ex);
         }
     }
 
-    public function readDir(array $entry, bool $loadRecursive = false): array
+    public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
     {
+        $path = $this->fullPath($entry);
         try {
-            $entry = $this->compactName($entry);
             $iter = $loadRecursive
-                ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($entry))
-                : new FilesystemIterator($entry)
+                ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path))
+                : new FilesystemIterator($path)
             ;
             return array_map(
                 [$this, 'intoNode'],
@@ -66,7 +70,7 @@ class ProcessDir implements IProcessDirs
                 )
             );
         } catch (Error $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotReadDir($path), $ex->getCode(), $ex);
         }
     }
 
@@ -92,32 +96,42 @@ class ProcessDir implements IProcessDirs
 
     public function copyDir(array $source, array $dest): bool
     {
+        $src = $this->fullPath($source);
+        $dst = $this->fullPath($dest);
         try {
-            return $this->xcopy($this->compactName($source), $this->compactName($dest));
+            return $this->xcopy($src, $dst);
         } catch (Error $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
     public function moveDir(array $source, array $dest): bool
     {
+        $src = $this->fullPath($source);
+        $dst = $this->fullPath($dest);
         try {
-            return @rename($this->compactName($source), $this->compactName($dest));
+            return @rename($src, $dst);
         } catch (Error $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
     public function deleteDir(array $entry, bool $deep = false): bool
     {
-        if ($deep) {
-            return $this->removeCycle($this->compactName($entry));
-        } else {
-            try {
-                return @rmdir($this->compactName($entry));
-            } catch (Error $ex) {
-                throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+        $path = $this->fullPath($entry);
+        try {
+            if ($deep) {
+                return $this->removeCycle($path);
+            } else {
+                return @rmdir($path);
             }
+        } catch (Error $ex) {
+            throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
+    }
+
+    protected function fullPath(array $path): string
+    {
+        return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
     }
 }

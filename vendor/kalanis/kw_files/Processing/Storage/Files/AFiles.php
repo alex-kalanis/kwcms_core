@@ -4,6 +4,7 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_files\Processing\TNameFinder;
 use kalanis\kw_files\Processing\TPathTransform;
@@ -22,15 +23,18 @@ abstract class AFiles implements IProcessFiles
     use TNameFinder;
     use TPathTransform;
 
+    /** @var IFLTranslations */
+    protected $lang = null;
     /** @var IStorage|IPassDirs */
     protected $storage = null;
 
     public function saveFile(array $targetName, $content): bool
     {
+        $path = $this->compactName($targetName, $this->getStorageSeparator());
         try {
-            return $this->storage->save($this->compactName($targetName, $this->getStorageSeparator()), $content);
+            return $this->storage->save($path, $content);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotSaveFile($path), $ex->getCode(), $ex);
         }
     }
 
@@ -46,13 +50,14 @@ abstract class AFiles implements IProcessFiles
 
     public function readFile(array $entry, ?int $offset = null, ?int $length = null)
     {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
         try {
-            $content = $this->storage->load($this->compactName($entry, $this->getStorageSeparator()));
+            $content = $this->storage->load($path);
             if (is_resource($content)) {
-                if (!is_null($length) && !is_null($offset)) {
+                if (!is_null($length) || !is_null($offset)) {
                     $stream = fopen('php://temp', 'rb+');
                     if (false === stream_copy_to_stream($content, $stream, $length, intval($offset))) {
-                        throw new FilesException('Cannot extract stream part');
+                        throw new FilesException($this->lang->flCannotGetFilePart($path));
                     }
                     return $stream;
                 } else {
@@ -69,16 +74,17 @@ abstract class AFiles implements IProcessFiles
                 return strval($content);
             }
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotLoadFile($path), $ex->getCode(), $ex);
         }
     }
 
     public function deleteFile(array $entry): bool
     {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
         try {
-            return $this->storage->remove($this->compactName($entry, $this->getStorageSeparator()));
+            return $this->storage->remove($path);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotRemoveFile($path), $ex->getCode(), $ex);
         }
     }
 

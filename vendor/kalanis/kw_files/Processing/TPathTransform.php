@@ -10,6 +10,7 @@ namespace kalanis\kw_files\Processing;
  */
 trait TPathTransform
 {
+    /** @var string */
     protected $pathDelimiter = DIRECTORY_SEPARATOR;
 
     public function compactName(array $path, string $pathDelimiter = DIRECTORY_SEPARATOR): string

@@ -4,8 +4,10 @@ namespace kalanis\kw_files\Processing\Storage\Dirs;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
+use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IPassDirs;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
@@ -18,31 +20,32 @@ use kalanis\kw_storage\StorageException;
  */
 class CanDir extends ADirs
 {
+    /** @var IFLTranslations */
+    protected $lang = null;
     /** @var IPassDirs|IStorage */
     protected $storage = null;
 
-    public function __construct(IPassDirs $storage)
+    public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
+        $this->lang = $lang ?? new Translations();
     }
 
     public function createDir(array $entry, bool $deep = false): bool
     {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
         try {
-            return $this->storage->mkDir(
-                $this->compactName($entry, $this->getStorageSeparator()),
-                $deep
-            );
+            return $this->storage->mkDir($path, $deep);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotCreateDir($path), $ex->getCode(), $ex);
         }
     }
 
     public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
     {
+        $entryPath = $this->compactName($entry, $this->getStorageSeparator());
         try {
             $files = [];
-            $entryPath = $this->compactName($entry, $this->getStorageSeparator());
             foreach ($this->storage->lookup($entryPath) as $item) {
                 $currentPath = $this->compactName($entry + [$item], $this->getStorageSeparator());
                 $sub = new Node();
@@ -64,43 +67,39 @@ class CanDir extends ADirs
             }
             return $files;
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotReadDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
     public function copyDir(array $source, array $dest): bool
     {
+        $src = $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->compactName($dest, $this->getStorageSeparator());
         try {
-            return $this->storage->copy(
-                $this->compactName($source, $this->getStorageSeparator()),
-                $this->compactName($dest, $this->getStorageSeparator())
-            );
+            return $this->storage->copy($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
     public function moveDir(array $source, array $dest): bool
     {
+        $src = $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->compactName($dest, $this->getStorageSeparator());
         try {
-            return $this->storage->move(
-                $this->compactName($source, $this->getStorageSeparator()),
-                $this->compactName($dest, $this->getStorageSeparator())
-            );
+            return $this->storage->move($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
     public function deleteDir(array $entry, bool $deep = false): bool
     {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
         try {
-            return $this->storage->rmDir(
-                $this->compactName($entry, $this->getStorageSeparator()),
-                $deep
-            );
+            return $this->storage->rmDir($path, $deep);
         } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
     }
 }

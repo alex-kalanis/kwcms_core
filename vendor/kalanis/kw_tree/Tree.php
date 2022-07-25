@@ -3,14 +3,12 @@
 namespace kalanis\kw_tree;
 
 
-use CallbackFilterIterator;
-use FilesystemIterator;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IProcessDirs;
+use kalanis\kw_files\Interfaces\ITypes;
+use kalanis\kw_files\Node;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_tree\Interfaces\ITree;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
 
 
 /**
@@ -20,17 +18,26 @@ use SplFileInfo;
  */
 class Tree
 {
+    /** @var Adapters\NodeAdapter */
     protected $nodeAdapter = null;
+    /** @var bool */
     protected $loadRecursive = false;
+    /** @var string */
     protected $rootDir = '';
+    /** @var string */
     protected $startFromPath = '';
+    /** @var callback|callable|null */
     protected $filterCallback = null;
+    /** @var FileNode|null */
     protected $loadedTree = null;
+    /** @var IProcessDirs */
+    protected $processor = null;
 
-    public function __construct(Path $path)
+    public function __construct(Path $path, IProcessDirs $processor)
     {
         $this->rootDir = realpath($path->getDocumentRoot() . $path->getPathToSystemRoot()) . DIRECTORY_SEPARATOR;
         $this->nodeAdapter = new Adapters\NodeAdapter();
+        $this->processor = $processor;
     }
 
     public function canRecursive(bool $recursive): void
@@ -54,15 +61,16 @@ class Tree
         $this->filterCallback = $callback;
     }
 
+    /**
+     * @throws FilesException
+     */
     public function process(): void
     {
-        $iter = $this->loadRecursive
-            ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->rootDir . $this->startFromPath))
-            : new FilesystemIterator($this->rootDir . $this->startFromPath)
-        ;
-        $iter = new CallbackFilterIterator($iter, [$this, 'filterDoubleDot']);
+        $targetPath = [$this->rootDir, $this->startFromPath];
+        /** @var Node[] $iter */
+        $iter = $this->processor->readDir($targetPath, $this->loadRecursive);
         if ($this->filterCallback) {
-            $iter = new CallbackFilterIterator($iter, $this->filterCallback);
+            $iter = array_filter($iter, $this->filterCallback);
         }
 
         /** @var FileNode[] $nodes */
@@ -76,7 +84,8 @@ class Tree
             unset($nodes[DIRECTORY_SEPARATOR]);
         }
         if (empty($nodes[''])) { // root dir has no upper path
-            $item = new SplFileInfo($this->rootDir . $this->startFromPath);
+            $item = new Node();
+            $item->setData([$this->rootDir, $this->startFromPath], 0, ITypes::TYPE_DIR);
             $rootNode = $this->nodeAdapter->process($item);
             $nodes[''] = $rootNode; // root node
         }
@@ -91,11 +100,6 @@ class Tree
         }
         $this->loadedTree = $nodes[''];
 //print_r($this->loadedTree);
-    }
-
-    public function filterDoubleDot(SplFileInfo $info): bool
-    {
-        return ( ITree::PARENT_DIR != $info->getFilename() ) ;
     }
 
     protected function getKey(FileNode $node): string

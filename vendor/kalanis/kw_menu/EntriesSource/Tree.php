@@ -3,6 +3,7 @@
 namespace kalanis\kw_menu\EntriesSource;
 
 
+use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_menu\Interfaces\IEntriesSource;
 use kalanis\kw_paths\Path;
 use kalanis\kw_tree\Tree as XTree;
@@ -24,7 +25,7 @@ class Tree implements IEntriesSource
 
     public function __construct(Path $path)
     {
-        $this->tree = new XTree($path);
+        $this->tree = new XTree($path, new ProcessDir());
     }
 
     public function getFiles(string $dir): Traversable

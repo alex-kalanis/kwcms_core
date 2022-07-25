@@ -4,8 +4,8 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use Error;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Stuff;
-use KWCMS\modules\Files\FilesException;
 use KWCMS\modules\Files\Interfaces\IProcessDirs;
 
 

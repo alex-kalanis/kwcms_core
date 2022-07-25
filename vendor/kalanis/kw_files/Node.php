@@ -3,6 +3,9 @@
 namespace kalanis\kw_files;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
+
+
 /**
  * Class Node
  * @package kalanis\kw_files
@@ -15,9 +18,9 @@ class Node
     /** @var int */
     protected $size = 0;
     /** @var string */
-    protected $type = 'none';
+    protected $type = ITypes::TYPE_UNKNOWN;
 
-    public function setData(array $path = [], int $size = 0, string $type = 'none'): self
+    public function setData(array $path = [], int $size = 0, string $type = ITypes::TYPE_UNKNOWN): self
     {
         $this->path = $path;
         $this->size = $size;
@@ -26,8 +29,8 @@ class Node
     }
 
     /**
-     * Gets the path without filename
-     * @return array the path to the file.
+     * Gets the full path
+     * @return array<string> the path to the file.
      */
     public function getPath(): array
     {
@@ -59,7 +62,7 @@ class Node
      */
     public function isFile(): bool
     {
-        return 'file' === $this->getType();
+        return ITypes::TYPE_FILE === $this->getType();
     }
 
     /**
@@ -68,6 +71,6 @@ class Node
      */
     public function isDir(): bool
     {
-        return 'dir' === $this->getType();
+        return ITypes::TYPE_DIR === $this->getType();
     }
 }
