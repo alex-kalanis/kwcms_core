@@ -80,7 +80,7 @@ class Read extends AAuthModule implements IModuleTitle
 
             if ($this->fileForm->process()) {
                 $item = $this->fileForm->getControl('sourceName')->getValue();
-                $this->fileContent = $this->getLibFileAction()->readFile($item);
+                $this->fileContent = $this->getLibAction()->readFile($item);
                 $this->fileMime = $this->libFileMime->mimeByPath($item);
                 $this->processed = true;
             }

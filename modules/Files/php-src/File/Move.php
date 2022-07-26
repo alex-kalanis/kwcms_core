@@ -48,7 +48,7 @@ class Move extends AFile
                 if (!$entries instanceof IMultiValue) {
                     throw new FilesException(Lang::get('files.error.must_contain_files'));
                 }
-                $actionLib = $this->getLibFileAction();
+                $actionLib = $this->getLibAction();
                 foreach ($entries->getValues() as $item) {
                     $this->processed[$item] = $actionLib->moveFile(
                         $item,

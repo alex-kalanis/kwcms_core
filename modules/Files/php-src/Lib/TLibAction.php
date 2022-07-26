@@ -3,10 +3,13 @@
 namespace KWCMS\modules\Files\Lib;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
+use kalanis\kw_files\Node;
+use kalanis\kw_files\Processing\Volume\ProcessDir;
+use kalanis\kw_files\Processing\Volume\ProcessFile;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
-use KWCMS\modules\Files\Interfaces;
 
 
 /**
@@ -16,21 +19,15 @@ use KWCMS\modules\Files\Interfaces;
  */
 trait TLibAction
 {
-    protected function getLibFileAction(): Interfaces\IProcessFiles
+    protected function getLibAction(): Processor
     {
         $userDir = $this->getUserDirLib();
-        return new ProcessFile(
-            $userDir->getWebRootDir() . $userDir->getHomeDir()
-            , Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
-        );
-    }
-
-    protected function getLibDirAction(): Interfaces\IProcessDirs
-    {
-        $userDir = $this->getUserDirLib();
-        return new ProcessDir(
-            $userDir->getWebRootDir() . $userDir->getHomeDir()
-            , Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
+        $node = new Node();
+        $node->setData(Stuff::pathToArray(Stuff::removeEndingSlash($this->getWhereDir())), 0, ITypes::TYPE_DIR);
+        return new Processor(
+            new ProcessFile($userDir->getWebRootDir() . $userDir->getHomeDir()),
+            new ProcessDir($userDir->getWebRootDir() . $userDir->getHomeDir()),
+            $node
         );
     }
 

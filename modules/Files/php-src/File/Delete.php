@@ -45,7 +45,7 @@ class Delete extends AFile
                 if ('yes' != $this->fileForm->getControl('targetPath')->getValue()) {
                     return;
                 }
-                $actionLib = $this->getLibFileAction();
+                $actionLib = $this->getLibAction();
                 foreach ($entries->getValues() as $item) {
                     $this->processed[$item] = $actionLib->deleteFile($item);
                 }

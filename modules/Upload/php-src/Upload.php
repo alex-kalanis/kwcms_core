@@ -150,7 +150,7 @@ class Upload extends AAuthModule implements IModuleTitle
         );
         /** @var Response\DoneResponse $result */
 
-        $act = $this->getLibFileAction();
+        $act = $this->getLibAction();
         $act->renameFile(
             Stuff::filename($result->getTemporaryLocation()),
             Stuff::filename($act->findFreeName($result->getFileName()))

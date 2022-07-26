@@ -48,7 +48,7 @@ class Copy extends ADir
                 if (!$entries instanceof IMultiValue) {
                     throw new FilesException(Lang::get('files.error.must_contain_files'));
                 }
-                $actionLib = $this->getLibDirAction();
+                $actionLib = $this->getLibAction();
                 foreach ($entries->getValues() as $item) {
                     $this->processed[$item] = $actionLib->copyDir(
                         $item,

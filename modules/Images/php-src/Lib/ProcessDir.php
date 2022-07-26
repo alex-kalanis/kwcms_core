@@ -14,8 +14,8 @@ use KWCMS\modules\Images\Interfaces\IProcessDirs;
  * Class ProcessDir
  * @package KWCMS\modules\Images\Lib
  * Process dirs which represent galleries
- * @see \KWCMS\modules\Files\Lib\ProcessDir
- * @todo: use KW_STORAGE as data source - that will remove that part with volume service
+ * @see \KWCMS\modules\Files\Lib\Processor
+ * @todo: use KW_FILES as data source - that will remove that part with volume service
  */
 class ProcessDir implements IProcessDirs
 {

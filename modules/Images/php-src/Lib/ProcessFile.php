@@ -17,7 +17,7 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  * Class ProcessFile
  * @package KWCMS\modules\Images\Lib
  * Process files in many ways
- * @todo: use KW_STORAGE as data source - that will remove that part with volume service
+ * @todo: use KW_FILES as data source - that will remove that part with volume service
  */
 class ProcessFile implements IProcessFiles
 {

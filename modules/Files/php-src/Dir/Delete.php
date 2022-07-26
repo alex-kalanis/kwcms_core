@@ -45,7 +45,7 @@ class Delete extends ADir
                 if ('yes' != $this->dirForm->getControl('targetPath')->getValue()) {
                     return;
                 }
-                $actionLib = $this->getLibDirAction();
+                $actionLib = $this->getLibAction();
                 foreach ($entries->getValues() as $item) {
                     $this->processed[$item] = $actionLib->deleteDir($item);
                 }

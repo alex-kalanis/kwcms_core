@@ -33,7 +33,7 @@ class Create extends ADir
 
             if ($this->dirForm->process()) {
                 $item = $this->dirForm->getControl('targetPath')->getValue();
-                $this->processed[$item] = $this->getLibDirAction()->createDir($item);
+                $this->processed[$item] = $this->getLibAction()->createDir($item);
                 $this->dirForm->composeCreateDir(); // again, changes in tree
             }
         } catch (FilesException | FormsException $ex) {

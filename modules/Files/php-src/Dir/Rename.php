@@ -37,7 +37,7 @@ class Rename extends ADir
 
             if ($this->dirForm->process()) {
                 $item = $this->dirForm->getControl('sourceName')->getValue();
-                $this->processed[$item] = $this->getLibDirAction()->renameDir(
+                $this->processed[$item] = $this->getLibAction()->renameDir(
                     $item,
                     $this->dirForm->getControl('targetPath')->getValue()
                 );

@@ -37,7 +37,7 @@ class Rename extends AFile
 
             if ($this->fileForm->process()) {
                 $item = $this->fileForm->getControl('sourceName')->getValue();
-                $this->processed[$item] = $this->getLibFileAction()->renameFile(
+                $this->processed[$item] = $this->getLibAction()->renameFile(
                     $item,
                     $this->fileForm->getControl('targetPath')->getValue()
                 );
