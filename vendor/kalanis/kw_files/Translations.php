@@ -13,6 +13,11 @@ use kalanis\kw_files\Interfaces\IFLTranslations;
  */
 class Translations implements IFLTranslations
 {
+    public function flCannotProcessNode(string $name): string
+    {
+        return 'Cannot process wanted path.';
+    }
+
     public function flCannotLoadFile(string $fileName): string
     {
         return 'Cannot load wanted file.';

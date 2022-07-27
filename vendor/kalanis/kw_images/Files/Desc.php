@@ -22,7 +22,7 @@ class Desc extends AFiles
      */
     public function get(string $path): string
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
+        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
         $realOne = realpath($whatPath);
         if ((false === $realOne) || !is_readable($whatPath)) {
             return '';
@@ -43,7 +43,7 @@ class Desc extends AFiles
      */
     public function set(string $path, string $content): void
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
+        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
 
         if (false === @file_put_contents( $whatPath, $content )) {
             throw new ImagesException($this->getLang()->imDescCannotAdd());
@@ -60,13 +60,13 @@ class Desc extends AFiles
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
-        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
+        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
 
         $this->checkWritable($targetPath);
         $this->dataCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
+            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
+            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -85,13 +85,13 @@ class Desc extends AFiles
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
-        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
+        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
 
         $this->checkWritable($targetPath);
         $this->dataRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
-            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt(),
+            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
+            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -110,12 +110,12 @@ class Desc extends AFiles
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $path. DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
+        $whatPath = $this->libProcessor->getWebRootDir() . $path. DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
 
         $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $sourceName . $this->libExtendDir->getDescExt(),
-            $whatPath . DIRECTORY_SEPARATOR . $targetName . $this->libExtendDir->getDescExt(),
+            $whatPath . DIRECTORY_SEPARATOR . $sourceName . $this->libProcessor->getDescExt(),
+            $whatPath . DIRECTORY_SEPARATOR . $targetName . $this->libProcessor->getDescExt(),
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -131,7 +131,7 @@ class Desc extends AFiles
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
         $this->dataRemove($whatPath, $this->getLang()->imDescCannotRemove());
     }
 
@@ -139,6 +139,6 @@ class Desc extends AFiles
     {
         $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
         $fileName = Stuff::filename($path);
-        return $filePath . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libExtendDir->getDescExt();
+        return $filePath . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt();
     }
 }

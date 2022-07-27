@@ -36,7 +36,7 @@ class ProcessFile implements IProcessFiles
     {
         $targetPath = $this->sourcePath . $targetName;
         try {
-            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibImage()->getExtendDir()->getWebRootDir() . $targetPath);
+            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibImage()->getProcessor()->getWebRootDir() . $targetPath);
             if (!$status) {
                 throw new ImagesException(Lang::get('images.upload.cannot_move'));
             }
@@ -53,7 +53,7 @@ class ProcessFile implements IProcessFiles
 
     protected function getTargetDir(): string
     {
-        return $this->libFiles->getLibImage()->getExtendDir()->getWebRootDir() . $this->sourcePath;
+        return $this->libFiles->getLibImage()->getProcessor()->getWebRootDir() . $this->sourcePath;
     }
 
     protected function targetExists(string $path): bool

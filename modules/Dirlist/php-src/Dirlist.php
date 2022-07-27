@@ -242,7 +242,7 @@ class Dirlist extends AModule
 
     protected function detailLink(string $fileName)
     {
-        $extendDir = $this->libFiles->getLibDirDesc()->getExtendDir();
+        $extendDir = $this->libFiles->getLibDirDesc()->getProcessor();
         return [
             $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, $extendDir->getDescDir(), Stuff::fileBase($fileName) . $extendDir->getDescExt() ])), // files
             $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, Stuff::fileBase($fileName), $extendDir->getDescDir(), $extendDir->getDescFile() . $extendDir->getDescExt() ])), // dirs

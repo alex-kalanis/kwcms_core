@@ -45,6 +45,11 @@ class Volume implements IStorage, IPassDirs
         return is_dir($key);
     }
 
+    public function isFile(string $key): bool
+    {
+        return is_file($key);
+    }
+
     public function mkDir(string $key, bool $recursive = false): bool
     {
         return mkdir($key, 0777, $recursive);

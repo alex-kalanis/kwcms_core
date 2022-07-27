@@ -3,7 +3,7 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_paths\Extras\ExtendDir;
+use kalanis\kw_files\Extended\Processor;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
@@ -22,9 +22,9 @@ class DirThumb extends AFiles
     protected $thumbExt = '.png';
     protected $libGraphics = null;
 
-    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
+    public function __construct(Processor $libProcessor, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
     {
-        parent::__construct($libExtendDir, $lang);
+        parent::__construct($libProcessor, $lang);
         $this->libGraphics = $libGraphics;
         $this->thumbExt = !empty($params['tmb_ext']) ? strval($params['tmb_ext']) : $this->thumbExt;
     }
@@ -35,9 +35,9 @@ class DirThumb extends AFiles
      */
     public function create(string $path): void
     {
-        $thumb = $this->libExtendDir->getWebRootDir() . $this->getPath(Stuff::directory($path));
+        $thumb = $this->libProcessor->getWebRootDir() . $this->getPath(Stuff::directory($path));
         $tempThumb = $thumb . static::FILE_TEMP;
-        if ($this->libExtendDir->isFile($thumb)) {
+        if ($this->libProcessor->isFile($thumb)) {
             if (!rename($thumb, $tempThumb)) {
                 // @codeCoverageIgnoreStart
                 throw new ImagesException($this->getLang()->imDirThumbCannotRemoveCurrent());
@@ -45,17 +45,17 @@ class DirThumb extends AFiles
             // @codeCoverageIgnoreEnd
         }
         try {
-            $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
+            $this->libGraphics->load($this->libProcessor->getWebRootDir() . $path);
             $this->libGraphics->save($thumb);
         } catch (ImagesException $ex) {
-            if ($this->libExtendDir->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
+            if ($this->libProcessor->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
                 // @codeCoverageIgnoreStart
                 throw new ImagesException($this->getLang()->imDirThumbCannotRestore());
             }
             // @codeCoverageIgnoreEnd
             throw $ex;
         }
-        if ($this->libExtendDir->isFile($tempThumb) && !unlink($tempThumb)) {
+        if ($this->libProcessor->isFile($tempThumb) && !unlink($tempThumb)) {
             // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imDirThumbCannotRemoveOld());
         }
@@ -68,18 +68,18 @@ class DirThumb extends AFiles
      */
     public function delete(string $whichDir): void
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($whichDir);
+        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($whichDir);
         $this->dataRemove($whatPath, $this->getLang()->imDirThumbCannotRemove());
     }
 
     public function canUse(string $path): bool
     {
-        $thumbDir = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir();
-        return $this->libExtendDir->isDir($thumbDir) && is_readable($thumbDir) && is_writable($thumbDir);
+        $thumbDir = $this->libProcessor->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
+        return $this->libProcessor->isDir($thumbDir) && is_readable($thumbDir) && is_writable($thumbDir);
     }
 
     public function getPath(string $path): string
     {
-        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getThumbDir() . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescFile() . $this->thumbExt;
+        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir() . DIRECTORY_SEPARATOR . $this->libProcessor->getDescFile() . $this->thumbExt;
     }
 }

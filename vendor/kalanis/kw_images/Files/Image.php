@@ -3,7 +3,7 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_paths\Extras\ExtendDir;
+use kalanis\kw_files\Extended\Processor;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
@@ -24,9 +24,9 @@ class Image extends AFiles
     protected $maxFileSize = 10485760;
     protected $libGraphics = null;
 
-    public function __construct(ExtendDir $libExtendDir, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
+    public function __construct(Processor $libProcessor, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
     {
-        parent::__construct($libExtendDir, $lang);
+        parent::__construct($libProcessor, $lang);
         $this->libGraphics = $libGraphics;
         $this->maxWidth = !empty($params['max_width']) ? strval($params['max_width']) : $this->maxWidth;
         $this->maxHeight = !empty($params['max_height']) ? strval($params['max_height']) : $this->maxHeight;
@@ -35,7 +35,7 @@ class Image extends AFiles
 
     public function getCreated(string $path, string $format = 'Y-m-d H:i:s'): ?string
     {
-        $created = filemtime($this->libExtendDir->getWebRootDir() . $this->getPath($path));
+        $created = filemtime($this->libProcessor->getWebRootDir() . $this->getPath($path));
         return (false === $created) ? null : date($format, $created);
     }
 
@@ -45,7 +45,7 @@ class Image extends AFiles
      */
     public function check(string $path): void
     {
-        $size = @filesize($this->libExtendDir->getWebRootDir() . $path);
+        $size = @filesize($this->libProcessor->getWebRootDir() . $path);
         if (false === $size) {
             throw new ImagesException($this->getLang()->imImageSizeExists());
         }
@@ -61,10 +61,10 @@ class Image extends AFiles
      */
     public function processUploaded(string $path): bool
     {
-        $this->libGraphics->load($this->libExtendDir->getWebRootDir() . $path);
+        $this->libGraphics->load($this->libProcessor->getWebRootDir() . $path);
         $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
-        $this->libGraphics->save($this->libExtendDir->getWebRootDir() . $path);
+        $this->libGraphics->save($this->libProcessor->getWebRootDir() . $path);
         return true;
     }
 
@@ -78,8 +78,8 @@ class Image extends AFiles
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir;
-        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir;
+        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir;
+        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir;
 
         $this->checkWritable($targetPath);
         $this->dataCopy(
@@ -103,8 +103,8 @@ class Image extends AFiles
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libExtendDir->getWebRootDir() . $sourceDir;
-        $targetPath = $this->libExtendDir->getWebRootDir() . $targetDir;
+        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir;
+        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir;
 
         $this->checkWritable($targetPath);
         $this->dataRename(
@@ -128,7 +128,7 @@ class Image extends AFiles
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $path;
+        $whatPath = $this->libProcessor->getWebRootDir() . $path;
 
         $this->checkWritable($whatPath);
         $this->dataRename(
@@ -149,7 +149,7 @@ class Image extends AFiles
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $whatPath = $this->libExtendDir->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
         $this->dataRemove($whatPath, $this->getLang()->imImageCannotRemove());
     }
 

@@ -20,6 +20,12 @@ interface IPassDirs
     public function isDir(string $key): bool;
 
     /**
+     * @param string $key
+     * @return bool
+     */
+    public function isFile(string $key): bool;
+
+    /**
      * Create subdir
      * @param string $key
      * @param bool $recursive

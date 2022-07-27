@@ -21,7 +21,7 @@ class DirDesc extends AFiles
      */
     public function get(string $path): string
     {
-        $descPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
+        $descPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
         if (is_null($this->isUsable($descPath))) {
             return '';
         }
@@ -42,7 +42,7 @@ class DirDesc extends AFiles
      */
     public function set(string $path, string $content): bool
     {
-        $descPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
+        $descPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
         $this->isUsable($descPath);
 
         if (false === @file_put_contents($descPath, $content)) {
@@ -60,8 +60,8 @@ class DirDesc extends AFiles
      */
     public function remove(string $path): bool
     {
-        $descPath = $this->libExtendDir->getWebRootDir() . $this->getPath($path);
-        if ($this->libExtendDir->isFile($descPath) && !unlink($descPath)) {
+        $descPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
+        if ($this->libProcessor->isFile($descPath) && !unlink($descPath)) {
             // @codeCoverageIgnoreStart
             throw new ImagesException($this->getLang()->imDirDescCannotRemove());
         }
@@ -71,8 +71,8 @@ class DirDesc extends AFiles
 
     public function canUse(string $path): bool
     {
-        $descPath = $this->libExtendDir->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir();
-        return $this->libExtendDir->isDir($descPath) && is_readable($descPath) && is_writable($descPath);
+        $descPath = $this->libProcessor->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
+        return $this->libProcessor->isDir($descPath) && is_readable($descPath) && is_writable($descPath);
     }
 
     /**
@@ -94,7 +94,7 @@ class DirDesc extends AFiles
 
     public function getPath(string $path): string
     {
-        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescDir()
-            . DIRECTORY_SEPARATOR . $this->libExtendDir->getDescFile() . $this->libExtendDir->getDescExt();
+        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir()
+            . DIRECTORY_SEPARATOR . $this->libProcessor->getDescFile() . $this->libProcessor->getDescExt();
     }
 }

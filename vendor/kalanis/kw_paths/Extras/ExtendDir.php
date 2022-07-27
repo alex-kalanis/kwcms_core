@@ -13,6 +13,7 @@ use kalanis\kw_paths\Translations;
 /**
  * Class ExtendDir
  * low-level work with extended dirs - which contains other params than just files and sub dirs
+ * @deprecated use kw_files/Extended/Processor
  */
 class ExtendDir
 {

@@ -3,9 +3,8 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_paths\Extras\ExtendDir;
-use kalanis\kw_paths\PathsException;
-use kalanis\kw_images\ImagesException;
+use kalanis\kw_files\Extended\Processor;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\TLang;
 
@@ -19,34 +18,34 @@ abstract class AFiles
 {
     use TLang;
 
-    /** @var ExtendDir|null */
-    protected $libExtendDir = null;
+    /** @var Processor|null */
+    protected $libProcessor = null;
 
-    public function __construct(ExtendDir $libExtendDir, ?IIMTranslations $lang = null)
+    public function __construct(Processor $libProcessor, ?IIMTranslations $lang = null)
     {
         $this->setLang($lang);
-        $this->libExtendDir = $libExtendDir;
+        $this->libProcessor = $libProcessor;
     }
 
-    public function getExtendDir(): ExtendDir
+    public function getProcessor(): Processor
     {
-        return $this->libExtendDir;
+        return $this->libProcessor;
     }
 
     public function isHere(string $path): bool
     {
-        return $this->libExtendDir->isFile($this->libExtendDir->getWebRootDir() . $this->getPath($path));
+        return $this->libProcessor->getNodeProcessor()->isFile($this->libProcessor->getConfig()->getWebRootDir() . $this->getPath($path));
     }
 
     abstract public function getPath(string $path): string;
 
     /**
      * @param string $path
-     * @throws PathsException
+     * @throws FilesException
      */
     protected function checkWritable(string $path): void
     {
-        $this->libExtendDir->isWritable($path);
+        $this->libProcessor->getNodeProcessor()->isWritable($path);
     }
 
     /**
@@ -57,18 +56,18 @@ abstract class AFiles
      * @param string $targetFileExistsErr
      * @param string $unlinkErr
      * @param string $copyErr
-     * @throws ImagesException
+     * @throws FilesException
      */
     protected function dataCopy(
         string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
     ): void
     {
-        if (!$this->libExtendDir->isFile($source)) {
-            throw new ImagesException($sourceFileNotExistsErr);
+        if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
+            throw new FilesException($sourceFileNotExistsErr);
         }
 
-        if ($this->libExtendDir->isFile($target) && !$overwrite) {
-            throw new ImagesException($targetFileExistsErr);
+        if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$overwrite) {
+            throw new FilesException($targetFileExistsErr);
         }
 
         $this->dataOverwriteCopy( $source, $target, $unlinkErr, $copyErr);
@@ -79,17 +78,17 @@ abstract class AFiles
      * @param string $target
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
-     * @throws ImagesException
+     * @throws FilesException
      */
     protected function dataOverwriteCopy(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if ($this->libExtendDir->isFile($target) && !@unlink($target)) {
+        if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$this->libProcessor->getFileProcessor()->deleteFile($target)) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($unlinkErrDesc);
+            throw new FilesException($unlinkErrDesc);
         }
         // @codeCoverageIgnoreEnd
-        if ($this->libExtendDir->isFile($source) && !@copy($source, $target)) {
-            throw new ImagesException($copyErrDesc);
+        if ($this->libProcessor->getNodeProcessor()->isFile($source) && !$this->libProcessor->getFileProcessor()->copyFile($source, $target)) {
+            throw new FilesException($copyErrDesc);
         }
     }
 
@@ -101,18 +100,18 @@ abstract class AFiles
      * @param string $targetFileExistsErr
      * @param string $unlinkErr
      * @param string $copyErr
-     * @throws ImagesException
+     * @throws FilesException
      */
     protected function dataRename(
         string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
     ): void
     {
-        if (!$this->libExtendDir->isFile($source)) {
-            throw new ImagesException($sourceFileNotExistsErr);
+        if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
+            throw new FilesException($sourceFileNotExistsErr);
         }
 
-        if ($this->libExtendDir->isFile($target) && !$overwrite) {
-            throw new ImagesException($targetFileExistsErr);
+        if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$overwrite) {
+            throw new FilesException($targetFileExistsErr);
         }
 
         $this->dataOverwriteRename( $source, $target, $unlinkErr, $copyErr);
@@ -123,33 +122,33 @@ abstract class AFiles
      * @param string $target
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
-     * @throws ImagesException
+     * @throws FilesException
      */
     protected function dataOverwriteRename(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
-        if ($this->libExtendDir->isFile($target) && !@unlink($target)) {
+        if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$this->libProcessor->getFileProcessor()->deleteFile($target)) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($unlinkErrDesc);
+            throw new FilesException($unlinkErrDesc);
         }
         // @codeCoverageIgnoreEnd
-        if ($this->libExtendDir->isFile($source) && !@rename($source, $target)) {
-            throw new ImagesException($copyErrDesc);
+        if ($this->libProcessor->getNodeProcessor()->isFile($source) && !$this->libProcessor->getFileProcessor()->moveFile($source, $target)) {
+            throw new FilesException($copyErrDesc);
         }
     }
 
     /**
      * @param string $source
      * @param string $unlinkErrDesc
-     * @throws ImagesException
+     * @throws FilesException
      */
     protected function dataRemove(string $source, string $unlinkErrDesc): void
     {
-        if (!$this->libExtendDir->isFile($source)) {
+        if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
             return;
         }
-        if ($this->libExtendDir->isFile($source) && !@unlink($source)) {
+        if ($this->libProcessor->getNodeProcessor()->isFile($source) && !$this->libProcessor->getFileProcessor()->deleteFile($source)) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($unlinkErrDesc);
+            throw new FilesException($unlinkErrDesc);
         }
         // @codeCoverageIgnoreEnd
     }

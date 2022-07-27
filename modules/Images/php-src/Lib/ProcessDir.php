@@ -37,7 +37,7 @@ class ProcessDir implements IProcessDirs
     {
         try {
             $targetPath = Stuff::removeEndingSlash($target) . DIRECTORY_SEPARATOR;
-            return $this->libFiles->getLibDirDesc()->getExtendDir()->createDir($targetPath, $name, true);
+            return $this->libFiles->getLibDirDesc()->getProcessor()->createDir($targetPath, $name, true);
         } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
@@ -46,7 +46,7 @@ class ProcessDir implements IProcessDirs
     public function createExtra(): bool
     {
         try {
-            return $this->libFiles->getLibDirDesc()->getExtendDir()->makeExtended($this->sourcePath);
+            return $this->libFiles->getLibDirDesc()->getProcessor()->makeExtended($this->sourcePath);
         } catch (PathsException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }

@@ -10,6 +10,8 @@ namespace kalanis\kw_files\Interfaces;
  */
 interface IFLTranslations
 {
+    public function flCannotProcessNode(string $name): string;
+
     public function flCannotLoadFile(string $fileName): string;
 
     public function flCannotSaveFile(string $fileName): string;

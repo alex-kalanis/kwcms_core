@@ -11,6 +11,7 @@ use kalanis\kw_paths\Stuff;
 /**
  * Class Graphics
  * @package kalanis\kw_images
+ * @todo: pass images from storage to temp and then back - cannot work with images in storages directly
  */
 class Graphics
 {
