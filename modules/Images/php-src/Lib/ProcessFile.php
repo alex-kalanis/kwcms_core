@@ -34,16 +34,17 @@ class ProcessFile implements IProcessFiles
 
     public function uploadFile(IFileEntry $file, string $targetName, string $description): bool
     {
-        $targetPath = $this->sourcePath . $targetName;
+        $path = Stuff::pathToArray($this->sourcePath) + [Stuff::filename($targetName)];
         try {
-            $status = move_uploaded_file($file->getTempName(), $this->libFiles->getLibImage()->getProcessor()->getWebRootDir() . $targetPath);
+            $stream = fopen($file->getTempName(), 'rb+');
+            $status = $this->libFiles->getLibImage()->getProcessor()->getFileProcessor()->saveFile($path, $stream);
             if (!$status) {
                 throw new ImagesException(Lang::get('images.upload.cannot_move'));
             }
         } catch (Error $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        return $this->libFiles->add($targetPath, $description);
+        return $this->libFiles->add($path, $description);
     }
 
     protected function getSeparator(): string

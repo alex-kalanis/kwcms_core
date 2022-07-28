@@ -3,7 +3,7 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_images\ImagesException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Stuff;
 
 
@@ -16,85 +16,59 @@ class DirDesc extends AFiles
 {
     /**
      * @param string $path
+     * @param bool $errorOnFail
+     * @throws FilesException
      * @return string
-     * @throws ImagesException
      */
-    public function get(string $path): string
+    public function get(string $path, bool $errorOnFail = false): string
     {
-        $descPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
-        if (is_null($this->isUsable($descPath))) {
-            return '';
+        try {
+            return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
+        } catch (FilesException $ex) {
+            if (!$errorOnFail) {
+                return '';
+            }
+            throw $ex;
         }
-        $content = file_get_contents($descPath);
-        if (false === $content) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imDirDescCannotRead());
-        }
-        // @codeCoverageIgnoreEnd
-        return $content;
     }
 
     /**
      * @param string $path
      * @param string $content
+     * @throws FilesException
      * @return bool
-     * @throws ImagesException
      */
     public function set(string $path, string $content): bool
     {
-        $descPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
-        $this->isUsable($descPath);
-
-        if (false === @file_put_contents($descPath, $content)) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imDirDescCannotAdd());
-        }
-        // @codeCoverageIgnoreEnd
-        return true;
+        return $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
     }
 
     /**
      * @param string $path
+     * @throws FilesException
      * @return bool
-     * @throws ImagesException
      */
     public function remove(string $path): bool
     {
-        $descPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
-        if ($this->libProcessor->isFile($descPath) && !unlink($descPath)) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imDirDescCannotRemove());
-        }
-        // @codeCoverageIgnoreEnd
-        return true;
-    }
-
-    public function canUse(string $path): bool
-    {
-        $descPath = $this->libProcessor->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
-        return $this->libProcessor->isDir($descPath) && is_readable($descPath) && is_writable($descPath);
+        return $this->libProcessor->getFileProcessor()->deleteFile($this->getPath($path));
     }
 
     /**
      * @param string $path
-     * @return bool|null
-     * @throws ImagesException
+     * @throws FilesException
+     * @return bool
      */
-    protected function isUsable(string $path): ?bool
+    public function canUse(string $path): bool
     {
-        if (is_readable($path) && is_writable($path)) {
-            return true;
-        }
-        $dir = Stuff::removeEndingSlash(Stuff::directory($path));
-        if (!file_exists($path) && is_readable($dir) && is_writable($dir)) {
-            return null;
-        }
-        throw new ImagesException($this->getLang()->imDirDescCannotAccess());
+        $descPath = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getConfig()->getDescDir();
+        return $this->libProcessor->getNodeProcessor()->isDir(Stuff::pathToArray($descPath));
     }
 
-    public function getPath(string $path): string
+    public function getPath(string $path): array
     {
-        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir()
-            . DIRECTORY_SEPARATOR . $this->libProcessor->getDescFile() . $this->libProcessor->getDescExt();
+        return Stuff::pathToArray(Stuff::removeEndingSlash($path)) + [
+            $this->libProcessor->getConfig()->getDescDir(),
+            $this->libProcessor->getConfig()->getDescFile() . $this->libProcessor->getConfig()->getDescExt()
+        ];
     }
 }

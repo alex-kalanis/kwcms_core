@@ -3,9 +3,8 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_images\ImagesException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -17,37 +16,30 @@ class Desc extends AFiles
 {
     /**
      * @param string $path
+     * @param bool $errorOnFail
+     * @throws FilesException
      * @return string
-     * @throws ImagesException
      */
-    public function get(string $path): string
+    public function get(string $path, bool $errorOnFail = false): string
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
-        $realOne = realpath($whatPath);
-        if ((false === $realOne) || !is_readable($whatPath)) {
-            return '';
+        try {
+            return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
+        } catch (FilesException $ex) {
+            if (!$errorOnFail) {
+                return '';
+            }
+            throw $ex;
         }
-        $content = file_get_contents($whatPath);
-        if (false === $content) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imDescCannotRead());
-        }
-        // @codeCoverageIgnoreEnd
-        return $content;
     }
 
     /**
      * @param string $path
      * @param string $content
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function set(string $path, string $content): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($path);
-
-        if (false === @file_put_contents( $whatPath, $content )) {
-            throw new ImagesException($this->getLang()->imDescCannotAdd());
-        }
+        $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
     }
 
     /**
@@ -55,18 +47,13 @@ class Desc extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws ImagesException
-     * @throws PathsException
+     * @throws FilesException
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
-        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
-
-        $this->checkWritable($targetPath);
         $this->dataCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
-            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
+            Stuff::pathToArray(Stuff::removeEndingSlash($sourceDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
+            Stuff::pathToArray(Stuff::removeEndingSlash($targetDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -80,18 +67,13 @@ class Desc extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws ImagesException
-     * @throws PathsException
+     * @throws FilesException
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
-        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
-
-        $this->checkWritable($targetPath);
         $this->dataRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
-            $targetPath . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt(),
+            Stuff::pathToArray(Stuff::removeEndingSlash($sourceDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
+            Stuff::pathToArray(Stuff::removeEndingSlash($targetDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -105,17 +87,15 @@ class Desc extends AFiles
      * @param string $sourceName
      * @param string $targetName
      * @param bool $overwrite
-     * @throws ImagesException
-     * @throws PathsException
+     * @throws FilesException
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $path. DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir();
+        $whatPath = Stuff::pathToArray(Stuff::removeEndingSlash($path));
 
-        $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $sourceName . $this->libProcessor->getDescExt(),
-            $whatPath . DIRECTORY_SEPARATOR . $targetName . $this->libProcessor->getDescExt(),
+            $whatPath + [$this->libProcessor->getConfig()->getDescDir(), $sourceName . $this->libProcessor->getConfig()->getDescExt()],
+            $whatPath + [$this->libProcessor->getConfig()->getDescDir(), $targetName . $this->libProcessor->getConfig()->getDescExt()],
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -127,18 +107,21 @@ class Desc extends AFiles
     /**
      * @param string $sourceDir
      * @param string $fileName
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $whatPath = $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
         $this->dataRemove($whatPath, $this->getLang()->imDescCannotRemove());
     }
 
-    public function getPath(string $path): string
+    public function getPath(string $path): array
     {
         $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
         $fileName = Stuff::filename($path);
-        return $filePath . DIRECTORY_SEPARATOR . $this->libProcessor->getDescDir() . DIRECTORY_SEPARATOR . $fileName . $this->libProcessor->getDescExt();
+        return Stuff::pathToArray($filePath) + [
+            $this->libProcessor->getConfig()->getDescDir(),
+            $fileName . $this->libProcessor->getConfig()->getDescExt()
+        ];
     }
 }

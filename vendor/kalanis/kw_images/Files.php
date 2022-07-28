@@ -3,8 +3,8 @@
 namespace kalanis\kw_images;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -30,13 +30,14 @@ class Files
     }
 
     /**
-     * @param string $currentPath
+     * @param string[] $currentPath
      * @param string $description
      * @param bool $hasThumb
-     * @return bool
+     * @throws FilesException
      * @throws ImagesException
+     * @return bool
      */
-    public function add(string $currentPath, string $description = '', bool $hasThumb = true): bool
+    public function add(array $currentPath, string $description = '', bool $hasThumb = true): bool
     {
         $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
         $fileName = Stuff::filename($currentPath);
@@ -62,8 +63,9 @@ class Files
      * @param string $currentPath
      * @param string $targetDir
      * @param bool $overwrite
-     * @return bool
      * @throws ImagesException
+     * @throws FilesException
+     * @return bool
      */
     public function copy(string $currentPath, string $targetDir, bool $overwrite = false): bool
     {
@@ -74,7 +76,7 @@ class Files
             $this->libImage->copy($fileName, $origDir, $targetDir, $overwrite);
         } catch (ImagesException $ex) {
             return false;
-        } catch (PathsException $ex) {
+        } catch (FilesException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($this->libThumb->isHere($currentPath)) {
@@ -83,7 +85,7 @@ class Files
             } catch (ImagesException $ex) {
                 $this->libImage->delete($targetDir, $fileName);
                 return false;
-            } catch (PathsException $ex) {
+            } catch (FilesException $ex) {
                 $this->libImage->delete($targetDir, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
@@ -95,7 +97,7 @@ class Files
                 $this->libThumb->delete($targetDir, $fileName);
                 $this->libImage->delete($targetDir, $fileName);
                 return false;
-            } catch (PathsException $ex) {
+            } catch (FilesException $ex) {
                 $this->libThumb->delete($targetDir, $fileName);
                 $this->libImage->delete($targetDir, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -110,7 +112,7 @@ class Files
      * @param bool $overwrite
      * @return bool
      * @throws ImagesException
-     * @throws PathsException
+     * @throws FilesException
      */
     public function move(string $currentPath, string $targetDir, bool $overwrite = false): bool
     {
@@ -121,7 +123,7 @@ class Files
             $this->libImage->move($fileName, $origDir, $targetDir, $overwrite);
         } catch (ImagesException $ex) {
             return false;
-        } catch (PathsException $ex) {
+        } catch (FilesException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($this->libThumb->isHere($currentPath)) {
@@ -130,7 +132,7 @@ class Files
             } catch (ImagesException $ex) {
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 return false;
-            } catch (PathsException $ex) {
+            } catch (FilesException $ex) {
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
@@ -142,7 +144,7 @@ class Files
                 $this->libThumb->move($fileName, $targetDir, $origDir);
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 return false;
-            } catch (PathsException $ex) {
+            } catch (FilesException $ex) {
                 $this->libThumb->move($fileName, $targetDir, $origDir);
                 $this->libImage->move($fileName, $targetDir, $origDir);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -157,7 +159,7 @@ class Files
      * @param bool $overwrite
      * @return bool
      * @throws ImagesException
-     * @throws PathsException
+     * @throws FilesException
      */
     public function rename(string $currentPath, string $targetName, bool $overwrite = false): bool
     {
@@ -167,7 +169,7 @@ class Files
             $this->libImage->rename($origDir, $fileName, $targetName, $overwrite);
         } catch (ImagesException $ex) {
             return false;
-        } catch (PathsException $ex) {
+        } catch (FilesException $ex) {
             throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($this->libThumb->isHere($currentPath)) {
@@ -176,7 +178,7 @@ class Files
             } catch (ImagesException $ex) {
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 return false;
-            } catch (PathsException $ex) {
+            } catch (FilesException $ex) {
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
             }
@@ -188,7 +190,7 @@ class Files
                 $this->libThumb->rename($origDir, $targetName, $fileName);
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 return false;
-            } catch (PathsException $ex) {
+            } catch (FilesException $ex) {
                 $this->libThumb->rename($origDir, $targetName, $fileName);
                 $this->libImage->rename($origDir, $targetName, $fileName);
                 throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -200,7 +202,7 @@ class Files
     /**
      * @param string $path
      * @return bool
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function delete(string $path): bool
     {

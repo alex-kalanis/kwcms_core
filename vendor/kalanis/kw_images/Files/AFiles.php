@@ -32,25 +32,21 @@ abstract class AFiles
         return $this->libProcessor;
     }
 
-    public function isHere(string $path): bool
-    {
-        return $this->libProcessor->getNodeProcessor()->isFile($this->libProcessor->getConfig()->getWebRootDir() . $this->getPath($path));
-    }
-
-    abstract public function getPath(string $path): string;
-
     /**
      * @param string $path
      * @throws FilesException
+     * @return bool
      */
-    protected function checkWritable(string $path): void
+    public function isHere(string $path): bool
     {
-        $this->libProcessor->getNodeProcessor()->isWritable($path);
+        return $this->libProcessor->getNodeProcessor()->isFile($this->getPath($path));
     }
 
+    abstract public function getPath(string $path): array;
+
     /**
-     * @param string $source
-     * @param string $target
+     * @param string[] $source
+     * @param string[] $target
      * @param bool $overwrite
      * @param string $sourceFileNotExistsErr
      * @param string $targetFileExistsErr
@@ -59,7 +55,7 @@ abstract class AFiles
      * @throws FilesException
      */
     protected function dataCopy(
-        string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
+        array $source, array $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
     ): void
     {
         if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
@@ -74,13 +70,13 @@ abstract class AFiles
     }
 
     /**
-     * @param string $source
-     * @param string $target
+     * @param string[] $source
+     * @param string[] $target
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws FilesException
      */
-    protected function dataOverwriteCopy(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
+    protected function dataOverwriteCopy(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
         if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$this->libProcessor->getFileProcessor()->deleteFile($target)) {
             // @codeCoverageIgnoreStart
@@ -93,8 +89,8 @@ abstract class AFiles
     }
 
     /**
-     * @param string $source
-     * @param string $target
+     * @param string[] $source
+     * @param string[] $target
      * @param bool $overwrite
      * @param string $sourceFileNotExistsErr
      * @param string $targetFileExistsErr
@@ -103,7 +99,7 @@ abstract class AFiles
      * @throws FilesException
      */
     protected function dataRename(
-        string $source, string $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
+        array $source, array $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
     ): void
     {
         if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
@@ -118,13 +114,13 @@ abstract class AFiles
     }
 
     /**
-     * @param string $source
-     * @param string $target
+     * @param string[] $source
+     * @param string[] $target
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws FilesException
      */
-    protected function dataOverwriteRename(string $source, string $target, string $unlinkErrDesc, string $copyErrDesc): void
+    protected function dataOverwriteRename(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): void
     {
         if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$this->libProcessor->getFileProcessor()->deleteFile($target)) {
             // @codeCoverageIgnoreStart
@@ -137,11 +133,11 @@ abstract class AFiles
     }
 
     /**
-     * @param string $source
+     * @param string[] $source
      * @param string $unlinkErrDesc
      * @throws FilesException
      */
-    protected function dataRemove(string $source, string $unlinkErrDesc): void
+    protected function dataRemove(array $source, string $unlinkErrDesc): void
     {
         if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
             return;

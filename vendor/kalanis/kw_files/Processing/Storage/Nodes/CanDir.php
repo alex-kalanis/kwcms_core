@@ -39,4 +39,16 @@ class CanDir extends ANodes
         $path = $this->compactName($entry, $this->getStorageSeparator());
         return $this->storage->isFile($path);
     }
+
+    public function size(array $entry): ?int
+    {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
+        return $this->storage->size($path);
+    }
+
+    public function created(array $entry): ?int
+    {
+        $path = $this->compactName($entry, $this->getStorageSeparator());
+        return $this->storage->created($path);
+    }
 }

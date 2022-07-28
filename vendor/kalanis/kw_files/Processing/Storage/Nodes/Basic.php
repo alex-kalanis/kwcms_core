@@ -55,4 +55,19 @@ class Basic extends ANodes
             throw new FilesException($this->lang->flCannotProcessNode($path), $ex->getCode(), $ex);
         }
     }
+
+    public function size(array $entry): ?int
+    {
+        try {
+            $path = $this->compactName($entry, $this->getStorageSeparator());
+            return strlen($this->storage->load($path));
+        } catch (StorageException $ex) {
+            throw new FilesException($this->lang->flCannotProcessNode($path), $ex->getCode(), $ex);
+        }
+    }
+
+    public function created(array $entry): ?int
+    {
+        return null;
+    }
 }

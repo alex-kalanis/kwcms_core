@@ -42,4 +42,18 @@ class ProcessNode implements IProcessNodes
     {
         return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
     }
+
+    public function size(array $entry): ?int
+    {
+        $path = $this->fullPath($entry);
+        $size = @filesize($path);
+        return (false === $size) ? null : $size;
+    }
+
+    public function created(array $entry): ?int
+    {
+        $path = $this->fullPath($entry);
+        $created = @filemtime($path);
+        return (false === $created) ? null : $created;
+    }
 }

@@ -91,7 +91,14 @@ class Volume implements IStorage, IPassDirs
 
     public function size(string $key): int
     {
-        return @filesize($key);
+        $size = @filesize($key);
+        return (false === $size) ? null : $size;
+    }
+
+    public function created(string $key): ?int
+    {
+        $created = @filemtime($key);
+        return (false === $created) ? null : $created;
     }
 
     public function lookup(string $path): Traversable

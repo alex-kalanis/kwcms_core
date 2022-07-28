@@ -50,26 +50,28 @@ class Graphics
 
     /**
      * @param string $path
+     * @param string $temp
      * @return $this
      * @throws ImagesException
      */
-    public function load(string $path): self
+    public function load(string $path, string $temp): self
     {
         $processor = $this->factory->getByType($this->getType($path), $this->getLang());
-        $this->resource = $processor->load($path);
+        $this->resource = $processor->load($temp);
         return $this;
     }
 
     /**
      * @param string $path
+     * @param string $temp
      * @return $this
      * @throws ImagesException
      */
-    public function save(string $path): self
+    public function save(string $path, string $temp): self
     {
         $this->checkResource();
         $processor = $this->factory->getByType($this->getType($path), $this->getLang());
-        $processor->save($path, $this->resource);
+        $processor->save($temp, $this->resource);
         return $this;
     }
 

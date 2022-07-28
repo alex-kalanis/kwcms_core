@@ -4,10 +4,11 @@ namespace kalanis\kw_images\Files;
 
 
 use kalanis\kw_files\Extended\Processor;
-use kalanis\kw_paths\PathsException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -33,24 +34,30 @@ class Image extends AFiles
         $this->maxFileSize = !empty($params['max_size']) ? strval($params['max_size']) : $this->maxFileSize;
     }
 
+    /**
+     * @param string $path
+     * @param string $format
+     * @throws FilesException
+     * @return string|null
+     */
     public function getCreated(string $path, string $format = 'Y-m-d H:i:s'): ?string
     {
-        $created = filemtime($this->libProcessor->getWebRootDir() . $this->getPath($path));
-        return (false === $created) ? null : date($format, $created);
+        $created = $this->libProcessor->getNodeProcessor()->created($this->getPath($path));
+        return (is_null($created)) ? null : date($format, $created);
     }
 
     /**
      * @param string $path
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function check(string $path): void
     {
-        $size = @filesize($this->libProcessor->getWebRootDir() . $path);
-        if (false === $size) {
-            throw new ImagesException($this->getLang()->imImageSizeExists());
+        $size = $this->libProcessor->getNodeProcessor()->size($this->getPath($path));
+        if (is_null($size)) {
+            throw new FilesException($this->getLang()->imImageSizeExists());
         }
         if ($this->maxFileSize < $size) {
-            throw new ImagesException($this->getLang()->imImageSizeTooLarge());
+            throw new FilesException($this->getLang()->imImageSizeTooLarge());
         }
     }
 
@@ -61,10 +68,10 @@ class Image extends AFiles
      */
     public function processUploaded(string $path): bool
     {
-        $this->libGraphics->load($this->libProcessor->getWebRootDir() . $path);
+        $this->libGraphics->load($path, $this->libProcessor->getWebRootDir() . $path);
         $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
-        $this->libGraphics->save($this->libProcessor->getWebRootDir() . $path);
+        $this->libGraphics->save($path, $this->libProcessor->getWebRootDir() . $path);
         return true;
     }
 
@@ -73,18 +80,13 @@ class Image extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws PathsException
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir;
-        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir;
-
-        $this->checkWritable($targetPath);
         $this->dataCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            Stuff::pathToArray($sourceDir) + [$fileName],
+            Stuff::pathToArray($targetDir) + [$fileName],
             $overwrite,
             $this->getLang()->imImageCannotFind(),
             $this->getLang()->imImageAlreadyExistsHere(),
@@ -98,18 +100,13 @@ class Image extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws PathsException
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir;
-        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir;
-
-        $this->checkWritable($targetPath);
         $this->dataRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            Stuff::pathToArray($sourceDir) + [$fileName],
+            Stuff::pathToArray($targetDir) + [$fileName],
             $overwrite,
             $this->getLang()->imImageCannotFind(),
             $this->getLang()->imImageAlreadyExistsHere(),
@@ -123,17 +120,13 @@ class Image extends AFiles
      * @param string $targetName
      * @param string $sourceName
      * @param bool $overwrite
-     * @throws PathsException
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $path;
-
-        $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $sourceName,
-            $whatPath . DIRECTORY_SEPARATOR . $targetName,
+            Stuff::pathToArray($path) + [$sourceName],
+            Stuff::pathToArray($path) + [$targetName],
             $overwrite,
             $this->getLang()->imImageCannotFind(),
             $this->getLang()->imImageAlreadyExistsHere(),
@@ -145,16 +138,16 @@ class Image extends AFiles
     /**
      * @param string $sourceDir
      * @param string $fileName
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $whatPath = $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
         $this->dataRemove($whatPath, $this->getLang()->imImageCannotRemove());
     }
 
-    public function getPath(string $path): string
+    public function getPath(string $path): array
     {
-        return $path; // no modifications need
+        return Stuff::pathToArray($path);
     }
 }

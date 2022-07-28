@@ -63,9 +63,17 @@ interface IPassDirs
 
     /**
      * Get node size
+     * null if not exists or cannot determine (dir)
      * @param string $key
-     * @throws StorageException
      * @return int
      */
-    public function size(string $key): int;
+    public function size(string $key): ?int;
+
+    /**
+     * Get when node has been created
+     * null if not exists or cannot get that info
+     * @param string $key
+     * @return int
+     */
+    public function created(string $key): ?int;
 }

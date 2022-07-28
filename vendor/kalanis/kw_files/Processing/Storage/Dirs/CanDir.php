@@ -59,7 +59,7 @@ class CanDir extends ADirs
                     // normal node - file
                     $sub->setData(
                         $this->expandName($currentPath),
-                        $wantSize ? $this->storage->size($currentPath) : 0,
+                        $wantSize ? intval($this->storage->size($currentPath)) : 0,
                         ITypes::TYPE_FILE
                     );
                 }

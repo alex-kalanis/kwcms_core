@@ -4,7 +4,7 @@ namespace kalanis\kw_images\Files;
 
 
 use kalanis\kw_files\Extended\Processor;
-use kalanis\kw_paths\PathsException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
@@ -50,10 +50,10 @@ class Thumb extends AFiles
             // @codeCoverageIgnoreEnd
         }
         try {
-            $this->libGraphics->load($this->libProcessor->getWebRootDir() . $path);
+            $this->libGraphics->load($path, $this->libProcessor->getWebRootDir() . $path);
             $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
             $this->libGraphics->resample($sizes['width'], $sizes['height']);
-            $this->libGraphics->save($thumb);
+            $this->libGraphics->save($thumb, $thumb);
         } catch (ImagesException $ex) {
             if ($this->libProcessor->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
                 // @codeCoverageIgnoreStart
@@ -74,18 +74,13 @@ class Thumb extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws PathsException
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
-        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
-
-        $this->checkWritable($targetPath);
         $this->dataCopy(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            Stuff::pathToArray($sourceDir) + [$this->libProcessor->getConfig()->getThumbDir(), $fileName],
+            Stuff::pathToArray($targetDir) + [$this->libProcessor->getConfig()->getThumbDir(), $fileName],
             $overwrite,
             $this->getLang()->imThumbCannotFind(),
             $this->getLang()->imThumbAlreadyExistsHere(),
@@ -99,18 +94,13 @@ class Thumb extends AFiles
      * @param string $sourceDir
      * @param string $targetDir
      * @param bool $overwrite
-     * @throws PathsException
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
     {
-        $sourcePath = $this->libProcessor->getWebRootDir() . $sourceDir . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
-        $targetPath = $this->libProcessor->getWebRootDir() . $targetDir . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
-
-        $this->checkWritable($targetPath);
         $this->dataRename(
-            $sourcePath . DIRECTORY_SEPARATOR . $fileName,
-            $targetPath . DIRECTORY_SEPARATOR . $fileName,
+            Stuff::pathToArray($sourceDir) + [$this->libProcessor->getConfig()->getThumbDir(), $fileName],
+            Stuff::pathToArray($targetDir) + [$this->libProcessor->getConfig()->getThumbDir(), $fileName],
             $overwrite,
             $this->getLang()->imThumbCannotFind(),
             $this->getLang()->imThumbAlreadyExistsHere(),
@@ -124,17 +114,13 @@ class Thumb extends AFiles
      * @param string $sourceName
      * @param string $targetName
      * @param bool $overwrite
-     * @throws PathsException
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $path . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
-
-        $this->checkWritable($whatPath);
         $this->dataRename(
-            $whatPath . DIRECTORY_SEPARATOR . $sourceName,
-            $whatPath . DIRECTORY_SEPARATOR . $targetName,
+            Stuff::pathToArray($path) + [$this->libProcessor->getConfig()->getThumbDir(), $sourceName],
+            Stuff::pathToArray($path) + [$this->libProcessor->getConfig()->getThumbDir(), $targetName],
             $overwrite,
             $this->getLang()->imThumbCannotFind(),
             $this->getLang()->imThumbAlreadyExistsHere(),
@@ -146,18 +132,18 @@ class Thumb extends AFiles
     /**
      * @param string $sourceDir
      * @param string $fileName
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function delete(string $sourceDir, string $fileName): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
+        $whatPath = $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
         $this->dataRemove($whatPath, $this->getLang()->imThumbCannotRemove());
     }
 
-    public function getPath(string $path): string
+    public function getPath(string $path): array
     {
         $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
         $fileName = Stuff::filename($path);
-        return $filePath . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir() . DIRECTORY_SEPARATOR . $fileName;
+        return Stuff::pathToArray($filePath) + [$this->libProcessor->getConfig()->getThumbDir(), $fileName];
     }
 }

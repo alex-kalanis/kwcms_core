@@ -38,4 +38,14 @@ class ProcessNode implements IProcessNodes
     {
         return $this->adapter->isFile($entry);
     }
+
+    public function size(array $entry): ?int
+    {
+        return $this->adapter->size($entry);
+    }
+
+    public function created(array $entry): ?int
+    {
+        return $this->adapter->created($entry);
+    }
 }

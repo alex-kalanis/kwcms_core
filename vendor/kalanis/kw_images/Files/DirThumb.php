@@ -4,8 +4,8 @@ namespace kalanis\kw_images\Files;
 
 
 use kalanis\kw_files\Extended\Processor;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
-use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_paths\Stuff;
 
@@ -31,55 +31,60 @@ class DirThumb extends AFiles
 
     /**
      * @param string $path
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function create(string $path): void
     {
-        $thumb = $this->libProcessor->getWebRootDir() . $this->getPath(Stuff::directory($path));
-        $tempThumb = $thumb . static::FILE_TEMP;
-        if ($this->libProcessor->isFile($thumb)) {
-            if (!rename($thumb, $tempThumb)) {
+        $dir = Stuff::directory($path);
+        $file = Stuff::pathToArray($path);
+        $thumb = $this->getPath($dir);
+        $tempThumb = $this->getPath($dir . static::FILE_TEMP);
+        if ($this->libProcessor->getNodeProcessor()->isFile($thumb)) {
+            if (!$this->libProcessor->getFileProcessor()->moveFile($thumb, $tempThumb)) {
                 // @codeCoverageIgnoreStart
-                throw new ImagesException($this->getLang()->imDirThumbCannotRemoveCurrent());
+                throw new FilesException($this->getLang()->imDirThumbCannotRemoveCurrent());
             }
             // @codeCoverageIgnoreEnd
         }
         try {
-            $this->libGraphics->load($this->libProcessor->getWebRootDir() . $path);
-            $this->libGraphics->save($thumb);
-        } catch (ImagesException $ex) {
-            if ($this->libProcessor->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
+            if ($this->libProcessor->getNodeProcessor()->exists($thumb)) {
+                $this->libProcessor->getFileProcessor()->deleteFile($thumb);
+            }
+            $this->libProcessor->getFileProcessor()->copyFile($file, $thumb);
+        } catch (FilesException $ex) {
+            if ($this->libProcessor->getNodeProcessor()->isFile($tempThumb)
+                && !$this->libProcessor->getFileProcessor()->moveFile($tempThumb, $thumb)
+            ) {
                 // @codeCoverageIgnoreStart
-                throw new ImagesException($this->getLang()->imDirThumbCannotRestore());
+                throw new FilesException($this->getLang()->imDirThumbCannotRestore());
             }
             // @codeCoverageIgnoreEnd
             throw $ex;
         }
-        if ($this->libProcessor->isFile($tempThumb) && !unlink($tempThumb)) {
+        if ($this->libProcessor->getNodeProcessor()->isFile($tempThumb)
+            && !$this->libProcessor->getFileProcessor()->deleteFile($tempThumb)
+        ) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imDirThumbCannotRemoveOld());
+            throw new FilesException($this->getLang()->imDirThumbCannotRemoveOld());
         }
         // @codeCoverageIgnoreEnd
     }
 
     /**
      * @param string $whichDir
-     * @throws ImagesException
+     * @throws FilesException
      */
     public function delete(string $whichDir): void
     {
-        $whatPath = $this->libProcessor->getWebRootDir() . $this->getPath($whichDir);
+        $whatPath = $this->getPath($whichDir);
         $this->dataRemove($whatPath, $this->getLang()->imDirThumbCannotRemove());
     }
 
-    public function canUse(string $path): bool
+    public function getPath(string $path): array
     {
-        $thumbDir = $this->libProcessor->getWebRootDir() . Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir();
-        return $this->libProcessor->isDir($thumbDir) && is_readable($thumbDir) && is_writable($thumbDir);
-    }
-
-    public function getPath(string $path): string
-    {
-        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getThumbDir() . DIRECTORY_SEPARATOR . $this->libProcessor->getDescFile() . $this->thumbExt;
+        return Stuff::pathToArray(Stuff::removeEndingSlash($path)) + [
+            $this->libProcessor->getConfig()->getThumbDir(),
+            $this->libProcessor->getConfig()->getDescFile() . $this->thumbExt
+        ];
     }
 }
