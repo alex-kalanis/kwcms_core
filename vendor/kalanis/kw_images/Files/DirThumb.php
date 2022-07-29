@@ -19,14 +19,13 @@ class DirThumb extends AFiles
 {
     const FILE_TEMP = '.tmp';
 
-    protected $thumbExt = '.png';
-    protected $libGraphics = null;
+    /** @var Graphics\DirConfig */
+    protected $libConfig = '.png';
 
-    public function __construct(Processor $libProcessor, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
+    public function __construct(Processor $libProcessor, Graphics\DirConfig $config, ?IIMTranslations $lang = null)
     {
         parent::__construct($libProcessor, $lang);
-        $this->libGraphics = $libGraphics;
-        $this->thumbExt = !empty($params['tmb_ext']) ? strval($params['tmb_ext']) : $this->thumbExt;
+        $this->libConfig = $config;
     }
 
     /**
@@ -84,7 +83,7 @@ class DirThumb extends AFiles
     {
         return Stuff::pathToArray(Stuff::removeEndingSlash($path)) + [
             $this->libProcessor->getConfig()->getThumbDir(),
-            $this->libProcessor->getConfig()->getDescFile() . $this->thumbExt
+            $this->libProcessor->getConfig()->getDescFile() . $this->libConfig->getThumbExt()
         ];
     }
 }

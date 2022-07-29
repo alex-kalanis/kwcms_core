@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use Error;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
@@ -35,16 +36,7 @@ class ProcessFile implements IProcessFiles
     public function uploadFile(IFileEntry $file, string $targetName, string $description): bool
     {
         $path = Stuff::pathToArray($this->sourcePath) + [Stuff::filename($targetName)];
-        try {
-            $stream = fopen($file->getTempName(), 'rb+');
-            $status = $this->libFiles->getLibImage()->getProcessor()->getFileProcessor()->saveFile($path, $stream);
-            if (!$status) {
-                throw new ImagesException(Lang::get('images.upload.cannot_move'));
-            }
-        } catch (Error $ex) {
-            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
-        return $this->libFiles->add($path, $description);
+        return $this->libFiles->add($path, $file->getTempName(), $description);
     }
 
     protected function getSeparator(): string
@@ -93,8 +85,9 @@ class ProcessFile implements IProcessFiles
      * @param string $currentPath
      * @param string $toPath
      * @param bool $overwrite
-     * @return bool
      * @throws ImagesException
+     * @throws FilesException
+     * @return bool
      */
     public function moveFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
@@ -105,8 +98,9 @@ class ProcessFile implements IProcessFiles
      * @param string $currentPath
      * @param string $toFileName
      * @param bool $overwrite
-     * @return bool
      * @throws ImagesException
+     * @throws FilesException
+     * @return bool
      */
     public function renameFile(string $currentPath, string $toFileName, bool $overwrite = false): bool
     {

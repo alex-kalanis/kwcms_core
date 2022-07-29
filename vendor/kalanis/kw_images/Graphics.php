@@ -49,23 +49,23 @@ class Graphics
     }
 
     /**
-     * @param string $path
-     * @param string $temp
-     * @return $this
+     * @param string $fileName
+     * @param string $tempPath
      * @throws ImagesException
+     * @return $this
      */
-    public function load(string $path, string $temp): self
+    public function load(string $fileName, string $tempPath): self
     {
-        $processor = $this->factory->getByType($this->getType($path), $this->getLang());
-        $this->resource = $processor->load($temp);
+        $processor = $this->factory->getByType($this->getType($fileName), $this->getLang());
+        $this->resource = $processor->load($tempPath);
         return $this;
     }
 
     /**
      * @param string $path
      * @param string $temp
-     * @return $this
      * @throws ImagesException
+     * @return $this
      */
     public function save(string $path, string $temp): self
     {
@@ -77,8 +77,8 @@ class Graphics
 
     /**
      * @param string $path
-     * @return string
      * @throws ImagesException
+     * @return string
      */
     protected function getType(string $path): string
     {
@@ -94,8 +94,8 @@ class Graphics
      * Change image size
      * @param int|null $width
      * @param int|null $height
-     * @return $this
      * @throws ImagesException
+     * @return $this
      */
     public function resize(?int $width = null, ?int $height = null): self
     {
@@ -120,8 +120,8 @@ class Graphics
      * Change image size and update sample
      * @param int|null $width
      * @param int|null $height
-     * @return $this
      * @throws ImagesException
+     * @return $this
      */
     public function resample(?int $width = null, ?int $height = null)
     {
@@ -146,8 +146,8 @@ class Graphics
      * Create empty image resource
      * @param int $width
      * @param int $height
-     * @return resource
      * @throws ImagesException
+     * @return resource
      */
     protected function create(int $width, int $height)
     {
@@ -161,8 +161,8 @@ class Graphics
     }
 
     /**
-     * @return int
      * @throws ImagesException
+     * @return int
      */
     public function width(): int
     {
@@ -177,8 +177,8 @@ class Graphics
     }
 
     /**
-     * @return int
      * @throws ImagesException
+     * @return int
      */
     public function height(): int
     {

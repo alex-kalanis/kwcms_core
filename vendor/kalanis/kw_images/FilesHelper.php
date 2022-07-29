@@ -22,7 +22,7 @@ class FilesHelper
 {
     /**
      * @param string $webRootDir
-     * @param array $params
+     * @param array<string, string|int> $params
      * @param IIMTranslations|null $langIm
      * @param IFLTranslations|null $langFl
      * @return Files
@@ -34,20 +34,17 @@ class FilesHelper
             new ProcessDir($webRootDir, $langFl),
             new ProcessFile($webRootDir, $langFl),
             new ProcessNode($webRootDir),
-            new Config(
-                isset($params['desc_dir']) ? $params['desc_dir'] : null,
-                isset($params['desc_file']) ? $params['desc_file'] : null,
-                isset($params['desc_ext']) ? $params['desc_ext'] : null,
-                isset($params['thumb_dir']) ? $params['thumb_dir'] : null
-            )
+            (new Config())->setData($params)
         );
         $libGraphics = new Graphics(new Graphics\Format\Factory(), new MimeType(), $langIm);
+        $thumbConf = (new Graphics\ThumbConfig())->setData($params);
         return new Files(
-            new Files\Image($libProcessor, $libGraphics, $params, $langIm),
-            new Files\Thumb($libProcessor, $libGraphics, $params, $langIm),
+            new Graphics\Processor($libGraphics, $thumbConf, $langIm),
+            new Files\Image($libProcessor, new Graphics\Processor($libGraphics, (new Graphics\ImageConfig())->setData($params), $langIm), $langIm),
+            new Files\Thumb($libProcessor, new Graphics\Processor($libGraphics, $thumbConf, $langIm), $thumbConf, $langIm),
             new Files\Desc($libProcessor, $langIm),
             new Files\DirDesc($libProcessor, $langIm),
-            new Files\DirThumb($libProcessor, $libGraphics, $params, $langIm)
+            new Files\DirThumb($libProcessor, (new Graphics\DirConfig())->setData($params), $langIm)
         );
     }
 }

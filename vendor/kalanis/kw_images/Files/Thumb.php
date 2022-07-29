@@ -18,55 +18,102 @@ use kalanis\kw_paths\Stuff;
  */
 class Thumb extends AFiles
 {
-    use TSizes;
-
-    const FILE_TEMP = '.tmp';
-
-    protected $maxWidth = 180;
-    protected $maxHeight = 180;
+    /** @var Graphics\Processor */
     protected $libGraphics = null;
+    /** @var Graphics\ThumbConfig */
+    protected $libConf = null;
 
-    public function __construct(Processor $libProcessor, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
+    public function __construct(Processor $libProcessor, Graphics\Processor $libGraphics, Graphics\ThumbConfig $thumbConfig, ?IIMTranslations $lang = null)
     {
         parent::__construct($libProcessor, $lang);
         $this->libGraphics = $libGraphics;
-        $this->maxWidth = !empty($params['tmb_width']) ? strval($params['tmb_width']) : $this->maxWidth;
-        $this->maxHeight = !empty($params['tmb_height']) ? strval($params['tmb_height']) : $this->maxHeight;
+        $this->libConf = $thumbConfig;
     }
 
     /**
      * @param string $path
+     * @param string|resource $content
+     * @throws FilesException
+     * @return bool
+     */
+    public function save(string $path, $content): bool
+    {
+        $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
+        return true;
+    }
+
+    /**
+     * @param string $path
+     * @throws FilesException
+     * @return string|resource
+     */
+    public function load(string $path)
+    {
+        return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
+    }
+
+    /**
+     * @param string $path
+     * @throws FilesException
      * @throws ImagesException
+     * @todo: out
      */
     public function create(string $path): void
     {
-        $thumb = $this->libProcessor->getWebRootDir() . $this->getPath($path);
-        $tempThumb = $thumb . static::FILE_TEMP;
-        if ($this->libProcessor->isFile($thumb)) {
-            if (!rename($thumb, $tempThumb)) {
+        $tempFile = $this->libConf->getTempDir() . $this->randomName();
+        $thumb = $this->getPath($path);
+        $tempThumb = $this->getPath($path . $this->libConf->getTempExt());
+        $image = $this->getImagePath($path);
+
+        // move old one
+        if ($this->libProcessor->getNodeProcessor()->isFile($thumb)) {
+            if (!$this->libProcessor->getFileProcessor()->moveFile($thumb, $tempThumb)) {
                 // @codeCoverageIgnoreStart
-                throw new ImagesException($this->getLang()->imThumbCannotRemoveCurrent());
+                throw new FilesException($this->getLang()->imThumbCannotRemoveCurrent());
             }
             // @codeCoverageIgnoreEnd
         }
+
         try {
-            $this->libGraphics->load($path, $this->libProcessor->getWebRootDir() . $path);
-            $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
-            $this->libGraphics->resample($sizes['width'], $sizes['height']);
-            $this->libGraphics->save($thumb, $thumb);
+            // get from the storage
+            $source = $this->libProcessor->getFileProcessor()->readFile($image);
+            if (false === @file_put_contents($tempFile, $source)) {
+                throw new FilesException($this->getLang()->imThumbCannotCopyBase());  ###!!! correct translation
+            }
+
+            // now process libraries locally
+            $this->libGraphics->resize($tempFile, $path);
+
+            // return result to the storage as new file
+            $result = @file_get_contents($tempFile);
+            if (false === $result) {
+                throw new FilesException($this->getLang()->imThumbCannotCopyBase());  ###!!! correct translation
+            }
+            $this->libProcessor->getFileProcessor()->saveFile($thumb, $result);
+
         } catch (ImagesException $ex) {
-            if ($this->libProcessor->isFile($tempThumb) && !rename($tempThumb, $thumb)) {
+            if ($this->libProcessor->getNodeProcessor()->isFile($tempThumb) && !$this->libProcessor->getFileProcessor()->moveFile($tempThumb, $thumb)) {
                 // @codeCoverageIgnoreStart
-                throw new ImagesException($this->getLang()->imThumbCannotRestore());
+                throw new FilesException($this->getLang()->imThumbCannotRestore());
             }
             // @codeCoverageIgnoreEnd
             throw $ex;
         }
-        if ($this->libProcessor->isFile($tempThumb) && !unlink($tempThumb)) {
+        if ($this->libProcessor->getNodeProcessor()->isFile($tempThumb) && !$this->libProcessor->getFileProcessor()->deleteFile($tempThumb)) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imThumbCannotRemoveOld());
+            throw new FilesException($this->getLang()->imThumbCannotRemoveOld());
         }
         // @codeCoverageIgnoreEnd
+    }
+
+    protected function randomName(): string
+    {
+        return uniqid('tmp_tmb_');
+    }
+
+    public function getImagePath(string $path): array
+    {
+        return Stuff::pathToArray($path);
     }
 
     /**

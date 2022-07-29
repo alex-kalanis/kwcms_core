@@ -19,41 +19,51 @@ class Files
     protected $libDesc = null;
     protected $libDirDesc = null;
     protected $libDirThumb = null;
+    protected $libGraphics = null;
 
-    public function __construct(Files\Image $image, Files\Thumb $thumb, Files\Desc $desc, Files\DirDesc $dirDesc, Files\DirThumb $dirThumb)
+    public function __construct(Graphics\Processor $graphics, Files\Image $image, Files\Thumb $thumb, Files\Desc $desc, Files\DirDesc $dirDesc, Files\DirThumb $dirThumb)
     {
         $this->libImage = $image;
         $this->libThumb = $thumb;
         $this->libDesc = $desc;
         $this->libDirDesc = $dirDesc;
         $this->libDirThumb = $dirThumb;
+        $this->libGraphics = $graphics;
     }
 
     /**
-     * @param string[] $currentPath
+     * @param string[] $wantedPath
+     * @param string $sourcePath
      * @param string $description
      * @param bool $hasThumb
      * @throws FilesException
      * @throws ImagesException
      * @return bool
+     * @todo: rewrite to use things from both graphics part running locally and "remote" storage
      */
-    public function add(array $currentPath, string $description = '', bool $hasThumb = true): bool
+    public function add(array $wantedPath, string $sourcePath = '', string $description = '', bool $hasThumb = true): bool
     {
-        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
-        $fileName = Stuff::filename($currentPath);
+        $origDir = array_slice($wantedPath, 0, -1);
+        $fileName = array_slice($wantedPath, -1, 1);
+        $fileName = reset($fileName);
 
-        $this->libImage->check($currentPath);
-        $this->libImage->processUploaded($currentPath);
+        $this->libImage->check($sourcePath);
+        $this->libImage->resizeLocally($sourcePath, $fileName);
+        $uploaded = @file_get_contents($sourcePath);
+        if (false === $uploaded) {
+            return false;
+        }
+        $this->libImage->getProcessor()->getFileProcessor()->saveFile($wantedPath, $uploaded);
 
-        $this->libThumb->delete($origDir, $fileName);
+        $this->libThumb->delete(Stuff::arrayToPath($origDir), $fileName);
         if ($hasThumb) {
-            $this->libThumb->create($currentPath);
+            $this->libThumb->create(Stuff::arrayToPath($wantedPath));
         }
 
         if (!empty($description)) {
-            $this->libDesc->set($currentPath, $description);
+            $this->libDesc->set(Stuff::arrayToPath($wantedPath), $description);
         } else {
-            $this->libDesc->delete($origDir, $fileName);
+            $this->libDesc->delete(Stuff::arrayToPath($origDir), $fileName);
         }
 
         return true;

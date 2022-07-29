@@ -1,12 +1,12 @@
 <?php
 
-namespace kalanis\kw_images\Files;
+namespace kalanis\kw_images\Graphics;
 
 
 /**
  * Trait TSizes
  * Calculate image sizes
- * @package kalanis\kw_images\Files
+ * @package kalanis\kw_images\Graphics
  */
 trait TSizes
 {

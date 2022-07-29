@@ -18,20 +18,13 @@ use kalanis\kw_paths\Stuff;
  */
 class Image extends AFiles
 {
-    use TSizes;
-
-    protected $maxWidth = 1024;
-    protected $maxHeight = 1024;
-    protected $maxFileSize = 10485760;
+    /** @var Graphics\Processor */
     protected $libGraphics = null;
 
-    public function __construct(Processor $libProcessor, Graphics $libGraphics, array $params = [], ?IIMTranslations $lang = null)
+    public function __construct(Processor $libProcessor, Graphics\Processor $libGraphics, ?IIMTranslations $lang = null)
     {
         parent::__construct($libProcessor, $lang);
         $this->libGraphics = $libGraphics;
-        $this->maxWidth = !empty($params['max_width']) ? strval($params['max_width']) : $this->maxWidth;
-        $this->maxHeight = !empty($params['max_height']) ? strval($params['max_height']) : $this->maxHeight;
-        $this->maxFileSize = !empty($params['max_size']) ? strval($params['max_size']) : $this->maxFileSize;
     }
 
     /**
@@ -48,30 +41,46 @@ class Image extends AFiles
 
     /**
      * @param string $path
+     * @param string|resource $content
      * @throws FilesException
+     * @return bool
      */
-    public function check(string $path): void
+    public function save(string $path, $content): bool
     {
-        $size = $this->libProcessor->getNodeProcessor()->size($this->getPath($path));
-        if (is_null($size)) {
-            throw new FilesException($this->getLang()->imImageSizeExists());
-        }
-        if ($this->maxFileSize < $size) {
-            throw new FilesException($this->getLang()->imImageSizeTooLarge());
-        }
+        $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
+        return true;
     }
 
     /**
      * @param string $path
-     * @return bool
-     * @throws ImagesException
+     * @throws FilesException
+     * @return string|resource
      */
-    public function processUploaded(string $path): bool
+    public function load(string $path)
     {
-        $this->libGraphics->load($path, $this->libProcessor->getWebRootDir() . $path);
-        $sizes = $this->calculateSize($this->libGraphics->width(), $this->maxWidth, $this->libGraphics->height(), $this->maxHeight);
-        $this->libGraphics->resample($sizes['width'], $sizes['height']);
-        $this->libGraphics->save($path, $this->libProcessor->getWebRootDir() . $path);
+        return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
+    }
+
+    /**
+     * @param string $path path to temp file
+     * @throws ImagesException
+     * @todo: out
+     */
+    public function check(string $path): void
+    {
+        $this->libGraphics->check($path);
+    }
+
+    /**
+     * @param string $tempPath path to temp file
+     * @param string $realName real file name for extension detection
+     * @throws ImagesException
+     * @return bool
+     * @todo: out
+     */
+    public function resizeLocally(string $tempPath, string $realName): bool
+    {
+        $this->libGraphics->resize($tempPath, $realName);
         return true;
     }
 
