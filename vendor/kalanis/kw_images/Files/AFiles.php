@@ -3,7 +3,8 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_files\Extended\Processor;
+use kalanis\kw_files\CompositeProcessor;
+use kalanis\kw_files\Extended\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\TLang;
@@ -18,18 +19,16 @@ abstract class AFiles
 {
     use TLang;
 
-    /** @var Processor|null */
+    /** @var CompositeProcessor|null */
     protected $libProcessor = null;
+    /** @var CompositeProcessor|null */
+    protected $config = null;
 
-    public function __construct(Processor $libProcessor, ?IIMTranslations $lang = null)
+    public function __construct(CompositeProcessor $libProcessor, Config $config, ?IIMTranslations $lang = null)
     {
         $this->setLang($lang);
         $this->libProcessor = $libProcessor;
-    }
-
-    public function getProcessor(): Processor
-    {
-        return $this->libProcessor;
+        $this->config = $config;
     }
 
     /**
@@ -53,10 +52,17 @@ abstract class AFiles
      * @param string $unlinkErr
      * @param string $copyErr
      * @throws FilesException
+     * @return bool
      */
     protected function dataCopy(
-        array $source, array $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
-    ): void
+        array $source,
+        array $target,
+        bool $overwrite,
+        string $sourceFileNotExistsErr,
+        string $targetFileExistsErr,
+        string $unlinkErr,
+        string $copyErr
+    ): bool
     {
         if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
             throw new FilesException($sourceFileNotExistsErr);
@@ -66,7 +72,7 @@ abstract class AFiles
             throw new FilesException($targetFileExistsErr);
         }
 
-        $this->dataOverwriteCopy( $source, $target, $unlinkErr, $copyErr);
+        return $this->dataOverwriteCopy( $source, $target, $unlinkErr, $copyErr);
     }
 
     /**
@@ -75,8 +81,9 @@ abstract class AFiles
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws FilesException
+     * @return bool
      */
-    protected function dataOverwriteCopy(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): void
+    protected function dataOverwriteCopy(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): bool
     {
         if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$this->libProcessor->getFileProcessor()->deleteFile($target)) {
             // @codeCoverageIgnoreStart
@@ -86,6 +93,7 @@ abstract class AFiles
         if ($this->libProcessor->getNodeProcessor()->isFile($source) && !$this->libProcessor->getFileProcessor()->copyFile($source, $target)) {
             throw new FilesException($copyErrDesc);
         }
+        return true;
     }
 
     /**
@@ -97,10 +105,17 @@ abstract class AFiles
      * @param string $unlinkErr
      * @param string $copyErr
      * @throws FilesException
+     * @return bool
      */
     protected function dataRename(
-        array $source, array $target, bool $overwrite, string $sourceFileNotExistsErr, string $targetFileExistsErr, string $unlinkErr, string $copyErr
-    ): void
+        array $source,
+        array $target,
+        bool $overwrite,
+        string $sourceFileNotExistsErr,
+        string $targetFileExistsErr,
+        string $unlinkErr,
+        string $copyErr
+    ): bool
     {
         if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
             throw new FilesException($sourceFileNotExistsErr);
@@ -110,7 +125,7 @@ abstract class AFiles
             throw new FilesException($targetFileExistsErr);
         }
 
-        $this->dataOverwriteRename( $source, $target, $unlinkErr, $copyErr);
+        return $this->dataOverwriteRename( $source, $target, $unlinkErr, $copyErr);
     }
 
     /**
@@ -119,8 +134,9 @@ abstract class AFiles
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws FilesException
+     * @return bool
      */
-    protected function dataOverwriteRename(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): void
+    protected function dataOverwriteRename(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): bool
     {
         if ($this->libProcessor->getNodeProcessor()->isFile($target) && !$this->libProcessor->getFileProcessor()->deleteFile($target)) {
             // @codeCoverageIgnoreStart
@@ -130,22 +146,25 @@ abstract class AFiles
         if ($this->libProcessor->getNodeProcessor()->isFile($source) && !$this->libProcessor->getFileProcessor()->moveFile($source, $target)) {
             throw new FilesException($copyErrDesc);
         }
+        return true;
     }
 
     /**
      * @param string[] $source
      * @param string $unlinkErrDesc
      * @throws FilesException
+     * @return bool
      */
-    protected function dataRemove(array $source, string $unlinkErrDesc): void
+    protected function dataRemove(array $source, string $unlinkErrDesc): bool
     {
         if (!$this->libProcessor->getNodeProcessor()->isFile($source)) {
-            return;
+            return true;
         }
         if ($this->libProcessor->getNodeProcessor()->isFile($source) && !$this->libProcessor->getFileProcessor()->deleteFile($source)) {
             // @codeCoverageIgnoreStart
             throw new FilesException($unlinkErrDesc);
         }
         // @codeCoverageIgnoreEnd
+        return true;
     }
 }

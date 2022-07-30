@@ -11,6 +11,7 @@ use kalanis\kw_paths\Stuff;
  * Class Files
  * Operations over files
  * @package kalanis\kw_images
+ * @todo: back to drawing board - separate by operations or their targets?
  */
 class Files
 {
@@ -47,17 +48,17 @@ class Files
         $fileName = array_slice($wantedPath, -1, 1);
         $fileName = reset($fileName);
 
-        $this->libImage->check($sourcePath);
-        $this->libImage->resizeLocally($sourcePath, $fileName);
+        $this->libGraphics->check($sourcePath);
+        $this->libGraphics->resize($sourcePath, $fileName);
         $uploaded = @file_get_contents($sourcePath);
         if (false === $uploaded) {
             return false;
         }
-        $this->libImage->getProcessor()->getFileProcessor()->saveFile($wantedPath, $uploaded);
+        $this->libImage->set($wantedPath, $uploaded);
 
         $this->libThumb->delete(Stuff::arrayToPath($origDir), $fileName);
         if ($hasThumb) {
-            $this->libThumb->create(Stuff::arrayToPath($wantedPath));
+            $this->createThumb(Stuff::arrayToPath($wantedPath));
         }
 
         if (!empty($description)) {
@@ -67,6 +68,108 @@ class Files
         }
 
         return true;
+    }
+
+    /**
+     * @param string $path
+     * @throws FilesException
+     * @throws ImagesException
+     */
+    public function createDirThumb(string $path): void
+    {
+        $dir = Stuff::directory($path);
+        $file = Stuff::filename($path);
+        $tempFile = $this->libDirThumb->getProcessor()->getConfig()->getDescFile() . $this->libDirThumb->getProcessor()->getConfig()->getThumbExt();
+        $backupFile = $this->libDirThumb->getProcessor()->getConfig()->getDescFile() . $this->libDirThumb->getProcessor()->getConfig()->getThumbExt() . $this->libDirThumb->getProcessor()->getConfig()->getThumbTemp();
+        $backupPath = $dir . DIRECTORY_SEPARATOR . $backupFile;
+
+        if ($this->libDirThumb->isHere($path)) {
+            if (!$this->libThumb->rename($path, $tempFile, $backupFile)) {
+                // @codeCoverageIgnoreStart
+                throw new FilesException($this->getLang()->imDirThumbCannotRemoveCurrent());
+            }
+            // @codeCoverageIgnoreEnd
+        }
+        try {
+            if (!$this->libThumb->isHere($path)) {
+                $this->createThumb($path);
+                $this->libDirThumb->set($path, $this->libThumb->get($path));
+                $this->libThumb->delete($dir, $file);
+            } else {
+                $this->libDirThumb->set($path, $this->libThumb->get($path));
+            }
+        } catch (FilesException $ex) {
+            if ($this->libThumb->isHere($path) && !$this->libThumb->rename($dir, $backupFile, $tempFile)) {
+                // @codeCoverageIgnoreStart
+                throw new FilesException($this->getLang()->imDirThumbCannotRestore());
+            }
+            // @codeCoverageIgnoreEnd
+            throw $ex;
+        }
+        if ($this->libThumb->isHere($backupPath) && !$this->libThumb->delete($dir, $backupFile)) {
+            // @codeCoverageIgnoreStart
+            throw new FilesException($this->getLang()->imDirThumbCannotRemoveOld());
+        }
+        // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * @param string $path
+     * @throws FilesException
+     * @throws ImagesException
+     */
+    public function createThumb(string $path): void
+    {
+        $dir = Stuff::directory($path);
+        $file = Stuff::filename($path);
+        $tempFile = $this->libThumb->getProcessor()->getConfig()->getTempDir() . $this->randomName();
+        $tempPath = $path . $this->libThumb->getProcessor()->getConfig()->getTempExt();
+        $backupFile = $file . $this->libThumb->getProcessor()->getConfig()->getTempExt();
+
+        // move old one
+        if ($this->libThumb->isHere($path)) {
+            if (!$this->libThumb->rename($dir, $file, $backupFile)) {
+                // @codeCoverageIgnoreStart
+                throw new FilesException($this->getLang()->imThumbCannotRemoveCurrent());
+            }
+            // @codeCoverageIgnoreEnd
+        }
+
+        try {
+            // get from the storage
+            $source = $this->libImage->get($path);
+            if (false === @file_put_contents($tempFile, $source)) {
+                throw new FilesException($this->getLang()->imThumbCannotCopyBase());  ###!!! correct translation
+            }
+
+            // now process libraries locally
+            $this->libGraphics->resize($tempFile, $path);
+
+            // return result to the storage as new file
+            $result = @file_get_contents($tempFile);
+            if (false === $result) {
+                throw new FilesException($this->getLang()->imThumbCannotCopyBase());  ###!!! correct translation
+            }
+            $this->libThumb->set($path, $result);
+
+        } catch (ImagesException $ex) {
+            if ($this->libThumb->isHere($tempPath) && !$this->libThumb->rename($dir, $backupFile, $file)) {
+                // @codeCoverageIgnoreStart
+                throw new FilesException($this->getLang()->imThumbCannotRestore());
+            }
+            // @codeCoverageIgnoreEnd
+            throw $ex;
+        }
+        if ($this->libThumb->isHere($tempPath) && !$this->libThumb->delete($dir, $backupFile)) {
+            // @codeCoverageIgnoreStart
+            throw new FilesException($this->getLang()->imThumbCannotRemoveOld());
+        }
+        // @codeCoverageIgnoreEnd
+    }
+
+    protected function randomName(): string
+    {
+        return uniqid('tmp_tmb_');
     }
 
     /**
@@ -223,6 +326,11 @@ class Files
         $this->libThumb->delete($origDir, $fileName);
         $this->libImage->delete($origDir, $fileName);
         return true;
+    }
+
+    public function getLibGraphics(): Graphics\Processor
+    {
+        return $this->libGraphics;
     }
 
     public function getLibImage(): Files\Image

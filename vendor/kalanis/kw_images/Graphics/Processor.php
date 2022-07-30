@@ -23,13 +23,18 @@ class Processor
     /** @var Graphics */
     protected $libGraphics = null;
     /** @var ISizes */
-    protected $libConf = null;
+    protected $libSizes = null;
 
-    public function __construct(Graphics $libGraphics, ISizes $config, ?IIMTranslations $lang = null)
+    public function __construct(Graphics $libGraphics, ?IIMTranslations $lang = null)
     {
         $this->libGraphics = $libGraphics;
-        $this->libConf = $config;
         $this->setLang($lang);
+    }
+
+    public function setSizes(ISizes $sizes): self
+    {
+        $this->libSizes = $sizes;
+        return $this;
     }
 
     /**
@@ -42,7 +47,7 @@ class Processor
         if (is_null($size)) {
             throw new ImagesException($this->getLang()->imImageSizeExists());
         }
-        if ($this->libConf->getMaxSize() < $size) {
+        if ($this->libSizes->getMaxSize() < $size) {
             throw new ImagesException($this->getLang()->imImageSizeTooLarge());
         }
     }
@@ -58,9 +63,9 @@ class Processor
         $this->libGraphics->load($realName, $tempPath);
         $sizes = $this->calculateSize(
             $this->libGraphics->width(),
-            $this->libConf->getMaxWidth(),
+            $this->libSizes->getMaxWidth(),
             $this->libGraphics->height(),
-            $this->libConf->getMaxHeight()
+            $this->libSizes->getMaxHeight()
         );
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
         $this->libGraphics->save($realName, $tempPath);

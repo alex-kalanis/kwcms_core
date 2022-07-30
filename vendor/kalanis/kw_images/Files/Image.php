@@ -3,11 +3,7 @@
 namespace kalanis\kw_images\Files;
 
 
-use kalanis\kw_files\Extended\Processor;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_images\Graphics;
-use kalanis\kw_images\ImagesException;
-use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_paths\Stuff;
 
 
@@ -18,15 +14,6 @@ use kalanis\kw_paths\Stuff;
  */
 class Image extends AFiles
 {
-    /** @var Graphics\Processor */
-    protected $libGraphics = null;
-
-    public function __construct(Processor $libProcessor, Graphics\Processor $libGraphics, ?IIMTranslations $lang = null)
-    {
-        parent::__construct($libProcessor, $lang);
-        $this->libGraphics = $libGraphics;
-    }
-
     /**
      * @param string $path
      * @param string $format
@@ -41,46 +28,23 @@ class Image extends AFiles
 
     /**
      * @param string $path
-     * @param string|resource $content
-     * @throws FilesException
-     * @return bool
-     */
-    public function save(string $path, $content): bool
-    {
-        $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
-        return true;
-    }
-
-    /**
-     * @param string $path
      * @throws FilesException
      * @return string|resource
      */
-    public function load(string $path)
+    public function get(string $path)
     {
         return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
     }
 
     /**
-     * @param string $path path to temp file
-     * @throws ImagesException
-     * @todo: out
-     */
-    public function check(string $path): void
-    {
-        $this->libGraphics->check($path);
-    }
-
-    /**
-     * @param string $tempPath path to temp file
-     * @param string $realName real file name for extension detection
-     * @throws ImagesException
+     * @param string $path
+     * @param string|resource $content
+     * @throws FilesException
      * @return bool
-     * @todo: out
      */
-    public function resizeLocally(string $tempPath, string $realName): bool
+    public function set(string $path, $content): bool
     {
-        $this->libGraphics->resize($tempPath, $realName);
+        $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
         return true;
     }
 
@@ -90,10 +54,11 @@ class Image extends AFiles
      * @param string $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @return bool
      */
-    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
-        $this->dataCopy(
+        return $this->dataCopy(
             Stuff::pathToArray($sourceDir) + [$fileName],
             Stuff::pathToArray($targetDir) + [$fileName],
             $overwrite,
@@ -110,10 +75,11 @@ class Image extends AFiles
      * @param string $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @return bool
      */
-    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
+    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
-        $this->dataRename(
+        return $this->dataRename(
             Stuff::pathToArray($sourceDir) + [$fileName],
             Stuff::pathToArray($targetDir) + [$fileName],
             $overwrite,
@@ -130,10 +96,11 @@ class Image extends AFiles
      * @param string $sourceName
      * @param bool $overwrite
      * @throws FilesException
+     * @return bool
      */
-    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
+    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): bool
     {
-        $this->dataRename(
+        return $this->dataRename(
             Stuff::pathToArray($path) + [$sourceName],
             Stuff::pathToArray($path) + [$targetName],
             $overwrite,
@@ -148,11 +115,12 @@ class Image extends AFiles
      * @param string $sourceDir
      * @param string $fileName
      * @throws FilesException
+     * @return bool
      */
-    public function delete(string $sourceDir, string $fileName): void
+    public function delete(string $sourceDir, string $fileName): bool
     {
         $whatPath = $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
-        $this->dataRemove($whatPath, $this->getLang()->imImageCannotRemove());
+        return $this->dataRemove($whatPath, $this->getLang()->imImageCannotRemove());
     }
 
     public function getPath(string $path): array

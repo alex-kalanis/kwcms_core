@@ -3,12 +3,10 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use Error;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
-use kalanis\kw_langs\Lang;
 use kalanis\kw_paths\Extras\TNameFinder;
 use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;

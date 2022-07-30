@@ -3,10 +3,8 @@
 namespace kalanis\kw_files\Extended;
 
 
+use kalanis\kw_files\CompositeProcessor;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces\IProcessDirs;
-use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Interfaces\IProcessNodes;
 
 
 /**
@@ -15,41 +13,15 @@ use kalanis\kw_files\Interfaces\IProcessNodes;
  */
 class Processor
 {
-    /** @var IProcessDirs */
-    protected $dirProcessor = null; # what will check content
-    /** @var IProcessFiles */
-    protected $fileProcessor = null; # what will check content
-    /** @var IProcessNodes */
-    protected $nodeProcessor = null; # what will check content
+    /** @var CompositeProcessor */
+    protected $files = null;
     /** @var Config */
-    protected $config = null; # configuration class
+    protected $config = null;
 
-    public function __construct(IProcessDirs $dirProcessor, IProcessFiles $fileProcessor, IProcessNodes $nodeProcessor, Config $config)
+    public function __construct(CompositeProcessor $files, Config $config)
     {
-        $this->dirProcessor = $dirProcessor;
-        $this->fileProcessor = $fileProcessor;
-        $this->nodeProcessor = $nodeProcessor;
+        $this->files = $files;
         $this->config = $config;
-    }
-
-    public function getDirProcessor(): IProcessDirs
-    {
-        return $this->dirProcessor;
-    }
-
-    public function getFileProcessor(): IProcessFiles
-    {
-        return $this->fileProcessor;
-    }
-
-    public function getNodeProcessor(): IProcessNodes
-    {
-        return $this->nodeProcessor;
-    }
-
-    public function getConfig(): Config
-    {
-        return $this->config;
     }
 
     /**
@@ -60,7 +32,7 @@ class Processor
      */
     public function createDir(array $path, bool $makeExtra = false): bool
     {
-        return $this->dirProcessor->createDir($path)
+        return $this->files->getDirProcessor()->createDir($path)
             && ( $makeExtra ? $this->makeExtended($path) : true );
     }
 
@@ -74,19 +46,19 @@ class Processor
     {
         $desc = $path + [$this->config->getDescDir()];
         $thumb = $path + [$this->config->getThumbDir()];
-        $descExists = $this->nodeProcessor->exists($desc);
-        $thumbExists = $this->nodeProcessor->exists($thumb);
-        if ($descExists && !$this->nodeProcessor->isDir($desc)) {
+        $descExists = $this->files->getNodeProcessor()->exists($desc);
+        $thumbExists = $this->files->getNodeProcessor()->exists($thumb);
+        if ($descExists && !$this->files->getNodeProcessor()->isDir($desc)) {
             return false;
         }
-        if ($thumbExists && !$this->nodeProcessor->isDir($thumb)) {
+        if ($thumbExists && !$this->files->getNodeProcessor()->isDir($thumb)) {
             return false;
         }
         if (!$descExists) {
-            $this->dirProcessor->createDir($desc);
+            $this->files->getDirProcessor()->createDir($desc);
         }
         if (!$thumbExists) {
-            $this->dirProcessor->createDir($thumb);
+            $this->files->getDirProcessor()->createDir($thumb);
         }
         return true;
     }
@@ -100,19 +72,19 @@ class Processor
     {
         $desc = $path + [$this->config->getDescDir()];
         $thumb = $path + [$this->config->getThumbDir()];
-        $descExists = $this->nodeProcessor->exists($desc);
-        $thumbExists = $this->nodeProcessor->exists($thumb);
-        if ($descExists && !$this->nodeProcessor->isDir($desc)) {
+        $descExists = $this->files->getNodeProcessor()->exists($desc);
+        $thumbExists = $this->files->getNodeProcessor()->exists($thumb);
+        if ($descExists && !$this->files->getNodeProcessor()->isDir($desc)) {
             return false;
         }
-        if ($thumbExists && !$this->nodeProcessor->isDir($thumb)) {
+        if ($thumbExists && !$this->files->getNodeProcessor()->isDir($thumb)) {
             return false;
         }
         if ($descExists) {
-            $this->dirProcessor->deleteDir($desc, true);
+            $this->files->getDirProcessor()->deleteDir($desc, true);
         }
         if ($thumbExists) {
-            $this->dirProcessor->deleteDir($thumb, true);
+            $this->files->getDirProcessor()->deleteDir($thumb, true);
         }
         return true;
     }

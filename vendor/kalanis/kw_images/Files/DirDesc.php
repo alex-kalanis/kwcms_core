@@ -18,9 +18,9 @@ class DirDesc extends AFiles
      * @param string $path
      * @param bool $errorOnFail
      * @throws FilesException
-     * @return string
+     * @return string|resource
      */
-    public function get(string $path, bool $errorOnFail = false): string
+    public function get(string $path, bool $errorOnFail = false)
     {
         try {
             return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
@@ -60,15 +60,15 @@ class DirDesc extends AFiles
      */
     public function canUse(string $path): bool
     {
-        $descPath = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->libProcessor->getConfig()->getDescDir();
+        $descPath = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->config->getDescDir();
         return $this->libProcessor->getNodeProcessor()->isDir(Stuff::pathToArray($descPath));
     }
 
     public function getPath(string $path): array
     {
         return Stuff::pathToArray(Stuff::removeEndingSlash($path)) + [
-            $this->libProcessor->getConfig()->getDescDir(),
-            $this->libProcessor->getConfig()->getDescFile() . $this->libProcessor->getConfig()->getDescExt()
+            $this->config->getDescDir(),
+            $this->config->getDescFile() . $this->config->getDescExt()
         ];
     }
 }

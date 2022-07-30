@@ -28,7 +28,7 @@ trait TLibExistence
             throw new ImagesException(Lang::get('images.file_name.invalid', $fileName));
         }
         try {
-            $files->getLibImage()->check(
+            $files->getLibGraphics()->check(
                 $dir . DIRECTORY_SEPARATOR . $fileName
             );
         } catch (ImagesException $ex) {

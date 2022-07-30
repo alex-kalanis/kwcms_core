@@ -18,7 +18,7 @@ class Desc extends AFiles
      * @param string $path
      * @param bool $errorOnFail
      * @throws FilesException
-     * @return string
+     * @return string|resource
      */
     public function get(string $path, bool $errorOnFail = false): string
     {
@@ -36,10 +36,11 @@ class Desc extends AFiles
      * @param string $path
      * @param string $content
      * @throws FilesException
+     * @return bool
      */
-    public function set(string $path, string $content): void
+    public function set(string $path, string $content): bool
     {
-        $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
+        return $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
     }
 
     /**
@@ -48,12 +49,13 @@ class Desc extends AFiles
      * @param string $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @return bool
      */
-    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
+    public function copy(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
-        $this->dataCopy(
-            Stuff::pathToArray(Stuff::removeEndingSlash($sourceDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
-            Stuff::pathToArray(Stuff::removeEndingSlash($targetDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
+        return $this->dataCopy(
+            Stuff::pathToArray(Stuff::removeEndingSlash($sourceDir)) + [$this->config->getDescDir(), $fileName . $this->config->getDescExt()],
+            Stuff::pathToArray(Stuff::removeEndingSlash($targetDir)) + [$this->config->getDescDir(), $fileName . $this->config->getDescExt()],
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -68,12 +70,13 @@ class Desc extends AFiles
      * @param string $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @return bool
      */
-    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): void
+    public function move(string $fileName, string $sourceDir, string $targetDir, bool $overwrite = false): bool
     {
-        $this->dataRename(
-            Stuff::pathToArray(Stuff::removeEndingSlash($sourceDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
-            Stuff::pathToArray(Stuff::removeEndingSlash($targetDir)) + [$this->libProcessor->getConfig()->getDescDir(), $fileName . $this->libProcessor->getConfig()->getDescExt()],
+        return $this->dataRename(
+            Stuff::pathToArray(Stuff::removeEndingSlash($sourceDir)) + [$this->config->getDescDir(), $fileName . $this->config->getDescExt()],
+            Stuff::pathToArray(Stuff::removeEndingSlash($targetDir)) + [$this->config->getDescDir(), $fileName . $this->config->getDescExt()],
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -88,14 +91,15 @@ class Desc extends AFiles
      * @param string $targetName
      * @param bool $overwrite
      * @throws FilesException
+     * @return bool
      */
-    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): void
+    public function rename(string $path, string $sourceName, string $targetName, bool $overwrite = false): bool
     {
         $whatPath = Stuff::pathToArray(Stuff::removeEndingSlash($path));
 
-        $this->dataRename(
-            $whatPath + [$this->libProcessor->getConfig()->getDescDir(), $sourceName . $this->libProcessor->getConfig()->getDescExt()],
-            $whatPath + [$this->libProcessor->getConfig()->getDescDir(), $targetName . $this->libProcessor->getConfig()->getDescExt()],
+        return $this->dataRename(
+            $whatPath + [$this->config->getDescDir(), $sourceName . $this->config->getDescExt()],
+            $whatPath + [$this->config->getDescDir(), $targetName . $this->config->getDescExt()],
             $overwrite,
             $this->getLang()->imDescCannotFind(),
             $this->getLang()->imDescAlreadyExistsHere(),
@@ -108,11 +112,14 @@ class Desc extends AFiles
      * @param string $sourceDir
      * @param string $fileName
      * @throws FilesException
+     * @return bool
      */
-    public function delete(string $sourceDir, string $fileName): void
+    public function delete(string $sourceDir, string $fileName): bool
     {
-        $whatPath = $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName);
-        $this->dataRemove($whatPath, $this->getLang()->imDescCannotRemove());
+        return $this->dataRemove(
+            $this->getPath($sourceDir . DIRECTORY_SEPARATOR . $fileName),
+            $this->getLang()->imDescCannotRemove()
+        );
     }
 
     public function getPath(string $path): array
@@ -120,8 +127,8 @@ class Desc extends AFiles
         $filePath = Stuff::removeEndingSlash(Stuff::directory($path));
         $fileName = Stuff::filename($path);
         return Stuff::pathToArray($filePath) + [
-            $this->libProcessor->getConfig()->getDescDir(),
-            $fileName . $this->libProcessor->getConfig()->getDescExt()
+            $this->config->getDescDir(),
+            $fileName . $this->config->getDescExt()
         ];
     }
 }
