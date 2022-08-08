@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_images\Files;
+namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
@@ -10,10 +10,21 @@ use kalanis\kw_paths\Stuff;
 /**
  * Class Image
  * Main image itself
- * @package kalanis\kw_images\Files
+ * @package kalanis\kw_images\Sources
  */
 class Image extends AFiles
 {
+    /**
+     * @param string $fileName
+     * @param string $ext
+     * @throws FilesException
+     * @return string
+     */
+    public function findFreeName(string $fileName, string $ext): string
+    {
+        return $this->libProcessor->getFileProcessor()->findFreeName([$fileName], $ext);
+    }
+
     /**
      * @param string $path
      * @param string $format

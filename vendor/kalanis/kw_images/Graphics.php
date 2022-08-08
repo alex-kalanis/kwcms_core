@@ -3,76 +3,77 @@
 namespace kalanis\kw_images;
 
 
+use kalanis\kw_images\Graphics\TSizes;
 use kalanis\kw_images\Interfaces\IIMTranslations;
+use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_paths\Stuff;
 
 
 /**
  * Class Graphics
- * @package kalanis\kw_images
- * @todo: pass images from storage to temp and then back - cannot work with images in storages directly
+ * Main image itself
+ * @package kalanis\kw_images\Graphics
  */
 class Graphics
 {
+    use TSizes;
     use TLang;
 
-    protected $factory = null;
+    /** @var Graphics\Processor */
+    protected $libGraphics = null;
+    /** @var ISizes */
+    protected $libSizes = null;
+    /** @var MimeType */
     protected $libMime = null;
-    protected $resource = null;
 
-    /**
-     * @param Graphics\Format\Factory $factory
-     * @param MimeType $libMime
-     * @param IIMTranslations|null $lang
-     * @throws ImagesException
-     */
-    public function __construct(Graphics\Format\Factory $factory, MimeType $libMime, ?IIMTranslations $lang = null)
+    public function __construct(Graphics\Processor $libGraphics, MimeType $libMime, ?IIMTranslations $lang = null)
     {
         $this->setLang($lang);
-
-        if (!(function_exists('imagecreatetruecolor')
-            && function_exists('imagecolorallocate')
-            && function_exists('imagesetpixel')
-            && function_exists('imagecopyresized')
-            && function_exists('imagecopyresampled')
-            && function_exists('imagesx')
-            && function_exists('imagesy')
-        )) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imGdLibNotPresent());
-        }
-        // @codeCoverageIgnoreEnd
-
-        $this->factory = $factory;
+        $this->libGraphics = $libGraphics;
         $this->libMime = $libMime;
     }
 
-    /**
-     * @param string $fileName
-     * @param string $tempPath
-     * @throws ImagesException
-     * @return $this
-     */
-    public function load(string $fileName, string $tempPath): self
+    public function setSizes(ISizes $sizes): self
     {
-        $processor = $this->factory->getByType($this->getType($fileName), $this->getLang());
-        $this->resource = $processor->load($tempPath);
+        $this->libSizes = $sizes;
         return $this;
     }
 
     /**
-     * @param string $path
-     * @param string $temp
+     * @param string $path path to temp file
      * @throws ImagesException
-     * @return $this
      */
-    public function save(string $path, string $temp): self
+    public function check(string $path): void
     {
-        $this->checkResource();
-        $processor = $this->factory->getByType($this->getType($path), $this->getLang());
-        $processor->save($temp, $this->resource);
-        return $this;
+        $size = @filesize($path);
+        if (is_null($size)) {
+            throw new ImagesException($this->getLang()->imImageSizeExists());
+        }
+        if ($this->libSizes->getMaxSize() < $size) {
+            throw new ImagesException($this->getLang()->imImageSizeTooLarge());
+        }
+    }
+
+    /**
+     * @param string $tempPath path to temp file
+     * @param string $realName real file name for extension detection
+     * @throws ImagesException
+     * @return bool
+     */
+    public function resize(string $tempPath, string $realName): bool
+    {
+        $type = $this->getType($realName);
+        $this->libGraphics->load($type, $tempPath);
+        $sizes = $this->calculateSize(
+            $this->libGraphics->width(),
+            $this->libSizes->getMaxWidth(),
+            $this->libGraphics->height(),
+            $this->libSizes->getMaxHeight()
+        );
+        $this->libGraphics->resample($sizes['width'], $sizes['height']);
+        $this->libGraphics->save($type, $tempPath);
+        return true;
     }
 
     /**
@@ -88,117 +89,5 @@ class Graphics
             throw new ImagesException($this->getLang()->imWrongMime($mime));
         }
         return $app;
-    }
-
-    /**
-     * Change image size
-     * @param int|null $width
-     * @param int|null $height
-     * @throws ImagesException
-     * @return $this
-     */
-    public function resize(?int $width = null, ?int $height = null): self
-    {
-        $this->checkResource();
-        $fromWidth = $this->width();
-        $fromHeight = $this->height();
-        $width = (!is_null($width) && ($width > 0)) ? (int)$width : $fromWidth;
-        $height = (!is_null($height) && ($height > 0)) ? (int)$height : $fromHeight;
-        $resource = $this->create($width, $height);
-        if (false === imagecopyresized($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
-            // @codeCoverageIgnoreStart
-            imagedestroy($resource);
-            throw new ImagesException($this->getLang()->imImageCannotResize());
-        }
-        // @codeCoverageIgnoreEnd
-        imagedestroy($this->resource);
-        $this->resource = $resource;
-        return $this;
-    }
-
-    /**
-     * Change image size and update sample
-     * @param int|null $width
-     * @param int|null $height
-     * @throws ImagesException
-     * @return $this
-     */
-    public function resample(?int $width = null, ?int $height = null)
-    {
-        $this->checkResource();
-        $fromWidth = $this->width();
-        $fromHeight = $this->height();
-        $width = ($width && is_numeric($width) && ($width > 0)) ? (int)$width : $fromWidth;
-        $height = ($height && is_numeric($height) && ($height > 0)) ? (int)$height : $fromHeight;
-        $resource = $this->create($width, $height);
-        if (false === imagecopyresampled($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
-            // @codeCoverageIgnoreStart
-            imagedestroy($resource);
-            throw new ImagesException($this->getLang()->imImageCannotResample());
-        }
-        // @codeCoverageIgnoreEnd
-        imagedestroy($this->resource);
-        $this->resource = $resource;
-        return $this;
-    }
-
-    /**
-     * Create empty image resource
-     * @param int $width
-     * @param int $height
-     * @throws ImagesException
-     * @return resource
-     */
-    protected function create(int $width, int $height)
-    {
-        $resource = imagecreatetruecolor($width, $height);
-        if (false === $resource) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageCannotCreateEmpty());
-        }
-        // @codeCoverageIgnoreEnd
-        return $resource;
-    }
-
-    /**
-     * @throws ImagesException
-     * @return int
-     */
-    public function width(): int
-    {
-        $this->checkResource();
-        $size = imagesx($this->resource);
-        if (false === $size) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageCannotGetSize());
-        }
-        // @codeCoverageIgnoreEnd
-        return intval($size);
-    }
-
-    /**
-     * @throws ImagesException
-     * @return int
-     */
-    public function height(): int
-    {
-        $this->checkResource();
-        $size = imagesy($this->resource);
-        if (false === $size) {
-            // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageCannotGetSize());
-        }
-        // @codeCoverageIgnoreEnd
-        return intval($size);
-    }
-
-    /**
-     * @throws ImagesException
-     */
-    protected function checkResource(): void
-    {
-        if (empty($this->resource)) {
-            throw new ImagesException($this->getLang()->imImageLoadFirst());
-        }
     }
 }

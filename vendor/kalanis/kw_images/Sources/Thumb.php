@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_images\Files;
+namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
@@ -10,7 +10,7 @@ use kalanis\kw_paths\Stuff;
 /**
  * Class Thumb
  * File thumbnail
- * @package kalanis\kw_images\Files
+ * @package kalanis\kw_images\Sources
  */
 class Thumb extends AFiles
 {

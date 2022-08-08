@@ -3,7 +3,9 @@
 namespace kalanis\kw_images;
 
 
+use kalanis\kw_files\Extended\Config;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_images\Graphics\ThumbConfig;
 use kalanis\kw_paths\Stuff;
 
 
@@ -12,6 +14,7 @@ use kalanis\kw_paths\Stuff;
  * Operations over files
  * @package kalanis\kw_images
  * @todo: back to drawing board - separate by operations or their targets?
+ * @deprecated remove because it's in kw_images/Content
  */
 class Files
 {
@@ -22,7 +25,7 @@ class Files
     protected $libDirThumb = null;
     protected $libGraphics = null;
 
-    public function __construct(Graphics\Processor $graphics, Files\Image $image, Files\Thumb $thumb, Files\Desc $desc, Files\DirDesc $dirDesc, Files\DirThumb $dirThumb)
+    public function __construct(Graphics $graphics, Sources\Image $image, Sources\Thumb $thumb, Sources\Desc $desc, Sources\DirDesc $dirDesc, Sources\DirThumb $dirThumb)
     {
         $this->libImage = $image;
         $this->libThumb = $thumb;
@@ -33,6 +36,7 @@ class Files
     }
 
     /**
+     * @param ThumbConfig $tConfig
      * @param string[] $wantedPath
      * @param string $sourcePath
      * @param string $description
@@ -42,7 +46,7 @@ class Files
      * @return bool
      * @todo: rewrite to use things from both graphics part running locally and "remote" storage
      */
-    public function add(array $wantedPath, string $sourcePath = '', string $description = '', bool $hasThumb = true): bool
+    public function add(ThumbConfig $tConfig, array $wantedPath, string $sourcePath = '', string $description = '', bool $hasThumb = true): bool
     {
         $origDir = array_slice($wantedPath, 0, -1);
         $fileName = array_slice($wantedPath, -1, 1);
@@ -58,7 +62,7 @@ class Files
 
         $this->libThumb->delete(Stuff::arrayToPath($origDir), $fileName);
         if ($hasThumb) {
-            $this->createThumb(Stuff::arrayToPath($wantedPath));
+            $this->createThumb(Stuff::arrayToPath($wantedPath), $tConfig);
         }
 
         if (!empty($description)) {
@@ -72,15 +76,17 @@ class Files
 
     /**
      * @param string $path
+     * @param Config $config
+     * @param ThumbConfig $tConfig
      * @throws FilesException
      * @throws ImagesException
      */
-    public function createDirThumb(string $path): void
+    public function createDirThumb(string $path, Config $config, ThumbConfig $tConfig): void
     {
         $dir = Stuff::directory($path);
         $file = Stuff::filename($path);
-        $tempFile = $this->libDirThumb->getProcessor()->getConfig()->getDescFile() . $this->libDirThumb->getProcessor()->getConfig()->getThumbExt();
-        $backupFile = $this->libDirThumb->getProcessor()->getConfig()->getDescFile() . $this->libDirThumb->getProcessor()->getConfig()->getThumbExt() . $this->libDirThumb->getProcessor()->getConfig()->getThumbTemp();
+        $tempFile = $config->getDescFile() . $config->getThumbExt();
+        $backupFile = $config->getDescFile() . $config->getThumbExt() . $config->getThumbTemp();
         $backupPath = $dir . DIRECTORY_SEPARATOR . $backupFile;
 
         if ($this->libDirThumb->isHere($path)) {
@@ -92,7 +98,7 @@ class Files
         }
         try {
             if (!$this->libThumb->isHere($path)) {
-                $this->createThumb($path);
+                $this->createThumb($path, $tConfig);
                 $this->libDirThumb->set($path, $this->libThumb->get($path));
                 $this->libThumb->delete($dir, $file);
             } else {
@@ -115,16 +121,17 @@ class Files
 
     /**
      * @param string $path
+     * @param ThumbConfig $config
      * @throws FilesException
      * @throws ImagesException
      */
-    public function createThumb(string $path): void
+    public function createThumb(string $path, ThumbConfig $config): void
     {
         $dir = Stuff::directory($path);
         $file = Stuff::filename($path);
-        $tempFile = $this->libThumb->getProcessor()->getConfig()->getTempDir() . $this->randomName();
-        $tempPath = $path . $this->libThumb->getProcessor()->getConfig()->getTempExt();
-        $backupFile = $file . $this->libThumb->getProcessor()->getConfig()->getTempExt();
+        $tempFile = $config->getTempDir() . $this->randomName();
+        $tempPath = $path . $config->getTempExt();
+        $backupFile = $file . $config->getTempExt();
 
         // move old one
         if ($this->libThumb->isHere($path)) {
@@ -328,32 +335,32 @@ class Files
         return true;
     }
 
-    public function getLibGraphics(): Graphics\Processor
+    public function getLibGraphics(): Graphics
     {
         return $this->libGraphics;
     }
 
-    public function getLibImage(): Files\Image
+    public function getLibImage(): Sources\Image
     {
         return $this->libImage;
     }
 
-    public function getLibThumb(): Files\Thumb
+    public function getLibThumb(): Sources\Thumb
     {
         return $this->libThumb;
     }
 
-    public function getLibDesc(): Files\Desc
+    public function getLibDesc(): Sources\Desc
     {
         return $this->libDesc;
     }
 
-    public function getLibDirDesc(): Files\DirDesc
+    public function getLibDirDesc(): Sources\DirDesc
     {
         return $this->libDirDesc;
     }
 
-    public function getLibDirThumb(): Files\DirThumb
+    public function getLibDirThumb(): Sources\DirThumb
     {
         return $this->libDirThumb;
     }

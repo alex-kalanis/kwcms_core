@@ -4,12 +4,16 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IProcessDirs;
+use kalanis\kw_files\Interfaces\IProcessFiles;
+use kalanis\kw_files\Node;
 use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_paths\Extras\TNameFinder;
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
-use KWCMS\modules\Images\Interfaces\IProcessFiles;
+use KWCMS\modules\Images\Interfaces\IProcessFiles as IProc;
 
 
 /**
@@ -17,24 +21,62 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  * @package KWCMS\modules\Images\Lib
  * Process files in many ways
  * @todo: use KW_FILES as data source - that will remove that part with volume service
+ * @todo: use operations in kw_image/Content
  */
-class ProcessFile implements IProcessFiles
+class ProcessFile implements IProc
 {
     use TNameFinder;
 
+    /** @var Files */
     protected $libFiles = null;
     protected $sourcePath = '';
+    /** @var Node */
+    protected $currentNode = null;
+    /** @var IProcessDirs */
+    protected $dirProcessor = null;
+    /** @var IProcessFiles */
+    protected $fileProcessor = null;
 
-    public function __construct(Files $libFiles, string $sourcePath)
+    public function __construct(Files $libFiles, string $sourcePath, IProcessFiles $fileProcessor)
     {
         $this->libFiles = $libFiles;
         $this->sourcePath = $sourcePath;
+//        $this->currentNode = $currentNode;
+//        $this->dirProcessor = $dirProcessor;
+        $this->fileProcessor = $fileProcessor;
     }
 
+    /**
+     * @param string $name
+     * @throws FilesException
+     * @return string
+     */
+    public function findFreeName(string $name): string
+    {
+        $name = Stuff::canonize($name);
+        $ext = Stuff::fileExt($name);
+        if (0 < mb_strlen($ext)) {
+            $ext = IPaths::SPLITTER_DOT . $ext;
+        }
+        $fileName = Stuff::fileBase($name);
+        return $this->fileProcessor->findFreeName([$fileName], $ext);
+    }
+
+    /**
+     * @param IFileEntry $file
+     * @param string $targetName
+     * @param string $description
+     * @throws FilesException
+     * @return bool
+     */
     public function uploadFile(IFileEntry $file, string $targetName, string $description): bool
     {
+//        $stream = fopen($file->getTempName(), 'rb+');
+//        $path = $this->currentNode->getPath() + [Stuff::filename($targetName)];
+//        return $this->fileProcessor->saveFile($path, $stream);
+
         $path = Stuff::pathToArray($this->sourcePath) + [Stuff::filename($targetName)];
-        return $this->libFiles->add($path, $file->getTempName(), $description);
+        return $this->libFiles->add(null, $path, $file->getTempName(), $description);
     }
 
     protected function getSeparator(): string

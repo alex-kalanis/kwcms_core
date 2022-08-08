@@ -41,15 +41,15 @@ class FilesHelper
             $libComposite,
             $fileConf
         );
-        $libGraphics = new Graphics(new Graphics\Format\Factory(), new MimeType(), $langIm);
+        $libGraphics = new Graphics\Processor(new Graphics\Format\Factory(), $langIm);
         $thumbConf = (new Graphics\ThumbConfig())->setData($params);
         return new Files(  ## process images
-            (new Graphics\Processor($libGraphics, $langIm))->setSizes($thumbConf),
-            new Files\Image($libComposite, $fileConf, $langIm),
-            new Files\Thumb($libComposite, $fileConf, $langIm),
-            new Files\Desc($libComposite, $fileConf, $langIm),
-            new Files\DirDesc($libComposite, $fileConf, $langIm),
-            new Files\DirThumb($libComposite, $fileConf, $langIm)
+            (new Graphics($libGraphics, new MimeType(), $langIm))->setSizes($thumbConf),
+            new Sources\Image($libComposite, $fileConf, $langIm),
+            new Sources\Thumb($libComposite, $fileConf, $langIm),
+            new Sources\Desc($libComposite, $fileConf, $langIm),
+            new Sources\DirDesc($libComposite, $fileConf, $langIm),
+            new Sources\DirThumb($libComposite, $fileConf, $langIm)
         );
     }
 }

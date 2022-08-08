@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_images\Files;
+namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\CompositeProcessor;
@@ -13,7 +13,7 @@ use kalanis\kw_images\TLang;
 /**
  * Class AFiles
  * Shared operations over files
- * @package kalanis\kw_images\Files
+ * @package kalanis\kw_images\Sources
  */
 abstract class AFiles
 {
@@ -21,7 +21,7 @@ abstract class AFiles
 
     /** @var CompositeProcessor|null */
     protected $libProcessor = null;
-    /** @var CompositeProcessor|null */
+    /** @var Config|null */
     protected $config = null;
 
     public function __construct(CompositeProcessor $libProcessor, Config $config, ?IIMTranslations $lang = null)
