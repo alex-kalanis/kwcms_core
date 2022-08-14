@@ -3,10 +3,10 @@
 namespace kalanis\kw_cache\Cache;
 
 
+use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\SemaphoreException;
-use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -37,7 +37,7 @@ class Semaphore implements ICache
         try {
             return $this->cache->exists() && !$this->reloadSemaphore->has();
         } catch (SemaphoreException $ex) {
-            throw new StorageException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
@@ -53,7 +53,7 @@ class Semaphore implements ICache
                 $this->reloadSemaphore->remove();
             }
         } catch (SemaphoreException $ex) {
-            throw new StorageException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
         return true;
     }

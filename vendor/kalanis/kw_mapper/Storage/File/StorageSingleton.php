@@ -41,9 +41,8 @@ class StorageSingleton
     {
         if (empty($this->storage)) {
             $this->storage = new Storage\Storage(
-                new Storage\Target\Volume(),
-                new Storage\Format\Raw(),
-                new Storage\Key\DefaultKey()
+                new Storage\Key\DefaultKey(),
+                new Storage\Target\Volume()
             );
         }
         return $this->storage;

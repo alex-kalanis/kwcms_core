@@ -3,6 +3,7 @@
 namespace kalanis\kw_cache\Storage;
 
 
+use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
 use kalanis\kw_storage\Storage\Storage;
 use kalanis\kw_storage\StorageException;
@@ -34,30 +35,30 @@ class Basic implements ICache
         return $this->cacheStorage->exists($this->cachePath);
     }
 
-    /**
-     * @param string $content
-     * @return bool
-     * @throws StorageException
-     */
     public function set(string $content): bool
     {
-        return $this->cacheStorage->write($this->cachePath, $content, null);
+        try {
+            return $this->cacheStorage->write($this->cachePath, $content, null);
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
-    /**
-     * @return string
-     * @throws StorageException
-     */
     public function get(): string
     {
-        return $this->exists() ? $this->cacheStorage->read($this->cachePath) : '';
+        try {
+            return $this->exists() ? strval($this->cacheStorage->read($this->cachePath)) : '';
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
-    /**
-     * @throws StorageException
-     */
     public function clear(): void
     {
-        $this->cacheStorage->remove($this->cachePath);
+        try {
+            $this->cacheStorage->remove($this->cachePath);
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 }

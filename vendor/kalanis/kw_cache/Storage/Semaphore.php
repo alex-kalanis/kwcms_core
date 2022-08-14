@@ -3,6 +3,7 @@
 namespace kalanis\kw_cache\Storage;
 
 
+use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\SemaphoreException;
@@ -39,34 +40,42 @@ class Semaphore implements ICache
         try {
             return $this->storage->exists($this->cachePath) && !$this->reloadSemaphore->has();
         } catch (SemaphoreException $ex) {
-            throw new StorageException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
     public function set(string $content): bool
     {
-        $result = $this->storage->write($this->cachePath, $content, null);
-        if (false === $result) {
-            return false;
-        }
-        # remove signal to save
         try {
+            $result = $this->storage->write($this->cachePath, $content, null);
+            if (false === $result) {
+                return false;
+            }
+            # remove signal to save
             if ($this->reloadSemaphore->has()) {
                 $this->reloadSemaphore->remove();
             }
-        } catch (SemaphoreException $ex) {
-            throw new StorageException($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (SemaphoreException | StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
         return true;
     }
 
     public function get(): string
     {
-        return $this->exists() ? strval($this->storage->read($this->cachePath)) : '' ;
+        try {
+            return $this->exists() ? strval($this->storage->read($this->cachePath)) : '';
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function clear(): void
     {
-        $this->storage->remove($this->cachePath);
+        try {
+            $this->storage->remove($this->cachePath);
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 }

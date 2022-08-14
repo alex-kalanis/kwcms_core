@@ -3,8 +3,10 @@
 namespace kalanis\kw_cache\Storage;
 
 
+use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
 use kalanis\kw_storage\Storage\Storage;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -40,24 +42,36 @@ class Dual implements ICache
 
     public function set(string $content): bool
     {
-        $result = $this->cacheStorage->write($this->cachePath, $content, null);
-        if (false === $result) {
-            return false;
+        try {
+            $result = $this->cacheStorage->write($this->cachePath, $content, null);
+            if (false === $result) {
+                return false;
+            }
+            # remove signal to save
+            if ($this->reloadStorage->exists($this->reloadPath)) {
+                $this->reloadStorage->remove($this->reloadPath);
+            }
+            return true;
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        # remove signal to save
-        if ($this->reloadStorage->exists($this->reloadPath)) {
-            $this->reloadStorage->remove($this->reloadPath);
-        }
-        return true;
     }
 
     public function get(): string
     {
-        return $this->exists() ? strval($this->cacheStorage->read($this->cachePath)) : '' ;
+        try {
+            return $this->exists() ? strval($this->cacheStorage->read($this->cachePath)) : '';
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function clear(): void
     {
-        $this->cacheStorage->remove($this->cachePath);
+        try {
+            $this->cacheStorage->remove($this->cachePath);
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 }
