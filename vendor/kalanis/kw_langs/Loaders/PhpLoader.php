@@ -3,7 +3,6 @@
 namespace kalanis\kw_langs\Loaders;
 
 
-use kalanis\kw_langs\LangException;
 use kalanis\kw_langs\Interfaces\ILoader;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
@@ -11,7 +10,7 @@ use kalanis\kw_paths\Path;
 
 /**
  * Class PhpLoader
- * @package kalanis\kw_langs
+ * @package kalanis\kw_langs\Loaders
  * Load config data from defined source
  * Contains personalized autoloader for configs!
  */
@@ -47,7 +46,6 @@ class PhpLoader implements ILoader
      * @param string $module
      * @param string $lang
      * @return string|null
-     * @throws LangException
      */
     public function contentPath(string $module, string $lang): ?string
     {
@@ -67,10 +65,14 @@ class PhpLoader implements ILoader
         return null;
     }
 
+    /**
+     * @param string $path
+     * @return array<string, string>
+     */
     protected function includedLang(string $path): array
     {
         $lang = [];
         include_once ($path);
-        return (array)$lang;
+        return (array) $lang;
     }
 }

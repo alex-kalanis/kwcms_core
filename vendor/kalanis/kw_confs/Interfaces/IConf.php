@@ -21,7 +21,7 @@ interface IConf
     public function getConfName(): string;
 
     /**
-     * @return string[]
+     * @return array<int|string, int|string|float|bool|null>
      */
     public function getSettings(): array;
 }

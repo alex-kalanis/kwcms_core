@@ -20,6 +20,7 @@ class Factory
     const PREG_IP6 = '#[0-9a-f:/\*]+#i';
     const PREG_NAME = '#[\*\?\:;\\//]#i';
 
+    /** @var IKBTranslations */
     protected $lang = null;
 
     public function __construct(?IKBTranslations $lang = null)
@@ -30,8 +31,8 @@ class Factory
     /**
      * @param int $type
      * @param Sources\ASources $sources
-     * @return ABan
      * @throws BanException
+     * @return ABan
      */
     public function getBan(int $type, Sources\ASources $sources): ABan
     {
@@ -51,9 +52,9 @@ class Factory
     }
 
     /**
-     * @param string|string[]|Sources\ASources $source
-     * @return ABan
+     * @param string|array<string>|array<int, string>|Sources\ASources $source
      * @throws BanException
+     * @return ABan
      * Filtering has been done by check if there is something left after matching
      */
     public function whichType($source): ABan
@@ -73,9 +74,9 @@ class Factory
     }
 
     /**
-     * @param string|string[]|Sources\ASources $source
-     * @return Sources\ASources
+     * @param string|array<string>|array<int, string>|Sources\ASources $source
      * @throws BanException
+     * @return Sources\ASources
      */
     protected function determineSource($source): Sources\ASources
     {
@@ -129,6 +130,6 @@ class Factory
      */
     public function checkForNames(string $content): bool
     {
-        return (bool)preg_match(static::PREG_NAME, $content);
+        return (bool) preg_match(static::PREG_NAME, $content);
     }
 }

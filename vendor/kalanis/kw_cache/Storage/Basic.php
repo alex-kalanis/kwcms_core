@@ -16,8 +16,9 @@ use kalanis\kw_storage\StorageException;
  */
 class Basic implements ICache
 {
-    /** @var Storage|null */
+    /** @var Storage */
     protected $cacheStorage = null;
+    /** @var string */
     protected $cachePath = '';
 
     public function __construct(Storage $cacheStorage)

@@ -11,10 +11,19 @@ namespace kalanis\kw_bans;
  */
 class Ip
 {
+    /** @var int */
     protected $type = Interfaces\IIpTypes::TYPE_NONE;
+    /** @var array<int, string> */
     protected $address = [];
+    /** @var int */
     protected $affectedBits = 0;
 
+    /**
+     * @param int $type
+     * @param array<int, string> $address
+     * @param int $affectedBits
+     * @return $this
+     */
     public function setData(int $type, array $address, int $affectedBits = 0): self
     {
         $this->type = $type;
@@ -28,6 +37,9 @@ class Ip
         return $this->type;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getAddress(): array
     {
         return $this->address;

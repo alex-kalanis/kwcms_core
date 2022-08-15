@@ -9,7 +9,7 @@ use kalanis\kw_bans\Sources\ASources;
 
 class Basic extends ABan
 {
-    /** @var string[] */
+    /** @var array<int, string> */
     protected $knownRecords = [];
     /** @var string */
     protected $searchKey = '';
@@ -32,7 +32,7 @@ class Basic extends ABan
         foreach ($this->knownRecords as $index => $word) {
             $found = mb_strpos($s, mb_strtolower($word));
             if (false !== $found) {
-                $this->foundRecords[$index] = $found;
+                $this->foundRecords[$index] = intval($found);
             }
         }
     }

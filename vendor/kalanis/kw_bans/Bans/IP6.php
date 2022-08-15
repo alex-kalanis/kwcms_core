@@ -15,6 +15,6 @@ class IP6 extends AIP
 
     protected function toNumber(string $value): int
     {
-        return hexdec($value);
+        return intval(hexdec($value));
     }
 }

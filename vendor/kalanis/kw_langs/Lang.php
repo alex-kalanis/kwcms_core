@@ -16,7 +16,7 @@ class Lang
 {
     /** @var ILoader */
     protected static $loader = null;
-    /** @var string[][] */
+    /** @var array<string, string> */
     protected static $translations = [];
     /** @var string */
     protected static $usedLang = '';
@@ -44,16 +44,26 @@ class Lang
         static::loadData(static::$usedLang, $lang->setLang(static::$usedLang)->getTranslations());
     }
 
+    /**
+     * @param string $lang
+     * @param array<string, string>|array<string, array<string, string>> $translations
+     */
     protected static function loadData(string $lang, array $translations): void
     {
-        $translations = (isset($translations[$lang]) && is_array($translations[$lang])) ? $translations[$lang] : $translations;
-        static::$translations = array_merge(static::$translations, $translations);
+        $translation = (isset($translations[$lang]) && is_array($translations[$lang])) ? $translations[$lang] : $translations;
+        /** @var array<string, string> $translation */
+        static::$translations = array_merge(static::$translations, $translation);
     }
 
+    /**
+     * @param string $key
+     * @param string|int|float ...$pass
+     * @return string
+     */
     public static function get(string $key, ...$pass): string
     {
         $content = (isset(static::$translations[$key])) ? static::$translations[$key] : $key ;
-        return empty($pass) ? $content : call_user_func_array('sprintf', array_merge([$content], $pass));
+        return strval(empty($pass) ? $content : call_user_func_array('sprintf', array_merge([$content], $pass)));
     }
 
     public static function getLang(): string

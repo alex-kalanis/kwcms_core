@@ -19,22 +19,22 @@ interface ISemaphore
 
     /**
      * We want/mark that thing
-     * @return bool
      * @throws SemaphoreException
+     * @return bool
      */
     public function want(): bool;
 
     /**
      * Is that thing wanted/marker
-     * @return bool
      * @throws SemaphoreException
+     * @return bool
      */
     public function has(): bool;
 
     /**
      * Remove want/mark
-     * @return bool
      * @throws SemaphoreException
+     * @return bool
      */
     public function remove(): bool;
 }

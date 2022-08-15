@@ -36,10 +36,15 @@ class PhpLoader implements ILoader
         $this->pathLib = $pathLib;
     }
 
-    public function load(string $module, string $conf = ''): array
+    /**
+     * @param string $module
+     * @param string $conf
+     * @return array<string|int, string|int|float|bool|null>
+     */
+    public function load(string $module, string $conf = ''): ?array
     {
         $path = $this->contentPath($module, $conf);
-        return (!empty($path)) ? $this->includedConf($path) : [];
+        return (!empty($path)) ? $this->includedConf($path) : null;
     }
 
     public function contentPath(string $module, string $conf = ''): ?string
@@ -59,10 +64,14 @@ class PhpLoader implements ILoader
         return null;
     }
 
+    /**
+     * @param string $path
+     * @return array<string|int, string|int|float|bool|null>
+     */
     protected function includedConf(string $path): array
     {
         $config = [];
         include_once ($path);
-        return (array)$config;
+        return (array) $config;
     }
 }

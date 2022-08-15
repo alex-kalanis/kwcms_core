@@ -16,8 +16,8 @@ interface ILoader
     /**
      * @param string $module which module it will be looked for
      * @param string $lang which lang name will be looked for
-     * @return string[]|null translations array or null if nothing found
      * @throws LangException
+     * @return array<string, string>|null translations array or null if nothing found
      */
     public function load(string $module, string $lang): ?array;
 }
