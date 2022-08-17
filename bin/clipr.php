@@ -63,7 +63,7 @@ try {
             new \kalanis\kw_clipr\Loaders\KwLoader()
         ),
         new kalanis\kw_clipr\Clipr\Sources(),
-        new kalanis\kw_input\Variables($inputs)
+        new kalanis\kw_input\Filtered\Variables($inputs)
     );
     # define basic paths with tasks
     $clipr->addPath('clipr', __DIR__ . DIRECTORY_SEPARATOR . 'run');

@@ -89,7 +89,7 @@ class Volume implements IStorage, IPassDirs
         return @unlink($key);
     }
 
-    public function size(string $key): int
+    public function size(string $key): ?int
     {
         $size = @filesize($key);
         return (false === $size) ? null : $size;

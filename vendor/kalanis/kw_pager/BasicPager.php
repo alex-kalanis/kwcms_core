@@ -57,6 +57,9 @@ class BasicPager implements Interfaces\IPager
 
     public function getPagesCount(): int
     {
+        if (0 >= $this->maxResults) {
+            return 1;
+        }
         $lastPageItems = $this->maxResults % $this->limitPerPage;
         $page = intval(floor($this->maxResults / $this->limitPerPage));
         return (0 < $lastPageItems) ? $page + 1 : $page ;

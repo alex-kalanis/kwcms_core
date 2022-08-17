@@ -4,7 +4,7 @@ namespace kalanis\kw_modules;
 
 
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_modules\Loaders\KwLoader;
 use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
@@ -19,7 +19,7 @@ use kalanis\kw_modules\Processing\Modules;
  */
 class Module
 {
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $inputs = null;
     /** @var Interfaces\ILoader|null */
     protected $loader = null;
@@ -29,13 +29,13 @@ class Module
     protected $module = null;
 
     /**
-     * @param IVariables $inputs
+     * @param IFiltered $inputs
      * @param string $moduleDefinitionDir
      * @param Modules|null $processor
      * @param Interfaces\ILoader|null $loader
      * @throws ModuleException
      */
-    public function __construct(IVariables $inputs, string $moduleDefinitionDir, ?Modules $processor, ?Interfaces\ILoader $loader = null)
+    public function __construct(IFiltered $inputs, string $moduleDefinitionDir, ?Modules $processor, ?Interfaces\ILoader $loader = null)
     {
         $this->inputs = $inputs;
         $this->loader = $loader ?: new KwLoader();

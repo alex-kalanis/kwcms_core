@@ -5,7 +5,7 @@ namespace kalanis\kw_modules;
 
 use kalanis\kw_input\Entries\Entry;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 
 
 /**
@@ -19,12 +19,12 @@ use kalanis\kw_input\Interfaces\IVariables;
  */
 abstract class AModule implements Interfaces\IModule
 {
-    /** @var IVariables */
+    /** @var IFiltered */
     protected $inputs = null;
     /** @var string[]|Entry[] */
     protected $params = [];
 
-    public function init(IVariables $inputs, array $passedParams): void
+    public function init(IFiltered $inputs, array $passedParams): void
     {
         $this->inputs = $inputs;
         $this->params = $passedParams;

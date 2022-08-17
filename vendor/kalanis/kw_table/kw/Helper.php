@@ -37,12 +37,12 @@ class Helper
     }
 
     /**
-     * @param InputInterface\IVariables $inputs
+     * @param InputInterface\IFiltered $inputs
      * @param string $alias
      * @throws FormsException
      * @return $this
      */
-    public function fillKwPage(InputInterface\IVariables $inputs, string $alias = 'filter'): self
+    public function fillKwPage(InputInterface\IFiltered $inputs, string $alias = 'filter'): self
     {
         // filter form
         $inputVariables = new Adapters\InputVarsAdapter($inputs);
@@ -67,18 +67,20 @@ class Helper
     }
 
     /**
-     * @param InputInterface\IVariables $inputs
+     * @param InputInterface\IFiltered $inputs
+     * @param int $currentPage
      * @param string $alias
      * @throws FormsException
      * @return $this
      */
-    public function fillKwCli(InputInterface\IVariables $inputs, string $alias = 'filter'): self
+    public function fillKwCli(InputInterface\IFiltered $inputs, ?int $currentPage = null, string $alias = 'filter'): self
     {
         // filter form
         $inputVariables = new Adapters\InputVarsAdapter($inputs);
         $inputFiles = new Adapters\InputFilesAdapter($inputs);
         $form = new Form($alias);
-        $this->table->addHeaderFilter(new KwFilter($form));
+        $form->setMethod(InputInterface\IEntry::SOURCE_CLI);
+        $this->table->addHeaderFilter(new KwFilter($form, false));
         $form->setInputs($inputVariables, $inputFiles);
 
         // order links
@@ -87,6 +89,9 @@ class Helper
         // pager
         $pager = new BasicPager();
         $pageLink = new PageLink(new Handler(new Sources\Inputs($inputs)), $pager);
+        if (!is_null($currentPage)) {
+            $pageLink->setPageNumber($currentPage);
+        }
         $pager->setActualPage($pageLink->getPageNumber());
         $this->table->addPager(new Render\CliPager(new Positions($pager)));
 
@@ -97,12 +102,12 @@ class Helper
     }
 
     /**
-     * @param InputInterface\IVariables $inputs
+     * @param InputInterface\IFiltered $inputs
      * @param string $alias
      * @throws FormsException
      * @return $this
      */
-    public function fillKwJson(InputInterface\IVariables $inputs, string $alias = 'filter'): self
+    public function fillKwJson(InputInterface\IFiltered $inputs, string $alias = 'filter'): self
     {
         // filter form
         $inputVariables = new Adapters\InputVarsAdapter($inputs);

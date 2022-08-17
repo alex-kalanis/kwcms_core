@@ -23,11 +23,23 @@ trait TVolumeCopy
      */
     protected function xcopy(string $source, string $dest, int $permissions = 0755): bool
     {
+        // check if source exists
+        if (!file_exists($source)) {
+            return false;
+        }
+
         $sourceHash = $this->hashDirectory($source);
+
         // Check for symlinks
         if (is_link($source)) {
-            return symlink(readlink($source), $dest);
+            // @codeCoverageIgnoreStart
+            $data = readlink($source);
+            if (false === $data) {
+                return false;
+            }
+            return symlink($data, $dest);
         }
+        // @codeCoverageIgnoreEnd
 
         // Simple copy for a file
         if (is_file($source)) {
@@ -41,7 +53,7 @@ trait TVolumeCopy
 
         // Loop through the folder
         $dir = dir($source);
-        while (false !== $entry = $dir->read()) {
+        while (false !== ($entry = $dir->read())) {
             // Skip pointers
             if (in_array($entry, ['.', '..'])) {
                 continue;

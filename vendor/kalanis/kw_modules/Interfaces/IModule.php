@@ -3,7 +3,7 @@
 namespace kalanis\kw_modules\Interfaces;
 
 
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
 
@@ -21,11 +21,11 @@ interface IModule
 
     /**
      * Initialize module, set values from external sources
-     * @param IVariables $inputs from external sources
+     * @param IFiltered $inputs from external sources
      * @param array $passedParams from modules settings
      * @return void
      */
-    public function init(IVariables $inputs, array $passedParams): void;
+    public function init(IFiltered $inputs, array $passedParams): void;
 
     /**
      * Process things in module

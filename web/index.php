@@ -150,7 +150,7 @@ try {
         $paths->getDocumentRoot() . $paths->getPathToSystemRoot()
     );
     $module = new \kalanis\kw_modules\Module(
-        new \kalanis\kw_input\Variables($inputs),'',
+        new \kalanis\kw_input\Filtered\Variables($inputs),'',
         new \kalanis\kw_modules\Processing\Modules($processor)
     );
     echo $module->process('Core')->get(); // dump output
