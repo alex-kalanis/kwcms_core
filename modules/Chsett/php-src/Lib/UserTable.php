@@ -7,8 +7,7 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IGroup;
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth\Interfaces;
 use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
@@ -43,20 +42,26 @@ class UserTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var Files|null */
-    protected $libAuth = null;
-    /** @var IUser|null */
+    /** @var Interfaces\IAccessAccounts|null */
+    protected $libAccounts = null;
+    /** @var Interfaces\IAccessGroups|null */
+    protected $libGroups = null;
+    /** @var Interfaces\IAccessClasses|null */
+    protected $libClasses = null;
+    /** @var Interfaces\IUser|null */
     protected $currentUser = null;
     /** @var Forward|null */
     protected $forward = null;
     /** @var Table|null */
     protected $table = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, Files $libAuth, IUser $currentUser)
+    public function __construct(IVariables $inputs, ExternalLink $link, Interfaces\IAccessAccounts $libAccounts, Interfaces\IAccessGroups $libGroups, Interfaces\IAccessClasses $libClasses, Interfaces\IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;
-        $this->libAuth = $libAuth;
+        $this->libAccounts = $libAccounts;
+        $this->libGroups = $libGroups;
+        $this->libClasses = $libClasses;
         $this->currentUser = $currentUser;
         $this->forward = new Forward();
     }
@@ -101,7 +106,7 @@ class UserTable
 
         $groups = $this->getGroups();
         $this->table->addOrderedColumn(Lang::get('chsett.table.group'), new Columns\Map('group', $groups), new Fields\Options($groups));
-        $classes = $this->libAuth->readClasses();
+        $classes = $this->libClasses->readClasses();
         $this->table->addOrderedColumn(Lang::get('chsett.table.class'), new Columns\Map('class', $classes), new Fields\Options($classes));
         $this->table->addOrderedColumn(Lang::get('chsett.table.name'), new Columns\Bold('name'), new Fields\TextContains());
 
@@ -113,7 +118,7 @@ class UserTable
         $this->table->addColumn(Lang::get('chsett.table.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $this->table->addDataSetConnector(new ConnectUserArray($this->libAuth->readAccounts(), 'id'));
+        $this->table->addDataSetConnector(new ConnectUserArray($this->libAccounts->readAccounts(), 'id'));
         $this->table->setOutput(new KwRenderer($this->table));
         return $this->table;
     }
@@ -125,16 +130,16 @@ class UserTable
      */
     protected function getGroups(): array
     {
-        $groups = $this->libAuth->readGroup();
+        $groups = $this->libGroups->readGroup();
         return array_combine(array_map([$this, 'getGroupId'], $groups), array_map([$this, 'getGroupName'], $groups));
     }
 
-    public function getGroupId(IGroup $group): int
+    public function getGroupId(Interfaces\IGroup $group): int
     {
         return $group->getGroupId();
     }
 
-    public function getGroupName(IGroup $group): string
+    public function getGroupName(Interfaces\IGroup $group): string
     {
         return $group->getGroupName();
     }

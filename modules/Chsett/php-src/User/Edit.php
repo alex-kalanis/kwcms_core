@@ -4,6 +4,7 @@ namespace KWCMS\modules\Chsett\User;
 
 
 use kalanis\kw_auth\AuthException;
+use kalanis\kw_auth\Interfaces\IAuthCert;
 use kalanis\kw_auth\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -24,13 +25,13 @@ class Edit extends AUsers
         try {
             $userName = strval($this->getFromParam('name'));
             $this->editUser = $this->user instanceof IUserCert
-                ? $this->libAuth->getCertData($userName)
-                : $this->libAuth->getDataOnly($userName)
+                ? $this->libAccounts->getCertData($userName)
+                : $this->libAccounts->getDataOnly($userName)
             ;
             if (empty($this->editUser)) {
                 throw new AuthException(Lang::get('chsett.user_not_found', $userName));
             }
-            $this->form->composeForm($this->editUser, $this->libAuth->readGroup(), $this->libAuth->readClasses());
+            $this->form->composeForm($this->editUser, $this->libGroups->readGroup(), $this->libClasses->readClasses());
             if ($this->editUser instanceof IUserCert) {
                 $this->form->addCerts($this->editUser);
             }
@@ -45,9 +46,9 @@ class Edit extends AUsers
                     $values['desc'],
                     $values['dir']
                 );
-                $this->libAuth->updateAccount($this->editUser);
-                if ($this->editUser instanceof IUserCert) {
-                    $this->libAuth->updateCertKeys(
+                $this->libAccounts->updateAccount($this->editUser);
+                if (($this->editUser instanceof IUserCert) && ($this->libAccounts instanceof IAuthCert)) {
+                    $this->libAccounts->updateCertKeys(
                         $this->editUser->getAuthName(),
                         $values['pubKey'],
                         $values['pubSalt']

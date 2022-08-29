@@ -7,8 +7,8 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_auth\AuthException;
+use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -42,18 +42,18 @@ class GroupTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var Files|null */
-    protected $libAuth = null;
+    /** @var IAccessGroups|null */
+    protected $libGroups = null;
     /** @var IUser|null */
     protected $currentUser = null;
     /** @var Forward|null */
     protected $forward = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, Files $libAuth, IUser $currentUser)
+    public function __construct(IVariables $inputs, ExternalLink $link, IAccessGroups $groups, IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;
-        $this->libAuth = $libAuth;
+        $this->libGroups = $groups;
         $this->currentUser = $currentUser;
         $this->forward = new Forward();
     }
@@ -104,7 +104,7 @@ class GroupTable
         $table->addColumn(Lang::get('chsett.table.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSetConnector(new ConnectGroupArray($this->libAuth->readGroup()));
+        $table->addDataSetConnector(new ConnectGroupArray($this->libGroups->readGroup()));
         $table->setOutput(new KwRenderer($table));
         return $table;
     }

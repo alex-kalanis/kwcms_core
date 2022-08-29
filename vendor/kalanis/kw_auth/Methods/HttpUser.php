@@ -18,10 +18,16 @@ class HttpUser extends AMethods
     const INPUT_NAME = 'PHP_AUTH_USER';
     const INPUT_PASS = 'PHP_AUTH_PW';
 
+    /** @var string */
     protected $realm = 'KWCMS_Http_User';
-
+    /** @var ArrayAccess<string, string|int> */
     protected $server = null;
 
+    /**
+     * @param IAuth|null $authenticator
+     * @param AMethods|null $nextOne
+     * @param ArrayAccess<string, string|int> $server
+     */
     public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $server)
     {
         parent::__construct($authenticator, $nextOne);
@@ -34,6 +40,7 @@ class HttpUser extends AMethods
         $pass = $this->server->offsetExists(static::INPUT_PASS) ? strval($this->server->offsetGet(static::INPUT_PASS)) : '' ;
 
         if (!empty($name) && !empty($pass)) {
+            /** @scrutinizer ignore-call */
             $this->loggedUser = $this->authenticator->authenticate($name, ['password' => $pass]);
         }
     }

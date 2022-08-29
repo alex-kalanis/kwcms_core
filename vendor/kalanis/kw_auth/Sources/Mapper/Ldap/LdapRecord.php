@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_auth\Data\Mapper;
+namespace kalanis\kw_auth\Sources\Mapper\Ldap;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
@@ -11,9 +11,9 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 
 /**
  * Class LdapRecord
- * @package kalanis\kw_auth\Sources\Mapper
- * @property int id
- * @property string name
+ * @package kalanis\kw_auth\Sources\Mapper\Ldap
+ * @property int $id
+ * @property string $name
  * @codeCoverageIgnore remote source
  */
 class LdapRecord extends ASimpleRecord implements IUser
@@ -22,7 +22,7 @@ class LdapRecord extends ASimpleRecord implements IUser
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 2048);
         $this->addEntry('name', IEntryType::TYPE_STRING, 128);
-        $this->setMapper('\kalanis\kw_auth\Data\Mapper\LdapMapper');
+        $this->setMapper('\kalanis\kw_auth\Sources\Mapper\Ldap\LdapMapper');
     }
 
     public function setData(int $authId, string $authName, int $authGroup, int $authClass, string $displayName, string $dir): void
@@ -32,12 +32,12 @@ class LdapRecord extends ASimpleRecord implements IUser
 
     public function getAuthId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function getAuthName(): string
     {
-        return (string)$this->name;
+        return (string) $this->name;
     }
 
     public function getGroup(): int
@@ -52,7 +52,7 @@ class LdapRecord extends ASimpleRecord implements IUser
 
     public function getDisplayName(): string
     {
-        return (string)$this->name;
+        return (string) $this->name;
     }
 
     public function getDir(): string

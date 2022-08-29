@@ -5,7 +5,6 @@ namespace kalanis\kw_auth_forms;
 
 use ArrayAccess;
 use kalanis\kw_forms\Form;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Rules\MatchAll;
 use kalanis\kw_rules\Rules\ProcessCallback;
 
@@ -29,7 +28,6 @@ class AuthForm
      * @param Form $boundForm
      * @param array $whichInputs
      * @param ArrayAccess $cookies
-     * @throws RuleException
      */
     public static function digest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
     {
@@ -54,7 +52,6 @@ class AuthForm
      * @param Form $boundForm
      * @param array $whichInputs
      * @param ArrayAccess $cookies
-     * @throws RuleException
      */
     public static function tokenAndDigest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
     {

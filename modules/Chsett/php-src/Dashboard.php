@@ -5,7 +5,6 @@ namespace KWCMS\modules\Chsett;
 
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -24,13 +23,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Files|null */
-    protected $libAuth = null;
-
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->libAuth = Auth::getAuthenticator();
     }
 
     public function allowedAccessClasses(): array
@@ -56,7 +51,14 @@ class Dashboard extends AAuthModule implements IModuleTitle
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
         try {
-            $table = new Lib\UserTable($this->inputs, $this->links, $this->libAuth, $this->user);
+            $table = new Lib\UserTable(
+                $this->inputs,
+                $this->links,
+                Auth::getAccounts(),
+                Auth::getGroups(),
+                Auth::getClasses(),
+                $this->user
+            );
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
         } catch ( FormsException | TableException | ConnectException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
@@ -71,7 +73,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         } else {
             $out = new Output\Json();
             $out->setContent([
-                'users' => $this->libAuth->readAccounts(),
+                'users' => Auth::getAccounts()->readAccounts(),
             ]);
             return $out;
         }

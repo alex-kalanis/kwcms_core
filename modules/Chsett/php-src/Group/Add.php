@@ -33,7 +33,7 @@ class Add extends AGroups
                     $this->user->getAuthId(),
                     $values['desc']
                 );
-                $this->libAuth->createGroup($this->group);
+                $this->libAuthEditGroups->createGroup($this->group);
                 $this->isProcessed = true;
                 $this->redirect = true;
             }

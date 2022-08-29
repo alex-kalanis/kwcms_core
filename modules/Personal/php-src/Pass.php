@@ -5,8 +5,7 @@ namespace KWCMS\modules\Personal;
 
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Sources\Files;
+use kalanis\kw_auth\Interfaces;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -27,8 +26,10 @@ class Pass extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Files|null */
+    /** @var Interfaces\IAuth|null */
     protected $libAuth = null;
+    /** @var Interfaces\IAccessAccounts|null */
+    protected $libAccount = null;
     /** @var Lib\FormPass|null */
     protected $form = null;
     /** @var bool */
@@ -37,13 +38,14 @@ class Pass extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libAuth = Auth::getAuth();
+        $this->libAccount = Auth::getAccounts();
         $this->form = new Lib\FormPass();
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+        return [Interfaces\IAccessClasses::CLASS_MAINTAINER, Interfaces\IAccessClasses::CLASS_ADMIN, Interfaces\IAccessClasses::CLASS_USER, ];
     }
 
     public function run(): void
@@ -54,7 +56,7 @@ class Pass extends AAuthModule implements IModuleTitle
             if ($this->form->process()) {
                 $values = $this->form->getValues();
                 if ($this->libAuth->authenticate($this->user->getAuthName(), ['password' => $values['currentPass']])) {
-                    $this->libAuth->updatePassword($this->user->getAuthName(), $values['newPass']);
+                    $this->libAccount->updatePassword($this->user->getAuthName(), $values['newPass']);
                     $this->isProcessed = true;
                 }
             }

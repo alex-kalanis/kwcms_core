@@ -6,7 +6,7 @@ namespace KWCMS\modules\Chsett;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Sources\Files;
+use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -26,13 +26,13 @@ class Groups extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Files|null */
-    protected $libAuth = null;
+    /** @var IAccessGroups|null */
+    protected $libGroups = null;
 
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libGroups = Auth::getGroups();
     }
 
     public function allowedAccessClasses(): array
@@ -58,7 +58,7 @@ class Groups extends AAuthModule implements IModuleTitle
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
         try {
-            $table = new Lib\GroupTable($this->inputs, $this->links, $this->libAuth, $this->user);
+            $table = new Lib\GroupTable($this->inputs, $this->links, $this->libGroups, $this->user);
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
         } catch ( FormsException | TableException | ConnectException | AuthException | LockException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
@@ -73,7 +73,7 @@ class Groups extends AAuthModule implements IModuleTitle
         } else {
             $out = new Output\Json();
             $out->setContent([
-                'groups' => $this->libAuth->readGroup(),
+                'groups' => $this->libGroups->readGroup(),
             ]);
             return $out;
         }

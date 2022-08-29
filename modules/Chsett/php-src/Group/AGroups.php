@@ -7,8 +7,8 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IGroup;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
@@ -28,8 +28,8 @@ abstract class AGroups extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Files|null */
-    protected $libAuth = null;
+    /** @var IAccessGroups|null */
+    protected $libAuthEditGroups = null;
     /** @var IGroup|null */
     protected $group = null;
     /** @var Lib\FormGroups|null */
@@ -44,7 +44,7 @@ abstract class AGroups extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libAuthEditGroups = Auth::getGroups();
         $this->form = new Lib\FormGroups();
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());

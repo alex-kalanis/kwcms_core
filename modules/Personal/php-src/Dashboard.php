@@ -5,10 +5,11 @@ namespace KWCMS\modules\Personal;
 
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
+use kalanis\kw_auth\Interfaces\IAccessAccounts;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth\Interfaces\IAuthCert;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Interfaces\IUserCert;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -29,8 +30,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Files|null */
-    protected $libAuth = null;
+    /** @var IAuthCert|null */
+    protected $libUsers = null;
+    /** @var IAccessAccounts|null */
+    protected $libAccounts = null;
     /** @var IUserCert|IUser|null */
     protected $editUser = null;
     /** @var Lib\FormProps|null */
@@ -41,7 +44,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libUsers = Auth::getAuth() instanceof IAuthCert ? Auth::getAuth() : (Auth::getAccounts() instanceof IAuthCert ? Auth::getAccounts() : null);
+        $this->libAccounts = Auth::getAccounts();
         $this->form = new Lib\FormProps();
     }
 
@@ -53,8 +57,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         try {
-            $this->editUser = $this->user instanceof IUserCert
-                ? $this->libAuth->getCertData($this->user->getAuthName())
+            $this->editUser = (($this->user instanceof IUserCert) && $this->libUsers)
+                ? $this->libUsers->getCertData($this->user->getAuthName())
                 : $this->user
             ;
             $this->form->composeForm($this->editUser);
@@ -72,9 +76,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
                     $values['displayName'],
                     $this->editUser->getDir()
                 );
-                $this->libAuth->updateAccount($this->editUser);
-                if ($this->editUser instanceof IUserCert) {
-                    $this->libAuth->updateCertKeys(
+                $this->libAccounts->updateAccount($this->editUser);
+                if (($this->editUser instanceof IUserCert) && $this->libUsers) {
+                    $this->libUsers->updateCertKeys(
                         $this->editUser->getAuthName(),
                         $values['pubKey'],
                         $values['pubSalt']

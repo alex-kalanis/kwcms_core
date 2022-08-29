@@ -25,7 +25,7 @@ class Add extends AUsers
     {
         try {
             $this->editUser = ($this->user instanceof IUserCert) ? new FileCertUser() : new FileUser();
-            $this->form->composeForm($this->editUser, $this->libAuth->readGroup(), $this->libAuth->readClasses());
+            $this->form->composeForm($this->editUser, $this->libGroups->readGroup(), $this->libClasses->readClasses());
             $this->form->wantPass();
             if ($this->editUser instanceof IUserCert) {
                 $this->form->addCerts($this->editUser);
@@ -47,7 +47,7 @@ class Add extends AUsers
                         $values['pubSalt']
                     );
                 }
-                $this->libAuth->createAccount($this->editUser, $values['pass']);
+                $this->libAccounts->createAccount($this->editUser, $values['pass']);
                 $this->isProcessed = true;
                 $this->redirect = true;
             }

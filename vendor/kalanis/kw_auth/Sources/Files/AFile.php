@@ -1,28 +1,26 @@
 <?php
 
-namespace kalanis\kw_auth\Sources;
+namespace kalanis\kw_auth\Sources\Files;
 
 
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Data\FileUser;
-use kalanis\kw_auth\Interfaces\IAccessAccounts;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAuth;
-use kalanis\kw_auth\Interfaces\IKATranslations;
-use kalanis\kw_auth\Interfaces\IMode;
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth\Interfaces;
+use kalanis\kw_auth\Sources\TAuthLock;
 use kalanis\kw_locks\Interfaces\ILock;
 use kalanis\kw_locks\LockException;
 
 
 /**
- * Class File
- * @package kalanis\kw_auth\Sources
- * Authenticate via file
+ * Class AFile
+ * @package kalanis\kw_auth\Sources\Files
+ * Authenticate via single file
  */
-class File extends AFile implements IAuth, IAccessAccounts
+abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
 {
     use TAuthLock;
+    use TLines;
+    use TStore;
 
     const PW_ID = 0;
     const PW_NAME = 1;
@@ -33,15 +31,18 @@ class File extends AFile implements IAuth, IAccessAccounts
     const PW_DIR = 6;
     const PW_FEED = 7;
 
+    /** @var Interfaces\IMode */
     protected $mode = null;
+    /** @var string */
+    protected $path = '';
 
     /**
-     * @param IMode $mode hashing mode
+     * @param Interfaces\IMode $mode hashing mode
      * @param ILock $lock file lock
      * @param string $path use full path with file name
-     * @param IKATranslations|null $lang
+     * @param Interfaces\IKATranslations|null $lang
      */
-    public function __construct(IMode $mode, ILock $lock, string $path, ?IKATranslations $lang = null)
+    public function __construct(Interfaces\IMode $mode, ILock $lock, string $path, ?Interfaces\IKATranslations $lang = null)
     {
         $this->setLang($lang);
         $this->mode = $mode;
@@ -49,19 +50,24 @@ class File extends AFile implements IAuth, IAccessAccounts
         $this->initAuthLock($lock);
     }
 
-    public function authenticate(string $userName, array $params = []): ?IUser
+    public function authenticate(string $userName, array $params = []): ?Interfaces\IUser
     {
         if (empty($params['password'])) {
             throw new AuthException($this->getLang()->kauPassMustBeSet());
         }
         $name = $this->stripChars($userName);
-        $pass = $params['password'];
+        $pass = strval($params['password']);
 
         $this->checkLock();
-        $passLines = $this->openFile($this->path);
+        try {
+            $passLines = $this->openFile($this->path);
+        } catch (AuthException $ex) {
+            // silence the problems on storage
+            return null;
+        }
         foreach ($passLines as &$line) {
             if ($line[static::PW_NAME] == $name) {
-                if ($this->mode->check((string)$pass, (string)$line[static::PW_PASS])) {
+                if ($this->mode->check($pass, strval($line[static::PW_PASS]))) {
                     return $this->getUserClass($line);
                 }
             }
@@ -69,13 +75,18 @@ class File extends AFile implements IAuth, IAccessAccounts
         return null;
     }
 
-    public function getDataOnly(string $userName): ?IUser
+    public function getDataOnly(string $userName): ?Interfaces\IUser
     {
         $name = $this->stripChars($userName);
 
         // load from password
         $this->checkLock();
-        $passwordLines = $this->openFile($this->path);
+        try {
+            $passwordLines = $this->openFile($this->path);
+        } catch (AuthException $ex) {
+            // silence the problems on storage
+            return null;
+        }
         foreach ($passwordLines as &$line) {
             if ($line[static::PW_NAME] == $name) {
                 return $this->getUserClass($line);
@@ -84,7 +95,11 @@ class File extends AFile implements IAuth, IAccessAccounts
         return null;
     }
 
-    protected function getUserClass(array &$line): IUser
+    /**
+     * @param array<int, string|int|float> $line
+     * @return Interfaces\IUser
+     */
+    protected function getUserClass(array &$line): Interfaces\IUser
     {
         $user = new FileUser();
         $user->setData(
@@ -98,25 +113,30 @@ class File extends AFile implements IAuth, IAccessAccounts
         return $user;
     }
 
-    public function createAccount(IUser $user, string $password): void
+    public function createAccount(Interfaces\IUser $user, string $password): void
     {
         $userName = $this->stripChars($user->getAuthName());
         $directory = $this->stripChars($user->getDir());
         $displayName = $this->stripChars($user->getDisplayName());
 
-        # no everything need is set
+        // not everything necessary is set
         if (empty($userName) || empty($directory) || empty($password)) {
             throw new AuthException($this->getLang()->kauPassMissParam());
         }
         $this->checkLock();
 
-        $uid = IUser::LOWEST_USER_ID;
-        $this->lock->create();
+        $uid = Interfaces\IUser::LOWEST_USER_ID;
+        $this->getLock()->create();
 
-        # read password
-        $passLines = $this->openFile($this->path);
+        // read password
+        try {
+            $passLines = $this->openFile($this->path);
+        } catch (AuthException $ex) {
+            // silence the problems on storage
+            $passLines = [];
+        }
         foreach ($passLines as &$line) {
-            $uid = max($uid, $line[static::PW_ID]);
+            $uid = max($uid, intval($line[static::PW_ID]));
         }
         $uid++;
 
@@ -125,7 +145,7 @@ class File extends AFile implements IAuth, IAccessAccounts
             static::PW_NAME => $userName,
             static::PW_PASS => $this->mode->hash($password),
             static::PW_GROUP => empty($user->getGroup()) ? $uid : $user->getClass() ,
-            static::PW_CLASS => empty($user->getClass()) ? IAccessClasses::CLASS_USER : $user->getClass() ,
+            static::PW_CLASS => empty($user->getClass()) ? Interfaces\IAccessClasses::CLASS_USER : $user->getClass() ,
             static::PW_DISPLAY => empty($displayName) ? $userName : $displayName,
             static::PW_DIR => $directory,
             static::PW_FEED => '',
@@ -133,16 +153,18 @@ class File extends AFile implements IAuth, IAccessAccounts
         ksort($newUserPass);
         $passLines[] = $newUserPass;
 
-        # now save it
-        $this->saveFile($this->path, $passLines);
-
-        $this->lock->delete();
+        // now save it
+        try {
+            $this->saveFile($this->path, $passLines);
+        } finally {
+            $this->getLock()->delete();
+        }
     }
 
     /**
-     * @return IUser[]
      * @throws AuthException
      * @throws LockException
+     * @return Interfaces\IUser[]
      */
     public function readAccounts(): array
     {
@@ -157,7 +179,7 @@ class File extends AFile implements IAuth, IAccessAccounts
         return $result;
     }
 
-    public function updateAccount(IUser $user): void
+    public function updateAccount(Interfaces\IUser $user): void
     {
         $userName = $this->stripChars($user->getAuthName());
         $directory = $this->stripChars($user->getDir());
@@ -165,8 +187,13 @@ class File extends AFile implements IAuth, IAccessAccounts
 
         $this->checkLock();
 
-        $this->lock->create();
-        $passwordLines = $this->openFile($this->path);
+        $this->getLock()->create();
+        try {
+            $passwordLines = $this->openFile($this->path);
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($passwordLines as &$line) {
             if ($line[static::PW_NAME] == $userName) {
                 // REFILL
@@ -177,8 +204,11 @@ class File extends AFile implements IAuth, IAccessAccounts
             }
         }
 
-        $this->saveFile($this->path, $passwordLines);
-        $this->lock->delete();
+        try {
+            $this->saveFile($this->path, $passwordLines);
+        } finally {
+            $this->getLock()->delete();
+        }
     }
 
     public function updatePassword(string $userName, string $passWord): void
@@ -188,19 +218,27 @@ class File extends AFile implements IAuth, IAccessAccounts
         $this->checkLock();
 
         $changed = false;
-        $this->lock->create();
+        $this->getLock()->create();
 
-        $lines = $this->openFile($this->path);
+        try {
+            $lines = $this->openFile($this->path);
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($lines as &$line) {
             if ($line[static::PW_NAME] == $name) {
                 $changed = true;
                 $line[static::PW_PASS] = $this->mode->hash($passWord);
             }
         }
-        if ($changed) {
-            $this->saveFile($this->path, $lines);
+        try {
+            if ($changed) {
+                $this->saveFile($this->path, $lines);
+            }
+        } finally {
+            $this->getLock()->delete();
         }
-        $this->lock->delete();
     }
 
     public function deleteAccount(string $userName): void
@@ -209,10 +247,17 @@ class File extends AFile implements IAuth, IAccessAccounts
         $this->checkLock();
 
         $changed = false;
-        $this->lock->create();
+        $this->getLock()->create();
 
-        # update password
-        $passLines = $this->openFile($this->path);
+        // update password
+        try {
+            $passLines = $this->openFile($this->path);
+        } catch (AuthException $ex) {
+            // removal on non-existent file is not possible and not necessary
+            $this->getLock()->delete();
+            return;
+        }
+
         foreach ($passLines as $index => &$line) {
             if ($line[static::PW_NAME] == $name) {
                 unset($passLines[$index]);
@@ -220,10 +265,13 @@ class File extends AFile implements IAuth, IAccessAccounts
             }
         }
 
-        # now save it
-        if ($changed) {
-            $this->saveFile($this->path, $passLines);
+        // now save it all
+        try {
+            if ($changed) {
+                $this->saveFile($this->path, $passLines);
+            }
+        } finally {
+            $this->getLock()->delete();
         }
-        $this->lock->delete();
     }
 }

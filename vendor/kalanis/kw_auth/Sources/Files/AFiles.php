@@ -1,32 +1,30 @@
 <?php
 
-namespace kalanis\kw_auth\Sources;
+namespace kalanis\kw_auth\Sources\Files;
 
 
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Data\FileCertUser;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAccessGroups;
-use kalanis\kw_auth\Interfaces\IAuthCert;
-use kalanis\kw_auth\Interfaces\IFile;
-use kalanis\kw_auth\Interfaces\IKATranslations;
-use kalanis\kw_auth\Interfaces\IMode;
-use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_auth\Interfaces\IUserCert;
+use kalanis\kw_auth\Interfaces;
+use kalanis\kw_auth\Sources\TClasses;
+use kalanis\kw_auth\Sources\TExpiration;
 use kalanis\kw_locks\Interfaces\ILock;
 use kalanis\kw_locks\LockException;
 
 
 /**
- * Class Files
+ * Class AFiles
  * @package kalanis\kw_auth\Sources
- * Authenticate via files
+ * Authenticate via multiple files
+ * Combined one - failing with no survivors!
  */
-class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
+abstract class AFiles implements Interfaces\IAuthCert, Interfaces\IAccessGroups, Interfaces\IAccessClasses
 {
     use TClasses;
     use TExpiration;
     use TGroups;
+    use TLines;
+    use TStore;
 
     const PW_NAME = 0;
     const PW_ID = 1;
@@ -44,9 +42,12 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
     const SH_CERT_KEY = 5;
     const SH_FEED = 6;
 
+    /** @var Interfaces\IMode */
     protected $mode = null;
+    /** @var string */
+    protected $path = '';
 
-    public function __construct(IMode $mode, ILock $lock, string $dir, ?IKATranslations $lang = null)
+    public function __construct(Interfaces\IMode $mode, ILock $lock, string $dir, ?Interfaces\IKATranslations $lang = null)
     {
         $this->setLang($lang);
         $this->initAuthLock($lock);
@@ -54,7 +55,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $this->mode = $mode;
     }
 
-    public function authenticate(string $userName, array $params = []): ?IUser
+    public function authenticate(string $userName, array $params = []): ?Interfaces\IUser
     {
         if (empty($params['password'])) {
             throw new AuthException($this->getLang()->kauPassMustBeSet());
@@ -65,11 +66,16 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         // load from shadow
         $this->checkLock();
 
-        $shadowLines = $this->openShadow();
+        try {
+            $shadowLines = $this->openShadow();
+        } catch (AuthException $ex) {
+            // silence the problems on storage
+            return null;
+        }
         foreach ($shadowLines as &$line) {
             if (
                 ($line[static::SH_NAME] == $name)
-                && $this->mode->check((string)$params['password'], (string)$line[static::SH_PASS])
+                && $this->mode->check(strval($params['password']), strval($line[static::SH_PASS]))
                 && ($time < $line[static::SH_CHANGE_NEXT])
             ) {
                 $class = $this->getDataOnly($userName);
@@ -82,14 +88,19 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         return null;
     }
 
-    public function getDataOnly(string $userName): ?IUser
+    public function getDataOnly(string $userName): ?Interfaces\IUser
     {
         $name = $this->stripChars($userName);
 
         // load from password
         $this->checkLock();
 
-        $passwordLines = $this->openPassword();
+        try {
+            $passwordLines = $this->openPassword();
+        } catch (AuthException $ex) {
+            // silence the problems on storage
+            return null;
+        }
         foreach ($passwordLines as &$line) {
             if ($line[static::PW_NAME] == $name) {
                 $user = $this->getUserClass();
@@ -107,26 +118,31 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         return null;
     }
 
-    protected function getUserClass(): IUser
+    protected function getUserClass(): Interfaces\IUser
     {
         return new FileCertUser();
     }
 
-    public function getCertData(string $userName): ?IUserCert
+    public function getCertData(string $userName): ?Interfaces\IUserCert
     {
         $name = $this->stripChars($userName);
 
         // load from shadow
         $this->checkLock();
 
-        $shadowLines = $this->openShadow();
+        try {
+            $shadowLines = $this->openShadow();
+        } catch (AuthException $ex) {
+            // silence the problems on storage
+            return null;
+        }
         foreach ($shadowLines as &$line) {
             if ($line[static::SH_NAME] == $name) {
                 $class = $this->getDataOnly($userName);
-                if ($class && ($class instanceof IUserCert)) {
+                if ($class && ($class instanceof Interfaces\IUserCert)) {
                     $class->addCertInfo(
-                        (string)base64_decode($line[static::SH_CERT_KEY]),
-                        (string)$line[static::SH_CERT_SALT]
+                        strval(base64_decode(strval($line[static::SH_CERT_KEY]))),
+                        strval($line[static::SH_CERT_SALT])
                     );
                     return $class;
                 }
@@ -142,8 +158,13 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $this->checkLock();
 
         $changed = false;
-        $this->lock->create();
-        $lines = $this->openShadow();
+        $this->getLock()->create();
+        try {
+            $lines = $this->openShadow();
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($lines as &$line) {
             if ($line[static::SH_NAME] == $name) {
                 $changed = true;
@@ -154,7 +175,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         if ($changed) {
             $this->saveShadow($lines);
         }
-        $this->lock->delete();
+        $this->getLock()->delete();
     }
 
     public function updateCertKeys(string $userName, ?string $certKey, ?string $certSalt): void
@@ -164,8 +185,13 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $this->checkLock();
 
         $changed = false;
-        $this->lock->create();
-        $lines = $this->openShadow();
+        $this->getLock()->create();
+        try {
+            $lines = $this->openShadow();
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($lines as &$line) {
             if ($line[static::SH_NAME] == $name) {
                 $changed = true;
@@ -176,10 +202,10 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         if ($changed) {
             $this->saveShadow($lines);
         }
-        $this->lock->delete();
+        $this->getLock()->delete();
     }
 
-    public function createAccount(IUser $user, string $password): void
+    public function createAccount(Interfaces\IUser $user, string $password): void
     {
         $userName = $this->stripChars($user->getAuthName());
         $displayName = $this->stripChars($user->getDisplayName());
@@ -187,22 +213,26 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $certSalt = '';
         $certKey = '';
 
-        if ($user instanceof IUserCert) {
+        if ($user instanceof Interfaces\IUserCert) {
             $certSalt = $this->stripChars($user->getPubSalt());
             $certKey = $user->getPubKey();
         }
 
-        # no everything need is set
+        // not everything necessary is set
         if (empty($userName) || empty($directory) || empty($password)) {
             throw new AuthException($this->getLang()->kauPassMissParam());
         }
         $this->checkLock();
 
-        $uid = IUser::LOWEST_USER_ID;
-        $this->lock->create();
+        $uid = Interfaces\IUser::LOWEST_USER_ID;
+        $this->getLock()->create();
 
-        # read password
-        $passLines = $this->openPassword();
+        // read password
+        try {
+            $passLines = $this->openPassword();
+        } catch (AuthException $ex) {
+            $passLines = [];
+        }
         foreach ($passLines as &$line) {
             $uid = max($uid, $line[static::PW_ID]);
         }
@@ -212,7 +242,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
             static::PW_NAME => $userName,
             static::PW_ID => $uid,
             static::PW_GROUP => empty($user->getGroup()) ? $uid : $user->getGroup() ,
-            static::PW_CLASS => empty($user->getClass()) ? IAccessClasses::CLASS_USER : $user->getClass() ,
+            static::PW_CLASS => empty($user->getClass()) ? Interfaces\IAccessClasses::CLASS_USER : $user->getClass() ,
             static::PW_DISPLAY => empty($displayName) ? $userName : $displayName,
             static::PW_DIR => $directory,
             static::PW_FEED => '',
@@ -220,8 +250,12 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         ksort($newUserPass);
         $passLines[] = $newUserPass;
 
-        # now read shadow
-        $shadeLines = $this->openShadow();
+        // now read shadow
+        try {
+            $shadeLines = $this->openShadow();
+        } catch (AuthException $ex) {
+            $shadeLines = [];
+        }
 
         $newUserShade = [
             static::SH_NAME => $userName,
@@ -235,17 +269,19 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         ksort($newUserShade);
         $shadeLines[] = $newUserShade;
 
-        # now save it
-        $this->savePassword($passLines);
-        $this->saveShadow($shadeLines);
-
-        $this->lock->delete();
+        // now save it all
+        try {
+            $this->savePassword($passLines);
+            $this->saveShadow($shadeLines);
+        } finally {
+            $this->getLock()->delete();
+        }
     }
 
     /**
-     * @return IUser[]
      * @throws AuthException
      * @throws LockException
+     * @return Interfaces\IUser[]
      */
     public function readAccounts(): array
     {
@@ -269,7 +305,7 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         return $result;
     }
 
-    public function updateAccount(IUser $user): void
+    public function updateAccount(Interfaces\IUser $user): void
     {
         $userName = $this->stripChars($user->getAuthName());
         $directory = $this->stripChars($user->getDir());
@@ -277,12 +313,17 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
 
         $this->checkLock();
 
-        $this->lock->create();
+        $this->getLock()->create();
         $oldName = null;
-        $passwordLines = $this->openPassword();
+        try {
+            $passwordLines = $this->openPassword();
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($passwordLines as &$line) {
             if (($line[static::PW_NAME] == $userName) && ($line[static::PW_ID] != $user->getAuthId())) {
-                $this->lock->delete();
+                $this->getLock()->delete();
                 throw new AuthException($this->getLang()->kauPassLoginExists());
             }
             if ($line[static::PW_ID] == $user->getAuthId()) {
@@ -298,18 +339,21 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
             }
         }
 
-        $this->savePassword($passwordLines);
+        try {
+            $this->savePassword($passwordLines);
 
-        if (!is_null($oldName)) {
-            $lines = $this->openShadow();
-            foreach ($lines as &$line) {
-                if ($line[static::SH_NAME] == $oldName) {
-                    $line[static::SH_NAME] = $userName;
+            if (!is_null($oldName)) {
+                $lines = $this->openShadow();
+                foreach ($lines as &$line) {
+                    if ($line[static::SH_NAME] == $oldName) {
+                        $line[static::SH_NAME] = $userName;
+                    }
                 }
+                $this->saveShadow($lines);
             }
-            $this->saveShadow($lines);
+        } finally {
+            $this->getLock()->delete();
         }
-        $this->lock->delete();
     }
 
     public function deleteAccount(string $userName): void
@@ -318,10 +362,15 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
         $this->checkLock();
 
         $changed = false;
-        $this->lock->create();
+        $this->getLock()->create();
 
-        # update password
-        $passLines = $this->openPassword();
+        // update password
+        try {
+            $passLines = $this->openPassword();
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($passLines as $index => &$line) {
             if ($line[static::PW_NAME] == $name) {
                 unset($passLines[$index]);
@@ -329,8 +378,13 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
             }
         }
 
-        # now update shadow
-        $shadeLines = $this->openShadow();
+        // now update shadow
+        try {
+            $shadeLines = $this->openShadow();
+        } catch (AuthException $ex) {
+            $this->getLock()->delete();
+            throw $ex;
+        }
         foreach ($shadeLines as $index => &$line) {
             if ($line[static::SH_NAME] == $name) {
                 unset($shadeLines[$index]);
@@ -338,12 +392,15 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
             }
         }
 
-        # now save it
-        if ($changed) {
-            $this->savePassword($passLines);
-            $this->saveShadow($shadeLines);
+        // now save it all
+        try {
+            if ($changed) {
+                $this->savePassword($passLines);
+                $this->saveShadow($shadeLines);
+            }
+        } finally {
+            $this->getLock()->delete();
         }
-        $this->lock->delete();
     }
 
     protected function checkRest(int $groupId): void
@@ -357,56 +414,56 @@ class Files extends AFile implements IAuthCert, IAccessGroups, IAccessClasses
     }
 
     /**
-     * @return string[][]
      * @throws AuthException
+     * @return array<int, array<int, string|int>>
      */
     protected function openPassword(): array
     {
-        return $this->openFile($this->path . DIRECTORY_SEPARATOR . IFile::PASS_FILE);
+        return $this->openFile($this->path . DIRECTORY_SEPARATOR . Interfaces\IFile::PASS_FILE);
     }
 
     /**
-     * @param string[][] $lines
+     * @param array<int, array<int, string|int>> $lines
      * @throws AuthException
      */
     protected function savePassword(array $lines): void
     {
-        $this->saveFile($this->path . DIRECTORY_SEPARATOR . IFile::PASS_FILE, $lines);
+        $this->saveFile($this->path . DIRECTORY_SEPARATOR . Interfaces\IFile::PASS_FILE, $lines);
     }
 
     /**
-     * @return string[][]
      * @throws AuthException
+     * @return array<int, array<int, string|int>>
      */
     protected function openShadow(): array
     {
-        return $this->openFile($this->path . DIRECTORY_SEPARATOR . IFile::SHADE_FILE);
+        return $this->openFile($this->path . DIRECTORY_SEPARATOR . Interfaces\IFile::SHADE_FILE);
     }
 
     /**
-     * @param string[][] $lines
+     * @param array<int, array<int, string|int>> $lines
      * @throws AuthException
      */
     protected function saveShadow(array $lines): void
     {
-        $this->saveFile($this->path . DIRECTORY_SEPARATOR . IFile::SHADE_FILE, $lines);
+        $this->saveFile($this->path . DIRECTORY_SEPARATOR . Interfaces\IFile::SHADE_FILE, $lines);
     }
 
     /**
-     * @return string[][]
      * @throws AuthException
+     * @return array<int, array<int, string|int>>
      */
     protected function openGroups(): array
     {
-        return $this->openFile($this->path . DIRECTORY_SEPARATOR . IFile::GROUP_FILE);
+        return $this->openFile($this->path . DIRECTORY_SEPARATOR . Interfaces\IFile::GROUP_FILE);
     }
 
     /**
-     * @param string[][] $lines
+     * @param array<int, array<int, string|int>> $lines
      * @throws AuthException
      */
     protected function saveGroups(array $lines): void
     {
-        $this->saveFile($this->path . DIRECTORY_SEPARATOR . IFile::GROUP_FILE, $lines);
+        $this->saveFile($this->path . DIRECTORY_SEPARATOR . Interfaces\IFile::GROUP_FILE, $lines);
     }
 }

@@ -26,11 +26,19 @@ class CountedSessions extends AMethods
 
     /** @var int */
     protected $maxTries = 100;
-    /** @var ArrayAccess */
+    /** @var ArrayAccess<string, string|int> */
     protected $session = null;
-    /** @var SessionHandlerInterface */
+    /** @var SessionHandlerInterface|null */
     protected $externalHandler = null;
 
+    /**
+     * @param IAuth|null $authenticator
+     * @param AMethods|null $nextOne
+     * @param ArrayAccess<string, string|int> $session
+     * @param int $maxTries
+     * @param IKATranslations|null $lang
+     * @param SessionHandlerInterface|null $externalHandler
+     */
     public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, int $maxTries = 100, ?IKATranslations $lang = null, ?SessionHandlerInterface $externalHandler = null)
     {
         parent::__construct($authenticator, $nextOne);
@@ -40,6 +48,10 @@ class CountedSessions extends AMethods
         $this->externalHandler = $externalHandler;
     }
 
+    /**
+     * @param ArrayAccess<string, string|int|float> $credentials
+     * @throws AuthException
+     */
     public function process(ArrayAccess $credentials): void
     {
         if (PHP_SESSION_NONE == session_status()) {
@@ -52,8 +64,8 @@ class CountedSessions extends AMethods
             if (!$this->session->offsetExists(static::INPUT_COUNTER)) {
                 $this->session->offsetSet(static::INPUT_COUNTER, 0);
             }
-            if ($this->session->offsetGet(static::INPUT_COUNTER) < $this->maxTries) {
-                $this->session->offsetSet(static::INPUT_COUNTER, $this->session->offsetGet(static::INPUT_COUNTER) + 1);
+            if (intval(strval($this->session->offsetGet(static::INPUT_COUNTER))) < $this->maxTries) {
+                $this->session->offsetSet(static::INPUT_COUNTER, strval(intval(strval($this->session->offsetGet(static::INPUT_COUNTER))) + 1));
             } else {
                 throw new AuthException($this->getLang()->kauTooManyTries(), 429);
             }

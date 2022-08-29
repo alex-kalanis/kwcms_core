@@ -8,6 +8,7 @@ use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IGroup;
 use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_langs\Lang;
@@ -26,8 +27,8 @@ use kalanis\kw_paths\Stored;
  */
 class Delete extends AAuthModule
 {
-    /** @var Files|null */
-    protected $libAuth = null;
+    /** @var IAccessGroups|null */
+    protected $libGroups = null;
     /** @var IGroup|null */
     protected $group = null;
     /** @var AuthException|null */
@@ -43,7 +44,7 @@ class Delete extends AAuthModule
     {
         Lang::load('Chsett');
         Lang::load('Admin');
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libGroups = Auth::getGroups();
         $this->links = new ExternalLink(Stored::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
@@ -58,11 +59,11 @@ class Delete extends AAuthModule
     {
         try {
             $groupId = intval(strval($this->getFromParam('id')));
-            $this->group = $this->libAuth->getGroupDataOnly($groupId);
+            $this->group = $this->libGroups->getGroupDataOnly($groupId);
             if (empty($this->group)) {
                 throw new AuthException(Lang::get('chsett.group_not_found', $groupId));
             }
-            $this->libAuth->deleteGroup($this->group->getGroupId());
+            $this->libGroups->deleteGroup($this->group->getGroupId());
             $this->isProcessed = true;
         } catch (AuthException | LockException $ex) {
             $this->error = $ex;

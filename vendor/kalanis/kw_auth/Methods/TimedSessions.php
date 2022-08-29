@@ -21,6 +21,14 @@ class TimedSessions extends Sessions
     /** @var int */
     protected $loginTimeout = 0;
 
+    /**
+     * @param IAuth|null $authenticator
+     * @param AMethods|null $nextOne
+     * @param ArrayAccess<string, string|int> $session
+     * @param ArrayAccess<string, string|int> $server
+     * @param int $loginTimeout
+     * @param SessionHandlerInterface|null $externalHandler
+     */
     public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, ArrayAccess $server, int $loginTimeout = 86400, ?SessionHandlerInterface $externalHandler = null)
     {
         parent::__construct($authenticator, $nextOne, $session, $server, $externalHandler);
@@ -37,7 +45,7 @@ class TimedSessions extends Sessions
             && $this->session->offsetExists(static::INPUT_TIME)
             && !empty($this->session->offsetGet(static::INPUT_TIME)) // user has already set last used time
             && ($this->server->offsetGet(static::SERVER_REMOTE) == $this->session->offsetGet(static::SESSION_IP)) // against proxy attack - changed ip through work
-            && (($this->session->offsetGet(static::INPUT_TIME) + $this->loginTimeout) > time()) // kick-off on time delay
+            && ((intval(strval($this->session->offsetGet(static::INPUT_TIME))) + $this->loginTimeout) > time()) // kick-off on time delay
         );
     }
 

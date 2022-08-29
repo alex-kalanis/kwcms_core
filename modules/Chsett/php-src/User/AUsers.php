@@ -6,9 +6,7 @@ namespace KWCMS\modules\Chsett\User;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_auth\Sources\Files;
+use kalanis\kw_auth\Interfaces;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
@@ -28,9 +26,13 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Files|null */
-    protected $libAuth = null;
-    /** @var IUser|null */
+    /** @var Interfaces\IAccessGroups|null */
+    protected $libGroups = null;
+    /** @var Interfaces\IAccessClasses|null */
+    protected $libClasses = null;
+    /** @var Interfaces\IAccessAccounts|Interfaces\IAuthCert|null */
+    protected $libAccounts = null;
+    /** @var Interfaces\IUser|null */
     protected $editUser = null;
     /** @var Lib\FormUsers|null */
     protected $form = null;
@@ -44,7 +46,9 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libGroups = Auth::getGroups();
+        $this->libClasses = Auth::getClasses();
+        $this->libAccounts = Auth::getAccounts();
         $this->form = new Lib\FormUsers();
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
@@ -52,7 +56,7 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER ];
+        return [Interfaces\IAccessClasses::CLASS_MAINTAINER ];
     }
 
     public function result(): Output\AOutput

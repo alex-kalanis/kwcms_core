@@ -24,13 +24,20 @@ class Sessions extends AMethods
     const INPUT_PASS = 'pass';
     const INPUT_PASS2 = 'password';
 
-    /** @var ArrayAccess */
+    /** @var ArrayAccess<string, string|int> */
     protected $session = null;
-    /** @var ArrayAccess */
+    /** @var ArrayAccess<string, string|int> */
     protected $server = null;
-    /** @var SessionHandlerInterface */
+    /** @var SessionHandlerInterface|null */
     protected $externalHandler = null;
 
+    /**
+     * @param IAuth|null $authenticator
+     * @param AMethods|null $nextOne
+     * @param ArrayAccess<string, string|int> $session
+     * @param ArrayAccess<string, string|int> $server
+     * @param SessionHandlerInterface|null $externalHandler
+     */
     public function __construct(?IAuth $authenticator, ?AMethods $nextOne, ArrayAccess $session, ArrayAccess $server, ?SessionHandlerInterface $externalHandler = null)
     {
         parent::__construct($authenticator, $nextOne);
@@ -48,6 +55,7 @@ class Sessions extends AMethods
             session_start();
         }
         if ($this->tryLogged()) {
+            /** @scrutinizer ignore-call */
             $this->loggedUser = $this->authenticator->getDataOnly($this->nameFromSess());
         } else {
             $name = $credentials->offsetExists(static::INPUT_NAME) ? strval($credentials->offsetGet(static::INPUT_NAME)) : '' ;
@@ -55,6 +63,7 @@ class Sessions extends AMethods
             $pass = $credentials->offsetExists(static::INPUT_PASS) ? strval($credentials->offsetGet(static::INPUT_PASS)) : '' ;
             $pass = $credentials->offsetExists(static::INPUT_PASS2) ? strval($credentials->offsetGet(static::INPUT_PASS2)) : $pass ;
             if (!empty($name) && !empty($pass)) {
+                /** @scrutinizer ignore-call */
                 $this->loggedUser = $this->authenticator->authenticate($name, ['password' => $pass]);
             }
         }
@@ -90,7 +99,7 @@ class Sessions extends AMethods
     protected function fillSession(string $name): void
     {
         $this->session->offsetSet(static::SESSION_NAME, $name);
-        $this->session->offsetSet(static::SESSION_IP, $this->server->offsetGet(static::SERVER_REMOTE));
+        $this->session->offsetSet(static::SESSION_IP, strval($this->server->offsetGet(static::SERVER_REMOTE)));
     }
 
     protected function clearSession(): void

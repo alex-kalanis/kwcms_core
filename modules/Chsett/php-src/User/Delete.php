@@ -7,9 +7,10 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
+use kalanis\kw_auth\Interfaces\IAccessAccounts;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth\Interfaces\IAuth;
 use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
@@ -26,8 +27,10 @@ use kalanis\kw_paths\Stored;
  */
 class Delete extends AAuthModule
 {
-    /** @var Files|null */
+    /** @var IAuth|null */
     protected $libAuth = null;
+    /** @var IAccessAccounts|null */
+    protected $libAccounts = null;
     /** @var IUser|null */
     protected $editUser = null;
     /** @var AuthException|null */
@@ -43,7 +46,8 @@ class Delete extends AAuthModule
     {
         Lang::load('Chsett');
         Lang::load('Admin');
-        $this->libAuth = Auth::getAuthenticator();
+        $this->libAuth = Auth::getAuth();
+        $this->libAccounts = Auth::getAccounts();
         $this->links = new ExternalLink(Stored::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
@@ -62,7 +66,7 @@ class Delete extends AAuthModule
             if (empty($this->editUser)) {
                 throw new AuthException(Lang::get('chsett.user_not_found', $userName));
             }
-            $this->libAuth->deleteAccount($this->editUser->getAuthName());
+            $this->libAccounts->deleteAccount($this->editUser->getAuthName());
             $this->isProcessed = true;
         } catch (AuthException | LockException $ex) {
             $this->error = $ex;
