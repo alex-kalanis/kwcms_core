@@ -3,7 +3,7 @@
 namespace kalanis\kw_storage_session;
 
 
-use kalanis\kw_storage\Storage;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 use SessionHandlerInterface;
 
@@ -24,12 +24,12 @@ session_start();
  */
 class StorageSession implements SessionHandlerInterface
 {
-    /** @var Storage */
+    /** @var IStorage */
     protected $storage = null;
     /** @var int */
     protected $ttl = 1800; // 30 minutes default
 
-    public function __construct(Storage $storage, ?int $ttl = null)
+    public function __construct(IStorage $storage, ?int $ttl = null)
     {
         $this->storage = $storage;
         $this->ttl = is_null($ttl) ? $this->ttl : $ttl ;
@@ -60,7 +60,7 @@ class StorageSession implements SessionHandlerInterface
     #[ReturnTypeWillChange]
     public function read($id)
     {
-        return strval($this->storage->get($id));
+        return strval($this->storage->read($id));
     }
 
     /**
@@ -71,7 +71,7 @@ class StorageSession implements SessionHandlerInterface
      */
     public function write($id, $data): bool
     {
-        return $this->storage->set($id, $data, $this->ttl);
+        return $this->storage->write($id, $data, $this->ttl);
     }
 
     /**
@@ -81,7 +81,7 @@ class StorageSession implements SessionHandlerInterface
      */
     public function destroy($id): bool
     {
-        return $this->storage->delete($id);
+        return $this->storage->remove($id);
     }
 
     public function gc($maxLifetime)

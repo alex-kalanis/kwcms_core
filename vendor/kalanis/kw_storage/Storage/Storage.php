@@ -3,7 +3,6 @@
 namespace kalanis\kw_storage\Storage;
 
 
-use kalanis\kw_storage\StorageException;
 use kalanis\kw_storage\Interfaces;
 use Traversable;
 
@@ -13,118 +12,65 @@ use Traversable;
  * @package kalanis\kw_storage\Storage
  * Main connection through storage structure
  */
-class Storage
+class Storage implements Interfaces\IStorage
 {
-    /** @var Interfaces\IStorage */
-    protected $storage = null;
+    /** @var Interfaces\ITarget */
+    protected $target = null;
     /** @var Interfaces\IKey */
     protected $key = null;
 
-    public function __construct(Interfaces\IKey $key, Interfaces\IStorage $storage)
+    public function __construct(Interfaces\IKey $key, Interfaces\ITarget $target)
     {
-        $this->storage = $storage;
+        $this->target = $target;
         $this->key = $key;
     }
 
-    /**
-     * Check if storage is usable
-     * @return bool
-     */
     public function canUse(): bool
     {
-        return $this->storage->check($this->key->fromSharedKey(''));
+        return $this->target->check($this->key->fromSharedKey(''));
     }
 
-    /**
-     * Create new record in storage
-     * @param string $sharedKey
-     * @param mixed $data
-     * @param int|null $timeout
-     * @throws StorageException
-     * @return bool
-     */
     public function write(string $sharedKey, $data, ?int $timeout = null): bool
     {
-        return $this->storage->save($this->key->fromSharedKey($sharedKey), $data, $timeout);
+        return $this->target->save($this->key->fromSharedKey($sharedKey), $data, $timeout);
     }
 
-    /**
-     * Read storage record
-     * @param string $sharedKey
-     * @throws StorageException
-     * @return mixed
-     */
     public function read(string $sharedKey)
     {
-        return $this->storage->load($this->key->fromSharedKey($sharedKey));
+        return $this->target->load($this->key->fromSharedKey($sharedKey));
     }
 
-    /**
-     * Delete storage record - usually on finish or discard
-     * @param string $sharedKey
-     * @throws StorageException
-     * @return bool
-     */
     public function remove(string $sharedKey): bool
     {
-        return $this->storage->remove($this->key->fromSharedKey($sharedKey));
+        return $this->target->remove($this->key->fromSharedKey($sharedKey));
     }
 
-    /**
-     * Has data in storage? Mainly for testing
-     * @param string $sharedKey
-     * @return bool
-     */
     public function exists(string $sharedKey): bool
     {
-        return $this->storage->exists($this->key->fromSharedKey($sharedKey));
+        return $this->target->exists($this->key->fromSharedKey($sharedKey));
     }
 
-    /**
-     * What data is in storage?
-     * @param string $mask
-     * @throws StorageException
-     * @return Traversable<string>
-     */
     public function lookup(string $mask): Traversable
     {
-        return $this->storage->lookup($this->key->fromSharedKey($mask));
+        return $this->target->lookup($this->key->fromSharedKey($mask));
     }
 
-    /**
-     * Increment index in key
-     * @param string $key
-     * @throws StorageException
-     * @return bool
-     */
     public function increment(string $key): bool
     {
-        return $this->storage->increment($this->key->fromSharedKey($key));
+        return $this->target->increment($this->key->fromSharedKey($key));
     }
 
-    /**
-     * Decrement index in key
-     * @param string $key
-     * @throws StorageException
-     * @return bool
-     */
     public function decrement(string $key): bool
     {
-        return $this->storage->decrement($this->key->fromSharedKey($key));
+        return $this->target->decrement($this->key->fromSharedKey($key));
     }
 
-    /**
-     * Remove multiple keys
-     * @param string[] $keys
-     * @throws StorageException
-     * @return array<int|string, bool>
-     */
     public function removeMulti(array $keys): array
     {
-        return $this->storage->removeMulti(array_map([$this, 'multiKey'], $keys));
+        return $this->target->removeMulti(array_map([$this, 'multiKey'], $keys));
     }
 
-    protected function multiKey(string $key): string
+    public function multiKey(string $key): string
     {
         return $this->key->fromSharedKey($key);
     }

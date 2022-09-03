@@ -9,7 +9,7 @@ use kalanis\kw_storage\Storage\Target;
 
 class Factory
 {
-    public function getKey(Interfaces\IStorage $storage): Interfaces\IKey
+    public function getKey(Interfaces\ITarget $storage): Interfaces\IKey
     {
         if ($storage instanceof Target\Volume) {
             return new DirKey();

@@ -13,7 +13,7 @@ use kalanis\kw_cache\Interfaces;
  */
 class Factory
 {
-    public function getFormat(Interfaces\ICache $cache): Interfaces\IFormat
+    public function getFormat(/** @scrutinizer ignore-unused */Interfaces\ICache $cache): Interfaces\IFormat
     {
         return new Format();
     }

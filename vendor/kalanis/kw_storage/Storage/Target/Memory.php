@@ -3,7 +3,7 @@
 namespace kalanis\kw_storage\Storage\Target;
 
 
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITarget;
 use kalanis\kw_storage\StorageException;
 use Traversable;
 
@@ -13,7 +13,7 @@ use Traversable;
  * @package kalanis\kw_storage\Storage\Target
  * Store content onto memory - TEMPORARY
  */
-class Memory implements IStorage
+class Memory implements ITarget
 {
     use TOperations;
 

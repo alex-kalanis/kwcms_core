@@ -6,7 +6,7 @@ namespace kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\SemaphoreException;
-use kalanis\kw_storage\Storage\Storage as XStorage;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -19,10 +19,10 @@ class Storage implements ISemaphore
 {
     /** @var string */
     protected $rootPath = '';
-    /** @var XStorage */
+    /** @var IStorage */
     protected $storage = null;
 
-    public function __construct(XStorage $storage, string $rootPath)
+    public function __construct(IStorage $storage, string $rootPath)
     {
         $this->rootPath = Stuff::removeEndingSlash($rootPath) . static::EXT_SEMAPHORE;
         $this->storage = $storage;
@@ -39,7 +39,11 @@ class Storage implements ISemaphore
 
     public function has(): bool
     {
-        return $this->storage->exists($this->rootPath);
+        try {
+            return $this->storage->exists($this->rootPath);
+        } catch (StorageException $ex) {
+            throw new SemaphoreException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function remove(): bool

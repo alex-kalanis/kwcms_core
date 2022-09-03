@@ -47,7 +47,7 @@ class Semaphore implements ICache
         if (false === $result) {
             return false;
         }
-        # remove signal to save
+        // remove signal to save
         try {
             if ($this->reloadSemaphore->has()) {
                 $this->reloadSemaphore->remove();

@@ -14,6 +14,7 @@ use kalanis\kw_paths\Stuff;
  * @package kalanis\kw_locks\Methods
  * Lock some target
  * Uses low-level volume operations
+ * @codeCoverageIgnore accessing local volume
  */
 class FileLock implements ILock
 {

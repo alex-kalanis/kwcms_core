@@ -25,10 +25,10 @@ class Factory
     }
 
     /**
-     * @param mixed|Interfaces\IStorage|array|string|null $storageParams
-     * @return Storage|null
+     * @param mixed|Interfaces\ITarget|array|string|null $storageParams
+     * @return Interfaces\IStorage|null
      */
-    public function getStorage($storageParams): ?Storage
+    public function getStorage($storageParams): ?Interfaces\IStorage
     {
         $storage = $this->targetFactory->getStorage($storageParams);
         if (empty($storage)) {

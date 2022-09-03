@@ -5,8 +5,7 @@ namespace kalanis\kw_storage\Storage\Target;
 
 use kalanis\kw_storage\Extras\TRemoveCycle;
 use kalanis\kw_storage\Extras\TVolumeCopy;
-use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITargetVolume;
 use kalanis\kw_storage\StorageException;
 use Traversable;
 
@@ -16,7 +15,7 @@ use Traversable;
  * @package kalanis\kw_storage\Storage\Target
  * Store content onto volume
  */
-class Volume implements IStorage, IPassDirs
+class Volume implements ITargetVolume
 {
     use TOperations;
     use TRemoveCycle;
@@ -37,27 +36,27 @@ class Volume implements IStorage, IPassDirs
 
     public function exists(string $key): bool
     {
-        return file_exists($key);
+        return @file_exists($key);
     }
 
     public function isDir(string $key): bool
     {
-        return is_dir($key);
+        return @is_dir($key);
     }
 
     public function isFile(string $key): bool
     {
-        return is_file($key);
+        return @is_file($key);
     }
 
     public function mkDir(string $key, bool $recursive = false): bool
     {
-        return mkdir($key, 0777, $recursive);
+        return @mkdir($key, 0777, $recursive);
     }
 
     public function rmDir(string $key, bool $recursive = false): bool
     {
-        return $recursive ? $this->removeCycle($key) && rmdir($key) : rmdir($key);
+        return $recursive ? $this->removeCycle($key) : @rmdir($key);
     }
 
     public function load(string $key)
@@ -81,7 +80,9 @@ class Volume implements IStorage, IPassDirs
 
     public function move(string $source, string $dest): bool
     {
-        return @rename($source, $dest);
+        $v1 = $this->copy($source, $dest);
+        $v2 = $this->removeCycle($source);
+        return $v1 && $v2;
     }
 
     public function remove(string $key): bool
@@ -107,7 +108,7 @@ class Volume implements IStorage, IPassDirs
         if (false === $real) {
             return;
         }
-        $files = scandir($real);
+        $files = @scandir($real);
         if (!empty($files)) {
             foreach ($files as $file) {
                 yield $file;

@@ -7,7 +7,7 @@ use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\SemaphoreException;
-use kalanis\kw_storage\Storage\Storage;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -18,14 +18,14 @@ use kalanis\kw_storage\StorageException;
  */
 class Semaphore implements ICache
 {
-    /** @var Storage */
+    /** @var IStorage */
     protected $storage = null;
     /** @var ISemaphore */
     protected $reloadSemaphore = null;
     /** @var string */
     protected $cachePath = '';
 
-    public function __construct(Storage $cacheStorage, ISemaphore $reloadSemaphore)
+    public function __construct(IStorage $cacheStorage, ISemaphore $reloadSemaphore)
     {
         $this->storage = $cacheStorage;
         $this->reloadSemaphore = $reloadSemaphore;
@@ -40,7 +40,7 @@ class Semaphore implements ICache
     {
         try {
             return $this->storage->exists($this->cachePath) && !$this->reloadSemaphore->has();
-        } catch (SemaphoreException $ex) {
+        } catch (SemaphoreException | StorageException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }

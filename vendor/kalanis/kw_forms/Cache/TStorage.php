@@ -3,7 +3,7 @@
 namespace kalanis\kw_forms\Cache;
 
 
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITarget;
 use kalanis\kw_storage\StorageException;
 
 
@@ -12,7 +12,7 @@ trait TStorage
     /** @var Storage|null */
     protected $storage = null;
 
-    public function setStorage(?IStorage $storage = null): self
+    public function setStorage(?ITarget $storage = null): self
     {
         $this->storage = new Storage($storage);
         $this->storage->setAlias(strval($this->getAlias()));
@@ -21,6 +21,7 @@ trait TStorage
 
     /**
      * Check if data is set inside storage
+     * @throws StorageException
      * @return bool
      */
     public function isStored(): bool

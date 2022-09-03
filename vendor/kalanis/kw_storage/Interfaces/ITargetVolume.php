@@ -7,22 +7,20 @@ use kalanis\kw_storage\StorageException;
 
 
 /**
- * Interface IPassDirs
+ * Interface ITargetVolume
  * @package kalanis\kw_storage\Interfaces
- * When storage differs dirs and files (like normal volume)
+ * When storage pass on volume dirs and files
  */
-interface IPassDirs extends IStorage
+interface ITargetVolume extends ITarget
 {
     /**
      * @param string $key
-     * @throws StorageException
      * @return bool
      */
     public function isDir(string $key): bool;
 
     /**
      * @param string $key
-     * @throws StorageException
      * @return bool
      */
     public function isFile(string $key): bool;
@@ -67,7 +65,6 @@ interface IPassDirs extends IStorage
      * Get node size
      * null if not exists or cannot determine (dir)
      * @param string $key
-     * @throws StorageException
      * @return int
      */
     public function size(string $key): ?int;
@@ -76,7 +73,6 @@ interface IPassDirs extends IStorage
      * Get when node has been created
      * null if not exists or cannot get that info
      * @param string $key
-     * @throws StorageException
      * @return int
      */
     public function created(string $key): ?int;

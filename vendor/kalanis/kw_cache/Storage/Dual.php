@@ -5,7 +5,7 @@ namespace kalanis\kw_cache\Storage;
 
 use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
-use kalanis\kw_storage\Storage\Storage;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -16,16 +16,16 @@ use kalanis\kw_storage\StorageException;
  */
 class Dual implements ICache
 {
-    /** @var Storage */
+    /** @var IStorage */
     protected $cacheStorage = null;
-    /** @var Storage */
+    /** @var IStorage */
     protected $reloadStorage = null;
     /** @var string */
     protected $cachePath = '';
     /** @var string */
     protected $reloadPath = '';
 
-    public function __construct(Storage $cacheStorage, ?Storage $reloadStorage = null)
+    public function __construct(IStorage $cacheStorage, ?IStorage $reloadStorage = null)
     {
         $this->cacheStorage = $cacheStorage;
         $this->reloadStorage = $reloadStorage ?: $cacheStorage;
@@ -39,7 +39,11 @@ class Dual implements ICache
 
     public function exists(): bool
     {
-        return $this->cacheStorage->exists($this->cachePath) && !$this->reloadStorage->exists($this->reloadPath);
+        try {
+            return $this->cacheStorage->exists($this->cachePath) && !$this->reloadStorage->exists($this->reloadPath);
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function set(string $content): bool
@@ -49,7 +53,7 @@ class Dual implements ICache
             if (false === $result) {
                 return false;
             }
-            # remove signal to save
+            // remove signal to save
             if ($this->reloadStorage->exists($this->reloadPath)) {
                 $this->reloadStorage->remove($this->reloadPath);
             }

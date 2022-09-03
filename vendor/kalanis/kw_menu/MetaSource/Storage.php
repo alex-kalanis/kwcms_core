@@ -7,7 +7,7 @@ use kalanis\kw_menu\Interfaces\IMetaFileParser;
 use kalanis\kw_menu\Interfaces\IMetaSource;
 use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
-use kalanis\kw_storage\Storage\Storage as XStorage;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -20,12 +20,12 @@ class Storage implements IMetaSource
 {
     /** @var string */
     protected $key = '';
-    /** @var XStorage */
+    /** @var IStorage */
     protected $storage = null;
     /** @var FileParser */
     protected $parser = null;
 
-    public function __construct(XStorage $storage, IMetaFileParser $parser, string $metaKey)
+    public function __construct(IStorage $storage, IMetaFileParser $parser, string $metaKey)
     {
         $this->storage = $storage;
         $this->parser = $parser;
@@ -39,7 +39,11 @@ class Storage implements IMetaSource
 
     public function exists(): bool
     {
-        return $this->storage->exists($this->key);
+        try {
+            return $this->storage->exists($this->key);
+        } catch (StorageException $ex) {
+            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function load(): Menu
@@ -55,10 +59,8 @@ class Storage implements IMetaSource
     {
         try {
             return $this->storage->write($this->key, $this->parser->pack($content));
-            // @codeCoverageIgnoreStart
         } catch (StorageException $ex) {
             throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        // @codeCoverageIgnoreEnd
     }
 }

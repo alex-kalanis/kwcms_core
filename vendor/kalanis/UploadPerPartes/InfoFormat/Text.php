@@ -3,12 +3,15 @@
 namespace kalanis\UploadPerPartes\InfoFormat;
 
 
+use kalanis\UploadPerPartes\Interfaces\IInfoFormatting;
+
+
 /**
  * Class Text
  * @package kalanis\UploadPerPartes\DriveFile
  * Driver file - format plaintext
  */
-class Text extends AFormat
+class Text implements IInfoFormatting
 {
     const DATA_SEPARATOR = ':';
     const LINE_SEPARATOR = "\r\n";
@@ -17,10 +20,15 @@ class Text extends AFormat
     {
         $lines = explode(static::LINE_SEPARATOR, $content);
         $libData = new Data();
-        foreach ($lines as $line) {
-            if (0 < mb_strlen($line)) {
-                list($key, $value, $nothing) = explode(static::DATA_SEPARATOR, $line);
-                $libData->{$key} = $value;
+        if (false !== $lines) {
+            foreach ($lines as $line) {
+                if (0 < mb_strlen($line)) {
+                    $data = explode(static::DATA_SEPARATOR, $line);
+                    if (false !== $data) {
+                        list($key, $value, $nothing) = $data;
+                        $libData->{$key} = $value;
+                    }
+                }
             }
         }
         return $libData->sanitizeData();

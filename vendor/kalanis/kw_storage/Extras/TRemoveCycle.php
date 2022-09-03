@@ -18,30 +18,27 @@ trait TRemoveCycle
      */
     protected function removeCycle(string $dirPath, string $sign = DIRECTORY_SEPARATOR): bool
     {
-        $path = static::removeEndingSign($dirPath, $sign);
-        if (is_dir($path) && $fileListing = scandir($path)) {
-            foreach ($fileListing as $fileName) {
-                if (is_dir($path . $sign . $fileName)) {
-                    if (('.' != $fileName) && ('..' != $fileName)) {
-                        $this->removeCycle($path . $sign . $fileName);
-                        rmdir($path . $sign . $fileName);
+        $path = realpath($dirPath);
+        if (false === $path) {
+            return false;
+        }
+        if (is_dir($path)) {
+            $fileListing = scandir($path);
+            if (!empty($fileListing)) {
+                foreach ($fileListing as $fileName) {
+                    if (is_dir($path . $sign . $fileName)) {
+                        if (('.' != $fileName) && ('..' != $fileName)) {
+                            $this->removeCycle($path . $sign . $fileName);
+                        }
+                    } else {
+                        unlink($path . $sign . $fileName);
                     }
-                } else {
-                    unlink($path . $sign . $fileName);
                 }
             }
+            rmdir($path);
+        } elseif (is_file($path)) {
+            unlink($path);
         }
         return true;
-    }
-
-    /**
-     * Remove ending separator sign
-     * @param string $path
-     * @param string $sign
-     * @return string
-     */
-    public static function removeEndingSign(string $path, string $sign = DIRECTORY_SEPARATOR): string
-    {
-        return ($sign == mb_substr($path, -1, 1)) ? mb_substr($path, 0, -1 * mb_strlen($sign)) : $path ;
     }
 }

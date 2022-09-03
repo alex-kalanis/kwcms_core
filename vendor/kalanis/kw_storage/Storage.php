@@ -3,6 +3,7 @@
 namespace kalanis\kw_storage;
 
 
+use kalanis\kw_storage\Interfaces\IStorage;
 use Traversable;
 
 
@@ -13,7 +14,7 @@ use Traversable;
  */
 class Storage
 {
-    /** @var Storage\Storage|null */
+    /** @var IStorage|null */
     protected $storage = null;
     /** @var Storage\Factory */
     protected $storageFactory = null;
@@ -24,7 +25,7 @@ class Storage
     }
 
     /**
-     * @param mixed|Interfaces\IStorage|array|string|null $storageParams
+     * @param mixed|Interfaces\ITarget|array|string|null $storageParams
      */
     public function init($storageParams): void
     {

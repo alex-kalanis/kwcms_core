@@ -5,7 +5,7 @@ namespace kalanis\kw_cache\Storage;
 
 use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
-use kalanis\kw_storage\Storage\Storage;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -16,12 +16,12 @@ use kalanis\kw_storage\StorageException;
  */
 class Basic implements ICache
 {
-    /** @var Storage */
+    /** @var IStorage */
     protected $cacheStorage = null;
     /** @var string */
     protected $cachePath = '';
 
-    public function __construct(Storage $cacheStorage)
+    public function __construct(IStorage $cacheStorage)
     {
         $this->cacheStorage = $cacheStorage;
     }
@@ -33,7 +33,11 @@ class Basic implements ICache
 
     public function exists(): bool
     {
-        return $this->cacheStorage->exists($this->cachePath);
+        try {
+            return $this->cacheStorage->exists($this->cachePath);
+        } catch (StorageException $ex) {
+            throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function set(string $content): bool

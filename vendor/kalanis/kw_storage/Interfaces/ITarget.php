@@ -8,59 +8,57 @@ use Traversable;
 
 
 /**
- * Interface IStorage
+ * Interface ITarget
  * @package kalanis\kw_storage\Interfaces
  * Basic operations over every storage
  */
-interface IStorage
+interface ITarget
 {
     /**
-     * Check if target storage is usable
+     * @param string $key
      * @return bool
      */
-    public function canUse(): bool;
+    public function check(string $key): bool;
 
     /**
-     * Create new record in storage
-     * @param string $sharedKey
+     * @param string $key
+     * @throws StorageException
+     * @return bool
+     */
+    public function exists(string $key): bool;
+
+    /**
+     * @param string $key
+     * @throws StorageException
+     * @return mixed
+     */
+    public function load(string $key);
+
+    /**
+     * @param string $key
      * @param mixed $data
      * @param int|null $timeout
      * @throws StorageException
      * @return bool
      */
-    public function write(string $sharedKey, $data, ?int $timeout = null): bool;
+    public function save(string $key, $data, ?int $timeout = null): bool;
 
     /**
-     * Read storage record
-     * @param string $sharedKey
-     * @throws StorageException
-     * @return mixed
-     */
-    public function read(string $sharedKey);
-
-    /**
-     * Delete storage record - usually on finish or discard
-     * @param string $sharedKey
+     * @param string $key
      * @throws StorageException
      * @return bool
      */
-    public function remove(string $sharedKey): bool;
+    public function remove(string $key): bool;
 
     /**
-     * Has data in storage? Mainly for testing
-     * @param string $sharedKey
-     * @throws StorageException
-     * @return bool
-     */
-    public function exists(string $sharedKey): bool;
-
-    /**
-     * What data is in storage?
-     * @param string $mask
+     * Lookup through keys in storage
+     * Passed key is full path
+     * Returns only names
+     * @param string $path parent node name
      * @throws StorageException
      * @return Traversable<string>
      */
-    public function lookup(string $mask): Traversable;
+    public function lookup(string $path): Traversable;
 
     /**
      * Increment index in key

@@ -15,11 +15,11 @@ class Factory
 {
     /**
      * @param mixed|object|array|string|null $params
-     * @return Interfaces\IStorage|null storage adapter or empty for no storage set
+     * @return Interfaces\ITarget|null storage adapter or empty for no storage set
      */
-    public function getStorage($params): ?Interfaces\IStorage
+    public function getStorage($params): ?Interfaces\ITarget
     {
-        if ($params instanceof Interfaces\IStorage) {
+        if ($params instanceof Interfaces\ITarget) {
             return $params;
         }
 
