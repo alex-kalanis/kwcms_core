@@ -4,7 +4,7 @@ namespace KWCMS\modules\AdminRouter\Lib\Chain;
 
 
 use kalanis\kw_input\Entries\Entry;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\ModuleException;
 use Throwable;
@@ -21,12 +21,12 @@ class Processor
     protected $first = null;
     /** @var AChain|null */
     protected $last = null;
-    /** @var IVariables */
+    /** @var IFiltered */
     protected $inputs = null;
     /** @var string[]|Entry[] */
     protected $params = [];
 
-    public function init(IVariables $inputs, array $passedParams): self
+    public function init(IFiltered $inputs, array $passedParams): self
     {
         $this->inputs = $inputs;
         $this->params = $passedParams;

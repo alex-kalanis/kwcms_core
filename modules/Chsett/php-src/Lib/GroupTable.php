@@ -13,7 +13,7 @@ use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -38,7 +38,7 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class GroupTable
 {
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
@@ -49,7 +49,7 @@ class GroupTable
     /** @var Forward|null */
     protected $forward = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, IAccessGroups $groups, IUser $currentUser)
+    public function __construct(IFiltered $inputs, ExternalLink $link, IAccessGroups $groups, IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;

@@ -9,7 +9,7 @@ use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITarget;
 use kalanis\kw_storage\StorageException;
 
 
@@ -22,7 +22,7 @@ class CanDir extends ADirs
 {
     /** @var IFLTranslations */
     protected $lang = null;
-    /** @var IPassDirs|IStorage */
+    /** @var IPassDirs|ITarget */
     protected $storage = null;
 
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)

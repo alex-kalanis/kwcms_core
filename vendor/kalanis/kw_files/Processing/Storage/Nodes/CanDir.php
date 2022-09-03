@@ -4,7 +4,7 @@ namespace kalanis\kw_files\Processing\Storage\Nodes;
 
 
 use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITarget;
 
 
 /**
@@ -14,7 +14,7 @@ use kalanis\kw_storage\Interfaces\IStorage;
  */
 class CanDir extends ANodes
 {
-    /** @var IPassDirs|IStorage */
+    /** @var IPassDirs|ITarget */
     protected $storage = null;
 
     public function __construct(IPassDirs $storage)

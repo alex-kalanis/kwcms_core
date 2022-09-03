@@ -8,7 +8,7 @@ use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Translations;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITarget;
 use kalanis\kw_storage\StorageException;
 
 
@@ -23,10 +23,10 @@ class Basic extends ADirs
 
     /** @var IFLTranslations */
     protected $lang = null;
-    /** @var IStorage */
+    /** @var ITarget */
     protected $storage = null;
 
-    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
+    public function __construct(ITarget $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
         $this->lang = $lang ?? new Translations();

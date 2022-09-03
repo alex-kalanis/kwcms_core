@@ -7,7 +7,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\ITarget;
 use kalanis\kw_storage\StorageException;
 
 
@@ -18,7 +18,7 @@ use kalanis\kw_storage\StorageException;
  */
 class CanDir extends AFiles
 {
-    /** @var IStorage|IPassDirs */
+    /** @var ITarget|IPassDirs */
     protected $storage = null;
 
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)

@@ -50,7 +50,7 @@ class Menu extends AModule
     {
         $cachePath = Stored::getPath()->getDocumentRoot() . DIRECTORY_SEPARATOR . IPaths::DIR_TEMP;
         Storage\Key\DirKey::setDir($cachePath. DIRECTORY_SEPARATOR);
-        $storage = new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory());
+        $storage = new Storage\Factory(new Storage\Key\Factory(), new Storage\Target\Factory());
         $cache = new CacheStorage\Semaphore($storage->getStorage('volume'), $this->getSemaphore());
         $cache->init('Menu');
         return $cache;

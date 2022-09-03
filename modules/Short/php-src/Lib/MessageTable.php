@@ -11,7 +11,7 @@ use kalanis\kw_connect\search\Connector;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\Search\Search;
@@ -37,14 +37,14 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class MessageTable
 {
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $variables = null;
     /** @var Forward|null */
     protected $forward = null;
     /** @var ExternalLink|null */
     protected $link = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link)
+    public function __construct(IFiltered $inputs, ExternalLink $link)
     {
         $this->variables = $inputs;
         $this->forward = new Forward();

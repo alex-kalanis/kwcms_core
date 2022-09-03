@@ -8,12 +8,11 @@ use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -38,7 +37,7 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class UserTable
 {
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
@@ -55,7 +54,7 @@ class UserTable
     /** @var Table|null */
     protected $table = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, Interfaces\IAccessAccounts $libAccounts, Interfaces\IAccessGroups $libGroups, Interfaces\IAccessClasses $libClasses, Interfaces\IUser $currentUser)
+    public function __construct(IFiltered $inputs, ExternalLink $link, Interfaces\IAccessAccounts $libAccounts, Interfaces\IAccessGroups $libGroups, Interfaces\IAccessClasses $libClasses, Interfaces\IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;

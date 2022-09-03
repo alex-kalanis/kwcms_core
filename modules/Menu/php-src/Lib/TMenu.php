@@ -4,7 +4,7 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_menu\EntriesSource;
 use kalanis\kw_menu\Interfaces;
@@ -64,11 +64,11 @@ trait TMenu
     }
 
     /**
-     * @param IVariables $inputs
+     * @param IFiltered $inputs
      * @param string $userDir
      * @throws MenuException
      */
-    protected function runTMenu(IVariables $inputs, string $userDir): void
+    protected function runTMenu(IFiltered $inputs, string $userDir): void
     {
         $this->initWhereDir(new SessionAdapter(), $inputs);
         $this->userDir->setUserPath($userDir);

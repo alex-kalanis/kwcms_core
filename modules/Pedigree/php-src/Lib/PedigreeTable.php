@@ -11,7 +11,7 @@ use kalanis\kw_connect\search\Connector;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
@@ -39,7 +39,7 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class PedigreeTable
 {
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $variables = null;
     /** @var Forward|null */
     protected $forward = null;
@@ -50,7 +50,7 @@ class PedigreeTable
     /** @var Table|null */
     protected $table = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, GetEntries $entries)
+    public function __construct(IFiltered $inputs, ExternalLink $link, GetEntries $entries)
     {
         $this->variables = $inputs;
         $this->forward = new Forward();

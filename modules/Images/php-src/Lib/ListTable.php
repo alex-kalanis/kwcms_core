@@ -10,7 +10,7 @@ use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_images\Files;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -35,7 +35,7 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class ListTable
 {
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
@@ -44,7 +44,7 @@ class ListTable
     /** @var string */
     protected $libGallery = null;
 
-    public function __construct(IVariables $inputs, ExternalLink $link, Files $libGallery, string $whereDir)
+    public function __construct(IFiltered $inputs, ExternalLink $link, Files $libGallery, string $whereDir)
     {
         $this->variables = $inputs;
         $this->link = $link;

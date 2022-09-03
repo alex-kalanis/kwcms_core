@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Texts\Lib;
 
 
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Path;
@@ -28,11 +28,11 @@ trait TTexts
     {
         $this->userDir = new UserDir($path);
         Storage\Key\DirKey::setDir($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
-        $this->storage = new Storage(new Storage\Factory(new Storage\Target\Factory(), new Storage\Format\Factory(), new Storage\Key\Factory()));
+        $this->storage = new Storage(new Storage\Factory(new Storage\Key\Factory(), new Storage\Target\Factory()));
         $this->storage->init('volume');
     }
 
-    protected function runTTexts(IVariables $inputs, string $userDir): void
+    protected function runTTexts(IFiltered $inputs, string $userDir): void
     {
         $this->initWhereDir(new SessionAdapter(), $inputs);
         $this->userDir->setUserPath($userDir);
