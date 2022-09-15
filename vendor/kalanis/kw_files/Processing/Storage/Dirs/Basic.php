@@ -8,7 +8,7 @@ use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Translations;
-use kalanis\kw_storage\Interfaces\ITarget;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -23,10 +23,10 @@ class Basic extends ADirs
 
     /** @var IFLTranslations */
     protected $lang = null;
-    /** @var ITarget */
+    /** @var IStorage */
     protected $storage = null;
 
-    public function __construct(ITarget $storage, ?IFLTranslations $lang = null)
+    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
         $this->lang = $lang ?? new Translations();
@@ -34,14 +34,14 @@ class Basic extends ADirs
 
     public function createDir(array $entry, bool $deep = false): bool
     {
+        $entryPath = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
         try {
-            $entryPath = $this->compactName($entry, $this->getStorageSeparator());
             if ($this->storage->exists($entryPath)) {
-                return $this->isNode($entryPath);
+                return false;
             }
             $total = count($entry);
-            for ($i = 1; $total < $i; $i++) {
-                $subNodeName = $this->compactName(array_slice($entry, 0, $i), $this->getStorageSeparator());
+            for ($i = 1; $i < $total; $i++) {
+                $subNodeName = $this->getStorageSeparator() . $this->compactName(array_slice($entry, 0, $i), $this->getStorageSeparator());
                 $exists = $this->storage->exists($subNodeName);
                 if ($exists) {
                     if (!$this->isNode($subNodeName)) {
@@ -51,50 +51,59 @@ class Basic extends ADirs
                 } else {
                     if ($deep) {
                         // create deep tree
-                        $this->storage->save($subNodeName, static::STORAGE_NODE_KEY);
+                        $this->storage->write($subNodeName, static::STORAGE_NODE_KEY);
                     } else {
                         // cannot create in shallow tree
                         return false;
                     }
                 }
             }
-            return $this->storage->save($entryPath, static::STORAGE_NODE_KEY);
+            return $this->storage->write($entryPath, static::STORAGE_NODE_KEY);
         } catch (StorageException $ex) {
             throw new FilesException($this->lang->flCannotCreateDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
-    public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
+    public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false, bool $withInitSub = false): array
     {
-        $entryPath = $this->compactName($entry, $this->getStorageSeparator());
+        $entryPath = $this->removeSeparator($this->compactName(array_filter($entry), $this->getStorageSeparator()));
+        $entryPath = empty($entryPath) ? '' : $this->getStorageSeparator() . $entryPath;
         try {
-            if (!$this->storage->exists($entryPath) || !$this->isNode($entryPath)) {
-                return [];
+            if (!$this->isNode($entryPath)) {
+                throw new FilesException($this->lang->flCannotReadDir($entryPath));
             }
             /** @var array<string, Node> */
             $files = [];
-            $master = new Node();
-            $master->setData($entry, 0, ITypes::TYPE_DIR);
-            $files[$entryPath] = $master;
+            $sepLen = mb_strlen($this->getStorageSeparator());
             foreach ($this->storage->lookup($entryPath) as $item) {
-                if (!$loadRecursive && (false !== mb_strpos($item, $this->getStorageSeparator()))) {
+                $usePath = mb_substr($item, $sepLen);
+                if (!$loadRecursive && (false !== mb_strpos($usePath, $this->getStorageSeparator()))) {
                     // pass sub when not need
                     continue;
                 }
 
                 $sub = new Node();
-                $currentPath = $this->compactName($entry + [$item], $this->getStorageSeparator());
-                if ($this->isNode($currentPath)) {
+                $currentPath = $this->removeSeparator($this->compactName(array_merge(
+                    $entry,
+                    $this->expandName($usePath, $this->getStorageSeparator())
+                ), $this->getStorageSeparator()));
+                if (empty($item)) {
                     $sub->setData(
-                        $this->expandName($currentPath),
+                        array_merge([''], array_filter($entry)),
+                        0,
+                        ITypes::TYPE_DIR
+                    );
+                } elseif ($this->isNode($this->getStorageSeparator() . $currentPath)) {
+                    $sub->setData(
+                        $this->expandName($this->getStorageSeparator() . $currentPath),
                         0,
                         ITypes::TYPE_DIR
                     );
                 } else {
                     // normal node - file
                     $sub->setData(
-                        $this->expandName($currentPath),
-                        $wantSize ? $this->getSize($currentPath) : 0,
+                        $this->expandName($this->getStorageSeparator() . $currentPath),
+                        $wantSize ? $this->getSize($this->getStorageSeparator() . $currentPath) : 0,
                         ITypes::TYPE_FILE
                     );
                 }
@@ -106,10 +115,17 @@ class Basic extends ADirs
         }
     }
 
+    protected function removeSeparator(string $path): string
+    {
+        $sepLen = mb_strlen($this->getStorageSeparator());
+        $first = mb_substr($path, 0, $sepLen);
+        return $this->getStorageSeparator() == $first ? mb_substr($path, $sepLen) : $path;
+    }
+
     public function copyDir(array $source, array $dest): bool
     {
-        $src = $this->compactName($source, $this->getStorageSeparator());
-        $dst = $this->compactName($dest, $this->getStorageSeparator());
+        $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
             if (!$this->isNode($src)) {
                 return false;
@@ -118,10 +134,13 @@ class Basic extends ADirs
                 return false;
             }
             $paths = $this->storage->lookup($src);
-            $this->storage->save($dst, self::STORAGE_NODE_KEY);
+            $this->storage->write($dst, self::STORAGE_NODE_KEY);
             foreach ($paths as $path) {
-                $updName = $dest . mb_substr($path, 0, mb_strlen($src));
-                $this->storage->save($updName, $this->storage->load($path));
+                if (empty($path)) {
+                    // skip current
+                    continue;
+                }
+                $this->storage->write($dst . $path, $this->storage->read($src . $path));
             }
             return true;
         } catch (StorageException $ex) {
@@ -131,8 +150,8 @@ class Basic extends ADirs
 
     public function moveDir(array $source, array $dest): bool
     {
-        $src = $this->compactName($source, $this->getStorageSeparator());
-        $dst = $this->compactName($dest, $this->getStorageSeparator());
+        $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
             if (!$this->isNode($src)) {
                 return false;
@@ -141,11 +160,14 @@ class Basic extends ADirs
                 return false;
             }
             $paths = $this->storage->lookup($src);
-            $this->storage->save($dst, self::STORAGE_NODE_KEY);
+            $this->storage->write($dst, self::STORAGE_NODE_KEY);
             foreach ($paths as $path) {
-                $updName = $dest . mb_substr($path, 0, mb_strlen($src));
-                $this->storage->save($updName, $this->storage->load($path));
-                $this->storage->remove($path);
+                if (empty($path)) {
+                    // skip current
+                    continue;
+                }
+                $this->storage->write($dst . $path, $this->storage->read($src . $path));
+                $this->storage->remove($src . $path);
             }
             return $this->storage->remove($src);
         } catch (StorageException $ex) {
@@ -155,21 +177,22 @@ class Basic extends ADirs
 
     public function deleteDir(array $entry, bool $deep = false): bool
     {
-        $path = $this->compactName($entry, $this->getStorageSeparator());
+        $path = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
         try {
             if (!$this->storage->exists($path)) {
-                return true;
+                return false;
             }
             if (!$this->isNode($path)) {
                 return false;
             }
             $paths = $this->storage->lookup($path);
-            if (!$deep && !empty($path)) {
-                return false;
-            }
-            if ($deep && $paths) {
-                foreach ($paths as $path) {
-                    $this->storage->remove($path);
+            foreach ($paths as $item) {
+                if ('' != $item) {
+                    // found something
+                    if (!$deep) {
+                        return false;
+                    }
+                    $this->storage->remove($path . $item);
                 }
             }
             return $this->storage->remove($path);
@@ -185,7 +208,7 @@ class Basic extends ADirs
      */
     protected function isNode(string $entry): bool
     {
-        return static::STORAGE_NODE_KEY === $this->storage->load($entry);
+        return $this->storage->exists($entry) ? (static::STORAGE_NODE_KEY === $this->storage->read($entry)) : false;
     }
 
     /**
@@ -196,18 +219,25 @@ class Basic extends ADirs
      */
     protected function getSize(string $file): int
     {
-        $content = $this->storage->load($file);
+        $content = $this->storage->read($file);
         if (is_resource($content)) {
             // a bit workaround
             $tempStream = fopen("php://temp", "w+b");
+            if (false === $tempStream) {
+                // @codeCoverageIgnoreStart
+                throw new FilesException($this->lang->flCannotLoadFile($file));
+            }
+            // @codeCoverageIgnoreEnd
             rewind($content);
             $size = stream_copy_to_stream($content, $tempStream, -1, 0);
             if (false === $size) {
+                // @codeCoverageIgnoreStart
                 throw new FilesException($this->lang->flCannotGetSize($file));
             }
+            // @codeCoverageIgnoreEnd
             return intval($size);
         } else {
-            return mb_strlen($content);
+            return mb_strlen(strval($content));
         }
     }
 }

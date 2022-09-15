@@ -5,7 +5,7 @@ namespace kalanis\kw_files\Processing\Storage\Nodes;
 
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\ITarget;
+use kalanis\kw_storage\Interfaces\IStorage;
 
 
 /**
@@ -15,7 +15,7 @@ use kalanis\kw_storage\Interfaces\ITarget;
  */
 class Factory
 {
-    public function getClass(ITarget $storage, ?IFLTranslations $lang = null): ANodes
+    public function getClass(IStorage $storage, ?IFLTranslations $lang = null): ANodes
     {
         if ($storage instanceof IPassDirs) {
             return new CanDir($storage);

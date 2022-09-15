@@ -13,13 +13,19 @@ use kalanis\kw_files\Interfaces\ITypes;
  */
 class Node
 {
-    /** @var array */
+    /** @var array<string> */
     protected $path = [];
     /** @var int */
     protected $size = 0;
     /** @var string */
     protected $type = ITypes::TYPE_UNKNOWN;
 
+    /**
+     * @param array<string> $path
+     * @param int $size
+     * @param string $type
+     * @return $this
+     */
     public function setData(array $path = [], int $size = 0, string $type = ITypes::TYPE_UNKNOWN): self
     {
         $this->path = $path;

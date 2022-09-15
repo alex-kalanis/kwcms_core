@@ -38,11 +38,6 @@ class ProcessNode implements IProcessNodes
         return @is_file($this->fullPath($entry));
     }
 
-    protected function fullPath(array $path): string
-    {
-        return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
-    }
-
     public function size(array $entry): ?int
     {
         $path = $this->fullPath($entry);
@@ -55,5 +50,14 @@ class ProcessNode implements IProcessNodes
         $path = $this->fullPath($entry);
         $created = @filemtime($path);
         return (false === $created) ? null : $created;
+    }
+
+    /**
+     * @param array<string> $path
+     * @return string
+     */
+    protected function fullPath(array $path): string
+    {
+        return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
     }
 }

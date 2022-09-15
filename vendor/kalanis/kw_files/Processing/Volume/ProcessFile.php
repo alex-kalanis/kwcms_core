@@ -3,7 +3,6 @@
 namespace kalanis\kw_files\Processing\Volume;
 
 
-use Error;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
@@ -11,6 +10,7 @@ use kalanis\kw_files\Processing\TNameFinder;
 use kalanis\kw_files\Processing\TPath;
 use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_files\Translations;
+use Throwable;
 
 
 /**
@@ -33,11 +33,16 @@ class ProcessFile implements IProcessFiles
         $this->setPath($path);
     }
 
-    protected function getSeparator(): string
+    protected function getNameSeparator(): string
     {
         return static::FREE_NAME_SEPARATOR;
     }
 
+    /**
+     * @param array<string> $path
+     * @param string $added
+     * @return bool
+     */
     protected function targetExists(array $path, string $added): bool
     {
         return @file_exists($this->fullPath($path) . $added);
@@ -47,20 +52,22 @@ class ProcessFile implements IProcessFiles
     {
         $path = $this->fullPath($entry);
         try {
-            if (!is_null($length) && is_null($offset)) {
-                $content = @file_get_contents($path, false, null, 0, $length);
-            } elseif (is_null($offset)) {
-                $content = @file_get_contents($path);
+            if (!is_null($length)) {
+                $content = @file_get_contents($path, false, null, intval($offset), $length);
+            } elseif (!is_null($offset)) {
+                $content = @file_get_contents($path, false, null, $offset);
             } else {
-                $content = @file_get_contents($path, false, null, $offset, $length);
+                $content = @file_get_contents($path);
             }
             if (false !== $content) {
                 return $content;
             }
             throw new FilesException($this->lang->flCannotLoadFile($path));
-        } catch (Error $ex) {
+        } catch (Throwable $ex) {
+            // @codeCoverageIgnoreStart
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function saveFile(array $entry, $content): bool
@@ -72,9 +79,11 @@ class ProcessFile implements IProcessFiles
                 throw new FilesException($this->lang->flCannotSaveFile($path));
             }
             return true;
-        } catch (Error $ex) {
+        } catch (Throwable $ex) {
+            // @codeCoverageIgnoreStart
             throw new FilesException($this->lang->flCannotSaveFile($path), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function copyFile(array $source, array $dest): bool
@@ -83,9 +92,11 @@ class ProcessFile implements IProcessFiles
         $dst = $this->fullPath($dest);
         try {
             return @copy($src, $dst);
-        } catch (Error $ex) {
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function moveFile(array $source, array $dest): bool
@@ -94,9 +105,11 @@ class ProcessFile implements IProcessFiles
         $dst = $this->fullPath($dest);
         try {
             return @rename($src, $dst);
-        } catch (Error $ex) {
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function deleteFile(array $entry): bool
@@ -104,11 +117,17 @@ class ProcessFile implements IProcessFiles
         $path = $this->fullPath($entry);
         try {
             return @unlink($path);
-        } catch (Error $ex) {
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotRemoveFile($path), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
+    /**
+     * @param array<string> $path
+     * @return string
+     */
     protected function fullPath(array $path): string
     {
         return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);

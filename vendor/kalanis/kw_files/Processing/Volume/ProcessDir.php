@@ -3,7 +3,6 @@
 namespace kalanis\kw_files\Processing\Volume;
 
 
-use Error;
 use FilesystemIterator;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
@@ -17,7 +16,8 @@ use kalanis\kw_storage\Extras\TRemoveCycle;
 use kalanis\kw_storage\Extras\TVolumeCopy;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SplFileObject;
+use SplFileInfo;
+use Throwable;
 
 
 /**
@@ -34,6 +34,8 @@ class ProcessDir implements IProcessDirs
 
     /** @var IFLTranslations */
     protected $lang = null;
+    /** @var int */
+    protected $sliceStartParts = 0;
 
     public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
@@ -41,14 +43,25 @@ class ProcessDir implements IProcessDirs
         $this->setPath($path);
     }
 
+    public function setPath(string $path = ''): void
+    {
+        $used = realpath($path);
+        if (false !== $used) {
+            $this->path = $used;
+            $this->sliceStartParts = count($this->expandName($used));
+        }
+    }
+
     public function createDir(array $entry, bool $deep = false): bool
     {
         $path = $this->fullPath($entry);
         try {
-            return mkdir($path, 0777, $deep);
-        } catch (Error $ex) {
+            return @mkdir($path, 0777, $deep);
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotCreateDir($path), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
@@ -57,38 +70,49 @@ class ProcessDir implements IProcessDirs
         try {
             $iter = $loadRecursive
                 ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path))
-                : new FilesystemIterator($path)
+                : new FilesystemIterator($path, 0)
             ;
-            return array_map(
-                [$this, 'intoNode'],
-                array_filter(
+            return array_values(
+                array_map(
+                    [$this, 'intoNode'],
                     array_filter(
-                        iterator_to_array($iter),
-                        [$this, 'filterFilesAndDirsOnly']
-                    ),
-                    [$this, 'filterDots']
+                        array_filter(
+                            array_filter(
+                                ($loadRecursive ? [] : [$this->addRootNode($path)]) + iterator_to_array($iter)
+                            ),
+                            [$this, 'filterFilesAndDirsOnly']
+                        ),
+                        [$this, 'filterDots']
+                    )
                 )
             );
-        } catch (Error $ex) {
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotReadDir($path), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
-    public function filterFilesAndDirsOnly(SplFileObject $file): bool
+    protected function addRootNode(string $path): SplFileInfo
+    {
+        return new SplFileInfo($path);
+    }
+
+    public function filterFilesAndDirsOnly(SplFileInfo $file): bool
     {
         return in_array($file->getType(), [ITypes::TYPE_DIR, ITypes::TYPE_FILE]);
     }
 
-    public function filterDots(SplFileObject $file): bool
+    public function filterDots(SplFileInfo $file): bool
     {
-        return !in_array($file->getFilename(), ['.', '..']);
+        return '..' !== $file->getFilename();
     }
 
-    public function intoNode(SplFileObject $file): Node
+    public function intoNode(SplFileInfo $file): Node
     {
         $node = new Node();
         return $node->setData(
-            $this->expandName($file->getPath()),
+            array_slice($this->expandName($file->getRealPath()), $this->sliceStartParts),
             $file->getSize(),
             $file->getType()
         );
@@ -100,9 +124,11 @@ class ProcessDir implements IProcessDirs
         $dst = $this->fullPath($dest);
         try {
             return $this->xcopy($src, $dst);
-        } catch (Error $ex) {
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function moveDir(array $source, array $dest): bool
@@ -110,10 +136,19 @@ class ProcessDir implements IProcessDirs
         $src = $this->fullPath($source);
         $dst = $this->fullPath($dest);
         try {
-            return @rename($src, $dst);
-        } catch (Error $ex) {
+            // original call with doomed sub-calls chmod and chown - see
+            // @link https://www.php.net/manual/en/function.rename.php#117590
+            // return @rename($src, $dst);
+
+            // to avoid that internal bug...
+            $v1 = $this->copyDir($source, $dest);
+            $v2 = $this->deleteDir($source, true);
+            return $v1 && $v2;
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function deleteDir(array $entry, bool $deep = false): bool
@@ -125,11 +160,17 @@ class ProcessDir implements IProcessDirs
             } else {
                 return @rmdir($path);
             }
-        } catch (Error $ex) {
+            // @codeCoverageIgnoreStart
+        } catch (Throwable $ex) {
             throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
+        // @codeCoverageIgnoreEnd
     }
 
+    /**
+     * @param array<string> $path
+     * @return string
+     */
     protected function fullPath(array $path): string
     {
         return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);

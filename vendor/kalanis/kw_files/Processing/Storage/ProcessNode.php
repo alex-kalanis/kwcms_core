@@ -5,7 +5,7 @@ namespace kalanis\kw_files\Processing\Storage;
 
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessNodes;
-use kalanis\kw_storage\Interfaces\ITarget;
+use kalanis\kw_storage\Interfaces\IStorage;
 
 
 /**
@@ -18,7 +18,7 @@ class ProcessNode implements IProcessNodes
     /** @var IProcessNodes */
     protected $adapter = null;
 
-    public function __construct(ITarget $storage, ?IFLTranslations $lang = null)
+    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $factory = new Nodes\Factory();
         $this->adapter = $factory->getClass($storage, $lang);

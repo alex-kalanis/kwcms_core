@@ -4,7 +4,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 
 
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\Database;
+use kalanis\kw_mapper\Mappers\Database as DbMapper;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;
 use kalanis\kw_mapper\Storage;
@@ -28,15 +28,16 @@ class WinRegistry extends AConnector
 
     /**
      * @param ARecord $record
+     * @param Storage\Shared\QueryBuilder|null $builder
      * @throws MapperException
      */
-    public function __construct(ARecord $record)
+    public function __construct(ARecord $record, ?Storage\Shared\QueryBuilder $builder = null)
     {
         $this->basicRecord = $record;
         $this->initRecordLookup($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
-        $this->queryBuilder = new Storage\Shared\QueryBuilder();
+        $this->queryBuilder = $builder ?: new Storage\Shared\QueryBuilder();
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
     }
 
@@ -65,7 +66,7 @@ class WinRegistry extends AConnector
         }
 
         $result = [];
-        /** @var Database\WinRegistry|Database\WinRegistry2 $mapper */
+        /** @var DbMapper\WinRegistry|DbMapper\WinRegistry2 $mapper */
         $mapper = $this->basicRecord->getMapper();
         $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
         reset($pks);

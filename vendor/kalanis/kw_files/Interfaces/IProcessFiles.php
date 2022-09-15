@@ -57,7 +57,7 @@ interface IProcessFiles
     public function moveFile(array $source, array $dest): bool;
 
     /**
-     * @param array $entry
+     * @param string[] $entry
      * @throws FilesException
      * @return bool
      */

@@ -9,7 +9,6 @@ use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\ITarget;
 use kalanis\kw_storage\StorageException;
 
 
@@ -22,7 +21,7 @@ class CanDir extends ADirs
 {
     /** @var IFLTranslations */
     protected $lang = null;
-    /** @var IPassDirs|ITarget */
+    /** @var IPassDirs */
     protected $storage = null;
 
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)
@@ -33,7 +32,7 @@ class CanDir extends ADirs
 
     public function createDir(array $entry, bool $deep = false): bool
     {
-        $path = $this->compactName($entry, $this->getStorageSeparator());
+        $path = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
         try {
             return $this->storage->mkDir($path, $deep);
         } catch (StorageException $ex) {
@@ -41,29 +40,48 @@ class CanDir extends ADirs
         }
     }
 
-    public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
+    public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false, bool $wantFirst = true): array
     {
-        $entryPath = $this->compactName($entry, $this->getStorageSeparator());
+        $entryPath = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
         try {
+            if (!$this->storage->isDir($entryPath)) {
+                throw new FilesException($this->lang->flCannotReadDir($entryPath));
+            }
             $files = [];
             foreach ($this->storage->lookup($entryPath) as $item) {
-                $currentPath = $this->compactName($entry + [$item], $this->getStorageSeparator());
+                if ('..' == $item) {
+                    continue;
+                }
+                $currentPath = $this->compactName(array_merge($entry, [$item]), $this->getStorageSeparator());
                 $sub = new Node();
-                if ($this->storage->isDir($currentPath)) {
+                if ('.' == $item) {
+                    if (!$wantFirst) {
+                        continue;
+                    }
+
                     $sub->setData(
-                        $this->expandName($currentPath),
+                        $entry,
+                        0,
+                        ITypes::TYPE_DIR
+                    );
+                } elseif ($this->storage->isDir($this->getStorageSeparator() . $currentPath)) {
+                    $sub->setData(
+                        $this->expandName($this->getStorageSeparator() . $currentPath),
                         0,
                         ITypes::TYPE_DIR
                     );
                 } else {
                     // normal node - file
                     $sub->setData(
-                        $this->expandName($currentPath),
+                        $this->expandName($this->getStorageSeparator() . $currentPath),
                         $wantSize ? intval($this->storage->size($currentPath)) : 0,
                         ITypes::TYPE_FILE
                     );
                 }
                 $files[] = $sub;
+                if ($loadRecursive && $sub->isDir() && ('.' !== $item)) {
+                    $files = array_merge($files, $this->readDir(array_merge($entry, [$item]), $loadRecursive, $wantSize, false));
+                }
             }
             return $files;
         } catch (StorageException $ex) {
@@ -73,8 +91,8 @@ class CanDir extends ADirs
 
     public function copyDir(array $source, array $dest): bool
     {
-        $src = $this->compactName($source, $this->getStorageSeparator());
-        $dst = $this->compactName($dest, $this->getStorageSeparator());
+        $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
             return $this->storage->copy($src, $dst);
         } catch (StorageException $ex) {
@@ -84,8 +102,8 @@ class CanDir extends ADirs
 
     public function moveDir(array $source, array $dest): bool
     {
-        $src = $this->compactName($source, $this->getStorageSeparator());
-        $dst = $this->compactName($dest, $this->getStorageSeparator());
+        $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
+        $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
             return $this->storage->move($src, $dst);
         } catch (StorageException $ex) {
@@ -95,9 +113,13 @@ class CanDir extends ADirs
 
     public function deleteDir(array $entry, bool $deep = false): bool
     {
-        $path = $this->compactName($entry, $this->getStorageSeparator());
+        $path = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
         try {
-            return $this->storage->rmDir($path, $deep);
+            if ($this->storage->isDir($path)) {
+                return $this->storage->rmDir($path, $deep);
+            } else {
+                return false;
+            }
         } catch (StorageException $ex) {
             throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }

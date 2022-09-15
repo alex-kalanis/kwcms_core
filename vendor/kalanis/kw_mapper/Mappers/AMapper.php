@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Mappers;
 
 
+use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 
@@ -252,8 +253,14 @@ abstract class AMapper
         $hasPreset = 0;
         $hasNewOne = 0;
         foreach ($record as $key => $value) {
-            $hasPreset += intval($record->getEntry($key)->isFromStorage() && (false !== $value));
-            $hasNewOne += intval(!$record->getEntry($key)->isFromStorage() && (false !== $value));
+            $fromStorage = $record->getEntry($key)->isFromStorage();
+            $toCompare = $record->getEntry($key)->getData();
+            $stay = (IEntryType::TYPE_BOOLEAN == $record->getEntry($key)->getType())
+                ? is_null($toCompare)
+                : (false === $toCompare)
+            ;
+            $hasPreset += intval($fromStorage && !$stay);
+            $hasNewOne += intval(!$fromStorage && !$stay);
         }
 
         $result = (boolval($hasPreset) && boolval($hasNewOne) && !$forceInsert)

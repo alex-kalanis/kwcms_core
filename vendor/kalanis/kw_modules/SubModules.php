@@ -3,7 +3,7 @@
 namespace kalanis\kw_modules;
 
 
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -32,13 +32,13 @@ class SubModules
 
     /**
      * @param Templates\ATemplate $template
-     * @param IVariables $inputs
+     * @param IFiltered $inputs
      * @param int $level
      * @param array $sharedParams
      * @return Templates\ATemplate
      * @throws ModuleException
      */
-    public function fill(Templates\ATemplate $template, IVariables $inputs, int $level, array $sharedParams = []): Templates\ATemplate
+    public function fill(Templates\ATemplate $template, IFiltered $inputs, int $level, array $sharedParams = []): Templates\ATemplate
     {
         $this->moduleProcessor->setLevel($level);
         $modules = $this->moduleProcessor->listing();
@@ -86,14 +86,14 @@ class SubModules
 
     /**
      * @param string $module
-     * @param IVariables $inputs
+     * @param IFiltered $inputs
      * @param mixed[] $constructParams
      * @param string[] $passedParams
      * @param string|null $constructPath
      * @return IModule
      * @throws ModuleException
      */
-    public function initModule(string $module, IVariables $inputs, array $constructParams, array $passedParams, ?string $constructPath = null): IModule
+    public function initModule(string $module, IFiltered $inputs, array $constructParams, array $passedParams, ?string $constructPath = null): IModule
     {
         $moduleClass = $this->loader->load($module, $constructPath, $constructParams);
         $moduleClass->init($inputs, $passedParams);

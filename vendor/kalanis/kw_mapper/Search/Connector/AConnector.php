@@ -338,12 +338,18 @@ abstract class AConnector
         $childTableAlias = empty($customAlias) ? $childAlias : $customAlias;
         $childLookup = $this->recordLookup($childTableAlias, $childAlias);
         if (empty($childLookup) || empty($childLookup->getRecord())) {
+            // might never happens - part already checked, so it must exists
+            // @codeCoverageIgnoreStart
             throw new MapperException(sprintf('Unknown record for child alias *%s*', $childAlias));
         }
+        // @codeCoverageIgnoreEnd
         $childRecord = $childLookup->getRecord();
         $childRelations = $childRecord->getMapper()->getRelations();
         if (empty($childRelations[$parentKey->getRemoteEntryKey()])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for child *%s*', $parentKey->getRemoteEntryKey(), $childAlias));
+        }
+        if ($parentRecord->getMapper()->getSource() != $childRecord->getMapper()->getSource()) {
+            throw new MapperException(sprintf('Parent *%s* and child *%s* must both have the same source', $parentAlias, $childAlias));
         }
 
         $this->queryBuilder->addJoin(
@@ -367,7 +373,6 @@ abstract class AConnector
      * @param string $parentAlias
      * @throws MapperException
      * @return $this
-     * @codeCoverageIgnore any db with left outer join?
      */
     public function childNotExist(string $childAlias, string $table, string $column, string $parentAlias = ''): self
     {
@@ -395,7 +400,11 @@ abstract class AConnector
      */
     abstract public function getResults(): array;
 
-
+    /**
+     * @param string $table
+     * @throws MapperException
+     * @return string
+     */
     protected function correctTable(string $table): string
     {
         return empty($table) ? $this->basicRecord->getMapper()->getAlias() : $table ;
@@ -410,6 +419,11 @@ abstract class AConnector
     protected function correctColumn(string $table, string $column)
     {
         $record = !empty($table) ? $this->recordLookup($table)->getRecord() : $this->basicRecord ;
+        if (empty($record)) {
+            // @codeCoverageIgnoreStart
+            throw new MapperException(sprintf('Unknown relation table *%s*', $table));
+        }
+        // @codeCoverageIgnoreEnd
         $relations = $record->getMapper()->getRelations();
         if (empty($relations[$column])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for table *%s*', $column, $table));

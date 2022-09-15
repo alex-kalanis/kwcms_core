@@ -12,7 +12,7 @@ class JsonError extends AOutput
 {
     protected $content = null;
 
-    public function setContent($code, string $message)
+    public function setContent($code, $message)
     {
         $this->content = compact('code', 'message');
         return $this;

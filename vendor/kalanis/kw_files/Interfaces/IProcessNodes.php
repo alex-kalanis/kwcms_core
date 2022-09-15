@@ -35,14 +35,14 @@ interface IProcessNodes
     public function isFile(array $entry): bool;
 
     /**
-     * @param array $entry
+     * @param string[] $entry
      * @throws FilesException
      * @return int|null
      */
     public function size(array $entry): ?int;
 
     /**
-     * @param array $entry
+     * @param string[] $entry
      * @throws FilesException
      * @return int|null
      */

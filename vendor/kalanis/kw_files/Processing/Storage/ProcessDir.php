@@ -5,7 +5,7 @@ namespace kalanis\kw_files\Processing\Storage;
 
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessDirs;
-use kalanis\kw_storage\Interfaces\ITarget;
+use kalanis\kw_storage\Interfaces\IStorage;
 
 
 /**
@@ -18,7 +18,7 @@ class ProcessDir implements IProcessDirs
     /** @var IProcessDirs */
     protected $adapter = null;
 
-    public function __construct(ITarget $storage, ?IFLTranslations $lang = null)
+    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $factory = new Dirs\Factory();
         $this->adapter = $factory->getClass($storage, $lang);

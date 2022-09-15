@@ -6,7 +6,7 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Translations;
-use kalanis\kw_storage\Interfaces\ITarget;
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -17,7 +17,7 @@ use kalanis\kw_storage\StorageException;
  */
 class Basic extends AFiles
 {
-    public function __construct(ITarget $storage, ?IFLTranslations $lang = null)
+    public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
         $this->lang = $lang ?? new Translations();
@@ -25,10 +25,10 @@ class Basic extends AFiles
 
     public function copyFile(array $source, array $dest): bool
     {
-        $src = $this->compactName($source, $this->getStorageSeparator());
-        $dst = $this->compactName($dest, $this->getStorageSeparator());
+        $src = $this->getStorageSeparator() . $this->filledName($this->compactName($source, $this->getStorageSeparator()));
+        $dst = $this->getStorageSeparator() . $this->filledName($this->compactName($dest, $this->getStorageSeparator()));
         try {
-            return $this->storage->save($dst, $this->storage->load($src));
+            return $this->storage->write($dst, $this->storage->read($src));
         } catch (StorageException $ex) {
             throw new FilesException($this->lang->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
         }
@@ -36,8 +36,8 @@ class Basic extends AFiles
 
     public function moveFile(array $source, array $dest): bool
     {
-        $this->copyFile($source, $dest);
-        $this->deleteFile($source);
-        return true;
+        $v1 = $this->copyFile($source, $dest);
+        $v2 = $this->deleteFile($source);
+        return $v1 && $v2;
     }
 }

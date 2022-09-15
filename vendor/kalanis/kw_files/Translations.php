@@ -28,11 +28,21 @@ class Translations implements IFLTranslations
         return 'Cannot save wanted file.';
     }
 
+    /**
+     * @param string $fileName
+     * @return string
+     * @codeCoverageIgnore failing streams
+     */
     public function flCannotGetFilePart(string $fileName): string
     {
         return 'Cannot extract part of content';
     }
 
+    /**
+     * @param string $fileName
+     * @return string
+     * @codeCoverageIgnore failing streams
+     */
     public function flCannotGetSize(string $fileName): string
     {
         return 'Cannot copy streams, cannot get file size';
