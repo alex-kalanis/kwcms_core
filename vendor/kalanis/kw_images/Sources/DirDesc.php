@@ -4,7 +4,6 @@ namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
-use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -15,15 +14,15 @@ use kalanis\kw_paths\Stuff;
 class DirDesc extends AFiles
 {
     /**
-     * @param string $path
+     * @param string[] $path
      * @param bool $errorOnFail
      * @throws FilesException
      * @return string|resource
      */
-    public function get(string $path, bool $errorOnFail = false)
+    public function get(array $path, bool $errorOnFail = false)
     {
         try {
-            return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
+            return $this->libFile->readFile($this->getPath($path));
         } catch (FilesException $ex) {
             if (!$errorOnFail) {
                 return '';
@@ -33,42 +32,38 @@ class DirDesc extends AFiles
     }
 
     /**
-     * @param string $path
+     * @param string[] $path
      * @param string $content
      * @throws FilesException
      * @return bool
      */
-    public function set(string $path, string $content): bool
+    public function set(array $path, string $content): bool
     {
-        return $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
+        return $this->libFile->saveFile($this->getPath($path), $content);
     }
 
     /**
-     * @param string $path
+     * @param string[] $path
      * @throws FilesException
      * @return bool
      */
-    public function remove(string $path): bool
+    public function remove(array $path): bool
     {
-        return $this->libProcessor->getFileProcessor()->deleteFile($this->getPath($path));
+        return $this->libFile->deleteFile($this->getPath($path));
     }
 
     /**
-     * @param string $path
+     * @param string[] $path
      * @throws FilesException
      * @return bool
      */
-    public function canUse(string $path): bool
+    public function canUse(array $path): bool
     {
-        $descPath = Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR . $this->config->getDescDir();
-        return $this->libProcessor->getNodeProcessor()->isDir(Stuff::pathToArray($descPath));
+        return $this->libNode->isDir(array_merge($path, [$this->config->getDescDir()]));
     }
 
-    public function getPath(string $path): array
+    public function getPath(array $path): array
     {
-        return Stuff::pathToArray(Stuff::removeEndingSlash($path)) + [
-            $this->config->getDescDir(),
-            $this->config->getDescFile() . $this->config->getDescExt()
-        ];
+        return array_merge($path, [$this->config->getDescDir(), $this->config->getDescFile() . $this->config->getDescExt()]);
     }
 }

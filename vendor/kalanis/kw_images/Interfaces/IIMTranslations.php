@@ -19,9 +19,13 @@ interface IIMTranslations
 
     public function imUnknownType(string $mime): string;
 
+    public function imWrongInstance(string $class): string;
+
     public function imWrongMime(string $mime): string;
 
     public function imImageCannotResize(): string;
+
+    public function imSizesNotSet(): string;
 
     public function imImageCannotResample(): string;
 
@@ -30,10 +34,6 @@ interface IIMTranslations
     public function imImageCannotGetSize(): string;
 
     public function imImageLoadFirst(): string;
-
-    public function imDescCannotRead(): string;
-
-    public function imDescCannotAdd(): string;
 
     public function imDescCannotRemove(): string;
 
@@ -49,21 +49,9 @@ interface IIMTranslations
 
     public function imDescCannotRenameBase(): string;
 
-    public function imDirDescCannotRead(): string;
-
-    public function imDirDescCannotAdd(): string;
-
-    public function imDirDescCannotRemove(): string;
-
-    public function imDirDescCannotAccess(): string;
-
     public function imDirThumbCannotRemove(): string;
 
     public function imDirThumbCannotRemoveCurrent(): string;
-
-    public function imDirThumbCannotRemoveOld(): string;
-
-    public function imDirThumbCannotRestore(): string;
 
     public function imImageSizeExists(): string;
 
@@ -87,13 +75,15 @@ interface IIMTranslations
 
     public function imThumbCannotRemove(): string;
 
-    public function imThumbCannotRemoveCurrent(): string;
-
-    public function imThumbCannotRestore(): string;
-
     public function imThumbAlreadyExistsHere(): string;
 
     public function imThumbCannotRemoveOld(): string;
+
+    public function imThumbCannotGetBaseImage(): string;
+
+    public function imThumbCannotStoreTemporaryImage(): string;
+
+    public function imThumbCannotLoadTemporaryImage(): string;
 
     public function imThumbCannotCopyBase(): string;
 

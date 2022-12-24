@@ -14,11 +14,20 @@ use kalanis\kw_forms\Controls\RadioSet;
  */
 class Radio extends Controls\Radio
 {
+    /** @var int */
     private static $uniqid = 0;
+
     protected $templateLabel = '';
     public $templateInput = '<label><input type="radio" value="%1$s"%2$s /> %3$s</label>';
 
-    public function set(string $alias, $value = null, string $label = '', $checked = ''): Controls\Radio
+    /**
+     * @param string $alias
+     * @param string|int|float|bool|null $value
+     * @param string $label
+     * @param string|int|float|bool|null $checked
+     * @return Controls\Radio
+     */
+    public function set(string $alias, $value = null, string $label = '', $checked = ''): parent
     {
         $this->setEntry($alias, $value, $label);
         $this->setChecked($checked);
@@ -34,6 +43,11 @@ class Radio extends Controls\Radio
         if (!($this->parent instanceof RadioSet)) {
             $this->setAttribute('name', $this->getKey());
         }
-        return $this->wrapIt(sprintf($this->templateInput, $this->escaped(strval($this->getOriginalValue())), $this->renderAttributes(), $this->escaped(strval($this->getLabel()))), $this->wrappersInput);
+        return $this->wrapIt(sprintf(
+            $this->templateInput,
+            $this->escaped(strval($this->getOriginalValue())),
+            $this->renderAttributes(),
+            $this->escaped(strval($this->getLabel()))
+        ), $this->wrappersInput);
     }
 }

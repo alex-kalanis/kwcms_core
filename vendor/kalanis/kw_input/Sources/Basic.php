@@ -74,6 +74,11 @@ class Basic implements Interfaces\ISource
         return $this->externalArgs;
     }
 
+    public function inputRawPaths(): ?array
+    {
+        return ['php://input'];
+    }
+
     /**
      * @param string[]|int[]|array<string|int, string|int|bool> $externalArgs
      * @return $this

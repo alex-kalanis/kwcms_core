@@ -32,8 +32,8 @@ class PedigreeItemMapper extends Mappers\Database\ADatabase
         $this->setRelation('blood', 'kp_blood');
         $this->setRelation('text', 'kp_text');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('parents', '\kalanis\kw_pedigree\Storage\MultiTable\PedigreeRelateRecord', 'id', 'childId');
-        $this->addForeignKey('children', '\kalanis\kw_pedigree\Storage\MultiTable\PedigreeRelateRecord', 'id', 'parentId');
+        $this->addForeignKey('parents', PedigreeRelateRecord::class, 'id', 'childId');
+        $this->addForeignKey('children', PedigreeRelateRecord::class, 'id', 'parentId');
     }
 
     public function beforeDelete(ARecord $record): bool

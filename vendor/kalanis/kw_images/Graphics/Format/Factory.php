@@ -13,6 +13,7 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
  */
 class Factory
 {
+    /** @var array<string, string> */
     protected $types = [
         'bmp' => '\kalanis\kw_images\Graphics\Format\Bmp',
         'gif' => '\kalanis\kw_images\Graphics\Format\Gif',
@@ -28,8 +29,8 @@ class Factory
     /**
      * @param string $type
      * @param IIMTranslations $lang
-     * @return AFormat
      * @throws ImagesException
+     * @return AFormat
      */
     public function getByType(string $type, IIMTranslations $lang): AFormat
     {
@@ -37,6 +38,10 @@ class Factory
             throw new ImagesException($lang->imUnknownType($type));
         }
         $class = $this->types[$type];
-        return new $class($lang);
+        $instance = new $class($lang);
+        if (!$instance instanceof AFormat) {
+            throw new ImagesException($lang->imWrongInstance($class));
+        }
+        return $instance;
     }
 }

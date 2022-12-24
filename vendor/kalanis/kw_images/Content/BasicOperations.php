@@ -4,9 +4,7 @@ namespace kalanis\kw_images\Content;
 
 
 use kalanis\kw_files\FilesException;
-use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
-use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -31,131 +29,116 @@ class BasicOperations
     }
 
     /**
-     * @param string $currentPath
-     * @param string $targetDir
+     * @param string[] $currentPath
+     * @param string[] $targetDir
      * @param bool $overwrite
-     * @throws ImagesException
      * @throws FilesException
      * @return bool
      */
-    public function copy(string $currentPath, string $targetDir, bool $overwrite = false): bool
+    public function copy(array $currentPath, array $targetDir, bool $overwrite = false): bool
     {
-        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
-        $fileName = Stuff::filename($currentPath);
-        $targetDir = Stuff::removeEndingSlash($targetDir);
-        try {
-            $this->libImage->copy($fileName, $origDir, $targetDir, $overwrite);
-        } catch (FilesException $ex) {
-            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
-        if ($this->libThumb->isHere($currentPath)) {
+        $fullPath = array_values($currentPath);
+        $fileName = strval(array_pop($currentPath));
+
+        $this->libImage->copy($fileName, $currentPath, $targetDir, $overwrite);
+        if ($this->libThumb->isHere($fullPath)) {
             try {
-                $this->libThumb->copy($fileName, $origDir, $targetDir, $overwrite);
+                $this->libThumb->copy($fileName, $currentPath, $targetDir, $overwrite);
             } catch (FilesException $ex) {
                 $this->libImage->delete($targetDir, $fileName);
-                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+                throw $ex;
             }
         }
-        if ($this->libDesc->isHere($currentPath)) {
+        if ($this->libDesc->isHere($fullPath)) {
             try {
-                $this->libDesc->copy($fileName, $origDir, $targetDir, $overwrite);
+                $this->libDesc->copy($fileName, $currentPath, $targetDir, $overwrite);
             } catch (FilesException $ex) {
                 $this->libThumb->delete($targetDir, $fileName);
                 $this->libImage->delete($targetDir, $fileName);
-                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+                throw $ex;
             }
         }
         return true;
     }
 
     /**
-     * @param string $currentPath
-     * @param string $targetDir
+     * @param string[] $currentPath
+     * @param string[] $targetDir
      * @param bool $overwrite
-     * @return bool
-     * @throws ImagesException
      * @throws FilesException
+     * @return bool
      */
-    public function move(string $currentPath, string $targetDir, bool $overwrite = false): bool
+    public function move(array $currentPath, array $targetDir, bool $overwrite = false): bool
     {
-        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
-        $fileName = Stuff::filename($currentPath);
-        $targetDir = Stuff::removeEndingSlash($targetDir);
-        try {
-            $this->libImage->move($fileName, $origDir, $targetDir, $overwrite);
-        } catch (FilesException $ex) {
-            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
-        if ($this->libThumb->isHere($currentPath)) {
+        $fullPath = array_values($currentPath);
+        $fileName = strval(array_pop($currentPath));
+
+        $this->libImage->move($fileName, $currentPath, $targetDir, $overwrite);
+        if ($this->libThumb->isHere($fullPath)) {
             try {
-                $this->libThumb->move($fileName, $origDir, $targetDir, $overwrite);
+                $this->libThumb->move($fileName, $currentPath, $targetDir, $overwrite);
             } catch (FilesException $ex) {
-                $this->libImage->move($fileName, $targetDir, $origDir);
-                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+                $this->libImage->move($fileName, $targetDir, $currentPath);
+                throw $ex;
             }
         }
-        if ($this->libDesc->isHere($currentPath)) {
+        if ($this->libDesc->isHere($fullPath)) {
             try {
-                $this->libDesc->move($fileName, $origDir, $targetDir, $overwrite);
+                $this->libDesc->move($fileName, $currentPath, $targetDir, $overwrite);
             } catch (FilesException $ex) {
-                $this->libThumb->move($fileName, $targetDir, $origDir);
-                $this->libImage->move($fileName, $targetDir, $origDir);
-                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+                $this->libThumb->move($fileName, $targetDir, $currentPath);
+                $this->libImage->move($fileName, $targetDir, $currentPath);
+                throw $ex;
             }
         }
         return true;
     }
 
     /**
-     * @param string $currentPath
+     * @param string[] $currentPath
      * @param string $targetName
      * @param bool $overwrite
-     * @return bool
-     * @throws ImagesException
      * @throws FilesException
+     * @return bool
      */
-    public function rename(string $currentPath, string $targetName, bool $overwrite = false): bool
+    public function rename(array $currentPath, string $targetName, bool $overwrite = false): bool
     {
-        $origDir = Stuff::removeEndingSlash(Stuff::directory($currentPath));
-        $fileName = Stuff::filename($currentPath);
-        try {
-            $this->libImage->rename($origDir, $fileName, $targetName, $overwrite);
-        } catch (FilesException $ex) {
-            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
-        if ($this->libThumb->isHere($currentPath)) {
+        $fullPath = array_values($currentPath);
+        $fileName = strval(array_pop($currentPath));
+
+        $this->libImage->rename($currentPath, $fileName, $targetName, $overwrite);
+        if ($this->libThumb->isHere($fullPath)) {
             try {
-                $this->libThumb->rename($origDir, $fileName, $targetName, $overwrite);
+                $this->libThumb->rename($currentPath, $fileName, $targetName, $overwrite);
             } catch (FilesException $ex) {
-                $this->libImage->rename($origDir, $targetName, $fileName);
-                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+                $this->libImage->rename($currentPath, $targetName, $fileName);
+                throw $ex;
             }
         }
-        if ($this->libDesc->isHere($currentPath)) {
+        if ($this->libDesc->isHere($fullPath)) {
             try {
-                $this->libDesc->rename($origDir, $fileName, $targetName, $overwrite);
+                $this->libDesc->rename($currentPath, $fileName, $targetName, $overwrite);
             } catch (FilesException $ex) {
-                $this->libThumb->rename($origDir, $targetName, $fileName);
-                $this->libImage->rename($origDir, $targetName, $fileName);
-                throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
+                $this->libThumb->rename($currentPath, $targetName, $fileName);
+                $this->libImage->rename($currentPath, $targetName, $fileName);
+                throw $ex;
             }
         }
         return true;
     }
 
     /**
-     * @param string $path
-     * @return bool
+     * @param string[] $path
      * @throws FilesException
+     * @return bool
      */
-    public function delete(string $path): bool
+    public function delete(array $path): bool
     {
-        $origDir = Stuff::removeEndingSlash(Stuff::directory($path));
-        $fileName = Stuff::filename($path);
+        $fileName = strval(array_pop($path));
 
-        $this->libDesc->delete($origDir, $fileName);
-        $this->libThumb->delete($origDir, $fileName);
-        $this->libImage->delete($origDir, $fileName);
-        return true;
+        $r1 = $this->libDesc->delete($path, $fileName);
+        $r2 = $this->libThumb->delete($path, $fileName);
+        $r3 = $this->libImage->delete($path, $fileName);
+        return $r1 && $r2 && $r3;
     }
 }

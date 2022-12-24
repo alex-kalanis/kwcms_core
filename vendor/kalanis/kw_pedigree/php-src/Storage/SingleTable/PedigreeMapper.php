@@ -31,8 +31,8 @@ class PedigreeMapper extends Mappers\Database\ADatabase
         $this->setRelation('sex', 'sex');
         $this->setRelation('blood', 'blood');
         $this->setRelation('text', 'text');
-        $this->addForeignKey('father', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeRecord', 'fatherId', 'id');
-        $this->addForeignKey('mother', '\kalanis\kw_pedigree\Storage\SingleTable\PedigreeRecord', 'motherId', 'id');
+        $this->addForeignKey('father', PedigreeRecord::class, 'fatherId', 'id');
+        $this->addForeignKey('mother', PedigreeRecord::class, 'motherId', 'id');
         $this->addPrimaryKey('id');
     }
 

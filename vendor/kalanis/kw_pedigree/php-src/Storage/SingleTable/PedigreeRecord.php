@@ -48,6 +48,6 @@ class PedigreeRecord extends ASimpleRecord
         $this->addEntry('text', IEntryType::TYPE_STRING, 8192);
         $this->addEntry('father', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
         $this->addEntry('mother', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\kalanis\kw_pedigree\Storage\SingleTable\PedigreeMapper');
+        $this->setMapper(PedigreeMapper::class);
     }
 }

@@ -5,8 +5,9 @@ namespace kalanis\kw_tree_controls\Controls;
 
 use kalanis\kw_forms\Controls\AControl;
 use kalanis\kw_forms\Controls\SelectOption;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_templates\HtmlElement;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\ControlNode;
 
 
@@ -18,6 +19,11 @@ class FileSelect extends ATreeControl
 {
     use TSimpleValue;
 
+    /**
+     * @param ControlNode|null $baseNode
+     * @throws RenderException
+     * @return string
+     */
     protected function renderTree(?ControlNode $baseNode): string
     {
         if (empty($baseNode)) {
@@ -29,10 +35,15 @@ class FileSelect extends ATreeControl
         return $select->render();
     }
 
+    /**
+     * @param ControlNode $node
+     * @throws RenderException
+     * @return string
+     */
     protected function getOptionGroup(ControlNode $node): string
     {
-        if ($node->getNode()->isDir()) {
-            $group = HtmlElement::init('optgroup', ['label' => $node->getNode()->getPath()]);
+        if ($node->getNode() && $node->getNode()->isDir()) {
+            $group = HtmlElement::init('optgroup', ['label' => $this->stringPath($node->getNode())]);
             foreach ($node->getSubNodes() as $subNode) {
                 $group->addChild($this->getOptionGroup($subNode));
             }
@@ -42,15 +53,20 @@ class FileSelect extends ATreeControl
         }
     }
 
+    /**
+     * @param ControlNode $node
+     * @throws RenderException
+     * @return string
+     */
     protected function getOption(ControlNode $node): string
     {
-        return $node->getControl()->render();
+        return $node->getControl() ? $node->getControl()->render() : '';
     }
 
     protected function getInput(FileNode $node): AControl
     {
         $input = new SelectOption();
-        $input->setEntry($this->getKey(), $node->getPath(), $node->getName());
+        $input->setEntry($this->getKey(), $this->stringPath($node), $this->stringName($node));
         $this->inputs[] = $input;
         return $input;
     }

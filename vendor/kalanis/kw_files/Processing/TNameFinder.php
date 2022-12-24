@@ -11,20 +11,22 @@ namespace kalanis\kw_files\Processing;
 trait TNameFinder
 {
     /**
-     * @param array<string> $name
+     * @param string[] $path
+     * @param string $name
      * @param string $suffix
      * @return string
      */
-    public function findFreeName(array $name, string $suffix): string
+    public function findFreeName(array $path, string $name, string $suffix): string
     {
-        if (!$this->targetExists($name, $suffix)) {
-            return $this->compactName($name) . $suffix;
+        $fullPath = array_merge($path, [$name]);
+        if (!$this->targetExists($fullPath, $suffix)) {
+            return $name . $suffix;
         }
         $i = 0;
-        while ($this->targetExists($name, $this->getNameSeparator() . strval($i) . $suffix)) {
+        while ($this->targetExists($fullPath, $this->getNameSeparator() . strval($i) . $suffix)) {
             $i++;
         }
-        return $this->compactName($name) . $this->getNameSeparator() . strval($i) . $suffix;
+        return $name . $this->getNameSeparator() . strval($i) . $suffix;
     }
 
     abstract protected function getNameSeparator(): string;
@@ -35,11 +37,4 @@ trait TNameFinder
      * @return bool
      */
     abstract protected function targetExists(array $path, string $added): bool;
-
-    /**
-     * @param array<string> $path
-     * @param string $pathDelimiter
-     * @return string
-     */
-    abstract public function compactName(array $path, string $pathDelimiter = DIRECTORY_SEPARATOR): string;
 }

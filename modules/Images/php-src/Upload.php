@@ -16,7 +16,7 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_tree\TWhereDir;
+use kalanis\kw_tree_controls\TWhereDir;
 
 
 /**

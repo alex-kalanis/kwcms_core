@@ -33,6 +33,7 @@ class Entry implements Interfaces\IEntry
         self::SOURCE_SERVER,
         self::SOURCE_ENV,
         self::SOURCE_EXTERNAL,
+        self::SOURCE_JSON,
     ];
 
     /**

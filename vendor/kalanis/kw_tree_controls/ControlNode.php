@@ -4,7 +4,7 @@ namespace kalanis\kw_tree_controls;
 
 
 use kalanis\kw_forms\Controls\AControl;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 
 
 /**

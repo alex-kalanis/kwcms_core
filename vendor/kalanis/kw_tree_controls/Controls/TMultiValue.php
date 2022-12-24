@@ -17,6 +17,9 @@ trait TMultiValue
     /** @var Controls\AControl[]|Controls\Checkbox[] */
     protected $inputs = [];
 
+    /**
+     * @return array<int, string|int|float|bool|null>
+     */
     public function getValues(): array
     {
         $array = [];
@@ -37,6 +40,7 @@ trait TMultiValue
     public function setValues(array $array): void
     {
         foreach ($this->inputs as $child) {
+            /** @var Controls\Checkbox $child */
             $shortKey = $this->shorterKey($child->getKey());
             $child->setValue(
                 isset($array[$shortKey])

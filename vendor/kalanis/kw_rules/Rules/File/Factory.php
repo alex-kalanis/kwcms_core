@@ -17,17 +17,17 @@ class Factory implements IRuleFactory
 {
     /** @var array<string, string> */
     protected static $map = [
-        IRules::FILE_EXISTS             => '\kalanis\kw_rules\Rules\File\FileExists',
-        IRules::FILE_SENT               => '\kalanis\kw_rules\Rules\File\FileSent',
-        IRules::FILE_RECEIVED           => '\kalanis\kw_rules\Rules\File\FileReceived',
-        IRules::FILE_MAX_SIZE           => '\kalanis\kw_rules\Rules\File\FileMaxSize',
-        IRules::FILE_MIMETYPE_EQUALS    => '\kalanis\kw_rules\Rules\File\FileMimeEquals',
-        IRules::FILE_MIMETYPE_IN_LIST   => '\kalanis\kw_rules\Rules\File\FileMimeList',
-        IRules::IS_IMAGE                => '\kalanis\kw_rules\Rules\File\ImageIs',
-        IRules::IMAGE_DIMENSION_EQUALS  => '\kalanis\kw_rules\Rules\File\ImageSizeEquals',
-        IRules::IMAGE_DIMENSION_IN_LIST => '\kalanis\kw_rules\Rules\File\ImageSizeList',
-        IRules::IMAGE_MAX_DIMENSION     => '\kalanis\kw_rules\Rules\File\ImageSizeMax',
-        IRules::IMAGE_MIN_DIMENSION     => '\kalanis\kw_rules\Rules\File\ImageSizeMin',
+        IRules::FILE_EXISTS             => FileExists::class,
+        IRules::FILE_SENT               => FileSent::class,
+        IRules::FILE_RECEIVED           => FileReceived::class,
+        IRules::FILE_MAX_SIZE           => FileMaxSize::class,
+        IRules::FILE_MIMETYPE_EQUALS    => FileMimeEquals::class,
+        IRules::FILE_MIMETYPE_IN_LIST   => FileMimeList::class,
+        IRules::IS_IMAGE                => ImageIs::class,
+        IRules::IMAGE_DIMENSION_EQUALS  => ImageSizeEquals::class,
+        IRules::IMAGE_DIMENSION_IN_LIST => ImageSizeList::class,
+        IRules::IMAGE_MAX_DIMENSION     => ImageSizeMax::class,
+        IRules::IMAGE_MIN_DIMENSION     => ImageSizeMin::class,
     ];
 
     /**

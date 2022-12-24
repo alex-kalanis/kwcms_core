@@ -13,7 +13,7 @@ use kalanis\kw_images\Interfaces\ISizes;
  */
 class ThumbConfig implements ISizes
 {
-    const FILE_TEMP = '.tmp';
+    const FILE_TEMP = 'thumb_tmp';
 
     /** @var int */
     protected $maxWidth = 180;
@@ -22,9 +22,7 @@ class ThumbConfig implements ISizes
     /** @var int */
     protected $maxFileSize = 10485760;
     /** @var string */
-    protected $thumbTempExt = self::FILE_TEMP;
-    /** @var string */
-    protected $tempDir = '';
+    protected $tempPrefix = self::FILE_TEMP;
 
     /**
      * @param array<string, string|int> $params
@@ -35,8 +33,7 @@ class ThumbConfig implements ISizes
         $this->maxWidth = !empty($params['tmb_width']) ? intval(strval($params['tmb_width'])) : $this->maxWidth;
         $this->maxHeight = !empty($params['tmb_height']) ? intval(strval($params['tmb_height'])) : $this->maxHeight;
         $this->maxFileSize = !empty($params['tmb_size']) ? intval(strval($params['tmb_size'])) : $this->maxFileSize;
-        $this->thumbTempExt = !empty($params['temp_ext']) ? strval($params['temp_ext']) : $this->thumbTempExt;
-        $this->tempDir = !empty($params['temp_dir']) ? strval($params['temp_dir']) : $this->tempDir;
+        $this->tempPrefix = !empty($params['temp_pref']) ? strval($params['temp_pref']) : $this->tempPrefix;
         return $this;
     }
 
@@ -55,13 +52,8 @@ class ThumbConfig implements ISizes
         return $this->maxFileSize;
     }
 
-    public function getTempExt(): string
+    public function getTempPrefix(): string
     {
-        return $this->thumbTempExt;
-    }
-
-    public function getTempDir(): string
-    {
-        return $this->tempDir;
+        return $this->tempPrefix;
     }
 }

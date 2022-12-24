@@ -3,6 +3,7 @@
 namespace kalanis\kw_paths;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Interfaces\IPaths;
 
 
@@ -18,11 +19,13 @@ class Stuff
      * Return path with no extra dots and slashes
      * Do not call realpath() which do the similar thing
      * @param string $path
+     * @param string $delimiter
+     * @throws FilesException
      * @return string
      */
-    public static function sanitize(string $path): string
+    public static function sanitize(string $path, string $delimiter = DIRECTORY_SEPARATOR): string
     {
-        return static::arrayToPath(array_filter(array_filter(static::pathToArray($path), ['\kalanis\kw_paths\Stuff', 'notDots'])));
+        return static::arrayToPath(array_filter(array_filter(static::pathToArray($path, $delimiter), ['\kalanis\kw_paths\Stuff', 'notDots'])), $delimiter);
     }
 
     public static function notDots(string $content): bool
@@ -32,103 +35,117 @@ class Stuff
 
     /**
      * @param string $path
-     * @return string[]
+     * @param string $delimiter
+     * @throws FilesException
+     * @return array<int, string>
      */
-    public static function pathToArray(string $path): array
+    public static function pathToArray(string $path, string $delimiter = DIRECTORY_SEPARATOR): array
     {
-        return explode(DIRECTORY_SEPARATOR, $path); // OS dependent
+        return Extras\PathTransform::get()->expandName($path, $delimiter);
     }
 
     /**
      * @param string[] $path
+     * @param string $delimiter
+     * @throws FilesException
      * @return string
      */
-    public static function arrayToPath(array $path): string
+    public static function arrayToPath(array $path, string $delimiter = DIRECTORY_SEPARATOR): string
     {
-        return implode(DIRECTORY_SEPARATOR, $path); // OS dependent
+        return Extras\PathTransform::get()->compactName($path, $delimiter);
     }
 
     /**
      * @param string $path
-     * @return string[]
+     * @param string $delimiter
+     * @throws FilesException
+     * @return array<int, string>
      */
-    public static function linkToArray(string $path): array
+    public static function linkToArray(string $path, string $delimiter = IPaths::SPLITTER_SLASH): array
     {
-        return explode(IPaths::SPLITTER_SLASH, $path); // HTTP dependent
+        return Extras\PathTransform::get()->expandName($path, $delimiter);
     }
 
     /**
      * @param string[] $path
+     * @param string $delimiter
+     * @throws FilesException
      * @return string
      */
-    public static function arrayToLink(array $path): string
+    public static function arrayToLink(array $path, string $delimiter = IPaths::SPLITTER_SLASH): string
     {
-        return implode(IPaths::SPLITTER_SLASH, $path); // HTTP dependent
+        return Extras\PathTransform::get()->compactName($path, $delimiter);
     }
 
     /**
      * Path to file (with trailing slash)
      * @param string $path
+     * @param string $delimiter
      * @return string
      * Do not use dirname(), because has problems with code pages
      */
-    public static function directory(string $path): string
+    public static function directory(string $path, string $delimiter = DIRECTORY_SEPARATOR): string
     {
-        $pos = mb_strrpos($path, DIRECTORY_SEPARATOR);
+        $pos = mb_strrpos($path, $delimiter);
         return (false !== $pos) ? mb_substr($path, 0, $pos + 1) : '' ;
     }
 
     /**
      * Name of file from the whole path
      * @param string $path
+     * @param string $delimiter
      * @return string
      * Do not use basename(), because has problems with code pages
      */
-    public static function filename(string $path): string
+    public static function filename(string $path, string $delimiter = DIRECTORY_SEPARATOR): string
     {
-        $pos = mb_strrpos($path, DIRECTORY_SEPARATOR);
+        $pos = mb_strrpos($path, $delimiter);
         return (false !== $pos) ? mb_substr($path, $pos + 1) : $path ;
     }
 
     /**
      * Base of file (part before the "dot")
      * @param string $path
+     * @param string $delimiter
      * @return string
      */
-    public static function fileBase(string $path): string
+    public static function fileBase(string $path, string $delimiter = IPaths::SPLITTER_DOT): string
     {
-        $pos = mb_strrpos($path, IPaths::SPLITTER_DOT);
+        $pos = mb_strrpos($path, $delimiter);
         return (false !== $pos) && (0 < $pos) ? mb_substr($path, 0, $pos) : $path ;
     }
 
     /**
      * Extension of file (part after the "dot" if it exists)
      * @param string $path
+     * @param string $delimiter
      * @return string
      */
-    public static function fileExt(string $path): string
+    public static function fileExt(string $path, string $delimiter = IPaths::SPLITTER_DOT): string
     {
-        $pos = mb_strrpos($path, IPaths::SPLITTER_DOT);
+        $pos = mb_strrpos($path, $delimiter);
         return ((false !== $pos) && (0 < $pos)) ? mb_substr($path, $pos + 1) : '' ;
     }
 
     /**
      * Remove ending slash
      * @param string $path
+     * @param string $delimiter
      * @return string
      */
-    public static function removeEndingSlash(string $path): string
+    public static function removeEndingSlash(string $path, string $delimiter = DIRECTORY_SEPARATOR): string
     {
-        return (DIRECTORY_SEPARATOR == mb_substr($path, -1, 1)) ? mb_substr($path, 0, -1) : $path ;
+        return ($delimiter == mb_substr($path, -1, 1)) ? mb_substr($path, 0, -1) : $path ;
     }
 
     /**
      * Return correct name with no non-ascii characters
      * @param string $name
      * @param int $maxLen
+     * @param string $delimiter
      * @return string
      */
-    public static function canonize(string $name, int $maxLen = 127): string
+    public static function canonize(string $name, int $maxLen = 127, string $delimiter = IPaths::SPLITTER_DOT): string
     {
         $fName = preg_replace('/((&[[:alpha:]]{1,6};)|(&#[[:alnum:]]{1,7};))/', '', $name); // remove ascii-escaped chars
         $fName = preg_replace('/[^[:alnum:]_\s\-\.]/', '', strval($fName)); // remove non-alnum + dots
@@ -138,6 +155,6 @@ class Stuff
         $base = static::fileBase($fName);
         $extLen = strlen($ext);
         $cut = substr($base, 0, ($maxLen - $extLen));
-        return ($extLen) ? $cut . IPaths::SPLITTER_DOT . $ext : $cut ;
+        return ($extLen) ? $cut . $delimiter . $ext : $cut ;
     }
 }

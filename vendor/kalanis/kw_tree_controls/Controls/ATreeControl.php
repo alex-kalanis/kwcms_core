@@ -4,7 +4,8 @@ namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\ControlNode;
 
 
@@ -20,7 +21,7 @@ abstract class ATreeControl extends Controls\AControl
     /** @var Controls\AControl[]|Controls\Checkbox[]|Controls\Radio[] */
     protected $inputs = [];
 
-    public function set(string $key, string $value = '', string $label = '', ?FileNode $tree = null)
+    public function set(string $key, string $value = '', string $label = '', ?FileNode $tree = null): self
     {
         $this->setEntry($key, $value, $label);
         $this->tree = $this->fillTreeControl($tree);
@@ -43,8 +44,8 @@ abstract class ATreeControl extends Controls\AControl
         $node->setControl($this->getInput($baseNode));
         $node->setNode($baseNode);
         foreach ($baseNode->getSubNodes() as $subNode) {
-            if ($subNode) {
-                $node->addSubNode($this->fillTreeControl($subNode));
+            if ($subControl = $this->fillTreeControl($subNode)) {
+                $node->addSubNode($subControl);
             }
         }
         return $node;
@@ -58,4 +59,21 @@ abstract class ATreeControl extends Controls\AControl
     abstract protected function getInput(FileNode $node): Controls\AControl;
 
     abstract protected function renderTree(?ControlNode $baseNode): string;
+
+    protected function stringName(?FileNode $node): string
+    {
+        if (is_null($node)) {
+            return '';
+        }
+        $path = $node->getPath();
+        $last = end($path);
+        return (false !== $last) ? strval($last) : IPaths::SPLITTER_SLASH;
+    }
+
+    protected function stringPath(?FileNode $node): string
+    {
+        return is_null($node)
+            ? IPaths::SPLITTER_SLASH
+            : implode(IPaths::SPLITTER_SLASH, $node->getPath());
+    }
 }

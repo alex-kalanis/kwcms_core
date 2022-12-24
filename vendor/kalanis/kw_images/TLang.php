@@ -13,6 +13,7 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
  */
 trait TLang
 {
+    /** @var IIMTranslations|null */
     protected $lang = null;
 
     public function setLang(?IIMTranslations $lang): void
@@ -20,8 +21,8 @@ trait TLang
         $this->lang = $lang ?: new Translations();
     }
 
-    public function getLang(): ?IIMTranslations
+    public function getLang(): IIMTranslations
     {
-        return $this->lang;
+        return $this->lang ?: new Translations();
     }
 }

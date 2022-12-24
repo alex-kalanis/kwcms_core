@@ -6,7 +6,7 @@ namespace kalanis\kw_clipr\Loaders;
 use kalanis\kw_clipr\Clipr\Paths;
 use kalanis\kw_clipr\Clipr\Useful;
 use kalanis\kw_clipr\CliprException;
-use kalanis\kw_clipr\Interfaces\ILoader;
+use kalanis\kw_clipr\Interfaces;
 use kalanis\kw_clipr\Tasks\ATask;
 use Psr\Container;
 
@@ -18,7 +18,7 @@ use Psr\Container;
  * It contains dependency injection - so everything loaded is from source targeted by that DI
  * @codeCoverageIgnore because of that internal autoloader
  */
-class DiLoader implements ILoader
+class DiLoader implements Interfaces\ILoader
 {
     /** @var Container\ContainerInterface */
     protected $container = null;
@@ -48,7 +48,7 @@ class DiLoader implements ILoader
                     return null;
                 }
                 if (!$task instanceof ATask) {
-                    throw new CliprException(sprintf('Class *%s* is not instance of ATask - check interface or query', $classPath));
+                    throw new CliprException(sprintf('Class *%s* is not instance of ATask - check interface or query', $classPath), Interfaces\IStatuses::STATUS_LIB_ERROR);
                 }
                 return $task;
             }

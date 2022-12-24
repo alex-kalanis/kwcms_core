@@ -17,15 +17,15 @@ use kalanis\kw_paths\Stuff;
  */
 class Graphics
 {
-    use TSizes;
     use TLang;
+    use TSizes;
 
     /** @var Graphics\Processor */
     protected $libGraphics = null;
-    /** @var ISizes */
-    protected $libSizes = null;
     /** @var MimeType */
     protected $libMime = null;
+    /** @var ISizes|null */
+    protected $libSizes = null;
 
     public function __construct(Graphics\Processor $libGraphics, MimeType $libMime, ?IIMTranslations $lang = null)
     {
@@ -41,30 +41,39 @@ class Graphics
     }
 
     /**
-     * @param string $path path to temp file
+     * @param string $tempPath path to temp file
      * @throws ImagesException
+     * @return bool
      */
-    public function check(string $path): void
+    public function check(string $tempPath): bool
     {
-        $size = @filesize($path);
-        if (is_null($size)) {
+        if (!$this->libSizes) {
+            throw new ImagesException($this->getLang()->imSizesNotSet());
+        }
+        $size = @filesize($tempPath);
+        if (false === $size) {
             throw new ImagesException($this->getLang()->imImageSizeExists());
         }
         if ($this->libSizes->getMaxSize() < $size) {
             throw new ImagesException($this->getLang()->imImageSizeTooLarge());
         }
+        return true;
     }
 
     /**
-     * @param string $tempPath path to temp file
-     * @param string $realName real file name for extension detection
+     * @param string $tempPath path to temp file which will be loaded and saved
+     * @param string $realSourceName real file name for extension detection of source image
+     * @param string|null $realTargetName real file name for extension detection of target image
      * @throws ImagesException
      * @return bool
      */
-    public function resize(string $tempPath, string $realName): bool
+    public function resize(string $tempPath, string $realSourceName, ?string $realTargetName = null): bool
     {
-        $type = $this->getType($realName);
-        $this->libGraphics->load($type, $tempPath);
+        if (!$this->libSizes) {
+            throw new ImagesException($this->getLang()->imSizesNotSet());
+        }
+        $realTargetName = empty($realTargetName) ? $realSourceName : $realTargetName;
+        $this->libGraphics->load($this->getType($realSourceName), $tempPath);
         $sizes = $this->calculateSize(
             $this->libGraphics->width(),
             $this->libSizes->getMaxWidth(),
@@ -72,7 +81,7 @@ class Graphics
             $this->libSizes->getMaxHeight()
         );
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
-        $this->libGraphics->save($type, $tempPath);
+        $this->libGraphics->save($this->getType($realTargetName), $tempPath);
         return true;
     }
 
@@ -85,7 +94,7 @@ class Graphics
     {
         $mime = $this->libMime->mimeByExt(Stuff::fileExt($path));
         list($type, $app) = explode('/', $mime);
-        if ('image' != $type) {
+        if ('image' !== $type) {
             throw new ImagesException($this->getLang()->imWrongMime($mime));
         }
         return $app;

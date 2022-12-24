@@ -11,6 +11,7 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
  * Class AFactory
  * @package kalanis\kw_connect\core
  * Factory Class for accessing filter types
+ * Intentionally without PSR-DI dependency
  */
 abstract class AFilterFactory implements IFilterFactory
 {

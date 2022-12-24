@@ -14,7 +14,8 @@ class DummyTask extends ATask
         return 'Just dummy task for processing info from params';
     }
 
-    public function process(): void
+    public function process(): int
     {
+        return static::STATUS_SUCCESS;
     }
 }

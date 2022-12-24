@@ -4,6 +4,7 @@ namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_templates\HtmlElement;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\ControlNode;
 
 
@@ -21,7 +22,9 @@ trait TSubEntry
         $fieldset = HtmlElement::init('fieldset');
         $legend = HtmlElement::init('legend');
         $div = HtmlElement::init('div', ['class' => 'select_tree']);
-        $legend->addChild($this->getLabel());
+        if (!is_null($this->getLabel())) {
+            $legend->addChild($this->getLabel());
+        }
         $div->addChild($this->fillEntries([$baseNode]));
         $fieldset->addChild($legend);
         $fieldset->addChild($div);
@@ -30,12 +33,16 @@ trait TSubEntry
 
     protected function getSubEntry(ControlNode $node): HtmlElement
     {
-        $entry = HtmlElement::init('li', ['value' => $node->getNode()->getPath()]);
+        $entry = HtmlElement::init('li', ['value' => $this->stringPath($node->getNode())]);
         $label = HtmlElement::init('label', ['class' => 'dir']);
-        $label->addChild($node->getNode()->getName());
+        $label->addChild($this->stringName($node->getNode()));
         $entry->addChild($label);
         return $entry;
     }
 
     abstract protected function fillEntries(array $nodes): string;
+
+    abstract protected function stringName(?FileNode $node): string;
+
+    abstract protected function stringPath(?FileNode $node): string;
 }

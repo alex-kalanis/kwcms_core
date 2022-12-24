@@ -24,6 +24,6 @@ class PedigreeRelateRecord extends ASimpleRecord
         $this->addEntry('parentId', IEntryType::TYPE_INTEGER, 2048);
         $this->addEntry('parents', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
         $this->addEntry('children', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\kalanis\kw_pedigree\Storage\MultiTable\PedigreeRelateMapper');
+        $this->setMapper(PedigreeRelateMapper::class);
     }
 }

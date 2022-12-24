@@ -69,11 +69,11 @@ abstract class ASingleTask extends ATask
         try {
             if ($this->isSingleInstance() && $this->isRunLocked()) {
                 // check if exists another instance
-                throw new SingleTaskException('One script instance is already running!');
+                throw new SingleTaskException('One script instance is already running!', static::STATUS_ATTEMPT_LATER);
                 // create own lock file
             }
         } catch (LockException $ex) {
-            throw new SingleTaskException('Locked by another user. Cannot unlock here.', 0, $ex);
+            throw new SingleTaskException('Locked by another user. Cannot unlock here.', static::STATUS_PERMISSION_BLOCK, $ex);
         }
     }
 

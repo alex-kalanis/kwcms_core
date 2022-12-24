@@ -103,7 +103,7 @@ class Request extends AParams
 
     /**
      * @param string $param
-     * @return array<string|int, string|int|bool>
+     * @return array<string|int, array<mixed>|string|int|bool>
      */
     protected function parseParamsToArray(string $param): array
     {

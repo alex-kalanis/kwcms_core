@@ -14,13 +14,13 @@ use kalanis\kw_connect\core\AFilterFactory;
 class Factory extends AFilterFactory
 {
     protected static $map = [
-        self::ACTION_CONTAINS => '\kalanis\kw_connect\arrays\Filters\Contains',
-        self::ACTION_EXACT => '\kalanis\kw_connect\arrays\Filters\Exact',
-        self::ACTION_FROM => '\kalanis\kw_connect\arrays\Filters\From',
-        self::ACTION_FROM_WITH => '\kalanis\kw_connect\arrays\Filters\FromWith',
-        self::ACTION_TO => '\kalanis\kw_connect\arrays\Filters\To',
-        self::ACTION_TO_WITH => '\kalanis\kw_connect\arrays\Filters\ToWith',
-        self::ACTION_RANGE => '\kalanis\kw_connect\arrays\Filters\Range',
-        self::ACTION_MULTIPLE => '\kalanis\kw_connect\arrays\Filters\Multiple',
+        self::ACTION_CONTAINS => Contains::class,
+        self::ACTION_EXACT => Exact::class,
+        self::ACTION_FROM => From::class,
+        self::ACTION_FROM_WITH => FromWith::class,
+        self::ACTION_TO => To::class,
+        self::ACTION_TO_WITH => ToWith::class,
+        self::ACTION_RANGE => Range::class,
+        self::ACTION_MULTIPLE => Multiple::class,
     ];
 }

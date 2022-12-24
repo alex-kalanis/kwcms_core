@@ -5,7 +5,7 @@ namespace kalanis\kw_tree_controls\Controls;
 
 use kalanis\kw_forms\Controls;
 use kalanis\kw_templates\HtmlElement;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\ControlNode;
 
 
@@ -38,14 +38,16 @@ class DirRadio extends ATreeControl
     protected function getEntry(ControlNode $node): HtmlElement
     {
         $entry = HtmlElement::init('li', ['class' => 'dir']);
-        $entry->addChild($node->getControl());
+        if ($childControl = $node->getControl()) {
+            $entry->addChild($childControl);
+        }
         return $entry;
     }
 
     protected function getInput(FileNode $node): Controls\AControl
     {
         $input = new Radio();
-        $input->set($this->getKey(), $node->getPath(), $node->getName());
+        $input->set($this->getKey(), $this->stringPath($node), $this->stringName($node));
         $this->inputs[] = $input;
         return $input;
     }

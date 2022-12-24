@@ -11,7 +11,6 @@ use kalanis\kw_paths\Stuff;
  * trait TNameFinder
  * @package kalanis\kw_paths\Extras
  * Find free name for file
- * @deprecated remove - must be on storage level where the names are known and then pass available name back through all layers
  */
 trait TNameFinder
 {

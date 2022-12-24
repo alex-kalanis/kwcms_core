@@ -31,6 +31,8 @@ class Factory
         switch ($source) {
             case IEntry::SOURCE_CLI:
                 return new Cli();
+            case IEntry::SOURCE_JSON:
+                return new Json();
             case IEntry::SOURCE_FILES:
                 return new Files();
             default:

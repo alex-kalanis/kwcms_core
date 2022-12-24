@@ -17,14 +17,14 @@ abstract class AFormat
 
     /**
      * @param string $path
-     * @return resource
      * @throws ImagesException
+     * @return \GdImage|resource
      */
     abstract public function load(string $path);
 
     /**
      * @param string $path
-     * @param resource $resource
+     * @param \GdImage|resource $resource
      * @throws ImagesException
      */
     abstract public function save(string $path, $resource): void;

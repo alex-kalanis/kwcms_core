@@ -3,6 +3,9 @@
 namespace kalanis\kw_clipr\Support\Posix;
 
 
+use kalanis\kw_clipr\Interfaces\IStatuses;
+
+
 /**
  * Class Command
  * @package kalanis\kw_clipr\Support\Posix
@@ -11,10 +14,6 @@ namespace kalanis\kw_clipr\Support\Posix;
  */
 class Command
 {
-    const E_NO_PROCESS_ID = 249;
-
-    const E_TIMED_OUT = 248;
-
     /** @var string */
     protected $command = '';
     /** @var bool */
@@ -35,7 +34,7 @@ class Command
     public function __construct(?string $command = null, ?array &$outputLines = null)
     {
         if (!$this->isExecFuncAvailable()) {
-            throw new \LogicException('This system did not allow to use Exec.');
+            throw new \LogicException('This system did not allow to use Exec.', IStatuses::STATUS_SW_INTERNAL);
         }
         if (!is_null($command)) {
             $this->setCommand($command);
@@ -120,13 +119,13 @@ class Command
         $iTimeStarted = time();
         $processId = $this->runOnBackground();
         if (!$processId) {
-            return $this->returnError(self::E_NO_PROCESS_ID);
+            return $this->returnError(IStatuses::STATUS_NO_PROCESS_ID);
         }
         while (true) {
             $cmd = new self('ps ' . $processId);
             if ($cmd->hasSuccess()) {
                 if ((time() - $iTimeStarted) >= $iTimeStarted) {
-                    return $this->returnError(self::E_TIMED_OUT);
+                    return $this->returnError(IStatuses::STATUS_TIMEOUT);
                 }
                 sleep($processCheckPeriod);
             } else {

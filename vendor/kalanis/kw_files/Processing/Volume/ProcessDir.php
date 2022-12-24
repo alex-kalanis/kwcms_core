@@ -37,12 +37,21 @@ class ProcessDir implements IProcessDirs
     /** @var int */
     protected $sliceStartParts = 0;
 
+    /**
+     * @param string $path
+     * @param IFLTranslations|null $lang
+     * @throws FilesException
+     */
     public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
         $this->lang = $lang ?? new Translations();
         $this->setPath($path);
     }
 
+    /**
+     * @param string $path
+     * @throws FilesException
+     */
     public function setPath(string $path = ''): void
     {
         $used = realpath($path);
@@ -108,6 +117,11 @@ class ProcessDir implements IProcessDirs
         return '..' !== $file->getFilename();
     }
 
+    /**
+     * @param SplFileInfo $file
+     * @throws FilesException
+     * @return Node
+     */
     public function intoNode(SplFileInfo $file): Node
     {
         $node = new Node();
@@ -169,6 +183,7 @@ class ProcessDir implements IProcessDirs
 
     /**
      * @param array<string> $path
+     * @throws FilesException
      * @return string
      */
     protected function fullPath(array $path): string

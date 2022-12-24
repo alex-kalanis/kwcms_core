@@ -4,7 +4,6 @@ namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
-use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -15,41 +14,39 @@ use kalanis\kw_paths\Stuff;
 class DirThumb extends AFiles
 {
     /**
-     * @param string $path
+     * @param string[] $path
      * @throws FilesException
      * @return string|resource
      */
-    public function get(string $path)
+    public function get(array $path)
     {
-        return $this->libProcessor->getFileProcessor()->readFile($this->getPath($path));
+        return $this->libFile->readFile($this->getPath($path));
     }
 
     /**
-     * @param string $path
+     * @param string[] $path
      * @param string|resource $content
      * @throws FilesException
      * @return bool
      */
-    public function set(string $path, $content): bool
+    public function set(array $path, $content): bool
     {
-        return $this->libProcessor->getFileProcessor()->saveFile($this->getPath($path), $content);
+        return $this->libFile->saveFile($this->getPath($path), $content);
     }
 
     /**
-     * @param string $whichDir
+     * @param string[] $whichDir
      * @throws FilesException
+     * @return bool
      */
-    public function delete(string $whichDir): void
+    public function delete(array $whichDir): bool
     {
         $whatPath = $this->getPath($whichDir);
-        $this->dataRemove($whatPath, $this->getLang()->imDirThumbCannotRemove());
+        return $this->dataRemove($whatPath, $this->getLang()->imDirThumbCannotRemove());
     }
 
-    public function getPath(string $path): array
+    public function getPath(array $path): array
     {
-        return Stuff::pathToArray(Stuff::removeEndingSlash($path)) + [
-            $this->config->getThumbDir(),
-            $this->config->getDescFile() . $this->config->getThumbExt()
-        ];
+        return array_merge($path, [$this->config->getThumbDir(), $this->config->getDescFile() . $this->config->getThumbExt()]);
     }
 }

@@ -15,7 +15,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
-use kalanis\kw_tree\TWhereDir;
+use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\UploadPerPartes\Response;
 use KWCMS\modules\Files\Lib as FileLib;
 

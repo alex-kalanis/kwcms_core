@@ -3,6 +3,7 @@
 namespace kalanis\kw_files\Processing\Volume;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_files\Processing\TPath;
 use kalanis\kw_files\Processing\TPathTransform;
@@ -54,6 +55,7 @@ class ProcessNode implements IProcessNodes
 
     /**
      * @param array<string> $path
+     * @throws FilesException
      * @return string
      */
     protected function fullPath(array $path): string

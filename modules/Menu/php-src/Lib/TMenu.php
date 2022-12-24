@@ -17,7 +17,7 @@ use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_tree\TWhereDir;
+use kalanis\kw_tree_controls\TWhereDir;
 
 
 /**

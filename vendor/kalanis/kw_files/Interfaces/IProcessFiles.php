@@ -16,12 +16,13 @@ interface IProcessFiles
     const FREE_NAME_SEPARATOR = '_';
 
     /**
-     * @param string[] $name
+     * @param string[] $path
+     * @param string $name
      * @param string $suffix
      * @throws FilesException
      * @return string
      */
-    public function findFreeName(array $name, string $suffix): string;
+    public function findFreeName(array $path, string $name, string $suffix): string;
 
     /**
      * @param string[] $entry

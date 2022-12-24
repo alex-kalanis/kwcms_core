@@ -30,6 +30,8 @@ class InputVarsAdapter extends VarsAdapter
             $this->vars = $this->inputs->getInArray(null, [IEntry::SOURCE_GET]);
         } elseif (IEntry::SOURCE_CLI == $inputType) {
             $this->vars = $this->inputs->getInArray(null, [IEntry::SOURCE_CLI]);
+        } elseif (IEntry::SOURCE_JSON == $inputType) {
+            $this->vars = $this->inputs->getInArray(null, [IEntry::SOURCE_JSON]);
         } else {
             throw new FormsException(sprintf('Unknown input type - %s', $inputType));
         }

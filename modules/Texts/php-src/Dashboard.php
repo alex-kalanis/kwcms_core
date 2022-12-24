@@ -15,7 +15,7 @@ use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\Adapters\ArrayAdapter;
 use kalanis\kw_tree\Tree;
-use kalanis\kw_tree\TWhereDir;
+use kalanis\kw_tree_controls\TWhereDir;
 
 
 /**

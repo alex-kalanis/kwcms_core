@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_tree;
+namespace kalanis\kw_tree_controls;
 
 
 use ArrayAccess;
@@ -9,11 +9,12 @@ use kalanis\kw_input\Interfaces\IFiltered;
 
 /**
  * Trait TWhereDir
- * @package kalanis\kw_tree
+ * @package kalanis\kw_tree_controls
  * Trait to controllers to access dirs from session
  */
 trait TWhereDir
 {
+    /** @var string */
     protected $whereConst = 'dir';
     /** @var ArrayAccess|null */
     protected $storeWhere = null;

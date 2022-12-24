@@ -11,7 +11,7 @@ use kalanis\kw_images\TLang;
 /**
  * Class Processor
  * @package kalanis\kw_images
- * Pass images in temporary local storage  - cannot work with images directly in main storages
+ * Pass images in temporary local storage  - cannot work with images directly in main storage
  */
 class Processor
 {
@@ -19,7 +19,7 @@ class Processor
 
     /** @var Format\Factory */
     protected $factory = null;
-    /** @var resource|null */
+    /** @var resource|\GdImage|null */
     protected $resource = null;
 
     /**
@@ -86,8 +86,8 @@ class Processor
         $this->checkResource();
         $fromWidth = $this->width();
         $fromHeight = $this->height();
-        $width = (!is_null($width) && ($width > 0)) ? (int)$width : $fromWidth;
-        $height = (!is_null($height) && ($height > 0)) ? (int)$height : $fromHeight;
+        $width = (!is_null($width) && (0 < $width)) ? intval($width) : $fromWidth;
+        $height = (!is_null($height) && (0 < $height)) ? intval($height) : $fromHeight;
         $resource = $this->create($width, $height);
         if (false === imagecopyresized($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
             // @codeCoverageIgnoreStart
@@ -112,8 +112,8 @@ class Processor
         $this->checkResource();
         $fromWidth = $this->width();
         $fromHeight = $this->height();
-        $width = ($width && is_numeric($width) && ($width > 0)) ? (int)$width : $fromWidth;
-        $height = ($height && is_numeric($height) && ($height > 0)) ? (int)$height : $fromHeight;
+        $width = (!is_null($width) && (0 < $width)) ? intval($width) : $fromWidth;
+        $height = (!is_null($height) && (0 < $height)) ? intval($height) : $fromHeight;
         $resource = $this->create($width, $height);
         if (false === imagecopyresampled($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
             // @codeCoverageIgnoreStart
@@ -131,7 +131,7 @@ class Processor
      * @param int $width
      * @param int $height
      * @throws ImagesException
-     * @return resource
+     * @return \GdImage|resource
      */
     protected function create(int $width, int $height)
     {

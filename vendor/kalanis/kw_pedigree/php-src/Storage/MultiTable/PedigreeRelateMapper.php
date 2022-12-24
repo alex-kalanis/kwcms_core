@@ -20,7 +20,7 @@ class PedigreeRelateMapper extends Mappers\Database\ADatabase
         $this->setRelation('childId', 'kp_id_child');
         $this->setRelation('parentId', 'kp_id_parent');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('parents', '\kalanis\kw_pedigree\Storage\MultiTable\PedigreeItemRecord', 'parentId', 'id');
-        $this->addForeignKey('children', '\kalanis\kw_pedigree\Storage\MultiTable\PedigreeItemRecord', 'childId', 'id');
+        $this->addForeignKey('parents', PedigreeItemRecord::class, 'parentId', 'id');
+        $this->addForeignKey('children', PedigreeItemRecord::class, 'childId', 'id');
     }
 }

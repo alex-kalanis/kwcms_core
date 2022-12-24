@@ -15,7 +15,7 @@ use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\Tree;
-use kalanis\kw_tree\TWhereDir;
+use kalanis\kw_tree_controls\TWhereDir;
 use KWCMS\modules\Files\Lib;
 
 

@@ -49,6 +49,6 @@ class PedigreeRecord extends ASimpleRecord
         $this->addEntry('sex', IEntryType::TYPE_SET, ['female','male']);
         $this->addEntry('blood', IEntryType::TYPE_SET, ['our','other']);
         $this->addEntry('text', IEntryType::TYPE_STRING, 8192);
-        $this->setMapper('\kalanis\kw_pedigree\Storage\File\PedigreeMapper');
+        $this->setMapper(PedigreeMapper::class);
     }
 }

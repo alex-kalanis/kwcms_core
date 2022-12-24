@@ -3,13 +3,11 @@
 namespace kalanis\kw_images\Content;
 
 
-use kalanis\kw_files\Extended\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Sources;
 use kalanis\kw_images\TLang;
-use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -21,81 +19,66 @@ class Dirs
 {
     use TLang;
 
-    /** @var Create */
-    protected $opCreate = null;
+    /** @var ImageSize */
+    protected $libProcessor = null;
     /** @var Sources\Thumb */
     protected $libThumb = null;
     /** @var Sources\DirDesc */
     protected $libDirDesc = null;
     /** @var Sources\DirThumb */
     protected $libDirThumb = null;
-    /** @var Config */
-    protected $extendConfig = null;
 
-    public function __construct(Create $opCreate, Config $extendConfig, Sources\Thumb $thumb, Sources\DirDesc $dirDesc, Sources\DirThumb $dirThumb, ?IIMTranslations $lang = null)
+    public function __construct(ImageSize $processor, Sources\Thumb $thumb, Sources\DirDesc $dirDesc, Sources\DirThumb $dirThumb, ?IIMTranslations $lang = null)
     {
         $this->setLang($lang);
-        $this->opCreate = $opCreate;
         $this->libThumb = $thumb;
         $this->libDirDesc = $dirDesc;
         $this->libDirThumb = $dirThumb;
-        $this->extendConfig = $extendConfig;
+        $this->libProcessor = $processor;
     }
 
     /**
-     * @param string $path
+     * @param string[] $path
      * @param string $description
      * @throws FilesException
+     * @return bool
      */
-    public function description(string $path, string $description = ''): void
+    public function description(array $path, string $description = ''): bool
     {
         if (!empty($description)) {
-            $this->libDirDesc->set(Stuff::pathToArray($path), $description);
+            return $this->libDirDesc->set($path, $description);
         } else {
-            $this->libDirDesc->remove(Stuff::pathToArray($path));
+            return $this->libDirDesc->remove($path);
         }
     }
 
     /**
-     * @param string $path
+     * @param string[] $path
+     * @param string $fromWhichFile
      * @throws FilesException
      * @throws ImagesException
+     * @return bool
      */
-    public function thumb(string $path): void
+    public function updateThumb(array $path, string $fromWhichFile): bool
     {
-        $dir = Stuff::directory($path);
-        $file = Stuff::filename($path);
-        $tempFile = $this->extendConfig->getDescFile() . $this->extendConfig->getThumbExt();
-        $backupFile = $this->extendConfig->getDescFile() . $this->extendConfig->getThumbExt() . $this->extendConfig->getThumbTemp();
-        $backupPath = $dir . DIRECTORY_SEPARATOR . $backupFile;
+        return $this->libProcessor->process(
+            $this->libThumb->getPath(array_merge($path, [$fromWhichFile])),
+            $this->libDirThumb->getPath($path)
+        );
+    }
 
+    /**
+     * @param string[] $path
+     * @throws FilesException
+     * @return bool
+     */
+    public function removeThumb(array $path): bool
+    {
         if ($this->libDirThumb->isHere($path)) {
-            if (!$this->libThumb->rename($path, $tempFile, $backupFile)) {
-                // @codeCoverageIgnoreStart
+            if (!$this->libDirThumb->delete($path)) {
                 throw new FilesException($this->getLang()->imDirThumbCannotRemoveCurrent());
             }
-            // @codeCoverageIgnoreEnd
         }
-        try {
-            if (!$this->libThumb->isHere($path)) {
-                $this->opCreate->thumb($path);
-                $this->libDirThumb->set($path, $this->libThumb->get($path));
-                $this->libThumb->delete($dir, $file);
-            } else {
-                $this->libDirThumb->set($path, $this->libThumb->get($path));
-            }
-        } catch (FilesException $ex) {
-            if ($this->libThumb->isHere($path) && !$this->libThumb->rename($dir, $backupFile, $tempFile)) {
-                // @codeCoverageIgnoreStart
-                throw new FilesException($this->getLang()->imDirThumbCannotRestore());
-            }
-            // @codeCoverageIgnoreEnd
-            throw $ex;
-        }
-        if ($this->libThumb->isHere($backupPath) && !$this->libThumb->delete($dir, $backupFile)) {
-            // @codeCoverageIgnoreStart
-            throw new FilesException($this->getLang()->imDirThumbCannotRemoveOld());
-        }
-        // @codeCoverageIgnoreEnd
+        return true;
     }
 }

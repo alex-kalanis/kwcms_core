@@ -3,8 +3,7 @@
 namespace kalanis\kw_clipr\Tasks;
 
 
-use kalanis\kw_clipr\Interfaces\ILoader;
-use kalanis\kw_clipr\Interfaces\ISources;
+use kalanis\kw_clipr\Interfaces;
 use kalanis\kw_clipr\Output;
 use kalanis\kw_input\Interfaces\IFiltered;
 
@@ -21,11 +20,11 @@ use kalanis\kw_input\Interfaces\IFiltered;
  * @property bool $quiet
  * @property bool $help
  */
-abstract class ATask
+abstract class ATask implements Interfaces\IStatuses
 {
     use Output\TWrite;
 
-    /** @var ILoader|null */
+    /** @var Interfaces\ILoader|null */
     protected $loader = null;
     /** @var Output\AOutput */
     protected $translator = null;
@@ -37,9 +36,9 @@ abstract class ATask
     /**
      * @param Output\AOutput $translator
      * @param IFiltered $inputs
-     * @param ILoader|null $loader
+     * @param Interfaces\ILoader|null $loader
      */
-    public final function initTask(Output\AOutput $translator, IFiltered $inputs, ?ILoader $loader): void
+    public final function initTask(Output\AOutput $translator, IFiltered $inputs, ?Interfaces\ILoader $loader): void
     {
         $this->loader = $loader;
         $this->translator = $translator;
@@ -55,7 +54,7 @@ abstract class ATask
         $this->params->addParam('verbose', 'verbose', null, false, 'v', 'Verbose output');
         $this->params->addParam('noHeaders', 'no-headers', null, true, null, 'No headers from core');
         $this->params->addParam('noColor', 'no-color', null, false, 'c', 'Use no colors in output');
-        $this->params->addParam('outputFile', 'output-file', null, ISources::OUTPUT_STD, null, 'Output into...');
+        $this->params->addParam('outputFile', 'output-file', null, Interfaces\ISources::OUTPUT_STD, null, 'Output into...');
         $this->params->addParam('webOutput', 'web-output', null, false, 'w', 'Output is into web');
         $this->params->addParam('noAppend', 'no-append', null, false, null, 'Overwrite whole output');
         $this->params->addParam('quiet', 'quiet', null, false, 'q', 'Silence output');
@@ -98,6 +97,8 @@ abstract class ATask
 
     /**
      * Process script itself
+     * @return int status of process
+     * @see Interfaces\IStatuses
      */
-    abstract public function process(): void;
+    abstract public function process(): int;
 }

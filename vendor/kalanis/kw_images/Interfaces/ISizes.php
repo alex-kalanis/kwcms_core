@@ -15,5 +15,5 @@ interface ISizes
 
     public function getMaxSize(): int;
 
-    public function getTempDir(): string;
+    public function getTempPrefix(): string;
 }

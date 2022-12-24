@@ -43,6 +43,7 @@ class Inputs implements Interfaces\IInputs
     {
         $this->entries = array_merge(
             $this->loadInput(Interfaces\IEntry::SOURCE_EXTERNAL, $this->source->external()),
+            $this->loadInput(Interfaces\IEntry::SOURCE_JSON, $this->source->inputRawPaths()),
             $this->loadInput(Interfaces\IEntry::SOURCE_GET, $this->source->get()),
             $this->loadInput(Interfaces\IEntry::SOURCE_POST, $this->source->post()),
             $this->loadInput(Interfaces\IEntry::SOURCE_CLI, $this->source->cli()),

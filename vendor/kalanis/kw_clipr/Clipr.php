@@ -41,8 +41,9 @@ class Clipr
 
     /**
      * @throws CliprException
+     * @return int
      */
-    public function run(): void
+    public function run(): int
     {
         // for parsing default params it's necessary to load another task
         $dummy = new Tasks\DummyTask();
@@ -54,7 +55,7 @@ class Clipr
         $taskName = Clipr\Useful::getNthParam($inputs) ?? Interfaces\ILoader::DEFAULT_TASK;
         $task = $this->loader->getTask($taskName);
         if (!$task) {
-            throw new CliprException(sprintf('Unknown task *%s* - check name, interface or your config paths.', $taskName));
+            throw new CliprException(sprintf('Unknown task *%s* - check name, interface or your config paths.', $taskName), Interfaces\IStatuses::STATUS_CLI_USAGE);
         }
         $task->initTask($this->sources->getOutput(), $this->variables, $this->loader);
 
@@ -66,7 +67,7 @@ class Clipr
             $task->writeHeader();
         }
 
-        $task->process();
+        $result = $task->process();
 
         if (false === $task->noHeaders) {
             $task->writeFooter();
@@ -75,5 +76,7 @@ class Clipr
         if (Interfaces\ISources::OUTPUT_STD != $task->outputFile) {
             file_put_contents($task->outputFile, ob_get_clean(), (false === $task->noAppend ? FILE_APPEND : 0));
         }
+
+        return $result;
     }
 }

@@ -20,7 +20,7 @@ class ImageConfig implements ISizes
     /** @var int */
     protected $maxFileSize = 10485760;
     /** @var string */
-    protected $tempDir = '';
+    protected $tempPrefix = '';
 
     /**
      * @param array<string, string|int> $params
@@ -31,7 +31,7 @@ class ImageConfig implements ISizes
         $this->maxWidth = !empty($params['max_width']) ? intval(strval($params['max_width'])) : $this->maxWidth;
         $this->maxHeight = !empty($params['max_height']) ? intval(strval($params['max_height'])) : $this->maxHeight;
         $this->maxFileSize = !empty($params['max_size']) ? intval(strval($params['max_size'])) : $this->maxFileSize;
-        $this->tempDir = !empty($params['temp_dir']) ? strval($params['temp_dir']) : $this->tempDir;
+        $this->tempPrefix = !empty($params['tmp_pref']) ? strval($params['tmp_pref']) : $this->tempPrefix;
         return $this;
     }
 
@@ -50,8 +50,8 @@ class ImageConfig implements ISizes
         return $this->maxFileSize;
     }
 
-    public function getTempDir(): string
+    public function getTempPrefix(): string
     {
-        return $this->tempDir;
+        return $this->tempPrefix;
     }
 }

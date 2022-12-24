@@ -6,8 +6,7 @@ namespace kalanis\kw_clipr\Loaders;
 use kalanis\kw_clipr\Clipr\Paths;
 use kalanis\kw_clipr\Clipr\Useful;
 use kalanis\kw_clipr\CliprException;
-use kalanis\kw_clipr\Interfaces\ILoader;
-use kalanis\kw_clipr\Interfaces\ISources;
+use kalanis\kw_clipr\Interfaces;
 use kalanis\kw_clipr\Tasks\ATask;
 
 
@@ -18,7 +17,7 @@ use kalanis\kw_clipr\Tasks\ATask;
  * In reality it runs like autoloader of own
  * @codeCoverageIgnore because of that internal autoloader
  */
-class KwLoader implements ILoader
+class KwLoader implements Interfaces\ILoader
 {
     /**
      * @param string $classFromParam
@@ -47,7 +46,7 @@ class KwLoader implements ILoader
                 }
                 $class = new $classPath();
                 if (!$class instanceof ATask) {
-                    throw new CliprException(sprintf('Class *%s* is not instance of ATask - check interface or query.', $classPath));
+                    throw new CliprException(sprintf('Class *%s* is not instance of ATask - check interface or query.', $classPath), Interfaces\IStatuses::STATUS_LIB_ERROR);
                 }
                 return $class;
             }
@@ -68,10 +67,10 @@ class KwLoader implements ILoader
      */
     protected function makeRealFilePath(string $namespacePath, string $classPath): string
     {
-        $setPath = $namespacePath . $classPath . ISources::EXT_PHP;
+        $setPath = $namespacePath . $classPath . Interfaces\ISources::EXT_PHP;
         $realPath = realpath($setPath);
         if (empty($realPath)) {
-            throw new CliprException(sprintf('There is problem with path *%s* - it does not exists!', $setPath));
+            throw new CliprException(sprintf('There is problem with path *%s* - it does not exists!', $setPath), Interfaces\IStatuses::STATUS_BAD_CONFIG);
         }
         return $realPath;
     }

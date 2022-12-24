@@ -41,6 +41,7 @@ class ProcessFile implements IProcessFiles
     /**
      * @param array<string> $path
      * @param string $added
+     * @throws FilesException
      * @return bool
      */
     protected function targetExists(array $path, string $added): bool
@@ -126,6 +127,7 @@ class ProcessFile implements IProcessFiles
 
     /**
      * @param array<string> $path
+     * @throws FilesException
      * @return string
      */
     protected function fullPath(array $path): string

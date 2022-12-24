@@ -23,6 +23,6 @@ class ShortMessage extends ASimpleRecord
         $this->addEntry('date', IEntryType::TYPE_INTEGER, PHP_INT_MAX);
         $this->addEntry('title', IEntryType::TYPE_STRING, 1024);
         $this->addEntry('content', IEntryType::TYPE_STRING, 8192);
-        $this->setMapper('\KWCMS\modules\Rss\Lib\ShortMessageMapper');
+        $this->setMapper(ShortMessageMapper::class);
     }
 }

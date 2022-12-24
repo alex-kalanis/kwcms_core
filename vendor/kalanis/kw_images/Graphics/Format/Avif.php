@@ -11,6 +11,11 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
  * Class Avif
  * AV1 Image File Format
  * @package kalanis\kw_images\Graphics\Format
+ * @codeCoverageIgnore too much hassle to run tests on this one
+ *
+ * phpunit says:
+1) ContentTests\FormatTest::testContentAvif
+imageavif(): AVIF image support has been disabled
  */
 class Avif extends AFormat
 {

@@ -19,6 +19,9 @@ interface IEntry
     const SOURCE_SERVER = 'server';
     const SOURCE_ENV = 'environment';
     const SOURCE_EXTERNAL = 'external';
+    const SOURCE_JSON = 'json';
+    const SOURCE_XML = 'xml';
+    const SOURCE_RAW = 'raw';
 
     /**
      * Return source of entry

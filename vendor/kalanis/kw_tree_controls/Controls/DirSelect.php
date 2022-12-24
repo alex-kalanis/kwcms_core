@@ -4,8 +4,9 @@ namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_templates\HtmlElement;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\ControlNode;
 
 
@@ -17,6 +18,11 @@ class DirSelect extends ATreeControl
 {
     use TSimpleValue;
 
+    /**
+     * @param ControlNode|null $baseNode
+     * @throws RenderException
+     * @return string
+     */
     protected function renderTree(?ControlNode $baseNode): string
     {
         if (empty($baseNode)) {
@@ -28,6 +34,11 @@ class DirSelect extends ATreeControl
         return $select->render();
     }
 
+    /**
+     * @param ControlNode[] $nodes
+     * @throws RenderException
+     * @return string
+     */
     protected function fillOptions(array $nodes): string
     {
         $result = [];
@@ -38,15 +49,21 @@ class DirSelect extends ATreeControl
         return implode('', $result);
     }
 
+    /**
+     * @param ControlNode $node
+     * @throws RenderException
+     * @return string
+     */
     protected function getOption(ControlNode $node): string
     {
-        return $node->getControl()->render();
+        return $node->getControl() ? $node->getControl()->render() : '';
     }
 
     protected function getInput(FileNode $node): Controls\AControl
     {
+        $path = $this->stringPath($node);
         $input = new Controls\SelectOption();
-        $input->setEntry($this->getKey(), $node->getPath(), $node->getPath() . DIRECTORY_SEPARATOR);
+        $input->setEntry($this->getKey(), $path, $path . DIRECTORY_SEPARATOR);
         $this->inputs[] = $input;
         return $input;
     }

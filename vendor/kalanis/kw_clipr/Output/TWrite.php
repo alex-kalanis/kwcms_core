@@ -4,6 +4,7 @@ namespace kalanis\kw_clipr\Output;
 
 
 use kalanis\kw_clipr\CliprException;
+use kalanis\kw_clipr\Interfaces;
 
 
 /**
@@ -71,14 +72,15 @@ trait TWrite
 
     /**
      * @param string $message
+     * @param int $exitCode
      * @throws CliprException
      * @codeCoverageIgnore because external effects
      * It ends as risky
      */
-    public function terminateWithError(string $message): void
+    public function terminateWithError(string $message, int $exitCode = Interfaces\IStatuses::STATUS_ERROR): void
     {
         $this->sendErrorMessage($message);
-        throw new CliprException($message);
+        throw new CliprException($message, $exitCode);
     }
 
     public function writeHeadlineLn(string $output, string $colour = 'green'): void
