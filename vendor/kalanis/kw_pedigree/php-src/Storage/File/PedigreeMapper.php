@@ -4,6 +4,7 @@ namespace kalanis\kw_pedigree\Storage\File;
 
 
 use kalanis\kw_mapper\Mappers;
+use kalanis\kw_mapper\Storage\Shared\FormatFiles\SeparatedElements;
 
 
 /**
@@ -14,7 +15,7 @@ class PedigreeMapper extends Mappers\File\ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(SeparatedElements::class);
         $this->setRelation('id', 0);
         $this->setRelation('key', 1);
         $this->setRelation('name', 2);

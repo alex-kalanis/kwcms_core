@@ -5,7 +5,7 @@ namespace KWCMS\modules\Dirlist;
 
 use kalanis\kw_address_handler\Sources\Inputs;
 use kalanis\kw_confs\Config;
-use kalanis\kw_images\Files;
+use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
@@ -44,8 +44,8 @@ class Dirlist extends AModule
     protected $linkExternal = null;
     /** @var DirectoryListing|null */
     protected $dirList = null;
-    /** @var Files|null */
-    protected $libFiles = null;
+    /** @var Images|null */
+    protected $libImages = null;
     /** @var SimplifiedPager|null */
     protected $pager = null;
 
@@ -63,7 +63,7 @@ class Dirlist extends AModule
         $this->templateDisplay = new Templates\Display();
         $this->linkInternal = new InternalLink(Stored::getPath());
         $this->linkExternal = new ExternalLink(Stored::getPath());
-        $this->libFiles = FilesHelper::get(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->libImages = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
         $this->dirList = new DirectoryListing();
     }
 
@@ -200,7 +200,7 @@ class Dirlist extends AModule
 
     protected function getThumb(string $file): string
     {
-        $want = $this->libFiles->getLibThumb()->getPath($this->path . DIRECTORY_SEPARATOR . $file);
+        $want = Stuff::arrayToLink($this->libImages->reverseThumbPath(Stuff::linkToArray($this->path . DIRECTORY_SEPARATOR . $file)));
         return $this->linkInternal->userContent($want)
             ? $this->linkExternal->linkVariant($want, 'Image', true)
             : $this->getIcon($file) ;
@@ -221,12 +221,7 @@ class Dirlist extends AModule
 
     protected function getDetails(string $file, string $renderStyle): string
     {
-        $detailContent = null;
-        foreach ($this->detailLink($file) as $v) {
-            if (is_null($detailContent) && $v) {
-                $detailContent = @file_get_contents($v);
-            }
-        }
+        $detailContent = $this->libImages->getDescription(Stuff::linkToArray($file));
         if (empty($detailContent)) {
             return '';
         }
@@ -238,15 +233,6 @@ class Dirlist extends AModule
             $detailContent .= '...';
         };
         return $detailContent;
-    }
-
-    protected function detailLink(string $fileName)
-    {
-        $extendDir = $this->libFiles->getLibDirDesc()->getProcessor();
-        return [
-            $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, $extendDir->getDescDir(), Stuff::fileBase($fileName) . $extendDir->getDescExt() ])), // files
-            $this->linkInternal->userContent(implode(DIRECTORY_SEPARATOR, [$this->path, Stuff::fileBase($fileName), $extendDir->getDescDir(), $extendDir->getDescFile() . $extendDir->getDescExt() ])), // dirs
-        ];
     }
 
     protected function getInfo(string $file): string

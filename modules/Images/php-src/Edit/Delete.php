@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -39,10 +40,10 @@ class Delete extends AEdit
             $this->deleteForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->deleteForm->process()) {
                 $libAction = $this->getLibFileAction();
-                $this->checkExistence($libAction->getLibFiles(), $this->getWhereDir(), $fileName);
+                $this->checkExistence($libAction->getLibImage(), $this->getWhereDir(), $fileName);
                 $this->isProcessed = $libAction->deleteFile($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
             }
-        } catch (FormsException | ImagesException $ex) {
+        } catch (FormsException | ImagesException | FilesException $ex) {
             $this->error = $ex;
         }
     }

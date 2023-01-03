@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Interfaces;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_images\ImagesException;
 
 
@@ -14,48 +15,55 @@ use kalanis\kw_images\ImagesException;
 interface IProcessDirs
 {
     /**
+     * @throws FilesException
      * @return bool
-     * @throws ImagesException
      */
     public function canUse(): bool;
 
     /**
      * @param string $target
      * @param string $name
+     * @throws FilesException
      * @return bool
-     * @throws ImagesException
      */
     public function createDir(string $target, string $name): bool;
 
     /**
+     * @throws FilesException
      * @return bool
-     * @throws ImagesException
      */
     public function createExtra(): bool;
 
     /**
+     * @throws FilesException
      * @return string
-     * @throws ImagesException
      */
     public function getDesc(): string;
 
     /**
      * @param string $content
+     * @throws FilesException
      * @return bool
-     * @throws ImagesException
      */
     public function updateDesc(string $content): bool;
 
     /**
-     * @return string
-     * @throws ImagesException
+     * @throws FilesException
+     * @return string|resource
      */
-    public function getThumb(): string;
+    public function getThumb();
 
     /**
      * @param string $filePath
-     * @return bool
+     * @throws FilesException
      * @throws ImagesException
+     * @return bool
      */
     public function updateThumb(string $filePath): bool;
+
+    /**
+     * @throws FilesException
+     * @return bool
+     */
+    public function removeThumb(): bool;
 }

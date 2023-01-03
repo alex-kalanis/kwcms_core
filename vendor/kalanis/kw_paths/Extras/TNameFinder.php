@@ -3,6 +3,7 @@
 namespace kalanis\kw_paths\Extras;
 
 
+use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
 
@@ -11,6 +12,9 @@ use kalanis\kw_paths\Stuff;
  * trait TNameFinder
  * @package kalanis\kw_paths\Extras
  * Find free name for file
+ * @deprecated since 2023-01-01
+ * @see FindFreeName use instead
+ * This one uses string as base for path, the replacement uses array as base for path
  */
 trait TNameFinder
 {

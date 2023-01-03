@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -69,7 +70,7 @@ class Upload extends AAuthModule implements IModuleTitle
                     strval($this->fileForm->getControl('description')->getValue())
                 );
             }
-        } catch (ImagesException | FormsException $ex) {
+        } catch (ImagesException | FormsException | FilesException $ex) {
             if (isset($usedName)) {
                 $libAction->deleteFile(Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR . $usedName);
             }

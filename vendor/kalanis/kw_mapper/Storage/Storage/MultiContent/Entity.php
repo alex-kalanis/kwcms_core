@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File\MultiContent;
+namespace kalanis\kw_mapper\Storage\Storage\MultiContent;
 
 
 use kalanis\kw_mapper\Interfaces\IFileFormat;
@@ -8,7 +8,7 @@ use kalanis\kw_mapper\Interfaces\IFileFormat;
 
 /**
  * Class Entity
- * @package kalanis\kw_mapper\Storage\File\MultiContent
+ * @package kalanis\kw_mapper\Storage\Storage\MultiContent
  */
 class Entity
 {

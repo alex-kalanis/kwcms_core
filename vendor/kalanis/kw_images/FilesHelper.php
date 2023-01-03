@@ -4,6 +4,8 @@ namespace kalanis\kw_images;
 
 
 use kalanis\kw_files\Extended\Config;
+use kalanis\kw_files\Extended\Processor;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Processing\Volume;
 use kalanis\kw_images\Content\BasicOperations;
@@ -46,12 +48,14 @@ class FilesHelper
      * @param array<string, string|int> $params
      * @param IIMTranslations|null $langIm
      * @param IFLTranslations|null $langFl
+     * @throws FilesException
      * @throws ImagesException
      * @return Dirs
      */
     public static function getDirs(string $webRootDir, array $params = [], ?IIMTranslations $langIm = null, ?IFLTranslations $langFl = null): Dirs
     {
         $fileConf = (new Config())->setData($params);
+        $libProcessDirs = new Volume\ProcessDir($webRootDir, $langFl);
         $libProcessFiles = new Volume\ProcessFile($webRootDir, $langFl);
         $libProcessNodes = new Volume\ProcessNode($webRootDir);
         return new Dirs(
@@ -64,6 +68,7 @@ class FilesHelper
             new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\DirDesc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\DirThumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
+            new Processor($libProcessDirs, $libProcessNodes, $fileConf),
         );
     }
 
@@ -87,6 +92,7 @@ class FilesHelper
                 new Sources\Image($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
                 $langIm
             ),
+            new Sources\Image($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
         );
@@ -118,6 +124,7 @@ class FilesHelper
                     $image,
                     $langIm
                 ),
+                new Sources\Image($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
                 new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
                 new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             )

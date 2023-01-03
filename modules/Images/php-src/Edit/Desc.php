@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -38,7 +39,7 @@ class Desc extends AEdit
 
             $this->fileName = strval($this->getFromParam('name'));
             $libAction = $this->getLibFileAction();
-            $this->checkExistence($libAction->getLibFiles(), $this->getWhereDir(), $this->fileName);
+            $this->checkExistence($libAction->getLibImage(), $this->getWhereDir(), $this->fileName);
 
             $this->descForm->composeForm($libAction->readDesc(
                 $this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName
@@ -52,7 +53,7 @@ class Desc extends AEdit
                 );
                 $this->isProcessed = true;
             }
-        } catch (FormsException | ImagesException $ex) {
+        } catch (FormsException | ImagesException | FilesException $ex) {
             $this->error = $ex;
         }
     }

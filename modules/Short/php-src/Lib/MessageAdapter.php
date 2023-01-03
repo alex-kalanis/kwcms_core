@@ -5,6 +5,8 @@ namespace KWCMS\modules\Short\Lib;
 
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Mappers\File\ATable;
 use KWCMS\modules\Short\ShortException;
 
 
@@ -40,8 +42,9 @@ class MessageAdapter
     }
 
     /**
-     * @return ShortMessage
+     * @throws MapperException
      * @throws ShortException
+     * @return ShortMessage
      */
     public function getRecord(): ShortMessage
     {
@@ -50,8 +53,8 @@ class MessageAdapter
             throw new ShortException(Lang::get('short.cannot_read'));
         }
         $mapper = $this->record->getMapper();
-        /** @var \kalanis\kw_mapper\Mappers\File\ATable $mapper */
-        $mapper->setFormat('\KWCMS\modules\Short\Lib\SeparatedElements');
+        /** @var ATable $mapper */
+        $mapper->setFormat(SeparatedElements::class);
         $mapper->setSource($path);
         return $this->record;
     }

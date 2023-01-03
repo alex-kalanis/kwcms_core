@@ -13,17 +13,6 @@ use kalanis\kw_files\FilesException;
  */
 interface IProcessFiles
 {
-    const FREE_NAME_SEPARATOR = '_';
-
-    /**
-     * @param string[] $path
-     * @param string $name
-     * @param string $suffix
-     * @throws FilesException
-     * @return string
-     */
-    public function findFreeName(array $path, string $name, string $suffix): string;
-
     /**
      * @param string[] $entry
      * @param string|resource $content

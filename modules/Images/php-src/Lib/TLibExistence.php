@@ -3,9 +3,10 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_images\Files;
-use kalanis\kw_images\ImagesException;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_images\Content\Images;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -16,23 +17,21 @@ use kalanis\kw_langs\Lang;
 trait TLibExistence
 {
     /**
-     * @param Files $files
+     * @param Images $images
      * @param string $dir
      * @param string $fileName
-     * @throws ImagesException
+     * @throws FilesException
      */
-    protected function checkExistence(Files $files, string $dir, string $fileName): void
+    protected function checkExistence(Images $images, string $dir, string $fileName): void
     {
         // no name or invalid file name -> redirect!
         if (empty($fileName)) {
-            throw new ImagesException(Lang::get('images.file_name.invalid', $fileName));
+            throw new FilesException(Lang::get('images.file_name.invalid', $fileName));
         }
-        try {
-            $files->getLibGraphics()->check(
-                $dir . DIRECTORY_SEPARATOR . $fileName
-            );
-        } catch (ImagesException $ex) {
-            throw new ImagesException(Lang::get('images.file_name.not_found', $fileName), 0, $ex);
+
+        $path = array_merge(Stuff::pathToArray($dir), [Stuff::canonize($fileName)]);
+        if (!$images->exists($path)) {
+            throw new FilesException(Lang::get('images.file_name.not_found', $fileName));
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File\Formats;
+namespace kalanis\kw_mapper\Storage\Shared\FormatFiles;
 
 
 use kalanis\kw_mapper\Interfaces\IFileFormat;
@@ -9,7 +9,7 @@ use kalanis\kw_mapper\MapperException;
 
 /**
  * Class Factory
- * @package kalanis\kw_mapper\Storage\File\Formats
+ * @package kalanis\kw_mapper\Storage\Shared\FormatFiles
  */
 class Factory
 {
@@ -30,7 +30,7 @@ class Factory
         }
         $instance = new $path();
         if (!$instance instanceof IFileFormat) {
-            throw new MapperException(sprintf('Defined class *%s* is not instance of IFilePacker!', $path));
+            throw new MapperException(sprintf('Defined class *%s* is not instance of IFileFormat!', $path));
         }
         return $instance;
     }

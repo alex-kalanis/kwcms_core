@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -80,7 +81,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
                     );
                 }
             }
-        } catch (ImagesException | FormsException $ex) {
+        } catch (ImagesException | FormsException | FilesException $ex) {
             $this->error = $ex;
         }
     }

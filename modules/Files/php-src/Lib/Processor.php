@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Files\Lib;
 
 
+use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces\IProcessDirs;
-use kalanis\kw_files\Interfaces\IProcessFiles;
+use kalanis\kw_files\Interfaces;
 use kalanis\kw_files\Node;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_paths\Interfaces\IPaths;
@@ -21,16 +21,19 @@ class Processor
 {
     /** @var Node */
     protected $currentNode = null;
-    /** @var IProcessDirs */
+    /** @var Interfaces\IProcessDirs */
     protected $dirProcessor = null;
-    /** @var IProcessFiles */
+    /** @var Interfaces\IProcessFiles */
     protected $fileProcessor = null;
+    /** @var Interfaces\IProcessNodes */
+    protected $nodeProcessor = null;
 
-    public function __construct(IProcessFiles $fileProcessor, IProcessDirs $dirProcessor, Node $currentNode)
+    public function __construct(Interfaces\IProcessNodes $nodeProcessor, Interfaces\IProcessFiles $fileProcessor, Interfaces\IProcessDirs $dirProcessor, Node $currentNode)
     {
         $this->currentNode = $currentNode;
         $this->dirProcessor = $dirProcessor;
         $this->fileProcessor = $fileProcessor;
+        $this->nodeProcessor = $nodeProcessor;
     }
 
     /**
@@ -107,7 +110,8 @@ class Processor
             $ext = IPaths::SPLITTER_DOT . $ext;
         }
         $fileName = Stuff::fileBase($name);
-        return $this->fileProcessor->findFreeName([$fileName], $ext);
+        $lib = new FindFreeName($this->nodeProcessor);
+        return $lib->findFreeName($this->currentNode->getPath(), $fileName, $ext);
     }
 
     /**

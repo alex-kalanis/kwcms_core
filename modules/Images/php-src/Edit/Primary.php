@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -37,7 +38,7 @@ class Primary extends AEdit
             $this->userDir->process();
 
             $this->fileName = strval($this->getFromParam('name'));
-            $this->checkExistence($this->getLibFileAction()->getLibFiles(), $this->getWhereDir(), $this->fileName);
+            $this->checkExistence($this->getLibFileAction()->getLibImage(), $this->getWhereDir(), $this->fileName);
 
             $this->primaryForm->composeForm('#');
             $this->primaryForm->setInputs(new InputVarsAdapter($this->inputs));
@@ -45,7 +46,7 @@ class Primary extends AEdit
             if ($this->primaryForm->process()) {
                 $this->isProcessed = $this->getLibDirAction()->updateThumb($this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName);
             }
-        } catch (FormsException | ImagesException $ex) {
+        } catch (FormsException | ImagesException | FilesException $ex) {
             $this->error = $ex;
         }
     }

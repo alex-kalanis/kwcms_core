@@ -24,11 +24,6 @@ class ProcessFile implements IProcessFiles
         $this->adapter = $factory->getClass($storage, $lang);
     }
 
-    public function findFreeName(array $path, string $name, string $suffix): string
-    {
-        return $this->adapter->findFreeName($path, $name, $suffix);
-    }
-
     public function saveFile(array $entry, $content): bool
     {
         return $this->adapter->saveFile($entry, $content);

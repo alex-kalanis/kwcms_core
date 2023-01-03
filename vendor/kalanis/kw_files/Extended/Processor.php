@@ -29,6 +29,36 @@ class Processor
 
     /**
      * @param string[] $path the path inside the web root dir
+     * @throws FilesException
+     * @return bool
+     */
+    public function exists(array $path): bool
+    {
+        return $this->nodes->exists($path);
+    }
+
+    /**
+     * @param string[] $path the path inside the web root dir
+     * @throws FilesException
+     * @return bool
+     */
+    public function dirExists(array $path): bool
+    {
+        return $this->nodes->isDir($path);
+    }
+
+    /**
+     * @param string[] $path the path inside the web root dir
+     * @throws FilesException
+     * @return bool
+     */
+    public function fileExists(array $path): bool
+    {
+        return $this->nodes->isFile($path);
+    }
+
+    /**
+     * @param string[] $path the path inside the web root dir
      * @param bool $makeExtra
      * @throws FilesException
      * @return bool

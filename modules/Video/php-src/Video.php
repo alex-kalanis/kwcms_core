@@ -99,7 +99,7 @@ class Video extends Dirlist
     protected function getThumb(string $file): string
     {
         $fileName = Stuff::fileBase($file);
-        $want = $this->libFiles->getLibThumb()->getPath($this->path . DIRECTORY_SEPARATOR . $fileName);
+        $want = Stuff::arrayToLink($this->libImages->reverseThumbPath(Stuff::linkToArray($this->path . DIRECTORY_SEPARATOR . $fileName)));
         if ($this->linkInternal->userContent($want . '.jpg')) {
             return $this->linkExternal->linkVariant($want . '.jpg', 'Image', true);
         }

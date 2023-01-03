@@ -17,6 +17,6 @@ class PathTransform
 
     public static function get(): self
     {
-        return new static();
+        return new self();
     }
 }

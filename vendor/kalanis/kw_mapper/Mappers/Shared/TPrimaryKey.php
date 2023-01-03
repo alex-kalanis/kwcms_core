@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers;
+namespace kalanis\kw_mapper\Mappers\Shared;
 
 
 /**
  * Trait TPrimaryKey
- * @package kalanis\kw_mapper\Mappers
+ * @package kalanis\kw_mapper\Mappers\Shared
  * Simple work with primary keys
  * There can be multiple of them as combined PKs
  */

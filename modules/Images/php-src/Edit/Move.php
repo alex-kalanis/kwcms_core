@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -51,13 +52,13 @@ class Move extends AEdit
 
             if ($this->moveForm->process()) {
                 $libAction = $this->getLibFileAction();
-                $this->checkExistence($libAction->getLibFiles(), $this->getWhereDir(), $fileName);
+                $this->checkExistence($libAction->getLibImage(), $this->getWhereDir(), $fileName);
                 $this->isProcessed = $libAction->moveFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,
                     strval($this->moveForm->getControl('where')->getValue())
                 );
             }
-        } catch (FormsException | ImagesException $ex) {
+        } catch (FormsException | ImagesException | FilesException $ex) {
             $this->error = $ex;
         }
     }

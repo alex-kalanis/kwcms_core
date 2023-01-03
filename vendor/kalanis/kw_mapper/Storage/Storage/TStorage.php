@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File;
+namespace kalanis\kw_mapper\Storage\Storage;
 
 
 use kalanis\kw_storage\Interfaces\IStorage;
@@ -8,7 +8,7 @@ use kalanis\kw_storage\Interfaces\IStorage;
 
 /**
  * Trait TStorage
- * @package kalanis\kw_mapper\Storage\File
+ * @package kalanis\kw_mapper\Storage\Storage
  */
 trait TStorage
 {

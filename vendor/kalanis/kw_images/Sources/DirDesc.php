@@ -17,12 +17,13 @@ class DirDesc extends AFiles
      * @param string[] $path
      * @param bool $errorOnFail
      * @throws FilesException
-     * @return string|resource
+     * @return string
      */
-    public function get(array $path, bool $errorOnFail = false)
+    public function get(array $path, bool $errorOnFail = false): string
     {
         try {
-            return $this->libFile->readFile($this->getPath($path));
+            $content = $this->libFile->readFile($this->getPath($path));
+            return is_resource($content) ? strval(stream_get_contents($content, 0, -1)) : strval($content);
         } catch (FilesException $ex) {
             if (!$errorOnFail) {
                 return '';

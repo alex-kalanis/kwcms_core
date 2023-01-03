@@ -3,6 +3,7 @@
 namespace kalanis\kw_images\Sources;
 
 
+use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_files\FilesException;
 
 
@@ -22,7 +23,8 @@ class Image extends AFiles
      */
     public function findFreeName(array $path, string $fileName, string $ext): string
     {
-        return $this->libFile->findFreeName($path, $fileName, $ext);
+        $libFinder = new FindFreeName($this->libNode);
+        return $libFinder->findFreeName($path, $fileName, $ext);
     }
 
     /**

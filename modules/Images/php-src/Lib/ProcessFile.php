@@ -3,157 +3,99 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces\IProcessDirs;
-use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Node;
-use kalanis\kw_images\Files;
-use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Content;
 use kalanis\kw_input\Interfaces\IFileEntry;
-use kalanis\kw_paths\Extras\TNameFinder;
-use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
-use KWCMS\modules\Images\Interfaces\IProcessFiles as IProc;
+use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
 
 /**
  * Class ProcessFile
  * @package KWCMS\modules\Images\Lib
  * Process files in many ways
- * @todo: use KW_FILES as data source - that will remove that part with volume service
- * @todo: use operations in kw_image/Content
  */
-class ProcessFile implements IProc
+class ProcessFile implements IProcessFiles
 {
-    use TNameFinder;
-
-    /** @var Files */
-    protected $libFiles = null;
+    /** @var Content\BasicOperations */
+    protected $libOper = null;
+    /** @var Content\ImageUpload */
+    protected $libUpload = null;
+    /** @var Content\Images */
+    protected $libImages = null;
+    /** @var string */
     protected $sourcePath = '';
-    /** @var Node */
-    protected $currentNode = null;
-    /** @var IProcessDirs */
-    protected $dirProcessor = null;
-    /** @var IProcessFiles */
-    protected $fileProcessor = null;
 
-    public function __construct(Files $libFiles, string $sourcePath, IProcessFiles $fileProcessor)
+    public function __construct(Content\BasicOperations $libOper, Content\ImageUpload $libUpload, Content\Images $libImages, string $sourcePath)
     {
-        $this->libFiles = $libFiles;
+        $this->libOper = $libOper;
+        $this->libImages = $libImages;
+        $this->libUpload = $libUpload;
         $this->sourcePath = $sourcePath;
-//        $this->currentNode = $currentNode;
-//        $this->dirProcessor = $dirProcessor;
-        $this->fileProcessor = $fileProcessor;
     }
 
-    /**
-     * @param string $name
-     * @throws FilesException
-     * @return string
-     */
     public function findFreeName(string $name): string
     {
-        $name = Stuff::canonize($name);
-        $ext = Stuff::fileExt($name);
-        if (0 < mb_strlen($ext)) {
-            $ext = IPaths::SPLITTER_DOT . $ext;
-        }
-        $fileName = Stuff::fileBase($name);
-        return $this->fileProcessor->findFreeName([$fileName], $ext);
+        return $this->libUpload->findFreeName(Stuff::linkToArray($this->sourcePath), $name);
     }
 
-    /**
-     * @param IFileEntry $file
-     * @param string $targetName
-     * @param string $description
-     * @throws FilesException
-     * @return bool
-     */
     public function uploadFile(IFileEntry $file, string $targetName, string $description): bool
     {
-//        $stream = fopen($file->getTempName(), 'rb+');
-//        $path = $this->currentNode->getPath() + [Stuff::filename($targetName)];
-//        return $this->fileProcessor->saveFile($path, $stream);
-
-        $path = Stuff::pathToArray($this->sourcePath) + [Stuff::filename($targetName)];
-        return $this->libFiles->add(null, $path, $file->getTempName(), $description);
-    }
-
-    protected function getSeparator(): string
-    {
-        return static::FREE_NAME_SEPARATOR;
-    }
-
-    protected function getTargetDir(): string
-    {
-        return $this->libFiles->getLibImage()->getProcessor()->getWebRootDir() . $this->sourcePath;
-    }
-
-    protected function targetExists(string $path): bool
-    {
-        return file_exists(Stuff::sanitize($path));
+        $path = Stuff::linkToArray($this->sourcePath) + [Stuff::filename($targetName)];
+        return $this->libUpload->process($path, $file->getTempName(), $description);
     }
 
     public function readCreated(string $path, string $format = 'Y-m-d H:i:s'): string
     {
-        return $this->libFiles->getLibImage()->getCreated(Stuff::sanitize($path), $format) ?: '';
+        return $this->libImages->created(Stuff::linkToArray(Stuff::sanitize($path)), $format) ?: '';
     }
 
     public function readDesc(string $path): string
     {
-        return $this->libFiles->getLibDesc()->get(Stuff::sanitize($path));
+        return $this->libImages->getDescription(Stuff::linkToArray(Stuff::sanitize($path)));
     }
 
-    public function updateDesc(string $path, string $content): void
+    public function updateDesc(string $path, string $content): bool
     {
-        if (empty($content)) {
-            $path = Stuff::sanitize($path);
-            $origDir = Stuff::removeEndingSlash(Stuff::directory($path));
-            $fileName = Stuff::filename($path);
-            $this->libFiles->getLibDesc()->delete($origDir, $fileName);
-        } else {
-            $this->libFiles->getLibDesc()->set(Stuff::sanitize($path), $content);
-        }
+        return $this->libImages->updateDescription(Stuff::linkToArray(Stuff::sanitize($path)), $content);
+    }
+
+    public function updateThumb(string $path): bool
+    {
+        return $this->libImages->updateThumb(Stuff::linkToArray(Stuff::sanitize($path)));
     }
 
     public function copyFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
-        return $this->libFiles->copy(Stuff::sanitize($currentPath), Stuff::sanitize($toPath), $overwrite);
+        return $this->libOper->copy(Stuff::linkToArray(Stuff::sanitize($currentPath)), Stuff::linkToArray(Stuff::sanitize($toPath)), $overwrite);
     }
 
-    /**
-     * @param string $currentPath
-     * @param string $toPath
-     * @param bool $overwrite
-     * @throws ImagesException
-     * @throws FilesException
-     * @return bool
-     */
     public function moveFile(string $currentPath, string $toPath, bool $overwrite = false): bool
     {
-        return $this->libFiles->move(Stuff::sanitize($currentPath), Stuff::sanitize($toPath), $overwrite);
+        return $this->libOper->move(Stuff::linkToArray(Stuff::sanitize($currentPath)), Stuff::linkToArray(Stuff::sanitize($toPath)), $overwrite);
     }
 
-    /**
-     * @param string $currentPath
-     * @param string $toFileName
-     * @param bool $overwrite
-     * @throws ImagesException
-     * @throws FilesException
-     * @return bool
-     */
     public function renameFile(string $currentPath, string $toFileName, bool $overwrite = false): bool
     {
-        return $this->libFiles->rename(Stuff::sanitize($currentPath), $toFileName, $overwrite);
+        return $this->libOper->rename(Stuff::linkToArray(Stuff::sanitize($currentPath)), $toFileName, $overwrite);
     }
 
     public function deleteFile(string $path): bool
     {
-        return $this->libFiles->delete(Stuff::sanitize($path));
+        return $this->libOper->delete(Stuff::linkToArray(Stuff::sanitize($path)));
     }
 
-    public function getLibFiles(): Files
+    public function reverseImage(string $path): string
     {
-        return $this->libFiles;
+        return Stuff::arrayToPath($this->libImages->reversePath(Stuff::linkToArray($path)));
+    }
+
+    public function reverseThumb(string $path): string
+    {
+        return Stuff::arrayToPath($this->libImages->reverseThumbPath(Stuff::linkToArray($path)));
+    }
+
+    public function getLibImage(): Content\Images
+    {
+        return $this->libImages;
     }
 }

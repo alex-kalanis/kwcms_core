@@ -1,15 +1,15 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File;
+namespace kalanis\kw_mapper\Storage\Storage;
 
 
 use kalanis\kw_storage\Interfaces\IStorage;
-use kalanis\kw_storage\Storage;
+use kalanis\kw_storage\Storage as Store;
 
 
 /**
  * Class StorageSingleton
- * @package kalanis\kw_mapper\Storage\File
+ * @package kalanis\kw_mapper\Storage\Storage
  * Singleton to access storage across the mappers
  */
 class StorageSingleton
@@ -41,9 +41,9 @@ class StorageSingleton
     public function getStorage(): IStorage
     {
         if (empty($this->storage)) {
-            $this->storage = new Storage\Storage(
-                new Storage\Key\DefaultKey(),
-                new Storage\Target\Volume()
+            $this->storage = new Store\Storage(
+                new Store\Key\DefaultKey(),
+                new Store\Target\Volume()
             );
         }
         return $this->storage;

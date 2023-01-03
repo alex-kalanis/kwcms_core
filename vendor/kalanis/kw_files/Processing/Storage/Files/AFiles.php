@@ -6,7 +6,6 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Processing\TNameFinder;
 use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_storage\Interfaces\IPassDirs;
 use kalanis\kw_storage\Interfaces\IStorage;
@@ -20,7 +19,6 @@ use kalanis\kw_storage\StorageException;
  */
 abstract class AFiles implements IProcessFiles
 {
-    use TNameFinder;
     use TPathTransform;
 
     /** @var IFLTranslations */
@@ -35,27 +33,6 @@ abstract class AFiles implements IProcessFiles
             return $this->storage->write($path, $content);
         } catch (StorageException $ex) {
             throw new FilesException($this->lang->flCannotSaveFile($path), $ex->getCode(), $ex);
-        }
-    }
-
-    protected function getNameSeparator(): string
-    {
-        return static::FREE_NAME_SEPARATOR;
-    }
-
-    /**
-     * @param array<string> $path
-     * @param string $added
-     * @throws FilesException
-     * @return bool
-     */
-    protected function targetExists(array $path, string $added): bool
-    {
-        try {
-            $path = $this->getStorageSeparator() . $this->compactName($path, $this->getStorageSeparator()) . $added;
-            return $this->storage->exists($path);
-        } catch (StorageException $ex) {
-            throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 

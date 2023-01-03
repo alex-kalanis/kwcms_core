@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File\Formats;
+namespace kalanis\kw_mapper\Storage\Shared\FormatFiles;
 
 
 use kalanis\kw_mapper\Interfaces\IFileFormat;
@@ -8,7 +8,7 @@ use kalanis\kw_mapper\Interfaces\IFileFormat;
 
 /**
  * Class SeparatedElements
- * @package kalanis\kw_mapper\Storage\File\Formats
+ * @package kalanis\kw_mapper\Storage\Shared\FormatFiles
  * Formats/unpack content into/from table created by separated elements in file
  */
 class SeparatedElements implements IFileFormat

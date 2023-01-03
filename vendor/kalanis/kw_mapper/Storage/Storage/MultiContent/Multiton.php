@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File\MultiContent;
+namespace kalanis\kw_mapper\Storage\Storage\MultiContent;
 
 
 use kalanis\kw_mapper\Interfaces\IFileFormat;
@@ -9,7 +9,7 @@ use kalanis\kw_mapper\MapperException;
 
 /**
  * Class Multiton
- * @package kalanis\kw_mapper\Storage\File\MultiContent
+ * @package kalanis\kw_mapper\Storage\Storage\MultiContent
  * Content is stored as array of ContentEntities where first key is usually file name
  * You also need to specify the format in which is it stored
  */

@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -67,7 +68,7 @@ class Properties extends AAuthModule implements IModuleTitle
                     $this->processed = $libAction->createExtra();
                 }
             }
-        } catch (ImagesException | FormsException $ex) {
+        } catch (ImagesException | FormsException | FilesException $ex) {
             $this->error = $ex;
         }
     }

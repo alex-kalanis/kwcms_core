@@ -1,21 +1,21 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers\File;
+namespace kalanis\kw_mapper\Mappers\Storage;
 
 
-use kalanis\kw_files\FilesException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\Shared\TFile;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\PageRecord;
+use kalanis\kw_storage\StorageException;
 
 
 /**
  * Class AFile
- * @package kalanis\kw_mapper\Mappers\File
+ * @package kalanis\kw_mapper\Mappers\Storage
  * Abstract layer for working with single files as content source
  */
-abstract class AFile extends AFileSource
+abstract class AFile extends AStorage
 {
     use TFile;
 
@@ -26,10 +26,14 @@ abstract class AFile extends AFileSource
      */
     protected function deleteRecord(ARecord $record): bool
     {
+        $path = strval($record->offsetGet($this->getPathFromPk($record)));
         try {
-            return $this->getFileAccessor()->deleteFile($this->getPath());
-        } catch (FilesException $ex) {
+            if ($this->getStorage()->exists($path)) {
+                return $this->getStorage()->remove($path);
+            }
+        } catch (StorageException $ex) {
             return false;
         }
+        return true; // not found - operation successful
     }
 }

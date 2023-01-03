@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers;
+namespace kalanis\kw_mapper\Mappers\Shared;
 
 
 /**
  * Class ForeignKey
- * @package kalanis\kw_mapper\Mappers
+ * @package kalanis\kw_mapper\Mappers\Shared
  */
 class ForeignKey
 {

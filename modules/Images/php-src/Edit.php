@@ -6,6 +6,7 @@ namespace KWCMS\modules\Images;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -88,7 +89,7 @@ class Edit extends AAuthModule implements IModuleTitle
             $this->fileName = strval($this->getFromParam('name'));
             // no name or invalid file name -> redirect!
             $this->libAction = $this->getLibFileAction();
-            $this->checkExistence($this->libAction->getLibFiles(), $this->getWhereDir(), $this->fileName);
+            $this->checkExistence($this->libAction->getLibImage(), $this->getWhereDir(), $this->fileName);
 
             $this->userDir->setUserPath($this->user->getDir());
             $this->userDir->process();
@@ -128,7 +129,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 ->setForward($this->links->linkVariant('images/edit?name='. $this->fileName));
             $this->primaryForm->composeForm($this->forward->getLink());
 
-        } catch (ImagesException $ex) {
+        } catch (ImagesException | FilesException $ex) {
             $this->redirect = true;
             $this->error = $ex;
         }
@@ -160,10 +161,10 @@ class Edit extends AAuthModule implements IModuleTitle
         }
         try {
             return $out->setContent($this->outModuleTemplate($page->setData(
-                $this->links->linkVariant($this->libAction->getLibFiles()->getLibImage()->getPath(
+                $this->links->linkVariant($this->libAction->reverseImage(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName
                 ), 'image', true, false),
-                $this->links->linkVariant($this->libAction->getLibFiles()->getLibThumb()->getPath(
+                $this->links->linkVariant($this->libAction->reverseThumb(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $this->fileName
                 ), 'image', true, false),
                 $this->thumbForm,
@@ -174,7 +175,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 $this->primaryForm,
                 $this->deleteForm
             )->render()));
-        } catch (FormsException $ex) {
+        } catch (FormsException | FilesException $ex) {
             $this->error = $ex;
         }
         return $out->setContent($this->outModuleTemplate(

@@ -7,8 +7,6 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Processing\Volume\ProcessDir;
-use kalanis\kw_images\Files;
-use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -20,6 +18,8 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\FileNode;
 use kalanis\kw_tree\Tree;
+use KWCMS\modules\Images\Interfaces\IProcessFiles;
+use KWCMS\modules\Images\Lib\TLibAction;
 
 
 /**
@@ -29,6 +29,8 @@ use kalanis\kw_tree\Tree;
  */
 class MediaRss extends AModule
 {
+    use TLibAction;
+
     /** @var UserDir|null */
     protected $userDir = null;
     /** @var ExternalLink|null */
@@ -46,6 +48,16 @@ class MediaRss extends AModule
 
     public function process(): void
     {
+    }
+
+    protected function getUserDir(): string
+    {
+        return '';
+    }
+
+    protected function getWhereDir(): string
+    {
+        return '';
     }
 
     public function output(): Output\AOutput
@@ -66,8 +78,6 @@ class MediaRss extends AModule
         Config::load('Logo');
         $out = new Output\Raw();
         try {
-            $libUserDir = new UserDir(Stored::getPath());
-            $libFiles = FilesHelper::get($libUserDir->getWebRootDir());
             $libTree = new Tree(Stored::getPath(), new ProcessDir());
 
             $tmpl = new Lib\MainTemplate();
@@ -75,9 +85,9 @@ class MediaRss extends AModule
                 $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
                 Config::get('Core', 'page.site_name'),
                 $this->libExternal->linkVariant(),
-                $this->getDesc($libFiles)
+                $this->getLibDirAction()->getDesc()
             )->addItems(
-                implode('', $this->getItems($libTree, $libFiles))
+                implode('', $this->getItems($libTree, $this->getLibFileAction()))
             )->render()
             );
         } catch (ImagesException | FilesException $ex) {
@@ -91,12 +101,11 @@ class MediaRss extends AModule
 
     /**
      * @param Tree $libTree
-     * @param Files $libFiles
-     * @return string[]
-     * @throws ImagesException
+     * @param IProcessFiles $libFiles
      * @throws FilesException
+     * @return string[]
      */
-    protected function getItems(Tree $libTree, Files $libFiles): array
+    protected function getItems(Tree $libTree, IProcessFiles $libFiles): array
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
@@ -112,11 +121,13 @@ class MediaRss extends AModule
         if ($libTree->getTree()) {
             foreach ($libTree->getTree()->getSubNodes() as $item) {
                 /** @var FileNode $item */
+                $path = $realPath . '/' . $item->getName();
+                $desc = $libFiles->readDesc($path);
                 $messages[] = $tmplItem->reset()->setData(
                     $this->libExternal->linkVariant($passedPath . '/' . $item->getName(), 'image', true),
-                    (string)$libFiles->getLibDesc()->get($realPath . DIRECTORY_SEPARATOR . $item->getName()),
-                    (string)$libFiles->getLibDesc()->get($realPath . DIRECTORY_SEPARATOR . $item->getName()),
-                    $this->libExternal->linkVariant($libFiles->getLibThumb()->getPath($passedPath . DIRECTORY_SEPARATOR . $item->getName()), 'image', true),
+                    $desc,
+                    $desc,
+                    $this->libExternal->linkVariant($libFiles->reverseThumb($path), 'image', true),
                     $this->libExternal->linkVariant($passedPath . '/' . $item->getName(), 'image', true)
                 )->render();
             }
@@ -129,15 +140,5 @@ class MediaRss extends AModule
         $name = array_slice($info->getPath(), -1, 1);
         $name = reset($name);
         return in_array(Stuff::fileExt($name), (array)Config::get(static::getClassName(static::class), 'accept_types', []));
-    }
-
-    /**
-     * @param Files $libFiles
-     * @return string
-     * @throws ImagesException
-     */
-    protected function getDesc(Files $libFiles): string
-    {
-        return $libFiles->getLibDirDesc()->get((string)$this->libInternal->shortContent(Stored::getPath()->getPath()));
     }
 }

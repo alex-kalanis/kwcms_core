@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers\File;
+namespace kalanis\kw_mapper\Mappers\Storage;
 
 
 use kalanis\kw_mapper\Records;
@@ -9,7 +9,7 @@ use kalanis\kw_mapper\Storage\Shared\FormatFiles\SinglePage;
 
 /**
  * Class PageContent
- * @package kalanis\kw_mapper\Mappers\File
+ * @package kalanis\kw_mapper\Mappers\Storage
  * Single entry as set in path key from defined source
  */
 class PageContent extends AFile

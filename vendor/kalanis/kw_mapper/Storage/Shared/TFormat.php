@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File;
+namespace kalanis\kw_mapper\Storage\Shared;
 
 
 /**
  * Trait TFormat
- * @package kalanis\kw_mapper\Storage\File
+ * @package kalanis\kw_mapper\Storage\Shared
  */
 trait TFormat
 {

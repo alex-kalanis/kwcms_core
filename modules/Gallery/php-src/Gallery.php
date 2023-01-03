@@ -60,7 +60,7 @@ class Gallery extends Dirlist
 
     protected function getThumb(string $file): string
     {
-        $want = $this->libFiles->getLibThumb()->getPath($this->path . DIRECTORY_SEPARATOR . $file);
+        $want = Stuff::arrayToLink($this->libImages->reverseThumbPath(Stuff::linkToArray($this->path . DIRECTORY_SEPARATOR . $file)));
         return $this->linkInternal->userContent($want)
             ? $this->linkExternal->linkVariant($want, 'Image', true)
             : $this->getIcon($file) ;

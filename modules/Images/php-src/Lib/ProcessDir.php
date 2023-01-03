@@ -3,10 +3,8 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_images\Files;
-use kalanis\kw_images\ImagesException;
+use kalanis\kw_images\Content;
 use kalanis\kw_paths\Stuff;
-use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Images\Interfaces\IProcessDirs;
 
 
@@ -15,64 +13,58 @@ use KWCMS\modules\Images\Interfaces\IProcessDirs;
  * @package KWCMS\modules\Images\Lib
  * Process dirs which represent galleries
  * @see \KWCMS\modules\Files\Lib\Processor
- * @todo: use KW_FILES as data source - that will remove that part with volume service
  */
 class ProcessDir implements IProcessDirs
 {
-    protected $libFiles = null;
+    /** @var Content\Dirs|null */
+    protected $libDirs = null;
+    /** @var string */
     protected $sourcePath = '';
 
-    public function __construct(Files $libFiles, string $sourcePath)
+    public function __construct(Content\Dirs $dirs, string $sourcePath)
     {
-        $this->libFiles = $libFiles;
+        $this->libDirs = $dirs;
         $this->sourcePath = $sourcePath;
     }
 
     public function canUse(): bool
     {
-        return $this->libFiles->getLibDirDesc()->canUse($this->sourcePath);
+        return $this->libDirs->canUse(Stuff::linkToArray($this->sourcePath));
     }
 
     public function createDir(string $target, string $name): bool
     {
-        try {
-            $targetPath = Stuff::removeEndingSlash($target) . DIRECTORY_SEPARATOR;
-            return $this->libFiles->getLibDirDesc()->getProcessor()->createDir($targetPath, $name, true);
-        } catch (PathsException $ex) {
-            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        $path = array_merge(Stuff::linkToArray($target), [Stuff::canonize($name)]);
+        return $this->libDirs->create($path);
     }
 
     public function createExtra(): bool
     {
-        try {
-            return $this->libFiles->getLibDirDesc()->getProcessor()->makeExtended($this->sourcePath);
-        } catch (PathsException $ex) {
-            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        return $this->libDirs->createExtra(Stuff::linkToArray($this->sourcePath));
     }
 
     public function getDesc(): string
     {
-        return $this->libFiles->getLibDirDesc()->get($this->sourcePath);
+        return $this->libDirs->getDescription(Stuff::linkToArray($this->sourcePath));
     }
 
     public function updateDesc(string $content): bool
     {
-        return empty($content)
-            ? $this->libFiles->getLibDirDesc()->remove($this->sourcePath)
-            : $this->libFiles->getLibDirDesc()->set($this->sourcePath, $content)
-        ;
+        return $this->libDirs->updateDescription(Stuff::linkToArray($this->sourcePath), $content);
     }
 
-    public function getThumb(): string
+    public function getThumb()
     {
-        return $this->libFiles->getLibDirThumb()->getPath($this->sourcePath);
+        return $this->libDirs->getThumb(Stuff::linkToArray($this->sourcePath));
     }
 
     public function updateThumb(string $filePath): bool
     {
-        $this->libFiles->getLibDirThumb()->create(Stuff::sanitize($filePath));
-        return true;
+        return $this->libDirs->updateThumb(Stuff::linkToArray($this->sourcePath), Stuff::sanitize($filePath));
+    }
+
+    public function removeThumb(): bool
+    {
+        return $this->libDirs->removeThumb(Stuff::linkToArray($this->sourcePath));
     }
 }

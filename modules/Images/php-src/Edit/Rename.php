@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
@@ -44,14 +45,14 @@ class Rename extends AEdit
             if ($this->renameForm->process()) {
                 $newName = strval($this->renameForm->getControl('newName')->getValue());
                 $libAction = $this->getLibFileAction();
-                $this->checkExistence($libAction->getLibFiles(), $this->getWhereDir(), $fileName);
+                $this->checkExistence($libAction->getLibImage(), $this->getWhereDir(), $fileName);
                 $this->isProcessed = $libAction->renameFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,
                     $newName
                 );
                 $this->targetName = $this->isProcessed ? $newName : $fileName ;
             }
-        } catch (FormsException | ImagesException $ex) {
+        } catch (FormsException | ImagesException | FilesException $ex) {
             $this->error = $ex;
         }
     }

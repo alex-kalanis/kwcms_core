@@ -3,9 +3,11 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_images\Files;
 use kalanis\kw_connect\arrays\Connector;
 use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_tree\FileNode;
+use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
 
 /**
@@ -15,18 +17,25 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class ConnectArray extends Connector
 {
+    /** @var string */
     protected $whereDir = '';
-    protected $libGallery = null;
+    /*** @var IProcessFiles */
+    protected $libFiles = null;
 
-    public function __construct(array $source, string $whereDir, Files $libGallery)
+    public function __construct(array $source, string $whereDir, IProcessFiles $libFiles)
     {
         parent::__construct($source);
         $this->whereDir = $whereDir;
-        $this->libGallery = $libGallery;
+        $this->libFiles = $libFiles;
     }
 
+    /**
+     * @param FileNode $data
+     * @throws FilesException
+     * @return IRow
+     */
     public function getTranslated($data): IRow
     {
-        return new ConnectItem($data, $this->whereDir, $this->libGallery);
+        return new ConnectItem($data, $this->whereDir, $this->libFiles);
     }
 }

@@ -5,9 +5,9 @@ namespace KWCMS\modules\Images;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Exceptions\FormsException;
-use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -20,6 +20,7 @@ use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree_controls\TWhereDir;
+use KWCMS\modules\Images\Lib\TLibAction;
 use SplFileInfo;
 
 
@@ -32,6 +33,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
     use TWhereDir;
+    use TLibAction;
 
     /** @var UserDir|null */
     protected $userDir = null;
@@ -44,6 +46,11 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $this->initTModuleTemplate();
         $this->tree = new Tree(Stored::getPath(), new ProcessDir());
         $this->userDir = new UserDir(Stored::getPath());
+    }
+
+    protected function getUserDir(): string
+    {
+        return $this->user->getDir();
     }
 
     public function allowedAccessClasses(): array
@@ -87,11 +94,11 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $table = new Lib\ListTable(
                 $this->inputs,
                 $this->links,
-                FilesHelper::get($this->userDir->getWebRootDir() . $this->userDir->getWorkDir()),
+                $this->getLibFileAction(),
                 $this->getWhereDir()
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
-        } catch ( FormsException | TableException | ConnectException | ImagesException $ex) {
+        } catch ( FormsException | TableException | ConnectException | ImagesException | FilesException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

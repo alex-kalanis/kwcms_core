@@ -4,6 +4,7 @@ namespace kalanis\kw_paths\Extras;
 
 
 use InvalidArgumentException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Interfaces\IPATranslations;
 use kalanis\kw_paths\Path;
@@ -158,6 +159,7 @@ class UserDir
 
     /**
      * Fill user dir from obtained params, must run every time
+     * @throws FilesException
      * @return $this
      */
     public function process(): self

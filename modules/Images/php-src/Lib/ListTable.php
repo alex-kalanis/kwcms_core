@@ -9,7 +9,6 @@ use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
-use kalanis\kw_images\Files;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -27,6 +26,7 @@ use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
 use kalanis\kw_tree\Tree;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
+use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
 
 /**
@@ -41,15 +41,15 @@ class ListTable
     protected $link = null;
     /** @var string */
     protected $whereDir = '';
-    /** @var string */
-    protected $libGallery = null;
+    /** @var IProcessFiles */
+    protected $libFiles = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link, Files $libGallery, string $whereDir)
+    public function __construct(IFiltered $inputs, ExternalLink $link, IProcessFiles $libFiles, string $whereDir)
     {
         $this->variables = $inputs;
         $this->link = $link;
         $this->whereDir = $whereDir;
-        $this->libGallery = $libGallery;
+        $this->libFiles = $libFiles;
     }
 
     /**
@@ -101,7 +101,7 @@ class ListTable
         $table->addColumn(Lang::get('images.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSetConnector(new ConnectArray($tree->getTree()->getSubNodes(), $this->whereDir, $this->libGallery));
+        $table->addDataSetConnector(new ConnectArray($tree->getTree()->getSubNodes(), $this->whereDir, $this->libFiles));
         $table->setOutput(new KwRenderer($table));
         return $table;
     }

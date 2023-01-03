@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Images\Edit;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
-use kalanis\kw_images\Files;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -38,18 +38,17 @@ class Thumb extends AEdit
             $this->userDir->process();
 
             $fileName = strval($this->getFromParam('name'));
-            $libFiles = $this->getLibFileAction()->getLibFiles();
-            $this->checkExistence($libFiles, $this->getWhereDir(), $fileName);
+            $libFiles = $this->getLibFileAction();
+            $this->checkExistence($libFiles->getLibImage(), $this->getWhereDir(), $fileName);
 
             $this->thumbForm->composeForm('#');
             $this->thumbForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->thumbForm->process()) {
-                /** @var Files $libFiles */
-                $libFiles->getLibThumb()->create($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
+                $libFiles->updateThumb($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
                 $this->isProcessed = true;
             }
-        } catch (FormsException | ImagesException $ex) {
+        } catch (FormsException | ImagesException | FilesException $ex) {
             $this->error = $ex;
         }
     }

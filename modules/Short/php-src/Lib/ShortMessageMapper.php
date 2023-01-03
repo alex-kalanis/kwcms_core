@@ -4,6 +4,7 @@ namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_mapper\Mappers;
+use kalanis\kw_mapper\Storage\Shared\FormatFiles;
 
 
 /**
@@ -14,7 +15,7 @@ class ShortMessageMapper extends Mappers\File\ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(FormatFiles\SeparatedElements::class);
         $this->orderFromFirst(false);
         $this->setRelation('id', 0);
         $this->setRelation('date', 1);

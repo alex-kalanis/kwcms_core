@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers;
+namespace kalanis\kw_mapper\Mappers\Shared;
 
 
 /**
  * Trait TForeignKey
- * @package kalanis\kw_mapper\Mappers
+ * @package kalanis\kw_mapper\Mappers\Shared
  * Accessing foreign keys
  *
  * @todo idea: fk from/to composite keys

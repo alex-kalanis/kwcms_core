@@ -6,7 +6,6 @@ namespace kalanis\kw_files\Processing\Volume;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Processing\TNameFinder;
 use kalanis\kw_files\Processing\TPath;
 use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_files\Translations;
@@ -20,7 +19,6 @@ use Throwable;
  */
 class ProcessFile implements IProcessFiles
 {
-    use TNameFinder;
     use TPath;
     use TPathTransform;
 
@@ -31,22 +29,6 @@ class ProcessFile implements IProcessFiles
     {
         $this->lang = $lang ?? new Translations();
         $this->setPath($path);
-    }
-
-    protected function getNameSeparator(): string
-    {
-        return static::FREE_NAME_SEPARATOR;
-    }
-
-    /**
-     * @param array<string> $path
-     * @param string $added
-     * @throws FilesException
-     * @return bool
-     */
-    protected function targetExists(array $path, string $added): bool
-    {
-        return @file_exists($this->fullPath($path) . $added);
     }
 
     public function readFile(array $entry, ?int $offset = null, ?int $length = null)

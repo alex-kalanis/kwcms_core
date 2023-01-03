@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers;
+namespace kalanis\kw_mapper\Mappers\Shared;
 
 
 use kalanis\kw_mapper\MapperException;
@@ -9,7 +9,7 @@ use kalanis\kw_mapper\Records;
 
 /**
  * Trait TStore
- * @package kalanis\kw_mapper\Mappers
+ * @package kalanis\kw_mapper\Mappers\Shared
  * Abstract for manipulation with file content as table
  */
 trait TStore

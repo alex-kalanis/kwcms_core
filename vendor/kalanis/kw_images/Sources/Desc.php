@@ -22,7 +22,8 @@ class Desc extends AFiles
     public function get(array $path, bool $errorOnFail = false): string
     {
         try {
-            return strval($this->libFile->readFile($this->getPath($path)));
+            $content = $this->libFile->readFile($this->getPath($path));
+            return is_resource($content) ? strval(stream_get_contents($content, 0, -1)) : strval($content);
         } catch (FilesException $ex) {
             if (!$errorOnFail) {
                 return '';
