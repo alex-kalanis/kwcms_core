@@ -1,26 +1,28 @@
 <?php
 
-namespace kalanis\kw_paths\Params\Request;
+namespace kalanis\kw_routed_paths\Sources;
 
 
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Interfaces\IFiltered;
-use kalanis\kw_paths\Params\Request;
 
 
 /**
  * Class Input
- * @package kalanis\kw_paths\Params\Request
+ * @package kalanis\kw_routed_paths\Params\Request
  * Input source is Request Uri in IInputs datasource which provides the path data
  * This one is for accessing with url rewrite engines
  * @codeCoverageIgnore access external variable
  */
 class Input extends Request
 {
-    public function set(IFiltered $inputs, ?string $virtualDir = null): parent
+    public function __construct(IFiltered $inputs, ?string $virtualDir = null)
     {
         $requestUri = $inputs->getInArray('REQUEST_URI', [IEntry::SOURCE_SERVER, ] );
         $entry = reset($requestUri);
-        return $this->setData($entry ? strval($entry) : '', $virtualDir);
+        parent::__construct(
+            $entry ? strval($entry) : '',
+            $virtualDir
+        );
     }
 }

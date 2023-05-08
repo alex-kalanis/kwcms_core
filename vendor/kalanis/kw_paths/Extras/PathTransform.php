@@ -3,7 +3,8 @@
 namespace kalanis\kw_paths\Extras;
 
 
-use kalanis\kw_files\Processing\TPathTransform;
+use kalanis\kw_paths\Interfaces\IPATranslations;
+use kalanis\kw_paths\Translations;
 
 
 /**
@@ -15,8 +16,21 @@ class PathTransform
 {
     use TPathTransform;
 
-    public static function get(): self
+    /** @var IPATranslations */
+    protected $lang = null;
+
+    public static function get(IPATranslations $lang = null): self
     {
-        return new self();
+        return new self($lang);
+    }
+
+    public function __construct(IPATranslations $lang = null)
+    {
+        $this->lang = $lang ?: new Translations();
+    }
+
+    protected function noDirectoryDelimiterSet(): string
+    {
+        return $this->lang->paNoDirectoryDelimiterSet();
     }
 }

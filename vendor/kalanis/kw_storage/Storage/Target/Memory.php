@@ -56,8 +56,10 @@ class Memory implements ITarget
     {
         $keyLen = mb_strlen($path);
         foreach ($this->data as $file => $entry) {
-            if (0 === mb_strpos($file, $path)) {
+            if (boolval($keyLen) && (0 === mb_strpos($file, $path))) {
                 yield mb_substr($file, $keyLen);
+            } elseif (!boolval($keyLen)) {
+                yield $file;
             }
         }
     }

@@ -19,7 +19,7 @@ class Help extends ATask
         return 'Help with Clipr tasks';
     }
 
-    public function process(): void
+    public function process(): int
     {
         $this->writeLn('<yellow><bluebg>+======================+</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>|       kw_clipr       |</bluebg></yellow>');
@@ -29,14 +29,14 @@ class Help extends ATask
 
         if (empty($this->loader)) {
             $this->sendErrorMessage('Need any loader to get tasks!');
-            return;
+            return static::STATUS_LIB_ERROR;
         }
 
         try {
-            $taskName = Useful::getNthParam($this->inputs, 2) ?? static::class;
+            $taskName = Useful::getNthParam($this->inputs->getInArray(), 2) ?? static::class;
             $task = $this->loader->getTask($taskName);
             if (!$task) {
-                throw new CliprException(sprintf('Unknown task *%s* - check name, interface or your config paths.', $taskName));
+                throw new CliprException(sprintf('Unknown task *%s* - check name, interface or your config paths.', $taskName), static::STATUS_NO_TARGET_RESOURCE);
             }
             $task->initTask($this->translator, $this->inputs, $this->loader);
             $this->writeLn();
@@ -55,7 +55,8 @@ class Help extends ATask
 
         } catch (CliprException $ex) {
             $this->writeLn($ex->getMessage());
-            return;
+            return $ex->getCode();
         }
+        return static::STATUS_SUCCESS;
     }
 }

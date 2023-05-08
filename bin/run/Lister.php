@@ -31,7 +31,7 @@ class Lister extends ATask
         return 'Render list of tasks available in paths defined for lookup';
     }
 
-    public function process(): void
+    public function process(): int
     {
         $this->writeLn('<yellow><bluebg>+====================================+</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>|              kw_clipr              |</bluebg></yellow>');
@@ -41,7 +41,7 @@ class Lister extends ATask
 
         if (empty($this->loader)) {
             $this->sendErrorMessage('Need any loader to get tasks!');
-            return;
+            return static::STATUS_LIB_ERROR;
         }
 
         $this->setTableHeaders(['Task name', 'Call target', 'Description']);
@@ -57,9 +57,10 @@ class Lister extends ATask
             }
         } catch (CliprException $ex) {
             $this->writeLn($ex->getMessage());
-            return;
+            return $ex->getCode();
         }
         $this->dumpTable();
+        return static::STATUS_SUCCESS;
     }
 
     /**
@@ -70,12 +71,12 @@ class Lister extends ATask
     protected function createOutput(string $path, bool $skipEmpty = false): void
     {
         if (!is_dir($path)) {
-            throw new CliprException(sprintf('<redbg> !!! </redbg> Path leads to something unreadable. Path: <yellow>%s</yellow>', $path));
+            throw new CliprException(sprintf('<redbg> !!! </redbg> Path leads to something unreadable. Path: <yellow>%s</yellow>', $path), static::STATUS_BAD_CONFIG);
         }
         $allFiles = array_diff((array) scandir($path), [false, '', '.', '..']);
         $files = array_filter($allFiles, [$this, 'onlyPhp']);
         if (empty($files) && !$skipEmpty) {
-            throw new CliprException(sprintf('<redbg> !!! </redbg> No usable files returned. Path: <yellow>%s</yellow>', $path));
+            throw new CliprException(sprintf('<redbg> !!! </redbg> No usable files returned. Path: <yellow>%s</yellow>', $path), static::STATUS_NO_TARGET_RESOURCE);
         }
         foreach ($files as $fileName) {
             $className = Paths::getInstance()->realFileToClass($path, $fileName);

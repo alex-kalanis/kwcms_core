@@ -34,11 +34,22 @@ class Factory
         if (empty($storage)) {
             return null;
         }
-        $publicStorage = new Storage(
-            $this->keyFactory->getKey($storage),
-            $storage
-        );
-        $publicStorage->canUse();
-        return $publicStorage;
+
+        if ($storage instanceof Interfaces\ITargetVolume) {
+            $publicStorage = new StorageDirs(
+                $this->keyFactory->getKey($storage),
+                $storage
+            );
+            $publicStorage->canUse();
+            return $publicStorage;
+
+        } else {
+            $publicStorage = new Storage(
+                $this->keyFactory->getKey($storage),
+                $storage
+            );
+            $publicStorage->canUse();
+            return $publicStorage;
+        }
     }
 }

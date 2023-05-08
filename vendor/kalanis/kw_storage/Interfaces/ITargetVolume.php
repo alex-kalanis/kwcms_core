@@ -26,6 +26,18 @@ interface ITargetVolume extends ITarget
     public function isFile(string $key): bool;
 
     /**
+     * @param string $key
+     * @return bool
+     */
+    public function isReadable(string $key): bool;
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function isWritable(string $key): bool;
+
+    /**
      * Create subdir
      * @param string $key
      * @param bool $recursive

@@ -20,11 +20,6 @@ class Stored
 
     public static function getPath(): ?Path
     {
-        return static::$paths ? clone static::$paths : null;
-    }
-
-    public static function getOriginalPath(): ?Path
-    {
         return static::$paths;
     }
 }

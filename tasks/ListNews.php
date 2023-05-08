@@ -53,8 +53,9 @@ class ListNews extends ATask
      * @throws ConnectException
      * @throws MapperException
      * @throws TableException
+     * @return int
      */
-    public function process(): void
+    public function process(): int
     {
         $this->writeLn('<yellow><bluebg>+============================+</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>|           kwcms            |</bluebg></yellow>');
@@ -85,11 +86,12 @@ class ListNews extends ATask
             $table->addDataSetConnector(new Connector(new Search($adapter->getRecord())));
         } catch (ShortException $ex) {
             $this->sendErrorMessage(sprintf('No short messages in path *%s*', $this->path));
-            return;
+            return static::STATUS_NO_INPUT_FILE;
         }
 
         // render
         $this->writeln();
         $this->write($table->render());
+        return static::STATUS_SUCCESS;
     }
 }

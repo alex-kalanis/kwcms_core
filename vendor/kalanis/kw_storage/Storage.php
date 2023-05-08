@@ -40,8 +40,7 @@ class Storage
      */
     public function exists(string $key): bool
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */exists($key);
+        return $this->getStorage()->exists($key);
     }
 
     /**
@@ -52,8 +51,7 @@ class Storage
      */
     public function get(string $key)
     {
-        $this->checkStorage();
-        $content = $this->storage->/** @scrutinizer ignore-call */read($key);
+        $content = $this->getStorage()->read($key);
         return empty($content) ? null : $content ;
     }
 
@@ -67,8 +65,7 @@ class Storage
      */
     public function set(string $key, $value, ?int $expire = 8600): bool
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */write($key, $value, $expire);
+        return $this->getStorage()->write($key, $value, $expire);
     }
 
     /**
@@ -81,9 +78,8 @@ class Storage
      */
     public function add(string $key, $value, ?int $expire = 8600): bool
     {
-        $this->checkStorage();
         // safeadd for multithread at any system
-        if ($this->storage->/** @scrutinizer ignore-call */write($key, $value, $expire)) {
+        if ($this->getStorage()->write($key, $value, $expire)) {
             return ( $value == $this->get($key) );
         }
         return false;
@@ -97,8 +93,7 @@ class Storage
      */
     public function increment(string $key): bool
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */increment($key);
+        return $this->getStorage()->increment($key);
     }
 
     /**
@@ -109,8 +104,7 @@ class Storage
      */
     public function decrement(string $key): bool
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */decrement($key);
+        return $this->getStorage()->decrement($key);
     }
 
     /**
@@ -131,8 +125,7 @@ class Storage
      */
     public function getMaskedKeys(string $mask): Traversable
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */lookup($mask);
+        return $this->getStorage()->lookup($mask);
     }
 
     /**
@@ -143,8 +136,7 @@ class Storage
      */
     public function delete(string $key): bool
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */remove($key);
+        return $this->getStorage()->remove($key);
     }
 
     /**
@@ -155,8 +147,7 @@ class Storage
      */
     public function deleteMulti(array $keys)
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */removeMulti($keys);
+        return $this->getStorage()->removeMulti($keys);
     }
 
     /**
@@ -185,17 +176,17 @@ class Storage
      */
     public function isConnected(): bool
     {
-        $this->checkStorage();
-        return $this->storage->/** @scrutinizer ignore-call */canUse();
+        return $this->getStorage()->canUse();
     }
 
     /**
      * @throws StorageException
      */
-    protected function checkStorage(): void
+    protected function getStorage(): IStorage
     {
         if (empty($this->storage)) {
             throw new StorageException('Storage not initialized');
         }
+        return $this->storage;
     }
 }

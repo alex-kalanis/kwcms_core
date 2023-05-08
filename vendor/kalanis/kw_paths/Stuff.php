@@ -3,7 +3,6 @@
 namespace kalanis\kw_paths;
 
 
-use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Interfaces\IPaths;
 
 
@@ -20,12 +19,12 @@ class Stuff
      * Do not call realpath() which do the similar thing
      * @param string $path
      * @param string $delimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public static function sanitize(string $path, string $delimiter = DIRECTORY_SEPARATOR): string
     {
-        return static::arrayToPath(array_filter(array_filter(static::pathToArray($path, $delimiter), ['\kalanis\kw_paths\Stuff', 'notDots'])), $delimiter);
+        return static::arrayToPath(array_filter(array_filter(static::pathToArray($path, $delimiter), [Stuff::class, 'notDots'])), $delimiter);
     }
 
     public static function notDots(string $content): bool
@@ -36,7 +35,7 @@ class Stuff
     /**
      * @param string $path
      * @param string $delimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return array<int, string>
      */
     public static function pathToArray(string $path, string $delimiter = DIRECTORY_SEPARATOR): array
@@ -47,7 +46,7 @@ class Stuff
     /**
      * @param string[] $path
      * @param string $delimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public static function arrayToPath(array $path, string $delimiter = DIRECTORY_SEPARATOR): string
@@ -58,7 +57,7 @@ class Stuff
     /**
      * @param string $path
      * @param string $delimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return array<int, string>
      */
     public static function linkToArray(string $path, string $delimiter = IPaths::SPLITTER_SLASH): array
@@ -69,7 +68,7 @@ class Stuff
     /**
      * @param string[] $path
      * @param string $delimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public static function arrayToLink(array $path, string $delimiter = IPaths::SPLITTER_SLASH): string

@@ -5,9 +5,7 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
-use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
 
@@ -24,7 +22,7 @@ class CanDir extends AFiles
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
-        $this->lang = $lang ?? new Translations();
+        $this->setLang($lang);
     }
 
     public function copyFile(array $source, array $dest): bool
@@ -34,7 +32,7 @@ class CanDir extends AFiles
         try {
             return $this->storage->copy($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -45,7 +43,16 @@ class CanDir extends AFiles
         try {
             return $this->storage->move($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
         }
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore only when path fails
+     */
+    protected function noDirectoryDelimiterSet(): string
+    {
+        return $this->getLang()->flNoDirectoryDelimiterSet();
     }
 }

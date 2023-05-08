@@ -106,11 +106,20 @@ class ServerAdapter implements ArrayAccess
         return $_SERVER[$this->removeNullBytes(strval($offset))];
     }
 
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws InputException
+     */
     public final function offsetSet($offset, $value): void
     {
         throw new InputException('Cannot write into _SERVER variable');
     }
 
+    /**
+     * @param mixed $offset
+     * @throws InputException
+     */
     public final function offsetUnset($offset): void
     {
         throw new InputException('Cannot write into _SERVER variable');

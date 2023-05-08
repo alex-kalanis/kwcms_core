@@ -39,7 +39,7 @@ class FilesHelper
         return new BasicOperations(  // operations with images
             new Sources\Image($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
-            new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
+            new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm)
         );
     }
 
@@ -68,7 +68,7 @@ class FilesHelper
             new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\DirDesc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\DirThumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
-            new Processor($libProcessDirs, $libProcessNodes, $fileConf),
+            new Processor($libProcessDirs, $libProcessNodes, $fileConf)
         );
     }
 
@@ -94,7 +94,7 @@ class FilesHelper
             ),
             new Sources\Image($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
             new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
-            new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
+            new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm)
         );
     }
 
@@ -126,7 +126,7 @@ class FilesHelper
                 ),
                 new Sources\Image($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
                 new Sources\Thumb($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
-                new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm),
+                new Sources\Desc($libProcessNodes, $libProcessFiles, $fileConf, $langIm)
             )
         );
     }

@@ -10,8 +10,9 @@ use kalanis\kw_files\Interfaces\IProcessDirs;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Processing\TPath;
-use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_files\Translations;
+use kalanis\kw_paths\Extras\TPathTransform;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_storage\Extras\TRemoveCycle;
 use kalanis\kw_storage\Extras\TVolumeCopy;
 use RecursiveDirectoryIterator;
@@ -40,7 +41,7 @@ class ProcessDir implements IProcessDirs
     /**
      * @param string $path
      * @param IFLTranslations|null $lang
-     * @throws FilesException
+     * @throws PathsException
      */
     public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
@@ -50,7 +51,7 @@ class ProcessDir implements IProcessDirs
 
     /**
      * @param string $path
-     * @throws FilesException
+     * @throws PathsException
      */
     public function setPath(string $path = ''): void
     {
@@ -119,7 +120,7 @@ class ProcessDir implements IProcessDirs
 
     /**
      * @param SplFileInfo $file
-     * @throws FilesException
+     * @throws PathsException
      * @return Node
      */
     public function intoNode(SplFileInfo $file): Node
@@ -183,11 +184,20 @@ class ProcessDir implements IProcessDirs
 
     /**
      * @param array<string> $path
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     protected function fullPath(array $path): string
     {
         return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore only when path fails
+     */
+    protected function noDirectoryDelimiterSet(): string
+    {
+        return $this->lang->flNoDirectoryDelimiterSet();
     }
 }

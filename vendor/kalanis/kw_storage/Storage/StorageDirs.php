@@ -27,6 +27,16 @@ class StorageDirs extends Storage implements IPassDirs
         return $this->target->isFile($this->key->fromSharedKey($key));
     }
 
+    public function isReadable(string $key): bool
+    {
+        return $this->target->isReadable($this->key->fromSharedKey($key));
+    }
+
+    public function isWritable(string $key): bool
+    {
+        return $this->target->isWritable($this->key->fromSharedKey($key));
+    }
+
     public function mkDir(string $key, bool $recursive = false): bool
     {
         return $this->target->mkDir($this->key->fromSharedKey($key), $recursive);

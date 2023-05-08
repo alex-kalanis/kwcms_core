@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_paths\Params;
+namespace kalanis\kw_routed_paths\Sources;
 
 
 use kalanis\kw_paths\Interfaces\IPaths;
@@ -8,11 +8,11 @@ use kalanis\kw_paths\Interfaces\IPaths;
 
 /**
  * Class Request
- * @package kalanis\kw_paths\Params
+ * @package kalanis\kw_routed_paths\Sources
  * Input source is Request Uri in preset variables
  * This one is for accessing content with url rewrite engines
  */
-class Request extends AParams
+class Request extends ASource
 {
     /** @var string */
     protected $requestUri = '';
@@ -22,37 +22,34 @@ class Request extends AParams
     /**
      * @param string $requestUri
      * @param string|null $virtualDir
-     * @return $this
      *
      * virtual dir has following variants:
      * empty string - cut on start of query string - cut on first possible position
      * null - cut on end of query string - don't know when cut
      * something - cut where you find that "prefix"
      */
-    public function setData(string $requestUri, ?string $virtualDir = null): self
+    public function __construct(string $requestUri, ?string $virtualDir = null)
     {
         $this->requestUri = $requestUri;
         $this->virtualDir = $virtualDir;
-        return $this;
     }
 
     /**
-     * @return $this
+     * @return array<string|int, mixed|null> $params
      * path is composed from:
-     * statical part - for subdirectory on server
+     * static part - for subdirectory on server
      * virtual prefix - something to split the string
      * path and other keys - after splitting to describe what client want
      */
-    public function process(): parent
+    public function getData(): array
     {
         list($path, $params) = $this->explodeInput($this->requestUri);
-        list($staticalPath, $virtualPrefix, $virtualParamPath) = $this->pathToSegments(urldecode($path), $this->virtualDir);
-        $this->preset( array_merge(
-                compact('staticalPath', 'virtualPrefix'),
+        list($staticPath, $virtualPrefix, $virtualParamPath) = $this->pathToSegments(urldecode($path), $this->virtualDir);
+        return array_merge(
+                compact('staticPath', 'virtualPrefix'),
                 $this->updateVirtualKeys($this->parseVirtualPath($virtualParamPath)),
                 $this->parseParamsToArray($params)
-        ) );
-        return $this;
+        );
     }
 
     /**

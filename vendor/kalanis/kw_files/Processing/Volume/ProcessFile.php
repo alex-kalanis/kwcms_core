@@ -7,8 +7,9 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_files\Processing\TPath;
-use kalanis\kw_files\Processing\TPathTransform;
 use kalanis\kw_files\Translations;
+use kalanis\kw_paths\Extras\TPathTransform;
+use kalanis\kw_paths\PathsException;
 use Throwable;
 
 
@@ -109,11 +110,20 @@ class ProcessFile implements IProcessFiles
 
     /**
      * @param array<string> $path
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     protected function fullPath(array $path): string
     {
         return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore only when path fails
+     */
+    protected function noDirectoryDelimiterSet(): string
+    {
+        return $this->lang->flNoDirectoryDelimiterSet();
     }
 }

@@ -3,8 +3,9 @@
 namespace kalanis\kw_files\Extended;
 
 
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -13,85 +14,88 @@ use kalanis\kw_files\Interfaces;
  */
 class Processor
 {
-    /** @var Interfaces\IProcessDirs */
-    protected $dirs = null;
-    /** @var Interfaces\IProcessNodes */
-    protected $nodes = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
     /** @var Config */
     protected $config = null;
 
-    public function __construct(Interfaces\IProcessDirs $dirs, Interfaces\IProcessNodes $nodes, Config $config)
+    public function __construct(CompositeAdapter $files, Config $config)
     {
-        $this->dirs = $dirs;
-        $this->nodes = $nodes;
+        $this->files = $files;
         $this->config = $config;
     }
 
     /**
      * @param string[] $path the path inside the web root dir
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function exists(array $path): bool
     {
-        return $this->nodes->exists($path);
+        return $this->files->exists($path);
     }
 
     /**
      * @param string[] $path the path inside the web root dir
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function dirExists(array $path): bool
     {
-        return $this->nodes->isDir($path);
+        return $this->files->isDir($path);
     }
 
     /**
      * @param string[] $path the path inside the web root dir
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function fileExists(array $path): bool
     {
-        return $this->nodes->isFile($path);
+        return $this->files->isFile($path);
     }
 
     /**
      * @param string[] $path the path inside the web root dir
      * @param bool $makeExtra
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function createDir(array $path, bool $makeExtra = false): bool
     {
-        return $this->dirs->createDir($path, true)
+        return $this->files->createDir($path, true)
             && ($makeExtra ? $this->makeExtended($path) : true);
     }
 
     /**
      * @param string[] $path the path inside the web root dir
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function removeDir(array $path): bool
     {
-        return ($this->isExtended($path) ? $this->removeExtended($path) : true) && $this->dirs->deleteDir($path);
+        return ($this->isExtended($path) ? $this->removeExtended($path) : true) && $this->files->deleteDir($path);
     }
 
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function isExtended(array $path): bool
     {
         $desc = array_merge($path, [$this->config->getDescDir()]);
         $thumb = array_merge($path, [$this->config->getThumbDir()]);
-        return $this->nodes->exists($desc)
-            && $this->nodes->isDir($desc)
-            && $this->nodes->exists($thumb)
-            && $this->nodes->isDir($thumb)
+        return $this->files->exists($desc)
+            && $this->files->isDir($desc)
+            && $this->files->exists($thumb)
+            && $this->files->isDir($thumb)
         ;
     }
 
@@ -99,26 +103,27 @@ class Processor
      * Make dir with extended properties
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function makeExtended(array $path): bool
     {
         $desc = array_merge($path, [$this->config->getDescDir()]);
         $thumb = array_merge($path, [$this->config->getThumbDir()]);
-        $descExists = $this->nodes->exists($desc);
-        $thumbExists = $this->nodes->exists($thumb);
-        if ($descExists && !$this->nodes->isDir($desc)) {
+        $descExists = $this->files->exists($desc);
+        $thumbExists = $this->files->exists($thumb);
+        if ($descExists && !$this->files->isDir($desc)) {
             return false;
         }
-        if ($thumbExists && !$this->nodes->isDir($thumb)) {
+        if ($thumbExists && !$this->files->isDir($thumb)) {
             return false;
         }
         $ret = true;
         if (!$descExists) {
-            $ret &= $this->dirs->createDir($desc, true);
+            $ret &= $this->files->createDir($desc, true);
         }
         if (!$thumbExists) {
-            $ret &= $this->dirs->createDir($thumb, true);
+            $ret &= $this->files->createDir($thumb, true);
         }
         return boolval($ret);
     }
@@ -126,26 +131,27 @@ class Processor
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function removeExtended(array $path): bool
     {
         $desc = array_merge($path, [$this->config->getDescDir()]);
         $thumb = array_merge($path, [$this->config->getThumbDir()]);
-        $descExists = $this->nodes->exists($desc);
-        $thumbExists = $this->nodes->exists($thumb);
-        if ($descExists && !$this->nodes->isDir($desc)) {
+        $descExists = $this->files->exists($desc);
+        $thumbExists = $this->files->exists($thumb);
+        if ($descExists && !$this->files->isDir($desc)) {
             return false;
         }
-        if ($thumbExists && !$this->nodes->isDir($thumb)) {
+        if ($thumbExists && !$this->files->isDir($thumb)) {
             return false;
         }
         $ret = true;
         if ($descExists) {
-            $ret &= $this->dirs->deleteDir($desc, true);
+            $ret &= $this->files->deleteDir($desc, true);
         }
         if ($thumbExists) {
-            $ret &= $this->dirs->deleteDir($thumb, true);
+            $ret &= $this->files->deleteDir($thumb, true);
         }
         return boolval($ret);
     }

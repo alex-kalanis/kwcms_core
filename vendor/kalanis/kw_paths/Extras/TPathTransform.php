@@ -1,14 +1,14 @@
 <?php
 
-namespace kalanis\kw_files\Processing;
+namespace kalanis\kw_paths\Extras;
 
 
-use kalanis\kw_files\FilesException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
  * trait TPathTransform
- * @package kalanis\kw_files\Processing
+ * @package kalanis\kw_paths\Extras
  * Transform path from string to array and back
  */
 trait TPathTransform
@@ -16,13 +16,13 @@ trait TPathTransform
     /**
      * @param array<string> $path
      * @param string $pathDelimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function compactName(array $path, string $pathDelimiter = DIRECTORY_SEPARATOR): string
     {
         if (empty($pathDelimiter)) {
-            throw new FilesException('You set the empty directory delimiter!');
+            throw new PathsException($this->noDirectoryDelimiterSet());
         }
         return implode(
             $pathDelimiter,
@@ -41,14 +41,14 @@ trait TPathTransform
     /**
      * @param string $path
      * @param string $pathDelimiter
-     * @throws FilesException
+     * @throws PathsException
      * @return array<string>
      */
     public function expandName(string $path, string $pathDelimiter = DIRECTORY_SEPARATOR): array
     {
         $extraDelimiter = "--\e--";
         if (empty($pathDelimiter)) {
-            throw new FilesException('You set the empty directory delimiter!');
+            throw new PathsException($this->noDirectoryDelimiterSet());
         }
         $path = str_replace($this->getEscapeChar() . $this->getEscapeChar(), $extraDelimiter . $extraDelimiter, $path);
         $path = str_replace($this->getEscapeChar() . $pathDelimiter, $this->getEscapeChar() . $extraDelimiter, $path);
@@ -62,4 +62,6 @@ trait TPathTransform
     {
         return '\\';
     }
+
+    abstract protected function noDirectoryDelimiterSet(): string;
 }

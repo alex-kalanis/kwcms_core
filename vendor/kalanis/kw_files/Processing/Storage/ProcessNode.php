@@ -29,6 +29,16 @@ class ProcessNode implements IProcessNodes
         return $this->adapter->exists($entry);
     }
 
+    public function isReadable(array $entry): bool
+    {
+        return $this->adapter->isReadable($entry);
+    }
+
+    public function isWritable(array $entry): bool
+    {
+        return $this->adapter->isWritable($entry);
+    }
+
     public function isDir(array $entry): bool
     {
         return $this->adapter->isDir($entry);

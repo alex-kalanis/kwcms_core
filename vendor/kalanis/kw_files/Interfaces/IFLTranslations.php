@@ -35,4 +35,14 @@ interface IFLTranslations
     public function flCannotMoveDir(string $sourceDirName, string $destDirName): string;
 
     public function flCannotRemoveDir(string $dirName): string;
+
+    public function flNoDirectoryDelimiterSet(): string;
+
+    public function flNoProcessNodeSet(): string;
+
+    public function flNoProcessFileSet(): string;
+
+    public function flNoProcessDirSet(): string;
+
+    public function flNoAvailableClasses(): string;
 }

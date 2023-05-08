@@ -7,7 +7,6 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
-use kalanis\kw_files\Translations;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -21,15 +20,13 @@ class Basic extends ADirs
 {
     const STORAGE_NODE_KEY = "\eNODE\e";
 
-    /** @var IFLTranslations */
-    protected $lang = null;
     /** @var IStorage */
     protected $storage = null;
 
     public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
-        $this->lang = $lang ?? new Translations();
+        $this->setLang($lang);
     }
 
     public function createDir(array $entry, bool $deep = false): bool
@@ -60,7 +57,7 @@ class Basic extends ADirs
             }
             return $this->storage->write($entryPath, static::STORAGE_NODE_KEY);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotCreateDir($entryPath), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotCreateDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
@@ -70,7 +67,7 @@ class Basic extends ADirs
         $entryPath = empty($entryPath) ? '' : $this->getStorageSeparator() . $entryPath;
         try {
             if (!$this->isNode($entryPath)) {
-                throw new FilesException($this->lang->flCannotReadDir($entryPath));
+                throw new FilesException($this->getLang()->flCannotReadDir($entryPath));
             }
             /** @var array<string, Node> */
             $files = [];
@@ -111,7 +108,7 @@ class Basic extends ADirs
             }
             return $files;
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotReadDir($entryPath), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotReadDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
@@ -144,7 +141,7 @@ class Basic extends ADirs
             }
             return true;
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -171,7 +168,7 @@ class Basic extends ADirs
             }
             return $this->storage->remove($src);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -197,7 +194,7 @@ class Basic extends ADirs
             }
             return $this->storage->remove($path);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
     }
 
@@ -225,19 +222,28 @@ class Basic extends ADirs
             $tempStream = fopen("php://temp", "w+b");
             if (false === $tempStream) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->lang->flCannotLoadFile($file));
+                throw new FilesException($this->getLang()->flCannotLoadFile($file));
             }
             // @codeCoverageIgnoreEnd
             rewind($content);
             $size = stream_copy_to_stream($content, $tempStream, -1, 0);
             if (false === $size) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->lang->flCannotGetSize($file));
+                throw new FilesException($this->getLang()->flCannotGetSize($file));
             }
             // @codeCoverageIgnoreEnd
             return intval($size);
         } else {
             return mb_strlen(strval($content));
         }
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore only when path fails
+     */
+    protected function noDirectoryDelimiterSet(): string
+    {
+        return $this->getLang()->flNoDirectoryDelimiterSet();
     }
 }

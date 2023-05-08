@@ -4,7 +4,8 @@ namespace kalanis\kw_files\Processing\Storage\Nodes;
 
 
 use kalanis\kw_files\Interfaces\IProcessNodes;
-use kalanis\kw_files\Processing\TPathTransform;
+use kalanis\kw_files\Traits\TLang;
+use kalanis\kw_paths\Extras\TPathTransform;
 
 
 /**
@@ -14,6 +15,7 @@ use kalanis\kw_files\Processing\TPathTransform;
  */
 abstract class ANodes implements IProcessNodes
 {
+    use TLang;
     use TPathTransform;
 
     protected function getStorageSeparator(): string

@@ -4,9 +4,9 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 
 
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Processing\TPathTransform;
+use kalanis\kw_files\Traits\TLang;
+use kalanis\kw_paths\Extras\TPathTransform;
 use kalanis\kw_storage\Interfaces\IPassDirs;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
@@ -20,9 +20,8 @@ use kalanis\kw_storage\StorageException;
 abstract class AFiles implements IProcessFiles
 {
     use TPathTransform;
+    use TLang;
 
-    /** @var IFLTranslations */
-    protected $lang = null;
     /** @var IStorage|IPassDirs */
     protected $storage = null;
 
@@ -32,7 +31,7 @@ abstract class AFiles implements IProcessFiles
         try {
             return $this->storage->write($path, $content);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotSaveFile($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotSaveFile($path), $ex->getCode(), $ex);
         }
     }
 
@@ -42,19 +41,19 @@ abstract class AFiles implements IProcessFiles
         try {
             $content = $this->storage->read($path);
             if (false === $content) {
-                throw new FilesException($this->lang->flCannotLoadFile($path));
+                throw new FilesException($this->getLang()->flCannotLoadFile($path));
             } elseif (is_resource($content)) {
                 if (!is_null($length) || !is_null($offset)) {
                     $stream = fopen('php://temp', 'rb+');
                     rewind($content);
                     if (false === $stream) {
                         // @codeCoverageIgnoreStart
-                        throw new FilesException($this->lang->flCannotLoadFile($path));
+                        throw new FilesException($this->getLang()->flCannotLoadFile($path));
                     }
                     // @codeCoverageIgnoreEnd
                     if (false === stream_copy_to_stream($content, $stream, (is_null($length) ? -1 : $length), intval($offset))) {
                         // @codeCoverageIgnoreStart
-                        throw new FilesException($this->lang->flCannotGetFilePart($path));
+                        throw new FilesException($this->getLang()->flCannotGetFilePart($path));
                     }
                     // @codeCoverageIgnoreEnd
                     return $stream;
@@ -72,7 +71,7 @@ abstract class AFiles implements IProcessFiles
                 return strval($content);
             }
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotLoadFile($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotLoadFile($path), $ex->getCode(), $ex);
         }
     }
 
@@ -82,7 +81,7 @@ abstract class AFiles implements IProcessFiles
         try {
             return $this->storage->remove($path);
         } catch (StorageException $ex) {
-            throw new FilesException($this->lang->flCannotRemoveFile($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotRemoveFile($path), $ex->getCode(), $ex);
         }
     }
 

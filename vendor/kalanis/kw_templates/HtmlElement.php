@@ -26,7 +26,7 @@ class HtmlElement extends AHtmlElement
 
     /**
      * @param string $name
-     * @param array<string, string> $attributes
+     * @param array<string, string|int|array<string>> $attributes
      * @return $this
      */
     public static function init(string $name, array $attributes = []): self
@@ -37,7 +37,7 @@ class HtmlElement extends AHtmlElement
 
     /**
      * @param string $name
-     * @param array<string, string> $attributes
+     * @param array<string, string|int|array<string>> $attributes
      */
     public function __construct(string $name, array $attributes = [])
     {

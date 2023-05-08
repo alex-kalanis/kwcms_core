@@ -18,7 +18,7 @@ class Factory
     public function getClass(IStorage $storage, ?IFLTranslations $lang = null): ANodes
     {
         if ($storage instanceof IPassDirs) {
-            return new CanDir($storage);
+            return new CanDir($storage, $lang);
         } else {
             return new Basic($storage, $lang);
         }

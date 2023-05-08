@@ -3,10 +3,12 @@
 namespace kalanis\kw_files\Processing\Volume;
 
 
-use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_files\Processing\TPath;
-use kalanis\kw_files\Processing\TPathTransform;
+use kalanis\kw_files\Translations;
+use kalanis\kw_paths\Extras\TPathTransform;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -19,14 +21,28 @@ class ProcessNode implements IProcessNodes
     use TPath;
     use TPathTransform;
 
-    public function __construct(string $path = '')
+    /** @var IFLTranslations */
+    protected $lang = null;
+
+    public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
         $this->setPath($path);
+        $this->lang = $lang ?? new Translations();
     }
 
     public function exists(array $entry): bool
     {
         return @file_exists($this->fullPath($entry));
+    }
+
+    public function isReadable(array $entry): bool
+    {
+        return @is_readable($this->fullPath($entry));
+    }
+
+    public function isWritable(array $entry): bool
+    {
+        return @is_writable($this->fullPath($entry));
     }
 
     public function isDir(array $entry): bool
@@ -55,11 +71,20 @@ class ProcessNode implements IProcessNodes
 
     /**
      * @param array<string> $path
-     * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     protected function fullPath(array $path): string
     {
         return $this->getPath() . DIRECTORY_SEPARATOR . $this->compactName($path);
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore only when path fails
+     */
+    protected function noDirectoryDelimiterSet(): string
+    {
+        return $this->lang->flNoDirectoryDelimiterSet();
     }
 }

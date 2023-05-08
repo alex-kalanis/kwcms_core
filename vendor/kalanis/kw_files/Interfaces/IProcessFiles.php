@@ -4,6 +4,7 @@ namespace kalanis\kw_files\Interfaces;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -17,15 +18,17 @@ interface IProcessFiles
      * @param string[] $entry
      * @param string|resource $content
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function saveFile(array $entry, $content): bool;
 
     /**
      * @param string[] $entry
-     * @param int|null $offset
-     * @param int|null $length
+     * @param int<0, max>|null $offset
+     * @param int<0, max>|null $length
      * @throws FilesException
+     * @throws PathsException
      * @return string|resource
      */
     public function readFile(array $entry, ?int $offset = null, ?int $length = null);
@@ -34,6 +37,7 @@ interface IProcessFiles
      * @param string[] $source
      * @param string[] $dest
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function copyFile(array $source, array $dest): bool;
@@ -42,6 +46,7 @@ interface IProcessFiles
      * @param string[] $source
      * @param string[] $dest
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function moveFile(array $source, array $dest): bool;
@@ -49,6 +54,7 @@ interface IProcessFiles
     /**
      * @param string[] $entry
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function deleteFile(array $entry): bool;

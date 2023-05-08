@@ -49,6 +49,16 @@ class Volume implements ITargetVolume
         return @is_file($key);
     }
 
+    public function isReadable(string $key): bool
+    {
+        return @is_readable($key);
+    }
+
+    public function isWritable(string $key): bool
+    {
+        return @is_writable($key);
+    }
+
     public function mkDir(string $key, bool $recursive = false): bool
     {
         return @mkdir($key, 0777, $recursive);

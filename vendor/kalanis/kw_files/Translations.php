@@ -87,4 +87,33 @@ class Translations implements IFLTranslations
     {
         return 'Cannot remove directory';
     }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore only when path fails
+     */
+    public function flNoDirectoryDelimiterSet(): string
+    {
+        return 'You set the empty directory delimiter!';
+    }
+
+    public function flNoProcessNodeSet(): string
+    {
+        return 'No processing nodes library set!';
+    }
+
+    public function flNoProcessFileSet(): string
+    {
+        return 'No processing files library set!';
+    }
+
+    public function flNoProcessDirSet(): string
+    {
+        return 'No processing directories library set!';
+    }
+
+    public function flNoAvailableClasses(): string
+    {
+        return 'No available classes for that settings!';
+    }
 }

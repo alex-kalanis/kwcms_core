@@ -18,9 +18,9 @@ class Info extends ATask
         return 'Info about Clipr and its inputs';
     }
 
-    public function process(): void
+    public function process(): int
     {
-        $cliprPath = Useful::getNthParam($this->inputs, 0) ?? 'clipr';
+        $cliprPath = Useful::getNthParam($this->inputs->getInArray(), 0) ?? 'clipr';
         $this->writeLn('<yellow><bluebg>+======================+</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>|       kw_clipr       |</bluebg></yellow>');
         $this->writeLn('<yellow><bluebg>+======================+</bluebg></yellow>');
@@ -44,5 +44,6 @@ class Info extends ATask
             $this->setTableDataLine([$option->getVariable(), $option->getCliKey(), $option->getValue()]);
         }
         $this->dumpTable();
+        return static::STATUS_SUCCESS;
     }
 }

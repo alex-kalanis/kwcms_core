@@ -5,6 +5,7 @@ namespace kalanis\kw_files\Extended;
 
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -29,6 +30,7 @@ class FindFreeName
      * @param string $name
      * @param string $suffix
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function findFreeName(array $path, string $name, string $suffix): string
@@ -47,6 +49,7 @@ class FindFreeName
      * @param array<string> $path
      * @param string $name
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     protected function targetExists(array $path, string $name): bool
