@@ -4,8 +4,7 @@ namespace kalanis\kw_files\Processing\Storage\Dirs;
 
 
 use kalanis\kw_files\Interfaces\IFLTranslations;
-use kalanis\kw_storage\Interfaces\IPassDirs;
-use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces;
 
 
 /**
@@ -15,10 +14,14 @@ use kalanis\kw_storage\Interfaces\IStorage;
  */
 class Factory
 {
-    public function getClass(IStorage $storage, ?IFLTranslations $lang = null): ADirs
+    public function getClass(Interfaces\IStorage $storage, ?IFLTranslations $lang = null): ADirs
     {
-        if ($storage instanceof IPassDirs) {
-            return new CanDir($storage, $lang);
+        if ($storage instanceof Interfaces\IPassDirs) {
+            if ($storage->isFlat()) {
+                return new CanDirFlat($storage);
+            } else {
+                return new CanDirRecursive($storage, $lang);
+            }
         } else {
             return new Basic($storage, $lang);
         }

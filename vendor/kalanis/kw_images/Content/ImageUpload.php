@@ -8,7 +8,9 @@ use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_images\Sources;
+use kalanis\kw_mime\MimeException;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 
 
@@ -40,6 +42,7 @@ class ImageUpload
      * @param string[] $wantedPath where we want to store the file
      * @param string $name
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function findFreeName(array $wantedPath, string $name): string
@@ -61,18 +64,19 @@ class ImageUpload
      * @param bool $wantResize
      * @throws FilesException
      * @throws ImagesException
+     * @throws MimeException
+     * @throws PathsException
      * @return bool
      */
     public function process(array $wantedPath, string $tempPath = '', string $description = '', bool $hasThumb = true, bool $wantResize = false): bool
     {
         $fullPath = array_values($wantedPath);
-        $fileName = strval(array_pop($wantedPath));
         // check file
         $this->graphics->setSizes($this->config)->check($tempPath);
 
         // resize if set
         if ($wantResize) {
-            $this->graphics->setSizes($this->config)->resize($tempPath, $fileName);
+            $this->graphics->setSizes($this->config)->resize($tempPath, $fullPath);
         }
 
         // store image

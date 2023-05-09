@@ -6,6 +6,8 @@ namespace kalanis\kw_images\Content;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
+use kalanis\kw_mime\MimeException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -35,6 +37,7 @@ class Images
     /**
      * @param string[] $wantedPath
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function exists(array $wantedPath): bool
@@ -44,6 +47,7 @@ class Images
 
     /**
      * @param string[] $wantedPath where we want to store the file
+     * @throws PathsException
      * @return resource|string
      */
     public function get(array $wantedPath)
@@ -59,6 +63,7 @@ class Images
      * @param string[] $wantedPath where we want to store the file
      * @param string $format
      * @throws FilesException
+     * @throws PathsException
      * @return null|string
      */
     public function created(array $wantedPath, string $format = 'Y-m-d H:i:s'): ?string
@@ -70,6 +75,7 @@ class Images
      * @param string[] $wantedPath where we want to store the file
      * @param string|resource $content what we want to store as the file
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function set(array $wantedPath, $content): bool
@@ -80,6 +86,7 @@ class Images
     /**
      * @param string[] $wantedPath where we want to store the file
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function remove(array $wantedPath): bool
@@ -99,6 +106,7 @@ class Images
 
     /**
      * @param string[] $wantedPath where we want to store the file
+     * @throws PathsException
      * @return resource|string
      */
     public function getThumb(array $wantedPath)
@@ -114,6 +122,8 @@ class Images
      * @param string[] $wantedPath where we want to store the file
      * @throws FilesException
      * @throws ImagesException
+     * @throws MimeException
+     * @throws PathsException
      * @return bool
      */
     public function updateThumb(array $wantedPath): bool
@@ -127,6 +137,7 @@ class Images
     /**
      * @param string[] $wantedPath where we want to store the file
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function removeThumb(array $wantedPath): bool
@@ -147,6 +158,7 @@ class Images
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function getDescription(array $path): string
@@ -158,6 +170,7 @@ class Images
      * @param string[] $wantedPath where we want to store the file
      * @param string $description
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function updateDescription(array $wantedPath, string $description = ''): bool

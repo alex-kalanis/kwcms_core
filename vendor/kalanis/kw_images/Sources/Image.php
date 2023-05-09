@@ -5,6 +5,7 @@ namespace kalanis\kw_images\Sources;
 
 use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -19,11 +20,12 @@ class Image extends AFiles
      * @param string $fileName
      * @param string $ext
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function findFreeName(array $path, string $fileName, string $ext): string
     {
-        $libFinder = new FindFreeName($this->libNode);
+        $libFinder = new FindFreeName($this->lib->getNode());
         return $libFinder->findFreeName($path, $fileName, $ext);
     }
 
@@ -31,33 +33,36 @@ class Image extends AFiles
      * @param string[] $path
      * @param string $format
      * @throws FilesException
+     * @throws PathsException
      * @return string|null
      */
     public function getCreated(array $path, string $format = 'Y-m-d H:i:s'): ?string
     {
-        $created = $this->libNode->created($this->getPath($path));
+        $created = $this->lib->created($this->getPath($path));
         return (is_null($created)) ? null : date($format, $created);
     }
 
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return string|resource
      */
     public function get(array $path)
     {
-        return $this->libFile->readFile($this->getPath($path));
+        return $this->lib->readFile($this->getPath($path));
     }
 
     /**
      * @param string[] $path
      * @param string|resource $content
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function set(array $path, $content): bool
     {
-        $this->libFile->saveFile($this->getPath($path), $content);
+        $this->lib->saveFile($this->getPath($path), $content);
         return true;
     }
 
@@ -67,6 +72,7 @@ class Image extends AFiles
      * @param string[] $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function copy(string $fileName, array $sourceDir, array $targetDir, bool $overwrite = false): bool
@@ -88,6 +94,7 @@ class Image extends AFiles
      * @param string[] $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function move(string $fileName, array $sourceDir, array $targetDir, bool $overwrite = false): bool
@@ -109,6 +116,7 @@ class Image extends AFiles
      * @param string $sourceName
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function rename(array $path, string $sourceName, string $targetName, bool $overwrite = false): bool
@@ -128,6 +136,7 @@ class Image extends AFiles
      * @param string[] $sourceDir
      * @param string $fileName
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function delete(array $sourceDir, string $fileName): bool

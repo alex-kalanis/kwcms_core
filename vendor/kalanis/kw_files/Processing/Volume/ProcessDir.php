@@ -37,6 +37,8 @@ class ProcessDir implements IProcessDirs
     protected $lang = null;
     /** @var int */
     protected $sliceStartParts = 0;
+    /** @var int */
+    protected $sliceCustomParts = 0;
 
     /**
      * @param string $path
@@ -77,6 +79,7 @@ class ProcessDir implements IProcessDirs
     public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array
     {
         $path = $this->fullPath($entry);
+        $this->sliceCustomParts = count($entry);
         try {
             $iter = $loadRecursive
                 ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path))
@@ -127,7 +130,7 @@ class ProcessDir implements IProcessDirs
     {
         $node = new Node();
         return $node->setData(
-            array_slice($this->expandName($file->getRealPath()), $this->sliceStartParts),
+            array_slice($this->expandName($file->getRealPath()), $this->sliceStartParts + $this->sliceCustomParts),
             $file->getSize(),
             $file->getType()
         );

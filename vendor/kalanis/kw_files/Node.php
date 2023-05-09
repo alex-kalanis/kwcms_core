@@ -10,6 +10,10 @@ use kalanis\kw_files\Interfaces\ITypes;
  * Class Node
  * @package kalanis\kw_files
  * File/dir object - similar to the SplFileInfo, but for passing as class over storages implemented externally
+ * Passed paths are in following style:
+ * - empty for current root node from lookup
+ * - array containing path to nodes "somewhere" in tree
+ * - then it's possible to reconstruct the path just by using array_merge()
  */
 class Node
 {
@@ -21,7 +25,7 @@ class Node
     protected $type = ITypes::TYPE_UNKNOWN;
 
     /**
-     * @param array<string> $path
+     * @param string[] $path only from wanted dir, not full path
      * @param int $size
      * @param string $type
      * @return $this

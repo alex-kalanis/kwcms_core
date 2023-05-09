@@ -15,15 +15,15 @@ class Factory
 {
     /** @var array<string, string> */
     protected $types = [
-        'bmp' => '\kalanis\kw_images\Graphics\Format\Bmp',
-        'gif' => '\kalanis\kw_images\Graphics\Format\Gif',
-        'jpeg' => '\kalanis\kw_images\Graphics\Format\Jpeg',
-        'jpg' => '\kalanis\kw_images\Graphics\Format\Jpeg',
-        'png' => '\kalanis\kw_images\Graphics\Format\Png',
-        'wbmp' => '\kalanis\kw_images\Graphics\Format\Wbmp',
-        'webp' => '\kalanis\kw_images\Graphics\Format\Webp',
-        'avif' => '\kalanis\kw_images\Graphics\Format\Avif',
-        'xbm' => '\kalanis\kw_images\Graphics\Format\Xbm',
+        'bmp' => Bmp::class,
+        'gif' => Gif::class,
+        'jpeg' => Jpeg::class,
+        'jpg' => Jpeg::class,
+        'png' => Png::class,
+        'wbmp' => Wbmp::class,
+        'webp' => Webp::class,
+        'avif' => Avif::class,
+        'xbm' => Xbm::class,
     ];
 
     /**

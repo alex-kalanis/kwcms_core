@@ -9,10 +9,12 @@ use kalanis\kw_mapper\Storage;
 
 
 /**
- * Class ADatabase
+ * Class AReadWriteDatabase
  * @package kalanis\kw_mapper\Mappers\Database
+ * Separated Read and write DB entry without need to reload mapper
+ * The most parts are similar to usual read/write one, just with separation of read-write operations
  */
-abstract class ADatabase extends AMapper
+abstract class AReadWriteDatabase extends AMapper
 {
     use TTable;
     use TReadDatabase;
@@ -32,15 +34,5 @@ abstract class ADatabase extends AMapper
     public function getAlias(): string
     {
         return $this->getTable();
-    }
-
-    protected function getReadSource(): string
-    {
-        return $this->getSource();
-    }
-
-    protected function getWriteSource(): string
-    {
-        return $this->getSource();
     }
 }

@@ -3,12 +3,12 @@
 namespace kalanis\kw_images\Sources;
 
 
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Extended\Config;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\TLang;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -20,29 +20,27 @@ abstract class AFiles
 {
     use TLang;
 
-    /** @var IProcessNodes */
-    protected $libNode = null;
-    /** @var IProcessFiles */
-    protected $libFile = null;
+    /** @var CompositeAdapter */
+    protected $lib = null;
     /** @var Config */
     protected $config = null;
 
-    public function __construct(IProcessNodes $libNode, IProcessFiles $libFile, Config $config, ?IIMTranslations $lang = null)
+    public function __construct(CompositeAdapter $lib, Config $config, ?IIMTranslations $lang = null)
     {
         $this->setLang($lang);
-        $this->libNode = $libNode;
-        $this->libFile = $libFile;
+        $this->lib = $lib;
         $this->config = $config;
     }
 
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function isHere(array $path): bool
     {
-        return $this->libNode->isFile($this->getPath($path));
+        return $this->lib->isFile($this->getPath($path));
     }
 
     /**
@@ -60,6 +58,7 @@ abstract class AFiles
      * @param string $unlinkErr
      * @param string $copyErr
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     protected function dataCopy(
@@ -72,11 +71,11 @@ abstract class AFiles
         string $copyErr
     ): bool
     {
-        if (!$this->libNode->isFile($source)) {
+        if (!$this->lib->isFile($source)) {
             throw new FilesException($sourceFileNotExistsErr);
         }
 
-        if ($this->libNode->isFile($target) && !$overwrite) {
+        if ($this->lib->isFile($target) && !$overwrite) {
             throw new FilesException($targetFileExistsErr);
         }
 
@@ -89,14 +88,15 @@ abstract class AFiles
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     protected function dataOverwriteCopy(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): bool
     {
-        if ($this->libNode->isFile($target) && !$this->libFile->deleteFile($target)) {
+        if ($this->lib->isFile($target) && !$this->lib->deleteFile($target)) {
             throw new FilesException($unlinkErrDesc);
         }
-        if ($this->libNode->isFile($source) && !$this->libFile->copyFile($source, $target)) {
+        if ($this->lib->isFile($source) && !$this->lib->copyFile($source, $target)) {
             throw new FilesException($copyErrDesc);
         }
         return true;
@@ -111,6 +111,7 @@ abstract class AFiles
      * @param string $unlinkErr
      * @param string $copyErr
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     protected function dataRename(
@@ -123,11 +124,11 @@ abstract class AFiles
         string $copyErr
     ): bool
     {
-        if (!$this->libNode->isFile($source)) {
+        if (!$this->lib->isFile($source)) {
             throw new FilesException($sourceFileNotExistsErr);
         }
 
-        if ($this->libNode->isFile($target) && !$overwrite) {
+        if ($this->lib->isFile($target) && !$overwrite) {
             throw new FilesException($targetFileExistsErr);
         }
 
@@ -140,14 +141,15 @@ abstract class AFiles
      * @param string $unlinkErrDesc
      * @param string $copyErrDesc
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     protected function dataOverwriteRename(array $source, array $target, string $unlinkErrDesc, string $copyErrDesc): bool
     {
-        if ($this->libNode->isFile($target) && !$this->libFile->deleteFile($target)) {
+        if ($this->lib->isFile($target) && !$this->lib->deleteFile($target)) {
             throw new FilesException($unlinkErrDesc);
         }
-        if ($this->libNode->isFile($source) && !$this->libFile->moveFile($source, $target)) {
+        if ($this->lib->isFile($source) && !$this->lib->moveFile($source, $target)) {
             throw new FilesException($copyErrDesc);
         }
         return true;
@@ -157,14 +159,15 @@ abstract class AFiles
      * @param string[] $source
      * @param string $unlinkErrDesc
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     protected function dataRemove(array $source, string $unlinkErrDesc): bool
     {
-        if (!$this->libNode->isFile($source)) {
+        if (!$this->lib->isFile($source)) {
             return true;
         }
-        if (!$this->libFile->deleteFile($source)) {
+        if (!$this->lib->deleteFile($source)) {
             throw new FilesException($unlinkErrDesc);
         }
         return true;

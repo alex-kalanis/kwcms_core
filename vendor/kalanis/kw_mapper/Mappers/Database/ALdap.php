@@ -7,6 +7,7 @@ use kalanis\kw_mapper\Interfaces\ICanFill;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
+use kalanis\kw_mapper\Mappers\Shared\TEntityChanged;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;
 use kalanis\kw_mapper\Storage;
@@ -19,6 +20,7 @@ use kalanis\kw_mapper\Storage;
  */
 abstract class ALdap extends AMapper
 {
+    use TEntityChanged;
     use TFill;
     use TTable;
 
@@ -49,17 +51,30 @@ abstract class ALdap extends AMapper
     protected function insertRecord(ARecord $record): bool
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
+                $this->queryBuilder->addProperty(
+                    $record->getMapper()->getAlias(),
+                    $relations[$key],
+                    $item
+                );
+            }
         }
+
+        if (empty($this->queryBuilder->getProperties())) {
+            return false;
+        }
+
         $this->database->connect();
         $connect = $this->database->getConnection();
         if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
-        return ldap_add(
-            $connect,
+
+        return $this->database->add(
             $this->dialect->domainDn($this->database->getDomain()),
             $this->dialect->changed($this->queryBuilder)
         );
@@ -68,19 +83,42 @@ abstract class ALdap extends AMapper
     protected function updateRecord(ARecord $record): bool
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (!$record->getEntry($key)->isFromStorage()) {
-                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
+                if ($record->getEntry($key)->isFromStorage()) {
+                    $this->queryBuilder->addCondition(
+                        $record->getMapper()->getAlias(),
+                        $relations[$key],
+                        IQueryBuilder::OPERATION_EQ,
+                        $item
+                    );
+                } else {
+                    $this->queryBuilder->addProperty(
+                        $record->getMapper()->getAlias(),
+                        $relations[$key],
+                        $item
+                    );
+                }
             }
         }
+
+        if (empty($this->queryBuilder->getConditions())) { /// this one is questionable - I really want to update everything?
+            return false;
+        }
+        if (empty($this->queryBuilder->getProperties())) {
+            return false;
+        }
+
         $this->database->connect();
         $connect = $this->database->getConnection();
         if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
-        return ldap_mod_replace(
-            $connect,
+
+        return $this->database->replace(
             $this->dialect->userDn($this->database->getDomain(), $this->getPk($record)),
             $this->dialect->changed($this->queryBuilder)
         );
@@ -93,8 +131,8 @@ abstract class ALdap extends AMapper
         if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
-        return ldap_delete(
-            $connect,
+
+        return $this->database->delete(
             $this->dialect->userDn($this->database->getDomain(), $this->getPk($record))
         );
     }
@@ -106,7 +144,7 @@ abstract class ALdap extends AMapper
      */
     protected function getPk(ARecord $record)
     {
-        $pks = $this->getPrimaryKeys();
+        $pks = $record->getMapper()->getPrimaryKeys();
         $pk = reset($pks);
         $off = $record->offsetGet($pk);
         return ($off instanceof ICanFill) ? strval($off->dumpData()) : strval($off);
@@ -121,7 +159,8 @@ abstract class ALdap extends AMapper
         }
 
         // fill entries in record
-        $relationMap = array_flip($this->relations);
+        $relations = $record->getMapper()->getRelations();
+        $relationMap = array_flip($relations);
         foreach ($lines[0] as $index => $item) {
             $entry = $record->getEntry($relationMap[$index]);
             $entry->setData($this->typedFillSelection($entry, $this->readItem($item)), true);
@@ -148,7 +187,8 @@ abstract class ALdap extends AMapper
         }
 
         $result = [];
-        $relationMap = array_flip($this->relations);
+        $relations = $record->getMapper()->getRelations();
+        $relationMap = array_flip($relations);
         foreach ($lines as $key => $line) {
             if (is_numeric($key) && is_iterable($line)) {
                 $rec = clone $record;
@@ -178,10 +218,17 @@ abstract class ALdap extends AMapper
     protected function fillConditions(ARecord $record): void
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (false !== $item) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
+                $this->queryBuilder->addCondition(
+                    $record->getMapper()->getAlias(),
+                    $relations[$key],
+                    IQueryBuilder::OPERATION_EQ,
+                    $item
+                );
             }
         }
     }
@@ -197,16 +244,11 @@ abstract class ALdap extends AMapper
         if (!(is_resource($connect) || is_object($connect))) {
             return [];
         }
-        $result = ldap_search(
-            $connect,
+
+        return $this->database->search(
             $this->dialect->domainDn($this->database->getDomain()),
             $this->dialect->filter($this->queryBuilder)
         );
-        if (false === $result) {
-            return [];
-        }
-        $items = ldap_get_entries($connect, $result);
-        return false !== $items ? $items : [];
     }
 
     /**
@@ -222,14 +264,20 @@ abstract class ALdap extends AMapper
         if (empty($params['password'])) {
             throw new MapperException('Password not set!');
         }
+
         $this->database->disconnect();
         $this->database->connect(false);
         $connect = $this->database->getConnection();
         if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
-        $result = ldap_bind($connect, $this->dialect->userDn($this->database->getDomain(), $params['user']), $params['password']);
+
+        $result = $this->database->bindUser(
+            $this->dialect->userDn($this->database->getDomain(), $params['user']),
+            $params['password']
+        );
         $this->database->disconnect();
+
         return $result;
     }
 }

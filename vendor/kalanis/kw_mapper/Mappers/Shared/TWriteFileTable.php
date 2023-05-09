@@ -10,11 +10,11 @@ use kalanis\kw_mapper\Records;
 
 
 /**
- * Trait TFileTable
+ * Trait TWriteFileTable
  * @package kalanis\kw_mapper\Mappers\Shared
- * Abstract for manipulation with file content as table
+ * Abstract for manipulation with file content as table - write content
  */
-trait TFileTable
+trait TWriteFileTable
 {
     use TFinder;
     use TStore;
@@ -35,8 +35,9 @@ trait TFileTable
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $matches = $this->findMatched($record, !empty($this->getPrimaryKeys()));
-        if (!empty($matches)) { // found!!!
+        if (!empty($matches)) { // already found!!!
             return false;
         }
 
@@ -73,6 +74,7 @@ trait TFileTable
      */
     protected function updateRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $matches = $this->findMatched($record, !empty($this->getPrimaryKeys()), true);
         if (empty($matches)) { // nothing found
             return false;
@@ -92,42 +94,12 @@ trait TFileTable
     /**
      * @param Records\ARecord|Records\PageRecord $record
      * @throws MapperException
-     * @return int
-     */
-    public function countRecord(Records\ARecord $record): int
-    {
-        return count($this->findMatched($record));
-    }
-
-    /**
-     * @param Records\ARecord|Records\PageRecord $record
-     * @throws MapperException
      * @return bool
-     */
-    protected function loadRecord(Records\ARecord $record): bool
-    {
-        $matches = $this->findMatched($record);
-        if (empty($matches)) { // nothing found
-            return false;
-        }
-
-        reset($matches);
-        $dataLine = & $this->records[key($matches)];
-        foreach ($this->getRelations() as $objectKey => $recordKey) {
-            $entry = $record->getEntry($objectKey);
-            $entry->setData($dataLine->offsetGet($objectKey), true);
-        }
-        return true;
-    }
-
-    /**
-     * @param Records\ARecord|Records\PageRecord $record
-     * @throws MapperException
-     * @return bool
-     * Scan array and remove items that have set equal values as that in passed record
+     * Scan array and remove items that have set equal values as these in passed record
      */
     protected function deleteRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $toDelete = $this->findMatched($record);
         if (empty($toDelete)) {
             return false;
@@ -138,15 +110,5 @@ trait TFileTable
             unset($this->records[$key]);
         }
         return $this->saveSource($this->records);
-    }
-
-    /**
-     * @param Records\ARecord $record
-     * @throws MapperException
-     * @return Records\ARecord[]
-     */
-    public function loadMultiple(Records\ARecord $record): array
-    {
-        return array_values($this->findMatched($record));
     }
 }

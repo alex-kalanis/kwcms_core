@@ -9,6 +9,8 @@ use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Sources;
 use kalanis\kw_images\TLang;
+use kalanis\kw_mime\MimeException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -44,6 +46,7 @@ class Dirs
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function exists(array $path): bool
@@ -54,6 +57,7 @@ class Dirs
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function getDescription(array $path): string
@@ -65,6 +69,7 @@ class Dirs
      * @param string[] $path
      * @param string $description
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function updateDescription(array $path, string $description = ''): bool
@@ -78,6 +83,7 @@ class Dirs
 
     /**
      * @param string[] $path
+     * @throws PathsException
      * @return string|resource
      */
     public function getThumb(array $path)
@@ -94,6 +100,8 @@ class Dirs
      * @param string $fromWhichFile
      * @throws FilesException
      * @throws ImagesException
+     * @throws MimeException
+     * @throws PathsException
      * @return bool
      */
     public function updateThumb(array $path, string $fromWhichFile): bool
@@ -107,6 +115,7 @@ class Dirs
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function removeThumb(array $path): bool
@@ -122,6 +131,7 @@ class Dirs
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function canUse(array $path): bool
@@ -132,6 +142,7 @@ class Dirs
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function create(array $path): bool
@@ -142,6 +153,7 @@ class Dirs
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function createExtra(array $path): bool

@@ -5,6 +5,7 @@ namespace kalanis\kw_images\Content;
 
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Sources;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -33,6 +34,7 @@ class BasicOperations
      * @param string[] $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function copy(array $currentPath, array $targetDir, bool $overwrite = false): bool
@@ -66,6 +68,7 @@ class BasicOperations
      * @param string[] $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function move(array $currentPath, array $targetDir, bool $overwrite = false): bool
@@ -99,6 +102,7 @@ class BasicOperations
      * @param string $targetName
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function rename(array $currentPath, string $targetName, bool $overwrite = false): bool
@@ -130,6 +134,7 @@ class BasicOperations
     /**
      * @param string[] $path
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function delete(array $path): bool

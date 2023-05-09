@@ -121,7 +121,13 @@ class Volume implements ITargetVolume
         $files = @scandir($real);
         if (!empty($files)) {
             foreach ($files as $file) {
-                yield $file;
+                if (empty($file) || '.' == $file) {
+                    yield '';
+                } elseif ('..' == $file) {
+                    // pass
+                } else {
+                    yield DIRECTORY_SEPARATOR . $file;
+                }
             }
         }
     }

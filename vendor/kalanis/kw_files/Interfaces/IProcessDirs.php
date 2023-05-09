@@ -31,6 +31,7 @@ interface IProcessDirs
      * @throws FilesException
      * @throws PathsException
      * @return array<Node>
+     * Returns complete list with entry as root node and with its children; can run deeply in structure
      */
     public function readDir(array $entry, bool $loadRecursive = false, bool $wantSize = false): array;
 

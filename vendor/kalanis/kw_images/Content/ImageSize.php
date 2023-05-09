@@ -10,6 +10,8 @@ use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_images\Sources;
 use kalanis\kw_images\TLang;
+use kalanis\kw_mime\MimeException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -41,14 +43,14 @@ class ImageSize
      * @param string[] $targetPath
      * @throws FilesException
      * @throws ImagesException
+     * @throws MimeException
+     * @throws PathsException
      * @return bool
      */
     public function process(array $sourcePath, array $targetPath): bool
     {
         $sourceFull = array_values($sourcePath);
         $targetFull = array_values($targetPath);
-        $sourceFile = strval(array_pop($sourcePath));
-        $targetFile = strval(array_pop($targetPath));
 
         $tempPath = strval(tempnam(sys_get_temp_dir(), $this->config->getTempPrefix()));
 
@@ -65,7 +67,7 @@ class ImageSize
         // @codeCoverageIgnoreEnd
 
         // now process image locally
-        $this->libGraphics->setSizes($this->config)->resize($tempPath, $sourceFile, $targetFile);
+        $this->libGraphics->setSizes($this->config)->resize($tempPath, $sourceFull, $targetFull);
 
         // return result to the storage as new file
         $result = @file_get_contents($tempPath);

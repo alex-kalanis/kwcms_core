@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -17,12 +18,13 @@ class Desc extends AFiles
      * @param string[] $path
      * @param bool $errorOnFail
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function get(array $path, bool $errorOnFail = false): string
     {
         try {
-            $content = $this->libFile->readFile($this->getPath($path));
+            $content = $this->lib->readFile($this->getPath($path));
             return is_resource($content) ? strval(stream_get_contents($content, 0, -1)) : strval($content);
         } catch (FilesException $ex) {
             if (!$errorOnFail) {
@@ -36,11 +38,12 @@ class Desc extends AFiles
      * @param string[] $path
      * @param string $content
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function set(array $path, string $content): bool
     {
-        return $this->libFile->saveFile($this->getPath($path), $content);
+        return $this->lib->saveFile($this->getPath($path), $content);
     }
 
     /**
@@ -49,6 +52,7 @@ class Desc extends AFiles
      * @param string[] $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function copy(string $fileName, array $sourceDir, array $targetDir, bool $overwrite = false): bool
@@ -70,6 +74,7 @@ class Desc extends AFiles
      * @param string[] $targetDir
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function move(string $fileName, array $sourceDir, array $targetDir, bool $overwrite = false): bool
@@ -91,6 +96,7 @@ class Desc extends AFiles
      * @param string $targetName
      * @param bool $overwrite
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function rename(array $path, string $sourceName, string $targetName, bool $overwrite = false): bool
@@ -110,6 +116,7 @@ class Desc extends AFiles
      * @param string[] $sourceDir
      * @param string $fileName
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function delete(array $sourceDir, string $fileName): bool

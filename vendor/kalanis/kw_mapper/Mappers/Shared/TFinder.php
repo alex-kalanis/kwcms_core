@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Records;
  */
 trait TFinder
 {
-    /** @var array<Records\ARecord<int|string, Records\Entry>>|Records\ARecord[] */
+    /** @var Records\ARecord[] */
     protected $records = [];
 
     /**
@@ -110,6 +110,11 @@ trait TFinder
             }
         }
         return $wantFromStorage ? (empty($stored) ? $written : $stored) : array_merge($stored, $written);
+    }
+
+    protected function clearSource(): void
+    {
+        $this->records = [];
     }
 
     /**

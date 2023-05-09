@@ -70,6 +70,11 @@ class Storage implements Interfaces\IStorage
         return $this->target->removeMulti(array_map([$this, 'multiKey'], $keys));
     }
 
+    public function isFlat(): bool
+    {
+        return $this->target instanceof Interfaces\ITargetFlat;
+    }
+
     public function multiKey(string $key): string
     {
         return $this->key->fromSharedKey($key);

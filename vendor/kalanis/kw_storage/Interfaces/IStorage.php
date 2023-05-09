@@ -85,4 +85,11 @@ interface IStorage
      * @return array<int|string, bool>
      */
     public function removeMulti(array $keys): array;
+
+    /**
+     * Is storage flat table or deep tree structure
+     * (is necessary to extra ask for get deeper levels in lookup or it already returns that nodes)
+     * @return bool
+     */
+    public function isFlat(): bool;
 }
