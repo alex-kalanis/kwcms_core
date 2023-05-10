@@ -6,6 +6,7 @@ namespace kalanis\kw_langs\Loaders;
 use kalanis\kw_langs\Interfaces\ILoader;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
+use kalanis\kw_routed_paths\RoutedPath;
 
 
 /**
@@ -30,10 +31,13 @@ class PhpLoader implements ILoader
 
     /** @var Path */
     protected $pathLib = null;
+    /** @var RoutedPath */
+    protected $routedLib = null;
 
-    public function __construct(Path $pathLib)
+    public function __construct(Path $pathLib, RoutedPath $routedLib)
     {
         $this->pathLib = $pathLib;
+        $this->routedLib = $routedLib;
     }
 
     public function load(string $module, string $lang): ?array
@@ -47,13 +51,13 @@ class PhpLoader implements ILoader
      * @param string $lang
      * @return string|null
      */
-    public function contentPath(string $module, string $lang): ?string
+    protected function contentPath(string $module, string $lang): ?string
     {
         $basicLookupDir = $this->pathLib->getDocumentRoot() . $this->pathLib->getPathToSystemRoot();
         foreach ($this->pathMasks as $pathMask) {
             $unmasked = sprintf( $pathMask,
                 DIRECTORY_SEPARATOR, $basicLookupDir,
-                IPaths::DIR_USER, $this->pathLib->getUser(),
+                IPaths::DIR_USER, $this->routedLib->getUser(),
                 IPaths::DIR_MODULE, $module,
                 IPaths::DIR_LANG, $lang, IPaths::EXT
             );

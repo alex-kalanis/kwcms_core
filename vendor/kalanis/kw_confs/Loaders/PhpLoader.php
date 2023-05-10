@@ -6,6 +6,7 @@ namespace kalanis\kw_confs\Loaders;
 use kalanis\kw_confs\Interfaces\ILoader;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
+use kalanis\kw_routed_paths\RoutedPath;
 
 
 /**
@@ -13,7 +14,6 @@ use kalanis\kw_paths\Path;
  * @package kalanis\kw_confs
  * Load config data from defined source
  * Contains personalized autoloader for configs!
- * @codeCoverageIgnore because internal autoloading
  */
 class PhpLoader implements ILoader
 {
@@ -30,10 +30,13 @@ class PhpLoader implements ILoader
 
     /** @var Path */
     protected $pathLib = null;
+    /** @var RoutedPath */
+    protected $routedLib = null;
 
-    public function __construct(Path $pathLib)
+    public function __construct(Path $pathLib, RoutedPath $routedLib)
     {
         $this->pathLib = $pathLib;
+        $this->routedLib = $routedLib;
     }
 
     /**
@@ -47,19 +50,21 @@ class PhpLoader implements ILoader
         return (!empty($path)) ? $this->includedConf($path) : null;
     }
 
-    public function contentPath(string $module, string $conf = ''): ?string
+    protected function contentPath(string $module, string $conf = ''): ?string
     {
         $basicLookupDir = $this->pathLib->getDocumentRoot() . $this->pathLib->getPathToSystemRoot();
         foreach ($this->pathMasks as $pathMask) {
-            $path = realpath(sprintf( $pathMask,
+            $unmasked = sprintf( $pathMask,
                 DIRECTORY_SEPARATOR, $basicLookupDir,
-                IPaths::DIR_USER, $this->pathLib->getUser(),
+                IPaths::DIR_USER, $this->routedLib->getUser(),
                 IPaths::DIR_MODULE, $module,
                 IPaths::DIR_CONF, $conf, IPaths::EXT
-            ));
-            if ($path) {
+            );
+            $path = realpath($unmasked);
+            if ($path && is_file($path)) {
                 return $path;
             }
+
         }
         return null;
     }

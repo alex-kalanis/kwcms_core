@@ -4,8 +4,7 @@ namespace kalanis\kw_langs;
 
 
 use ArrayAccess;
-use kalanis\kw_paths\Path;
-use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\RoutedPath;
 
 
 /**
@@ -17,6 +16,11 @@ class Support
 {
     const LANG_KEY = 'lang';
 
+    /**
+     * @param ArrayAccess<string, mixed> $array
+     * @param string|null $defaultLang
+     * @return string|null
+     */
     public static function fillFromArray(ArrayAccess $array, ?string $defaultLang): ?string
     {
         return $array->offsetExists(static::LANG_KEY)
@@ -26,18 +30,22 @@ class Support
             : $defaultLang ;
     }
 
+    /**
+     * @param ArrayAccess<string, string> $array
+     * @param string $lang
+     */
     public static function setToArray(ArrayAccess $array, string $lang): void
     {
         $array->offsetSet(static::LANG_KEY, $lang);
     }
 
-    public static function fillFromPaths(Path $path, string $defaultLang, bool $moreLangs): string
+    public static function fillFromPaths(RoutedPath $path, string $defaultLang, bool $moreLangs): string
     {
         if ($path->getLang()) {
             return $path->getLang();
         }
         if ($moreLangs && !empty($path->getPath())) {
-            $trace = Stuff::pathToArray($path->getPath());
+            $trace = $path->getPath();
             $firstDir = reset($trace);
             if (false !== $firstDir) {
                 $length = strlen($firstDir);
