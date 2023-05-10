@@ -6,6 +6,7 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_files\Traits\TLang;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Extras\TPathTransform;
 use kalanis\kw_storage\Interfaces\IPassDirs;
 use kalanis\kw_storage\Interfaces\IStorage;
@@ -29,6 +30,13 @@ abstract class AFiles implements IProcessFiles
     {
         $path = $this->getStorageSeparator() . $this->filledName($this->compactName($targetName, $this->getStorageSeparator()));
         try {
+            $dstArr = new ArrayPath();
+            $dstArr->setArray($targetName);
+            $tgt = $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator());
+            if (!empty($tgt) && !$this->storage->exists($this->getStorageSeparator() . $tgt)) {
+                throw new FilesException($this->getLang()->flCannotSaveFile($path));
+            }
+
             return $this->storage->write($path, $content);
         } catch (StorageException $ex) {
             throw new FilesException($this->getLang()->flCannotSaveFile($path), $ex->getCode(), $ex);

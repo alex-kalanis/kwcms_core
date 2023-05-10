@@ -8,6 +8,7 @@ use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -124,12 +125,23 @@ class Basic extends ADirs
         $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
         $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
+            if ($this->isSubPart($dest, $source)) {
+                return false;
+            }
+
             if (!$this->isNode($src)) {
                 return false;
             }
             if ($this->storage->exists($dst)) {
                 return false;
             }
+            $dstArr = new ArrayPath();
+            $dstArr->setArray($dest);
+            $tgt = $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator());
+            if (!empty($tgt) && !$this->storage->exists($this->getStorageSeparator() . $tgt)) {
+                return false;
+            }
+
             $paths = $this->storage->lookup($src);
             $this->storage->write($dst, IProcessNodes::STORAGE_NODE_KEY);
             foreach ($paths as $path) {
@@ -150,12 +162,23 @@ class Basic extends ADirs
         $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
         $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
+            if ($this->isSubPart($dest, $source)) {
+                return false;
+            }
+
             if (!$this->isNode($src)) {
                 return false;
             }
             if ($this->storage->exists($dst)) {
                 return false;
             }
+            $dstArr = new ArrayPath();
+            $dstArr->setArray($dest);
+            $tgt = $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator());
+            if (!empty($tgt) && !$this->storage->exists($this->getStorageSeparator() . $tgt)) {
+                return false;
+            }
+
             $paths = $this->storage->lookup($src);
             $this->storage->write($dst, IProcessNodes::STORAGE_NODE_KEY);
             foreach ($paths as $path) {

@@ -27,7 +27,8 @@ class Basic extends ANodes
 
     public function exists(array $entry): bool
     {
-        $path = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
+        $path = $this->compactName($entry, $this->getStorageSeparator());
+        $path = empty($entry) ? $path : $this->getStorageSeparator() . $path;
         try {
             return $this->storage->exists($path);
         } catch (StorageException $ex) {
@@ -47,7 +48,8 @@ class Basic extends ANodes
 
     public function isDir(array $entry): bool
     {
-        $path = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
+        $path = $this->compactName($entry, $this->getStorageSeparator());
+        $path = empty($entry) ? $path : $this->getStorageSeparator() . $path;
         try {
             return $this->storage->exists($path) && static::STORAGE_NODE_KEY === $this->storage->read($path);
         } catch (StorageException $ex) {
@@ -57,7 +59,8 @@ class Basic extends ANodes
 
     public function isFile(array $entry): bool
     {
-        $path = $this->getStorageSeparator() . $this->compactName($entry, $this->getStorageSeparator());
+        $path = $this->compactName($entry, $this->getStorageSeparator());
+        $path = empty($entry) ? $path : $this->getStorageSeparator() . $path;
         try {
             return $this->storage->exists($path) && static::STORAGE_NODE_KEY !== $this->storage->read($path);
         } catch (StorageException $ex) {

@@ -10,7 +10,9 @@ use kalanis\kw_files\Interfaces\IProcessDirs;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Processing\TPath;
-use kalanis\kw_files\Translations;
+use kalanis\kw_files\Traits\TLang;
+use kalanis\kw_files\Traits\TSubPart;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Extras\TPathTransform;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_storage\Extras\TRemoveCycle;
@@ -28,13 +30,13 @@ use Throwable;
  */
 class ProcessDir implements IProcessDirs
 {
+    use TLang;
     use TPath;
     use TPathTransform;
     use TRemoveCycle;
+    use TSubPart;
     use TVolumeCopy;
 
-    /** @var IFLTranslations */
-    protected $lang = null;
     /** @var int */
     protected $sliceStartParts = 0;
     /** @var int */
@@ -47,7 +49,7 @@ class ProcessDir implements IProcessDirs
      */
     public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
-        $this->lang = $lang ?? new Translations();
+        $this->setLang($lang);
         $this->setPath($path);
     }
 
@@ -71,7 +73,7 @@ class ProcessDir implements IProcessDirs
             return @mkdir($path, 0777, $deep);
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotCreateDir($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotCreateDir($path), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -80,6 +82,10 @@ class ProcessDir implements IProcessDirs
     {
         $path = $this->fullPath($entry);
         $this->sliceCustomParts = count($entry);
+        if (!is_dir($path)) {
+            throw new FilesException($this->getLang()->flCannotReadDir($path));
+        }
+
         try {
             $iter = $loadRecursive
                 ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path))
@@ -101,7 +107,7 @@ class ProcessDir implements IProcessDirs
             );
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotReadDir($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotReadDir($path), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -140,11 +146,30 @@ class ProcessDir implements IProcessDirs
     {
         $src = $this->fullPath($source);
         $dst = $this->fullPath($dest);
+        if ($this->isSubPart($dest, $source)) {
+            return false;
+        }
+
+        if (!file_exists($src)) {
+            return false;
+        }
+
+        $dstArr = new ArrayPath();
+        $dstArr->setArray($dest);
+
+        if (!file_exists($this->fullPath($dstArr->getArrayDirectory()))) {
+            return false;
+        }
+
+        if (file_exists($dst)) {
+            return false;
+        }
+
         try {
             return $this->xcopy($src, $dst);
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -153,6 +178,25 @@ class ProcessDir implements IProcessDirs
     {
         $src = $this->fullPath($source);
         $dst = $this->fullPath($dest);
+        if ($this->isSubPart($dest, $source)) {
+            return false;
+        }
+
+        if (!file_exists($src)) {
+            return false;
+        }
+
+        $dstArr = new ArrayPath();
+        $dstArr->setArray($dest);
+
+        if (!file_exists($this->fullPath($dstArr->getArrayDirectory()))) {
+            return false;
+        }
+
+        if (file_exists($dst)) {
+            return false;
+        }
+
         try {
             // original call with doomed sub-calls chmod and chown - see
             // @link https://www.php.net/manual/en/function.rename.php#117590
@@ -164,7 +208,7 @@ class ProcessDir implements IProcessDirs
             return $v1 && $v2;
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -180,7 +224,7 @@ class ProcessDir implements IProcessDirs
             }
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotRemoveDir($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -201,6 +245,6 @@ class ProcessDir implements IProcessDirs
      */
     protected function noDirectoryDelimiterSet(): string
     {
-        return $this->lang->flNoDirectoryDelimiterSet();
+        return $this->getLang()->flNoDirectoryDelimiterSet();
     }
 }

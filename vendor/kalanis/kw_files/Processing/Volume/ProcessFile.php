@@ -7,7 +7,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_files\Processing\TPath;
-use kalanis\kw_files\Translations;
+use kalanis\kw_files\Traits\TLang;
 use kalanis\kw_paths\Extras\TPathTransform;
 use kalanis\kw_paths\PathsException;
 use Throwable;
@@ -20,16 +20,14 @@ use Throwable;
  */
 class ProcessFile implements IProcessFiles
 {
+    use TLang;
     use TPath;
     use TPathTransform;
 
-    /** @var IFLTranslations */
-    protected $lang = null;
-
     public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
-        $this->lang = $lang ?? new Translations();
         $this->setPath($path);
+        $this->setLang($lang);
     }
 
     public function readFile(array $entry, ?int $offset = null, ?int $length = null)
@@ -46,7 +44,7 @@ class ProcessFile implements IProcessFiles
             if (false !== $content) {
                 return $content;
             }
-            throw new FilesException($this->lang->flCannotLoadFile($path));
+            throw new FilesException($this->getLang()->flCannotLoadFile($path));
         } catch (Throwable $ex) {
             // @codeCoverageIgnoreStart
             throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
@@ -60,12 +58,12 @@ class ProcessFile implements IProcessFiles
         try {
             $result = @file_put_contents($path, $content);
             if (false === $result) {
-                throw new FilesException($this->lang->flCannotSaveFile($path));
+                throw new FilesException($this->getLang()->flCannotSaveFile($path));
             }
             return true;
         } catch (Throwable $ex) {
             // @codeCoverageIgnoreStart
-            throw new FilesException($this->lang->flCannotSaveFile($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotSaveFile($path), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -78,7 +76,7 @@ class ProcessFile implements IProcessFiles
             return @copy($src, $dst);
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -91,7 +89,7 @@ class ProcessFile implements IProcessFiles
             return @rename($src, $dst);
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -103,7 +101,7 @@ class ProcessFile implements IProcessFiles
             return @unlink($path);
             // @codeCoverageIgnoreStart
         } catch (Throwable $ex) {
-            throw new FilesException($this->lang->flCannotRemoveFile($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getLang()->flCannotRemoveFile($path), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -124,6 +122,6 @@ class ProcessFile implements IProcessFiles
      */
     protected function noDirectoryDelimiterSet(): string
     {
-        return $this->lang->flNoDirectoryDelimiterSet();
+        return $this->getLang()->flNoDirectoryDelimiterSet();
     }
 }

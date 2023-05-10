@@ -5,6 +5,7 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -27,6 +28,16 @@ class Basic extends AFiles
         $src = $this->getStorageSeparator() . $this->filledName($this->compactName($source, $this->getStorageSeparator()));
         $dst = $this->getStorageSeparator() . $this->filledName($this->compactName($dest, $this->getStorageSeparator()));
         try {
+            if ($this->storage->exists($dst)) {
+                return false;
+            }
+            $dstArr = new ArrayPath();
+            $dstArr->setArray($dest);
+            $tgt = $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator());
+            if (!empty($tgt) && !$this->storage->exists($this->getStorageSeparator() . $tgt)) {
+                return false;
+            }
+
             return $this->storage->write($dst, $this->storage->read($src));
         } catch (StorageException $ex) {
             throw new FilesException($this->getLang()->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);

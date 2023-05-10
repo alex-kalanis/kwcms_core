@@ -7,6 +7,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_storage\Interfaces\IPassDirs;
 use kalanis\kw_storage\StorageException;
@@ -100,6 +101,23 @@ class CanDirRecursive extends ADirs
         $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
         $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
+            if ($this->isSubPart($dest, $source)) {
+                return false;
+            }
+
+            if (!$this->isNode($src)) {
+                return false;
+            }
+
+            if ($this->storage->exists($dst)) {
+                return false;
+            }
+            $dstArr = new ArrayPath();
+            $dstArr->setArray($dest);
+            if (!$this->storage->exists($this->getStorageSeparator() . $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator()))) {
+                return false;
+            }
+
             return $this->storage->copy($src, $dst);
         } catch (StorageException $ex) {
             throw new FilesException($this->getLang()->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
@@ -111,6 +129,23 @@ class CanDirRecursive extends ADirs
         $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
         $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
+            if ($this->isSubPart($dest, $source)) {
+                return false;
+            }
+
+            if (!$this->isNode($src)) {
+                return false;
+            }
+
+            if ($this->storage->exists($dst)) {
+                return false;
+            }
+            $dstArr = new ArrayPath();
+            $dstArr->setArray($dest);
+            if (!$this->storage->exists($this->getStorageSeparator() . $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator()))) {
+                return false;
+            }
+
             return $this->storage->move($src, $dst);
         } catch (StorageException $ex) {
             throw new FilesException($this->getLang()->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
@@ -129,6 +164,16 @@ class CanDirRecursive extends ADirs
         } catch (StorageException $ex) {
             throw new FilesException($this->getLang()->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
+    }
+
+    /**
+     * @param string $entry
+     * @throws StorageException
+     * @return bool
+     */
+    protected function isNode(string $entry): bool
+    {
+        return $this->storage->isDir($entry);
     }
 
     /**
