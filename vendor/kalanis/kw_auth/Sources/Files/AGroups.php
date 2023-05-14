@@ -5,7 +5,7 @@ namespace kalanis\kw_auth\Sources\Files;
 
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessGroups;
-use kalanis\kw_auth\Interfaces\IKATranslations;
+use kalanis\kw_auth\Interfaces\IKauTranslations;
 use kalanis\kw_locks\Interfaces\ILock;
 
 
@@ -20,17 +20,17 @@ abstract class AGroups implements IAccessGroups
     use TLines;
     use TStore;
 
-    /** @var string */
-    protected $path = '';
+    /** @var string[] */
+    protected $path = [];
 
     /**
      * @param ILock $lock
-     * @param string $path full path to group file
-     * @param IKATranslations|null $lang
+     * @param string[] $path full path to group file
+     * @param IKauTranslations|null $lang
      */
-    public function __construct(ILock $lock, string $path, ?IKATranslations $lang = null)
+    public function __construct(ILock $lock, array $path, ?IKauTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setAuLang($lang);
         $this->initAuthLock($lock);
         $this->path = $path;
     }

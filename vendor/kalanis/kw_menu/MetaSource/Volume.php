@@ -7,6 +7,8 @@ use kalanis\kw_menu\Interfaces;
 use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\Translations;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -18,8 +20,8 @@ class Volume implements Interfaces\IMetaSource
 {
     /** @var string path to menu dir */
     protected $metaDir = '';
-    /** @var string name of the file */
-    protected $metaFile = '';
+    /** @var string[] name of the file */
+    protected $metaFile = [];
     /** @var Interfaces\IMNTranslations */
     protected $lang = null;
     /** @var Interfaces\IMetaFileParser */
@@ -28,35 +30,58 @@ class Volume implements Interfaces\IMetaSource
     public function __construct(string $metaPath, Interfaces\IMetaFileParser $parser, ?Interfaces\IMNTranslations $lang = null)
     {
         $this->metaDir = $metaPath;
-        $this->metaFile = '';
         $this->parser = $parser;
         $this->lang = $lang ?: new Translations();
     }
 
-    public function setSource(string $metaSource): void
+    public function setSource(array $metaSource): void
     {
         $this->metaFile = $metaSource;
     }
 
     public function exists(): bool
     {
-        return is_file($this->metaDir . $this->metaFile);
+        try {
+            $path = $this->metaDir . Stuff::arrayToPath($this->metaFile, $this->systemDelimiter());
+            return is_file($path);
+        } catch (PathsException $ex) {
+            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function load(): Menu
     {
-        $content = @file_get_contents($this->metaDir . $this->metaFile);
-        if (false === $content) {
-            throw new MenuException($this->lang->mnCannotOpen());
+        try {
+            $path = $this->metaDir . Stuff::arrayToPath($this->metaFile, $this->systemDelimiter());
+            $content = @file_get_contents($path);
+            if (false === $content) {
+                throw new MenuException($this->lang->mnCannotOpen());
+            }
+            return $this->parser->unpack($content);
+        } catch (PathsException $ex) {
+            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        return $this->parser->unpack($content);
     }
 
     public function save(Menu $content): bool
     {
-        if (false === @file_put_contents($this->metaDir . $this->metaFile, $this->parser->pack($content))) {
-            throw new MenuException($this->lang->mnCannotSave());
+        try {
+            $path = $this->metaDir . Stuff::arrayToPath($this->metaFile, $this->systemDelimiter());
+            if (false === @file_put_contents($path, $this->parser->pack($content))) {
+                throw new MenuException($this->lang->mnCannotSave());
+            }
+            return true;
+        } catch (PathsException $ex) {
+            throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        return true;
+    }
+
+    /**
+     * Because tests - fail Stuff class
+     * @return string
+     */
+    protected function systemDelimiter(): string
+    {
+        return DIRECTORY_SEPARATOR;
     }
 }

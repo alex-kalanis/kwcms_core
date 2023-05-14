@@ -15,27 +15,27 @@ use kalanis\kw_menu\MenuException;
 interface IMetaSource
 {
     /**
-     * @param string $groupKey
+     * @param string[] $groupKey
      * @throws MenuException
      */
-    public function setSource(string $groupKey): void;
+    public function setSource(array $groupKey): void;
 
     /**
-     * @return bool
      * @throws MenuException
+     * @return bool
      */
     public function exists(): bool;
 
     /**
-     * @return Menu
      * @throws MenuException
+     * @return Menu
      */
     public function load(): Menu;
 
     /**
      * @param Menu $content
-     * @return bool
      * @throws MenuException
+     * @return bool
      */
     public function save(Menu $content): bool;
 }

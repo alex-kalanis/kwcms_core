@@ -31,4 +31,14 @@ class Translations implements IMNTranslations
     {
         return 'You post problematic data!';
     }
+
+    public function mnNoAvailableEntrySource(): string
+    {
+        return 'No available entry source for set params!';
+    }
+
+    public function mnNoAvailableMetaSource(): string
+    {
+        return 'No available meta data source for set params!';
+    }
 }

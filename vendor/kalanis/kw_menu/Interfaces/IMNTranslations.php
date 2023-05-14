@@ -17,4 +17,8 @@ interface IMNTranslations
     public function mnItemNotFound(string $item): string;
 
     public function mnProblematicData(): string;
+
+    public function mnNoAvailableEntrySource(): string;
+
+    public function mnNoAvailableMetaSource(): string;
 }

@@ -4,6 +4,7 @@ namespace kalanis\kw_menu;
 
 
 use kalanis\kw_menu\Interfaces\IMNTranslations;
+use kalanis\kw_menu\Traits\TLang;
 
 
 /**
@@ -13,10 +14,10 @@ use kalanis\kw_menu\Interfaces\IMNTranslations;
  */
 class MetaProcessor
 {
-    /** @var Interfaces\IMetaSource|null */
+    use TLang;
+
+    /** @var Interfaces\IMetaSource */
     protected $metaSource = null;
-    /** @var IMNTranslations */
-    protected $lang = null;
     /** @var Menu\Menu */
     protected $menu = null;
     /** @var Menu\Entry */
@@ -31,23 +32,23 @@ class MetaProcessor
         $this->menu = new Menu\Menu();
         $this->entry = new Menu\Entry();
         $this->metaSource = $metaSource;
-        $this->lang = $lang ?: new Translations();
+        $this->setMnLang($lang);
     }
 
     /**
-     * @param string $metaSource
-     * @return $this
+     * @param string[] $metaSource
      * @throws MenuException
+     * @return $this
      */
-    public function setKey(string $metaSource): self
+    public function setKey(array $metaSource): self
     {
         $this->metaSource->setSource($metaSource);
         return $this;
     }
 
     /**
-     * @return bool
      * @throws MenuException
+     * @return bool
      */
     public function exists(): bool
     {
@@ -130,7 +131,7 @@ class MetaProcessor
         # null sign means not free, just unchanged
         $item = $this->getEntry($id);
         if (!$item) {
-            throw new MenuException($this->lang->mnItemNotFound($id));
+            throw new MenuException($this->getMnLang()->mnItemNotFound($id));
         }
 
         $item->setData(
@@ -158,7 +159,7 @@ class MetaProcessor
     public function rearrangePositions(array $positions): void
     {
         if (empty($positions)) {
-            throw new MenuException($this->lang->mnProblematicData());
+            throw new MenuException($this->getMnLang()->mnProblematicData());
         }
         $matrix = [];
         # all at first
@@ -168,10 +169,10 @@ class MetaProcessor
         # updated at second
         foreach ($positions as $id => &$position) {
             if (empty($this->workList[$id])) {
-                throw new MenuException($this->lang->mnItemNotFound($id));
+                throw new MenuException($this->getMnLang()->mnItemNotFound($id));
             }
             if (!is_numeric($position)) {
-                throw new MenuException($this->lang->mnProblematicData());
+                throw new MenuException($this->getMnLang()->mnProblematicData());
             }
             $matrix[$this->workList[$id]->getPosition()] = intval($position);
         }
@@ -184,7 +185,7 @@ class MetaProcessor
             }
         }
 
-        while (count($matrix) > 0) {
+        while (0 < count($matrix)) {
             foreach ($matrix as $old => &$new) {
                 if (!isset($prepared[$new])) { # nothing on new position
                     $prepared[$new] = $old;
@@ -212,11 +213,12 @@ class MetaProcessor
     protected function clearHoles(): void
     {
         $max = $this->highest;
+        /** @var array<int, string> $use */
         $use = [];
         $hole = false;
         $j = 0;
 
-        /** @var Menu\Entry[] $workList */
+        /** @var array<int, string> $workList */
         $workList = [];
         foreach ($this->workList as &$item) {
             $workList[$item->getPosition()] = $item->getId(); # old position contains file ***
@@ -242,12 +244,12 @@ class MetaProcessor
 
     protected function getHighestKnownPosition(): int
     {
-        return (int)array_reduce($this->workList, [$this, 'maxPosition'], 0);
+        return intval(array_reduce($this->workList, [$this, 'maxPosition'], 0));
     }
 
-    public function maxPosition($carry, Menu\Entry $item)
+    public function maxPosition(int $carry, Menu\Entry $item): int
     {
-        return max($carry, $item->getPosition());
+        return intval(max($carry, $item->getPosition()));
     }
 
     /**
@@ -272,7 +274,7 @@ class MetaProcessor
         uasort($this->workList, [$this, 'sortWorkList']);
     }
 
-    public function sortWorkList(Menu\Entry $a, Menu\Entry $b)
+    public function sortWorkList(Menu\Entry $a, Menu\Entry $b): int
     {
         return $a->getPosition() <=> $b->getPosition();
     }

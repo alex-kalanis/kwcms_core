@@ -5,6 +5,7 @@ namespace kalanis\kw_bans\Bans;
 
 use kalanis\kw_bans\Interfaces\IKBTranslations;
 use kalanis\kw_bans\Ip;
+use kalanis\kw_bans\Translations;
 
 
 trait TLangIp
@@ -19,7 +20,7 @@ trait TLangIp
         $this->basicIp = $ip;
     }
 
-    protected function setLang(IKBTranslations $lang): void
+    protected function setLang(?IKBTranslations $lang = null): void
     {
         $this->lang = $lang;
     }
@@ -31,6 +32,9 @@ trait TLangIp
 
     protected function getLang(): IKBTranslations
     {
+        if (empty($this->lang)) {
+            $this->lang = new Translations();
+        }
         return $this->lang;
     }
 }

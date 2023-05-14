@@ -5,6 +5,7 @@ namespace kalanis\kw_menu\EntriesSource;
 
 use kalanis\kw_menu\Interfaces\IEntriesSource;
 use kalanis\kw_menu\MenuException;
+use kalanis\kw_menu\Traits\TFilterHtml;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
@@ -28,12 +29,13 @@ class Storage implements IEntriesSource
         $this->storage = $storage;
     }
 
-    public function getFiles(string $dir): Traversable
+    public function getFiles(array $path): Traversable
     {
+        $dir = Stuff::arrayToPath($path);
         try {
             foreach ($this->storage->lookup($dir) as $item) {
                 if ($this->filterExt(Stuff::fileExt($item))) {
-                    yield $item;
+                    yield Stuff::sanitize($item);
                 }
             }
         } catch (StorageException $ex) {

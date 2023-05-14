@@ -20,7 +20,9 @@ interface IAccessGroups
     const GRP_NAME = 1;
     const GRP_AUTHOR = 2;
     const GRP_DESC = 3;
-    const GRP_FEED = 4;
+    const GRP_STATUS = 4;
+    const GRP_PARENTS = 5;
+    const GRP_FEED = 6;
 
     /**
      * @param IGroup $group
@@ -48,13 +50,15 @@ interface IAccessGroups
      * @param IGroup $group
      * @throws AuthException
      * @throws LockException
+     * @return bool
      */
-    public function updateGroup(IGroup $group): void;
+    public function updateGroup(IGroup $group): bool;
 
     /**
      * @param int $groupId
      * @throws AuthException
      * @throws LockException
+     * @return bool
      */
-    public function deleteGroup(int $groupId): void;
+    public function deleteGroup(int $groupId): bool;
 }

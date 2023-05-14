@@ -10,10 +10,15 @@ namespace kalanis\kw_menu\Menu;
  */
 class Entry
 {
+    /** @var string */
     protected $id = '';
+    /** @var string */
     protected $name = '';
+    /** @var string */
     protected $desc = '';
+    /** @var int */
     protected $position = 0;
+    /** @var bool */
     protected $goSub = false;
     /** @var Menu|null */
     protected $submenu = null;

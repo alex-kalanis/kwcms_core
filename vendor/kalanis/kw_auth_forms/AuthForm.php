@@ -26,17 +26,17 @@ class AuthForm
      * @param string $inputAlias
      * @param Rules\ARule $digest
      * @param Form $boundForm
-     * @param array $whichInputs
-     * @param ArrayAccess $cookies
+     * @param string[] $whichInputs
+     * @param ArrayAccess<string|int, string|int|float|bool|null> $cookies
      */
-    public static function digest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
+    public static function digest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies): void
     {
         // init input
         $csrf = new Inputs\AuthCsrf();
         $csrf->setHidden($inputAlias, $cookies);
 
         // check content for digested value
-        $digest->setForm($boundForm);
+        $digest->setBoundForm($boundForm);
         $digest->setAgainstValue($whichInputs);
         $digest->setErrorText('Digest fails');
 
@@ -50,10 +50,10 @@ class AuthForm
      * @param string $inputAlias
      * @param Rules\ARule $digest
      * @param Form $boundForm
-     * @param array $whichInputs
-     * @param ArrayAccess $cookies
+     * @param string[] $whichInputs
+     * @param ArrayAccess<string|int, string|int|float|bool|null> $cookies
      */
-    public static function tokenAndDigest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies)
+    public static function tokenAndDigest(string $inputAlias, Rules\ARule $digest, Form $boundForm, array $whichInputs, ArrayAccess $cookies): void
     {
         // init input
         $csrf = new Inputs\AuthCsrf();
@@ -65,7 +65,7 @@ class AuthForm
         $check->setErrorText('Token fails');
 
         // check content for digested value
-        $digest->setForm($boundForm);
+        $digest->setBoundForm($boundForm);
         $digest->setAgainstValue($whichInputs);
         $digest->setErrorText('Digest fails');
 

@@ -3,6 +3,9 @@
 namespace kalanis\kw_menu;
 
 
+use kalanis\kw_paths\PathsException;
+
+
 /**
  * Class MoreEntries
  * @package kalanis\kw_menu
@@ -11,8 +14,8 @@ namespace kalanis\kw_menu;
  */
 class MoreEntries
 {
-    /** @var string */
-    protected $groupKey = '';
+    /** @var string[] */
+    protected $groupKey = [];
     /** @var MetaProcessor */
     protected $meta = null;
     /** @var Interfaces\IEntriesSource */
@@ -25,29 +28,30 @@ class MoreEntries
     }
 
     /**
-     * @param string $groupKey directory to scan
+     * @param string[] $groupKey directory to scan
      * @return $this
      */
-    public function setGroupKey(string $groupKey): self
+    public function setGroupKey(array $groupKey): self
     {
         $this->groupKey = $groupKey;
         return $this;
     }
 
     /**
-     * @param string $metaKey file/id with meta data
-     * @return $this
+     * @param string[] $metaKey file/id with meta data
      * @throws MenuException
+     * @return $this
      */
-    public function setMeta(string $metaKey): self
+    public function setMeta(array $metaKey): self
     {
         $this->meta->setKey($metaKey);
         return $this;
     }
 
     /**
-     * @return $this
      * @throws MenuException
+     * @throws PathsException
+     * @return $this
      */
     public function load(): self
     {
@@ -62,6 +66,7 @@ class MoreEntries
 
     /**
      * @throws MenuException
+     * @throws PathsException
      */
     protected function createNew(): void
     {
@@ -72,11 +77,12 @@ class MoreEntries
 
     /**
      * @throws MenuException
+     * @throws PathsException
      */
     protected function fillMissing(): void
     {
         $toRemoval = array_map([$this, 'entryId'], $this->meta->getWorking());
-        $toRemoval = array_combine($toRemoval, array_fill(0, count($toRemoval), true));
+        $toRemoval = (array) array_combine($toRemoval, array_fill(0, count($toRemoval), true));
 
         foreach ($this->dataSource->getFiles($this->groupKey) as $file) {
             $alreadyKnown = false;

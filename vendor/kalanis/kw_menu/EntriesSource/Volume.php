@@ -4,6 +4,7 @@ namespace kalanis\kw_menu\EntriesSource;
 
 
 use kalanis\kw_menu\Interfaces\IEntriesSource;
+use kalanis\kw_menu\Traits\TFilterHtml;
 use kalanis\kw_paths\Stuff;
 use Traversable;
 
@@ -25,9 +26,13 @@ class Volume implements IEntriesSource
         $this->rootPath = Stuff::removeEndingSlash($rootPath) . DIRECTORY_SEPARATOR;
     }
 
-    public function getFiles(string $dir): Traversable
+    public function getFiles(array $path): Traversable
     {
-        yield from array_filter(array_filter(scandir($this->rootPath . $dir), ['\kalanis\kw_paths\Stuff', 'notDots']), [$this, 'filterHtml']);
+        $dir = Stuff::arrayToPath($path);
+        $list = scandir($this->rootPath . $dir);
+        if (false !== $list) {
+            yield from array_filter(array_filter($list, [Stuff::class, 'notDots']), [$this, 'filterHtml']);
+        }
     }
 
     public function filterHtml(string $fileName): bool

@@ -16,15 +16,15 @@ interface IMetaFileParser
 {
     /**
      * @param string $content
-     * @return Menu
      * @throws MenuException
+     * @return Menu
      */
     public function unpack(string $content): Menu;
 
     /**
      * @param Menu $menu
-     * @return string
      * @throws MenuException
+     * @return string
      */
     public function pack(Menu $menu): string;
 }

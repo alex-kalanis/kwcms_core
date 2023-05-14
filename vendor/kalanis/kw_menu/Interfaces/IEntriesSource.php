@@ -4,6 +4,7 @@ namespace kalanis\kw_menu\Interfaces;
 
 
 use kalanis\kw_menu\MenuException;
+use kalanis\kw_paths\PathsException;
 use Traversable;
 
 
@@ -16,9 +17,10 @@ use Traversable;
 interface IEntriesSource
 {
     /**
-     * @param string $dir
-     * @return Traversable
+     * @param string[] $path
      * @throws MenuException
+     * @throws PathsException
+     * @return Traversable<string>
      */
-    public function getFiles(string $dir): Traversable;
+    public function getFiles(array $path): Traversable;
 }

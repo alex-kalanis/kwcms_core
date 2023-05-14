@@ -7,6 +7,7 @@ use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Data\FileUser;
 use kalanis\kw_auth\Interfaces;
 use kalanis\kw_auth\Sources\TAuthLock;
+use kalanis\kw_auth\Sources\TStatusTransform;
 use kalanis\kw_locks\Interfaces\ILock;
 use kalanis\kw_locks\LockException;
 
@@ -20,6 +21,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
 {
     use TAuthLock;
     use TLines;
+    use TStatusTransform;
     use TStore;
 
     const PW_ID = 0;
@@ -27,25 +29,30 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
     const PW_PASS = 2;
     const PW_GROUP = 3;
     const PW_CLASS = 4;
-    const PW_DISPLAY = 5;
-    const PW_DIR = 6;
-    const PW_FEED = 7;
+    const PW_STATUS = 5;
+    const PW_DISPLAY = 6;
+    const PW_DIR = 7;
+    const PW_FEED = 8;
 
     /** @var Interfaces\IMode */
     protected $mode = null;
-    /** @var string */
-    protected $path = '';
+    /** @var Interfaces\IStatus */
+    protected $status = null;
+    /** @var string[] */
+    protected $path = [];
 
     /**
      * @param Interfaces\IMode $mode hashing mode
+     * @param Interfaces\IStatus $status which status is necessary to use that feature
      * @param ILock $lock file lock
-     * @param string $path use full path with file name
-     * @param Interfaces\IKATranslations|null $lang
+     * @param string[] $path use full path with file name
+     * @param Interfaces\IKauTranslations|null $lang
      */
-    public function __construct(Interfaces\IMode $mode, ILock $lock, string $path, ?Interfaces\IKATranslations $lang = null)
+    public function __construct(Interfaces\IMode $mode, Interfaces\IStatus $status, ILock $lock, array $path, ?Interfaces\IKauTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setAuLang($lang);
         $this->mode = $mode;
+        $this->status = $status;
         $this->path = $path;
         $this->initAuthLock($lock);
     }
@@ -53,7 +60,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
     public function authenticate(string $userName, array $params = []): ?Interfaces\IUser
     {
         if (empty($params['password'])) {
-            throw new AuthException($this->getLang()->kauPassMustBeSet());
+            throw new AuthException($this->getAuLang()->kauPassMustBeSet());
         }
         $name = $this->stripChars($userName);
         $pass = strval($params['password']);
@@ -67,7 +74,10 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         }
         foreach ($passLines as &$line) {
             if ($line[static::PW_NAME] == $name) {
-                if ($this->mode->check($pass, strval($line[static::PW_PASS]))) {
+                if (
+                    $this->mode->check($pass, strval($line[static::PW_PASS]))
+                    && $this->status->allowLogin($this->transformFromStringToInt(strval($line[static::PW_STATUS])))
+                ) {
                     return $this->getUserClass($line);
                 }
             }
@@ -107,6 +117,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
             strval($line[static::PW_NAME]),
             intval($line[static::PW_GROUP]),
             intval($line[static::PW_CLASS]),
+            $this->transformFromStringToInt(strval($line[static::PW_STATUS])),
             strval($line[static::PW_DISPLAY]),
             strval($line[static::PW_DIR])
         );
@@ -121,7 +132,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
 
         // not everything necessary is set
         if (empty($userName) || empty($directory) || empty($password)) {
-            throw new AuthException($this->getLang()->kauPassMissParam());
+            throw new AuthException($this->getAuLang()->kauPassMissParam());
         }
         $this->checkLock();
 
@@ -146,6 +157,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
             static::PW_PASS => $this->mode->hash($password),
             static::PW_GROUP => empty($user->getGroup()) ? $uid : $user->getClass() ,
             static::PW_CLASS => empty($user->getClass()) ? Interfaces\IAccessClasses::CLASS_USER : $user->getClass() ,
+            static::PW_STATUS => $this->transformFromIntToString($user->getStatus()),
             static::PW_DISPLAY => empty($displayName) ? $userName : $displayName,
             static::PW_DIR => $directory,
             static::PW_FEED => '',
@@ -179,7 +191,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         return $result;
     }
 
-    public function updateAccount(Interfaces\IUser $user): void
+    public function updateAccount(Interfaces\IUser $user): bool
     {
         $userName = $this->stripChars($user->getAuthName());
         $directory = $this->stripChars($user->getDir());
@@ -190,15 +202,15 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         $this->getLock()->create();
         try {
             $passwordLines = $this->openFile($this->path);
-        } catch (AuthException $ex) {
+        } finally {
             $this->getLock()->delete();
-            throw $ex;
         }
         foreach ($passwordLines as &$line) {
             if ($line[static::PW_NAME] == $userName) {
                 // REFILL
                 $line[static::PW_GROUP] = !empty($user->getGroup()) ? $user->getGroup() : $line[static::PW_GROUP] ;
                 $line[static::PW_CLASS] = !empty($user->getClass()) ? $user->getClass() : $line[static::PW_CLASS] ;
+                $line[static::PW_STATUS] = $this->transformFromIntToString($user->getStatus());
                 $line[static::PW_DISPLAY] = !empty($displayName) ? $displayName : $line[static::PW_DISPLAY] ;
                 $line[static::PW_DIR] = !empty($directory) ? $directory : $line[static::PW_DIR] ;
             }
@@ -209,9 +221,10 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         } finally {
             $this->getLock()->delete();
         }
+        return true;
     }
 
-    public function updatePassword(string $userName, string $passWord): void
+    public function updatePassword(string $userName, string $passWord): bool
     {
         $name = $this->stripChars($userName);
         // load from shadow
@@ -222,9 +235,8 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
 
         try {
             $lines = $this->openFile($this->path);
-        } catch (AuthException $ex) {
+        } finally {
             $this->getLock()->delete();
-            throw $ex;
         }
         foreach ($lines as &$line) {
             if ($line[static::PW_NAME] == $name) {
@@ -239,9 +251,10 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         } finally {
             $this->getLock()->delete();
         }
+        return true;
     }
 
-    public function deleteAccount(string $userName): void
+    public function deleteAccount(string $userName): bool
     {
         $name = $this->stripChars($userName);
         $this->checkLock();
@@ -255,7 +268,7 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         } catch (AuthException $ex) {
             // removal on non-existent file is not possible and not necessary
             $this->getLock()->delete();
-            return;
+            return true;
         }
 
         foreach ($passLines as $index => &$line) {
@@ -273,5 +286,6 @@ abstract class AFile implements Interfaces\IAuth, Interfaces\IAccessAccounts
         } finally {
             $this->getLock()->delete();
         }
+        return true;
     }
 }

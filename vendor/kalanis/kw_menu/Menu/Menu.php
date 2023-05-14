@@ -10,9 +10,13 @@ namespace kalanis\kw_menu\Menu;
  */
 class Menu
 {
+    /** @var string */
     protected $file = '';
+    /** @var string */
     protected $name = '';
+    /** @var string */
     protected $title = '';
+    /** @var int */
     protected $displayCount = 0;
     /** @var Entry[] */
     protected $entries = [];
@@ -24,10 +28,10 @@ class Menu
 
     public function setData(string $file, string $name, string $title, int $count): self
     {
-        $this->name = (string)$name;
-        $this->title = (string)$title;
-        $this->file = (string)$file;
-        $this->displayCount = (string)$count;
+        $this->name = strval($name);
+        $this->title = strval($title);
+        $this->file = strval($file);
+        $this->displayCount = intval($count);
         $this->entries = [];
         return $this;
     }
@@ -40,22 +44,22 @@ class Menu
 
     public function getName(): string
     {
-        return (string)$this->name;
+        return strval($this->name);
     }
 
     public function getTitle(): string
     {
-        return (string)$this->title;
+        return strval($this->title);
     }
 
     public function getFile(): string
     {
-        return (string)$this->file;
+        return strval($this->file);
     }
 
     public function getDisplayCount(): int
     {
-        return (string)$this->displayCount;
+        return intval($this->displayCount);
     }
 
     /**

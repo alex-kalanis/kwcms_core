@@ -5,8 +5,12 @@ namespace kalanis\kw_menu\MetaSource;
 
 use kalanis\kw_menu\Interfaces\IMetaFileParser;
 use kalanis\kw_menu\Interfaces\IMetaSource;
+use kalanis\kw_menu\Interfaces\IMNTranslations;
 use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
+use kalanis\kw_menu\Traits\TToString;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -18,21 +22,30 @@ use kalanis\kw_storage\StorageException;
  */
 class Storage implements IMetaSource
 {
-    /** @var string */
-    protected $key = '';
+    use TToString;
+
+    /** @var string[] */
+    protected $key = [];
     /** @var IStorage */
     protected $storage = null;
-    /** @var FileParser */
+    /** @var IMetaFileParser */
     protected $parser = null;
 
-    public function __construct(IStorage $storage, IMetaFileParser $parser, string $metaKey)
+    /**
+     * @param IStorage $storage
+     * @param IMetaFileParser $parser
+     * @param IMNTranslations|null $lang
+     * @param string[] $metaKey
+     */
+    public function __construct(IStorage $storage, IMetaFileParser $parser, ?IMNTranslations $lang = null, array $metaKey = [])
     {
+        $this->setMnLang($lang);
         $this->storage = $storage;
         $this->parser = $parser;
         $this->key = $metaKey;
     }
 
-    public function setSource(string $metaSource): void
+    public function setSource(array $metaSource): void
     {
         $this->key = $metaSource;
     }
@@ -40,8 +53,8 @@ class Storage implements IMetaSource
     public function exists(): bool
     {
         try {
-            return $this->storage->exists($this->key);
-        } catch (StorageException $ex) {
+            return $this->storage->exists(Stuff::arrayToPath($this->key));
+        } catch (StorageException | PathsException $ex) {
             throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -49,8 +62,8 @@ class Storage implements IMetaSource
     public function load(): Menu
     {
         try {
-            return $this->parser->unpack($this->storage->read($this->key));
-        } catch (StorageException $ex) {
+            return $this->parser->unpack($this->toString($this->storage->read(Stuff::arrayToPath($this->key))));
+        } catch (StorageException | PathsException $ex) {
             throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -58,8 +71,8 @@ class Storage implements IMetaSource
     public function save(Menu $content): bool
     {
         try {
-            return $this->storage->write($this->key, $this->parser->pack($content));
-        } catch (StorageException $ex) {
+            return $this->storage->write(Stuff::arrayToPath($this->key), $this->parser->pack($content));
+        } catch (StorageException | PathsException $ex) {
             throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }

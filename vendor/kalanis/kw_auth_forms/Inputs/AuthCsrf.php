@@ -33,7 +33,13 @@ class AuthCsrf extends Hidden
         return new Csrf\Simple();
     }
 
-    public function setHidden(string $alias, ArrayAccess &$cookie, string $errorMessage = ''): parent
+    /**
+     * @param string $alias
+     * @param ArrayAccess<string|int, string|int|float|bool|null> $cookie
+     * @param string $errorMessage
+     * @return $this
+     */
+    public function setHidden(string $alias, ArrayAccess &$cookie, string $errorMessage = ''): self
     {
         $this->csrf->init($cookie);
         $this->setEntry($alias);
@@ -43,6 +49,10 @@ class AuthCsrf extends Hidden
         return $this;
     }
 
+    /**
+     * @param string|int|float $incomingValue
+     * @return bool
+     */
     public function checkToken($incomingValue): bool
     {
         if ($this->csrf->checkToken(strval($incomingValue), $this->csrfTokenAlias)) {

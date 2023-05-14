@@ -8,6 +8,7 @@ use kalanis\kw_auth\Data\FileGroup;
 use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IGroup;
 use kalanis\kw_auth\Sources\TAuthLock;
+use kalanis\kw_auth\Traits\TSeparated;
 use kalanis\kw_locks\LockException;
 
 
@@ -19,6 +20,7 @@ use kalanis\kw_locks\LockException;
 trait TGroups
 {
     use TAuthLock;
+    use TSeparated;
 
     /**
      * @param IGroup $group
@@ -33,7 +35,7 @@ trait TGroups
 
         // not everything necessary is set
         if (empty($userId) || empty($groupName)) {
-            throw new AuthException($this->getLang()->kauGroupMissParam());
+            throw new AuthException($this->getAuLang()->kauGroupMissParam());
         }
         $this->checkLock();
 
@@ -57,15 +59,19 @@ trait TGroups
             IAccessGroups::GRP_NAME => $groupName,
             IAccessGroups::GRP_AUTHOR => $userId,
             IAccessGroups::GRP_DESC => !empty($groupDesc) ? $groupDesc : $groupName,
+            IAccessGroups::GRP_STATUS => $group->getGroupStatus(),
+            IAccessGroups::GRP_PARENTS => $this->compactInt($group->getGroupParents()),
             IAccessGroups::GRP_FEED => '',
         ];
         ksort($newGroup);
         $groupLines[] = $newGroup;
 
-        // now save it
-        $this->saveGroups($groupLines);
-
-        $this->getLock()->delete();
+        try {
+            // now save it
+            $this->saveGroups($groupLines);
+        } finally {
+            $this->getLock()->delete();
+        }
     }
 
     /**
@@ -120,7 +126,9 @@ trait TGroups
             intval($line[IAccessGroups::GRP_ID]),
             strval($line[IAccessGroups::GRP_NAME]),
             intval($line[IAccessGroups::GRP_AUTHOR]),
-            strval($line[IAccessGroups::GRP_DESC])
+            strval($line[IAccessGroups::GRP_DESC]),
+            intval($line[IAccessGroups::GRP_STATUS]),
+            $this->separateInt($line[IAccessGroups::GRP_PARENTS])
         );
         return $group;
     }
@@ -129,8 +137,9 @@ trait TGroups
      * @param IGroup $group
      * @throws AuthException
      * @throws LockException
+     * @return bool
      */
-    public function updateGroup(IGroup $group): void
+    public function updateGroup(IGroup $group): bool
     {
         $groupName = $this->stripChars($group->getGroupName());
         $groupDesc = $this->stripChars($group->getGroupDesc());
@@ -140,28 +149,34 @@ trait TGroups
         $this->getLock()->create();
         try {
             $groupLines = $this->openGroups();
-        } catch (AuthException $ex) {
+        } finally {
             $this->getLock()->delete();
-            throw $ex;
         }
         foreach ($groupLines as &$line) {
             if ($line[IAccessGroups::GRP_ID] == $group->getGroupId()) {
                 // REFILL
                 $line[IAccessGroups::GRP_NAME] = !empty($groupName) ? $groupName : $line[IAccessGroups::GRP_NAME] ;
                 $line[IAccessGroups::GRP_DESC] = !empty($groupDesc) ? $groupDesc : $line[IAccessGroups::GRP_DESC] ;
+                $line[IAccessGroups::GRP_STATUS] = $group->getGroupStatus();
+                $line[IAccessGroups::GRP_PARENTS] = $this->compactInt($group->getGroupParents());
             }
         }
 
-        $this->saveGroups($groupLines);
-        $this->getLock()->delete();
+        try {
+            $this->saveGroups($groupLines);
+        } finally {
+            $this->getLock()->delete();
+        }
+        return true;
     }
 
     /**
      * @param int $groupId
      * @throws AuthException
      * @throws LockException
+     * @return bool
      */
-    public function deleteGroup(int $groupId): void
+    public function deleteGroup(int $groupId): bool
     {
         $this->checkLock();
         $this->checkRest($groupId);
@@ -175,7 +190,7 @@ trait TGroups
         } catch (AuthException $ex) {
             // silence the problems on storage
             $this->getLock()->delete();
-            return;
+            return false;
         }
         foreach ($openGroups as $index => &$line) {
             if ($line[IAccessGroups::GRP_ID] == $groupId) {
@@ -184,12 +199,23 @@ trait TGroups
             }
         }
 
-        // now save it
-        if ($changed) {
-            $this->saveGroups($openGroups);
+        try {
+            // now save it
+            if ($changed) {
+                $this->saveGroups($openGroups);
+            }
+        } finally {
+            $this->getLock()->delete();
         }
-        $this->getLock()->delete();
+        return true;
     }
+
+    /**
+     * Strip unwelcome characters from strings
+     * @param string $input
+     * @return string
+     */
+    abstract public function stripChars(string $input): string;
 
     /**
      * Check the rest of source for existence of group

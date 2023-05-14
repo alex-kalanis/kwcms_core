@@ -6,6 +6,7 @@ namespace kalanis\kw_menu\MetaSource;
 use kalanis\kw_menu\Interfaces;
 use kalanis\kw_menu\Menu\Entry;
 use kalanis\kw_menu\Menu\Menu;
+use kalanis\kw_menu\Traits\TEscape;
 
 
 /**
@@ -35,23 +36,32 @@ class FileParser implements Interfaces\IMetaFileParser
     public function unpack(string $content): Menu
     {
         $menu = clone $this->menu;
-        $lines = explode("\r\n", $content);
-        $this->loadHeader($menu, reset($lines));
-        $this->loadItems($menu, array_slice($lines, 1));
+        if (!empty($content) && (false !== mb_strpos($content, "\r\n"))) {
+            $lines = explode("\r\n", $content);
+            $this->loadHeader($menu, reset($lines));
+            $this->loadItems($menu, array_slice($lines, 1));
+        }
         return $menu;
     }
 
     protected function loadHeader(Menu $menu, string $line): void
     {
+        if (false === mb_strpos($line, Interfaces\IMenu::SEPARATOR)) {
+            return;
+        }
         $headData = explode(Interfaces\IMenu::SEPARATOR, $line);
         $menu->setData(
             $this->restoreNl(strval($headData[0])),
             $this->restoreNl(strval($headData[2])),
             $this->restoreNl(strval($headData[3])),
-            (int)$headData[1]
+            intval($headData[1])
         );
     }
 
+    /**
+     * @param Menu $menu
+     * @param string[] $lines
+     */
     protected function loadItems(Menu $menu, array $lines): void
     {
         foreach ($lines as $line) {
@@ -70,7 +80,7 @@ class FileParser implements Interfaces\IMetaFileParser
                 $this->restoreNl(strval($data[0])),
                 $this->restoreNl(strval($data[2])),
                 $this->restoreNl(strval($data[3])),
-                (int)$data[1],
+                intval($data[1]),
                 boolval(intval($data[4]))
             );
             $menu->addItem($item);
