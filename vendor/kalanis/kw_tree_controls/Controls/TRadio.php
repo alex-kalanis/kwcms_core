@@ -16,6 +16,7 @@ trait TRadio
     public function getValue()
     {
         foreach ($this->inputs as $input) {
+            /** @var Radio $input */
             if ($input->getAttribute('checked')) {
                 return $input->getOriginalValue();
             }
@@ -26,6 +27,7 @@ trait TRadio
     public function setValue($value): void
     {
         foreach ($this->inputs as $input) {
+            /** @var Radio $input */
             if ($input->getOriginalValue() == $value) {
                 $input->setAttribute('checked', 'checked');
             } else {

@@ -25,7 +25,7 @@ class Radio extends Controls\Radio
      * @param string|int|float|bool|null $value
      * @param string $label
      * @param string|int|float|bool|null $checked
-     * @return Controls\Radio
+     * @return $this
      */
     public function set(string $alias, $value = null, string $label = '', $checked = ''): parent
     {

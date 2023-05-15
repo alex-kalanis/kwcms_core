@@ -4,6 +4,7 @@ namespace kalanis\kw_tree_controls\Controls;
 
 
 use kalanis\kw_forms\Controls;
+use kalanis\kw_input\Interfaces\IFileEntry;
 
 
 /**
@@ -18,7 +19,7 @@ trait TMultiValue
     protected $inputs = [];
 
     /**
-     * @return array<int, string|int|float|bool|null>
+     * @return array<string|int, string|int|float|bool|IFileEntry|null>
      */
     public function getValues(): array
     {
@@ -35,7 +36,7 @@ trait TMultiValue
     /**
      * Set values to all children
      * !! UNDEFINED values will be SET too !!
-     * @param string[]|array $array
+     * @param array<string|int, string|int|float|bool|IFileEntry|null> $array
      */
     public function setValues(array $array): void
     {

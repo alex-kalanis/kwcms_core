@@ -15,7 +15,7 @@ class Scripts
 {
     /** @var ILoader */
     protected static $loader = null;
-    /** @var string[][] */
+    /** @var array<string, array<int, string>> */
     protected static $scripts = [];
 
     public static function init(ILoader $loader): void
@@ -31,6 +31,9 @@ class Scripts
         static::$scripts[$module][] = $path;
     }
 
+    /**
+     * @return array<string, array<int, string>>
+     */
     public static function getAll(): array
     {
         return static::$scripts;
@@ -39,10 +42,10 @@ class Scripts
     /**
      * @param string $module
      * @param string $path
-     * @return string
      * @throws ScriptsException
+     * @return string|null
      */
-    public static function getFile(string $module, string $path): string
+    public static function getFile(string $module, string $path): ?string
     {
         return static::$loader->load($module, $path);
     }

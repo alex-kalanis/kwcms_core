@@ -5,6 +5,7 @@ namespace kalanis\kw_scripts\Loaders;
 
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
+use kalanis\kw_routed_paths\RoutedPath;
 use kalanis\kw_scripts\Interfaces\ILoader;
 
 
@@ -28,10 +29,13 @@ class PhpLoader implements ILoader
 
     /** @var Path */
     protected $pathLib = null;
+    /** @var RoutedPath */
+    protected $routedLib = null;
 
-    public function __construct(Path $pathLib)
+    public function __construct(Path $pathLib, RoutedPath $routedLib)
     {
         $this->pathLib = $pathLib;
+        $this->routedLib = $routedLib;
     }
 
     public function load(string $module, string $wantedPath = ''): string
@@ -46,7 +50,7 @@ class PhpLoader implements ILoader
         foreach ($this->pathMasks as $pathMask) {
             $unmasked = sprintf( $pathMask,
                 DIRECTORY_SEPARATOR, $basicLookupDir,
-                IPaths::DIR_USER, $this->pathLib->getUser(),
+                IPaths::DIR_USER, $this->routedLib->getUser(),
                 IPaths::DIR_MODULE, $module,
                 IPaths::DIR_STYLE, $conf
             );
@@ -60,6 +64,6 @@ class PhpLoader implements ILoader
 
     protected function includedScript(string $path): string
     {
-        return (string)@file_get_contents($path);
+        return (string) @file_get_contents($path);
     }
 }

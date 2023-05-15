@@ -16,8 +16,8 @@ interface ILoader
     /**
      * @param string $module which module it will be looked for
      * @param string $path which path will be looked for
-     * @return string|null content of that source
      * @throws StylesException
+     * @return string|null content of that source
      */
     public function load(string $module, string $path = ''): ?string;
 }

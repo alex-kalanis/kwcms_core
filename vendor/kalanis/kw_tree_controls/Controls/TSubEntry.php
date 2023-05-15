@@ -40,6 +40,10 @@ trait TSubEntry
         return $entry;
     }
 
+    abstract public function getLabel(): ?string;
+
+    abstract public function addChild($child, $alias = null, bool $merge = false, bool $inherit = false): void;
+
     abstract protected function fillEntries(array $nodes): string;
 
     abstract protected function stringName(?FileNode $node): string;
