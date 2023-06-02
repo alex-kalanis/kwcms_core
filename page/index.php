@@ -25,24 +25,25 @@ require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalani
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
 // where is the system?
-$paths = new \kalanis\kw_paths\Path();
-$paths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
-$paths->setPathToSystemRoot('/..');
-
-// init config
-\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($paths));
-\kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
-\kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
-\kalanis\kw_confs\Config::set('Core', 'site.default_display_module', 'Layout');
+$systemPaths = new \kalanis\kw_paths\Path();
+$systemPaths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
+$systemPaths->setPathToSystemRoot('/..');
+\kalanis\kw_paths\Stored::init($systemPaths);
 
 // load virtual parts - if exists
-$virtualDir = \kalanis\kw_confs\Config::get('Core', 'site.fake_dir', 'dir_from_config/');
-$params = new \kalanis\kw_paths\Params\Request\Server();
-$params->set($virtualDir)->process();
-$paths->setData($params->getParams());
+$routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Server(
+    strval(getenv('VIRTUAL_DIRECTORY') ?: 'dir_from_config/')
+));
+\kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
+
+// init config
+\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
+\kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
+\kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
+
 // init styles and scripts
-\kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($paths));
-\kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($paths));
+\kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($systemPaths, $routedPaths));
+\kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($systemPaths, $routedPaths));
 
 // pass parsed params as external source
 $argv = isset($argv) ? $argv : [] ;
@@ -54,9 +55,9 @@ $inputs->setSource($source)->loadEntries();
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
 \kalanis\kw_langs\Lang::init(
-    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    new \kalanis\kw_langs\Loaders\PhpLoader($systemPaths, $routedPaths),
     \kalanis\kw_langs\Support::fillFromPaths(
-        $paths,
+        $routedPaths,
         \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
         false
     )

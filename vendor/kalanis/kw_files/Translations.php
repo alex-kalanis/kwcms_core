@@ -33,6 +33,26 @@ class Translations implements IFLTranslations
      * @return string
      * @codeCoverageIgnore failing streams
      */
+    public function flCannotOpenFile(string $fileName): string
+    {
+        return 'Cannot open wanted file.';
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     * @codeCoverageIgnore failing streams
+     */
+    public function flCannotWriteFile(string $fileName): string
+    {
+        return 'Cannot write wanted file.';
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     * @codeCoverageIgnore failing streams
+     */
     public function flCannotGetFilePart(string $fileName): string
     {
         return 'Cannot extract part of content';

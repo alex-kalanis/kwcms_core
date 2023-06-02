@@ -21,4 +21,9 @@ class Translations implements ISMTranslations
     {
         return 'Cannot save semaphore data';
     }
+
+    public function mnCannotGetSemaphoreClass(): string
+    {
+        return 'Cannot determine semaphore class';
+    }
 }

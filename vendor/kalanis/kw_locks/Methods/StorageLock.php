@@ -6,6 +6,7 @@ namespace kalanis\kw_locks\Methods;
 use kalanis\kw_locks\Interfaces\IKLTranslations;
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
+use kalanis\kw_locks\Traits\TLang;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -16,10 +17,10 @@ use kalanis\kw_storage\StorageException;
  */
 class StorageLock implements IPassedKey
 {
+    use TLang;
+
     /** @var IStorage */
     protected $storage = null;
-    /** @var IKLTranslations */
-    protected $lang = null;
     /** @var string */
     protected $specialKey = '';
     /** @var string */
@@ -28,7 +29,7 @@ class StorageLock implements IPassedKey
     public function __construct(IStorage $storage, ?IKLTranslations $lang = null)
     {
         $this->storage = $storage;
-        $this->lang = $lang ?: new Translations();
+        $this->setKlLang($lang);
     }
 
     public function __destruct()
@@ -56,9 +57,9 @@ class StorageLock implements IPassedKey
             if ($this->checkContent == strval($this->storage->read($this->specialKey))) {
                 return true;
             }
-            throw new LockException($this->lang->iklLockedByOther());
+            throw new LockException($this->getKlLang()->iklLockedByOther());
         } catch (StorageException $ex) {
-            throw new LockException($this->lang->iklProblemWithStorage(), 0, $ex);
+            throw new LockException($this->getKlLang()->iklProblemWithStorage(), $ex->getCode(), $ex);
         }
     }
 
@@ -71,7 +72,7 @@ class StorageLock implements IPassedKey
             $result = $this->storage->write($this->specialKey, $this->checkContent);
             return $result;
         } catch (StorageException $ex) {
-            throw new LockException($this->lang->iklProblemWithStorage(), 0, $ex);
+            throw new LockException($this->getKlLang()->iklProblemWithStorage(), $ex->getCode(), $ex);
         }
     }
 
@@ -83,7 +84,7 @@ class StorageLock implements IPassedKey
         try {
             return $this->storage->remove($this->specialKey);
         } catch (StorageException $ex) {
-            throw new LockException($this->lang->iklProblemWithStorage(), 0, $ex);
+            throw new LockException($this->getKlLang()->iklProblemWithStorage(), $ex->getCode(), $ex);
         }
     }
 }

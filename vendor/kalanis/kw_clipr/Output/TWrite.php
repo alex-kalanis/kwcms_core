@@ -74,8 +74,6 @@ trait TWrite
      * @param string $message
      * @param int $exitCode
      * @throws CliprException
-     * @codeCoverageIgnore because external effects
-     * It ends as risky
      */
     public function terminateWithError(string $message, int $exitCode = Interfaces\IStatuses::STATUS_ERROR): void
     {

@@ -16,7 +16,7 @@ class Memory implements ICache
     /** @var resource|null */
     protected $resource = null;
 
-    public function init(string $what): void
+    public function init(array $what): void
     {
     }
 

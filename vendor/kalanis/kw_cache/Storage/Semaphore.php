@@ -5,6 +5,9 @@ namespace kalanis\kw_cache\Storage;
 
 use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_storage\Interfaces\IStorage;
@@ -22,8 +25,8 @@ class Semaphore implements ICache
     protected $storage = null;
     /** @var ISemaphore */
     protected $reloadSemaphore = null;
-    /** @var string */
-    protected $cachePath = '';
+    /** @var string[] */
+    protected $cachePath = [ICache::EXT_CACHE];
 
     public function __construct(IStorage $cacheStorage, ISemaphore $reloadSemaphore)
     {
@@ -31,16 +34,22 @@ class Semaphore implements ICache
         $this->reloadSemaphore = $reloadSemaphore;
     }
 
-    public function init(string $what): void
+    public function init(array $what): void
     {
-        $this->cachePath = $what . ICache::EXT_CACHE;
+        $arr = new ArrayPath();
+        $arr->setArray($what);
+        $this->cachePath = array_merge(
+            $arr->getArrayDirectory(),
+            [$arr->getFileName() . ICache::EXT_CACHE]
+        );
     }
 
     public function exists(): bool
     {
         try {
-            return $this->storage->exists($this->cachePath) && !$this->reloadSemaphore->has();
-        } catch (SemaphoreException | StorageException $ex) {
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            return $this->storage->exists($cachePath) && !$this->reloadSemaphore->has();
+        } catch (SemaphoreException | StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -48,15 +57,16 @@ class Semaphore implements ICache
     public function set(string $content): bool
     {
         try {
-            $result = $this->storage->write($this->cachePath, $content, null);
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            $result = $this->storage->write($cachePath, $content, null);
             if (false === $result) {
                 return false;
             }
-            # remove signal to save
+            // remove signal to save
             if ($this->reloadSemaphore->has()) {
                 $this->reloadSemaphore->remove();
             }
-        } catch (SemaphoreException | StorageException $ex) {
+        } catch (SemaphoreException | StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
         return true;
@@ -65,8 +75,9 @@ class Semaphore implements ICache
     public function get(): string
     {
         try {
-            return $this->exists() ? strval($this->storage->read($this->cachePath)) : '';
-        } catch (StorageException $ex) {
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            return $this->exists() ? strval($this->storage->read($cachePath)) : '';
+        } catch (StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -74,8 +85,9 @@ class Semaphore implements ICache
     public function clear(): void
     {
         try {
-            $this->storage->remove($this->cachePath);
-        } catch (StorageException $ex) {
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            $this->storage->remove($cachePath);
+        } catch (StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }

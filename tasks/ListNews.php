@@ -21,9 +21,9 @@ use KWCMS\modules\Short\ShortException;
 /**
  * Class ListNews
  * @package clipr
- * @property string path
- * @property int page
- * @property int limit
+ * @property string $path
+ * @property int $page
+ * @property int $limit
  */
 class ListNews extends ATask
 {

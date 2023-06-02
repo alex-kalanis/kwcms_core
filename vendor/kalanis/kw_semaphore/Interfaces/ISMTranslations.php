@@ -13,4 +13,6 @@ interface ISMTranslations
     public function mnCannotOpenSemaphore(): string;
 
     public function mnCannotSaveSemaphore(): string;
+
+    public function mnCannotGetSemaphoreClass(): string;
 }

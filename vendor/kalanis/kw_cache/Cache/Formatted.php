@@ -26,10 +26,10 @@ class Formatted
     }
 
     /**
-     * @param string $what
+     * @param string[] $what
      * @throws CacheException
      */
-    public function init(string $what): void
+    public function init(array $what): void
     {
         $this->cache->init($what);
     }

@@ -16,6 +16,10 @@ interface IFLTranslations
 
     public function flCannotSaveFile(string $fileName): string;
 
+    public function flCannotOpenFile(string $fileName): string;
+
+    public function flCannotWriteFile(string $fileName): string;
+
     public function flCannotGetFilePart(string $fileName): string;
 
     public function flCannotGetSize(string $fileName): string;

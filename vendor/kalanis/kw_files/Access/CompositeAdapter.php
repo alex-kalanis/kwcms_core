@@ -52,9 +52,9 @@ class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessD
         return $this->libDir->deleteDir($entry, $deep);
     }
 
-    public function saveFile(array $entry, $content): bool
+    public function saveFile(array $entry, $content, ?int $offset = null): bool
     {
-        return $this->libFile->saveFile($entry, $content);
+        return $this->libFile->saveFile($entry, $content, $offset);
     }
 
     public function readFile(array $entry, ?int $offset = null, ?int $length = null)

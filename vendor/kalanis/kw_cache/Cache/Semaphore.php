@@ -27,7 +27,7 @@ class Semaphore implements ICache
         $this->reloadSemaphore = $reloadSemaphore;
     }
 
-    public function init(string $what): void
+    public function init(array $what): void
     {
         $this->cache->init($what);
     }

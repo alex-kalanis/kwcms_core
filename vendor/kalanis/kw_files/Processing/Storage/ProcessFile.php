@@ -24,9 +24,9 @@ class ProcessFile implements IProcessFiles
         $this->adapter = $factory->getClass($storage, $lang);
     }
 
-    public function saveFile(array $entry, $content): bool
+    public function saveFile(array $entry, $content, ?int $offset = null): bool
     {
-        return $this->adapter->saveFile($entry, $content);
+        return $this->adapter->saveFile($entry, $content, $offset);
     }
 
     public function readFile(array $entry, ?int $offset = null, ?int $length = null)

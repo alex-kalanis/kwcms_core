@@ -6,6 +6,8 @@ namespace kalanis\kw_files\Processing\Storage\Files;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_files\Traits\TLang;
+use kalanis\kw_files\Traits\TStreamToPos;
+use kalanis\kw_files\Traits\TToStream;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Extras\TPathTransform;
 use kalanis\kw_storage\Interfaces\IPassDirs;
@@ -20,13 +22,15 @@ use kalanis\kw_storage\StorageException;
  */
 abstract class AFiles implements IProcessFiles
 {
-    use TPathTransform;
     use TLang;
+    use TPathTransform;
+    use TStreamToPos;
+    use TToStream;
 
     /** @var IStorage|IPassDirs */
     protected $storage = null;
 
-    public function saveFile(array $targetName, $content): bool
+    public function saveFile(array $targetName, $content, ?int $offset = null): bool
     {
         $path = $this->getStorageSeparator() . $this->filledName($this->compactName($targetName, $this->getStorageSeparator()));
         try {
@@ -34,10 +38,22 @@ abstract class AFiles implements IProcessFiles
             $dstArr->setArray($targetName);
             $tgt = $this->compactName($dstArr->getArrayDirectory(), $this->getStorageSeparator());
             if (!empty($tgt) && !$this->storage->exists($this->getStorageSeparator() . $tgt)) {
+                // parent dir
                 throw new FilesException($this->getLang()->flCannotSaveFile($path));
             }
 
-            return $this->storage->write($path, $content);
+            $added = $this->toStream($path, $content);
+            if (!is_null($offset)) {
+                // put it somewhere, left the rest intact
+                if ($this->storage->exists($path)) {
+                    $target = $this->toStream($path, $this->storage->read($path));
+                } else {
+                    $target = $this->toStream('', '');
+                }
+                return $this->storage->write($path, $this->addStreamToPosition($target, $added, $offset));
+            } else {
+                return $this->storage->write($path, $content);
+            }
         } catch (StorageException $ex) {
             throw new FilesException($this->getLang()->flCannotSaveFile($path), $ex->getCode(), $ex);
         }

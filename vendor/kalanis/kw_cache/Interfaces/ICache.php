@@ -17,10 +17,10 @@ interface ICache
     const EXT_RELOAD = '.reload'; # reload file ext
 
     /**
-     * @param string $what
+     * @param string[] $what
      * @throws CacheException
      */
-    public function init(string $what): void;
+    public function init(array $what): void;
 
     /**
      * @throws CacheException

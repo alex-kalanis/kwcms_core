@@ -23,28 +23,29 @@ require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'vendor', 'kalanis', '
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
 // where is the system?
-$paths = new \kalanis\kw_paths\Path();
-$paths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
-$paths->setPathToSystemRoot('/..');
+$systemPaths = new \kalanis\kw_paths\Path();
+$systemPaths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
+$systemPaths->setPathToSystemRoot('/..');
+\kalanis\kw_paths\Stored::init($systemPaths);
+
+// load virtual parts - if exists
+$routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Request(
+    '',
+    strval(getenv('VIRTUAL_DIRECTORY') ?: 'dir_from_config/')
+));
+\kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
 
 // init config
-\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($paths));
+\kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
 \kalanis\kw_confs\Config::load('Admin'); // autoload admin config
 
-// load virtual parts - if exists
-$virtualDir = \kalanis\kw_confs\Config::get('Core', 'site.fake_dir', 'dir_from_config/');
-$params = new \kalanis\kw_paths\Params\Request();
-$params->setData($argv[0], $virtualDir)->process();
-$paths->setData($params->getParams());
-\kalanis\kw_paths\Stored::init($paths);
-
 // init langs - the similar way like configs, but it's necessary to already have loaded params
 \kalanis\kw_langs\Lang::init(
-    new \kalanis\kw_langs\Loaders\PhpLoader($paths),
+    new \kalanis\kw_langs\Loaders\PhpLoader($systemPaths, $routedPaths),
     \kalanis\kw_langs\Support::fillFromPaths(
-        $paths,
+        $routedPaths,
         \kalanis\kw_confs\Config::get('Core', 'page.default_lang', 'hrk'),
         false
     )
@@ -60,14 +61,14 @@ try {
     $inputs->setSource($argv)->loadEntries();
     $clipr = new \kalanis\kw_clipr\Clipr(
         \kalanis\kw_clipr\Loaders\CacheLoader::init(
-            new \kalanis\kw_clipr\Loaders\KwLoader()
+            new \kalanis\kw_clipr\Loaders\KwLoader([
+                'clipr' => [__DIR__, 'run'],
+                'kwcms' => [__DIR__, '..', 'tasks'],
+            ])
         ),
         new kalanis\kw_clipr\Clipr\Sources(),
         new kalanis\kw_input\Filtered\Variables($inputs)
     );
-    # define basic paths with tasks
-    $clipr->addPath('clipr', __DIR__ . DIRECTORY_SEPARATOR . 'run');
-    $clipr->addPath('kwcms', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'tasks');
     # and run!
     $clipr->run();
 } catch (\kalanis\kw_clipr\Tasks\SingleTaskException $ex) {

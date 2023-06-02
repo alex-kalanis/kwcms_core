@@ -5,6 +5,9 @@ namespace kalanis\kw_cache\Storage;
 
 use kalanis\kw_cache\CacheException;
 use kalanis\kw_cache\Interfaces\ICache;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
 
@@ -20,10 +23,10 @@ class Dual implements ICache
     protected $cacheStorage = null;
     /** @var IStorage */
     protected $reloadStorage = null;
-    /** @var string */
-    protected $cachePath = '';
-    /** @var string */
-    protected $reloadPath = '';
+    /** @var string[] */
+    protected $cachePath = [ICache::EXT_CACHE];
+    /** @var string[] */
+    protected $reloadPath = [ICache::EXT_RELOAD];
 
     public function __construct(IStorage $cacheStorage, ?IStorage $reloadStorage = null)
     {
@@ -31,17 +34,27 @@ class Dual implements ICache
         $this->reloadStorage = $reloadStorage ?: $cacheStorage;
     }
 
-    public function init(string $what): void
+    public function init(array $what): void
     {
-        $this->cachePath = $what . ICache::EXT_CACHE;
-        $this->reloadPath = $what . ICache::EXT_RELOAD;
+        $arr = new ArrayPath();
+        $arr->setArray($what);
+        $this->cachePath = array_merge(
+            $arr->getArrayDirectory(),
+            [$arr->getFileName() . ICache::EXT_CACHE]
+        );
+        $this->reloadPath = array_merge(
+            $arr->getArrayDirectory(),
+            [$arr->getFileName() . ICache::EXT_RELOAD]
+        );
     }
 
     public function exists(): bool
     {
         try {
-            return $this->cacheStorage->exists($this->cachePath) && !$this->reloadStorage->exists($this->reloadPath);
-        } catch (StorageException $ex) {
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            $reloadPath = Stuff::arrayToPath($this->reloadPath);
+            return $this->cacheStorage->exists($cachePath) && !$this->reloadStorage->exists($reloadPath);
+        } catch (StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -49,16 +62,18 @@ class Dual implements ICache
     public function set(string $content): bool
     {
         try {
-            $result = $this->cacheStorage->write($this->cachePath, $content, null);
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            $reloadPath = Stuff::arrayToPath($this->reloadPath);
+            $result = $this->cacheStorage->write($cachePath, $content, null);
             if (false === $result) {
                 return false;
             }
             // remove signal to save
-            if ($this->reloadStorage->exists($this->reloadPath)) {
-                $this->reloadStorage->remove($this->reloadPath);
+            if ($this->reloadStorage->exists($reloadPath)) {
+                $this->reloadStorage->remove($reloadPath);
             }
             return true;
-        } catch (StorageException $ex) {
+        } catch (StorageException | PathsException$ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -66,8 +81,9 @@ class Dual implements ICache
     public function get(): string
     {
         try {
-            return $this->exists() ? strval($this->cacheStorage->read($this->cachePath)) : '';
-        } catch (StorageException $ex) {
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            return $this->exists() ? strval($this->cacheStorage->read($cachePath)) : '';
+        } catch (StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
@@ -75,8 +91,9 @@ class Dual implements ICache
     public function clear(): void
     {
         try {
-            $this->cacheStorage->remove($this->cachePath);
-        } catch (StorageException $ex) {
+            $cachePath = Stuff::arrayToPath($this->cachePath);
+            $this->cacheStorage->remove($cachePath);
+        } catch (StorageException | PathsException $ex) {
             throw new CacheException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }

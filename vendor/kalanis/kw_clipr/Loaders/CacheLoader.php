@@ -5,6 +5,7 @@ namespace kalanis\kw_clipr\Loaders;
 
 use kalanis\kw_clipr\Clipr\Useful;
 use kalanis\kw_clipr\Interfaces\ILoader;
+use kalanis\kw_clipr\Interfaces\ISubLoaders;
 use kalanis\kw_clipr\Tasks\ATask;
 
 
@@ -13,7 +14,7 @@ use kalanis\kw_clipr\Tasks\ATask;
  * @package kalanis\kw_clipr\Tasks
  * Cache classes got by child loader
  */
-class CacheLoader implements ILoader
+class CacheLoader implements ILoader, ISubLoaders
 {
     /** @var ILoader */
     protected $loader = null;
@@ -41,5 +42,10 @@ class CacheLoader implements ILoader
             $this->loadedClasses[$classPath] = $availableTask;
         }
         return $this->loadedClasses[$classPath];
+    }
+
+    public function getLoaders(): array
+    {
+        return [$this->loader];
     }
 }

@@ -3,22 +3,31 @@
 namespace clipr;
 
 
-use kalanis\kw_clipr\Clipr\Paths;
 use kalanis\kw_clipr\Clipr\Useful;
 use kalanis\kw_clipr\CliprException;
-use kalanis\kw_clipr\Interfaces\ISources;
+use kalanis\kw_clipr\Interfaces;
 use kalanis\kw_clipr\Output\TPrettyTable;
 use kalanis\kw_clipr\Tasks\ATask;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
 
 
 /**
  * Class Lister
  * @package clipr
- * @property string path
+ * @property string $path
  */
 class Lister extends ATask
 {
     use TPrettyTable;
+
+    /** @var ArrayPath */
+    protected $arrPt = null;
+
+    public function __construct()
+    {
+        $this->arrPt = new ArrayPath();
+    }
 
     protected function startup(): void
     {
@@ -48,41 +57,76 @@ class Lister extends ATask
         $this->setTableColors(['lgreen', 'lcyan', '']);
 
         try {
+            $paths = $this->getPathsFromSubLoaders($this->loader);
+
             if ($this->path) {
-                $this->createOutput($this->path);
+                if (false === $real = realpath($this->path)) { // from relative to absolute path
+                    throw new CliprException(sprintf('<redbg> !!! </redbg> Path leads to something unreadable. Path: <yellow>%s</yellow>', $this->path), static::STATUS_BAD_CONFIG);
+                }
+                $this->createOutput($paths, $this->arrPt->setString($real)->getArray());
             } else {
-                foreach (Paths::getInstance()->getPaths() as $namespace => $path) {
-                    $this->createOutput($path);
+                foreach ($paths as $namespace => $path) {
+                    if (false !== $real = realpath(DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $path))) { // from relative to absolute path
+                        $this->createOutput($paths, $this->arrPt->setString($real)->getArray());
+                    }
                 }
             }
-        } catch (CliprException $ex) {
+        } catch (CliprException | PathsException $ex) {
             $this->writeLn($ex->getMessage());
-            return $ex->getCode();
+            return $ex->getCode() ?: static::STATUS_ERROR;
         }
         $this->dumpTable();
         return static::STATUS_SUCCESS;
     }
 
     /**
-     * @param string $path
+     * Paths known by internal loaders
+     * @param Interfaces\ILoader $loader
+     * @throws CliprException
+     * @return array<string, array<string>>
+     */
+    protected function getPathsFromSubLoaders(Interfaces\ILoader $loader): array
+    {
+        $paths = [];
+        if ($loader instanceof Interfaces\ISubLoaders) {
+            foreach ($loader->getLoaders() as $single) {
+                $paths = array_merge($paths, $this->getPathsFromSubLoaders($single));
+            }
+        }
+        if ($loader instanceof Interfaces\ITargetDirs) {
+            $paths = array_merge($paths, $loader->getPaths());
+        }
+        return $paths;
+    }
+
+    /**
+     * @param array<string, array<string>> $pathsForNamespaces
+     * @param string[] $currentPath
      * @param bool $skipEmpty
      * @throws CliprException
+     * @throws PathsException
      */
-    protected function createOutput(string $path, bool $skipEmpty = false): void
+    protected function createOutput(array $pathsForNamespaces, array $currentPath, bool $skipEmpty = false): void
     {
-        if (!is_dir($path)) {
-            throw new CliprException(sprintf('<redbg> !!! </redbg> Path leads to something unreadable. Path: <yellow>%s</yellow>', $path), static::STATUS_BAD_CONFIG);
+        $known = realpath($full = DIRECTORY_SEPARATOR . $this->arrPt->setArray($currentPath)->getString());
+        if (!is_dir($known)) {
+            throw new CliprException(sprintf('<redbg> !!! </redbg> Path leads to something other than directory. Path: <yellow>%s</yellow>', $known), static::STATUS_BAD_CONFIG);
         }
-        $allFiles = array_diff((array) scandir($path), [false, '', '.', '..']);
+
+        $allFiles = array_diff((array) scandir($known), [false, '', '.', '..']);
         $files = array_filter($allFiles, [$this, 'onlyPhp']);
         if (empty($files) && !$skipEmpty) {
-            throw new CliprException(sprintf('<redbg> !!! </redbg> No usable files returned. Path: <yellow>%s</yellow>', $path), static::STATUS_NO_TARGET_RESOURCE);
+            throw new CliprException(sprintf('<redbg> !!! </redbg> No usable files returned. Path: <yellow>%s</yellow>', $known), static::STATUS_NO_TARGET_RESOURCE);
         }
+
         foreach ($files as $fileName) {
-            $className = Paths::getInstance()->realFileToClass($path, $fileName);
+            $className = $this->realFileToClass($pathsForNamespaces, $currentPath, $fileName);
             if ($className) {
-                /** @scrutinizer ignore-call */
-                $task = $this->loader->getTask($className);
+                try {
+                    $task = $this->loader ? $this->loader->getTask($className) : null;
+                } catch (CliprException $ex) {
+                    $task = null;
+                }
                 if (!$task) {
                     continue;
                 }
@@ -91,16 +135,49 @@ class Lister extends ATask
             }
         }
         foreach ($allFiles as $fileName) {
-            $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
-            if (is_dir($fullPath)) {
-                $this->createOutput($fullPath, true);
+            if (is_dir($known . DIRECTORY_SEPARATOR . $fileName)) {
+                $this->createOutput($pathsForNamespaces, array_merge($currentPath, [$fileName]), true);
             }
         }
     }
 
+    /**
+     * @param array<string, array<string>> $availablePaths
+     * @param string[] $dir
+     * @param string $file
+     * @throws PathsException
+     * @return string|null
+     */
+    protected function realFileToClass(array $availablePaths, array $dir, string $file): ?string
+    {
+        $dir = DIRECTORY_SEPARATOR . $this->arrPt->setArray($dir)->getString();
+        $dirLen = mb_strlen($dir);
+        foreach ($availablePaths as $namespace => $path) {
+            // got some path
+            $pt = implode(DIRECTORY_SEPARATOR, $path);
+            $compLen = min($dirLen, mb_strlen($pt));
+            $lgPath = mb_substr(Useful::mb_str_pad($pt, $compLen, '-'), 0, $compLen);
+            $lgDir = mb_substr(Useful::mb_str_pad($dir, $compLen, '-'), 0, $compLen);
+            if ($lgDir == $lgPath) {
+                // rewrite namespace
+                $lcDir = DIRECTORY_SEPARATOR == $dir[0] ? $dir : DIRECTORY_SEPARATOR . $dir;
+                $end = $namespace . mb_substr($lcDir, $compLen);
+                // change slashes
+                $namespaced = DIRECTORY_SEPARATOR == mb_substr($end, -1) ? $end : $end . DIRECTORY_SEPARATOR;
+                $namespaced = strtr($namespaced, DIRECTORY_SEPARATOR, '\\');
+                // remove ext
+                $withExt = mb_strripos($file, Interfaces\ISources::EXT_PHP);
+                $withoutExt = (false !== $withExt) ? mb_substr($file, 0, $withExt) : $file ;
+                // return named class
+                return $namespaced . $withoutExt;
+            }
+        }
+        return null;
+    }
+
     public function onlyPhp(string $filename): bool
     {
-        $extPos = mb_strripos($filename, ISources::EXT_PHP);
-        return mb_substr($filename, 0, $extPos) . ISources::EXT_PHP == $filename; // something more than ext - and die!
+        $extPos = mb_strripos($filename, Interfaces\ISources::EXT_PHP);
+        return mb_substr($filename, 0, $extPos) . Interfaces\ISources::EXT_PHP == $filename; // something more than ext - and die!
     }
 }

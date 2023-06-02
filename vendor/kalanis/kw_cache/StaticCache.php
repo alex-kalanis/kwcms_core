@@ -27,33 +27,35 @@ class StaticCache
     }
 
     /**
-     * @return Formatted|ICache|null
+     * @throws CacheException
+     * @return Formatted|ICache
      */
     public static function getCache()
     {
+        if (empty(static::$cache)) {
+            throw new CacheException('Cache not initialized');
+        }
         return static::$cache;
     }
 
     /**
      * Init cache
-     * @param string $what
+     * @param string[] $what
      * @throws CacheException
      */
-    public static function init(string $what): void
+    public static function init(array $what): void
     {
-        static::checkCache();
-        static::$cache->/** @scrutinizer ignore-call */init($what);
+        static::getCache()->init($what);
     }
 
     /**
      * Is cache set?
-     * @return boolean
      * @throws CacheException
+     * @return boolean
      */
     public static function exists(): bool
     {
-        static::checkCache();
-        return static::$cache->/** @scrutinizer ignore-call */exists();
+        return static::getCache()->exists();
     }
 
     /**
@@ -64,8 +66,7 @@ class StaticCache
      */
     public static function set($content): bool
     {
-        static::checkCache();
-        return static::$cache->/** @scrutinizer ignore-call */set($content);
+        return static::getCache()->set($content);
     }
 
     /**
@@ -75,8 +76,7 @@ class StaticCache
      */
     public static function get()
     {
-        static::checkCache();
-        return static::$cache->/** @scrutinizer ignore-call */get();
+        return static::getCache()->get();
     }
 
     /**
@@ -85,17 +85,6 @@ class StaticCache
      */
     public static function clear(): void
     {
-        static::checkCache();
-        static::$cache->/** @scrutinizer ignore-call */clear();
-    }
-
-    /**
-     * @throws CacheException
-     */
-    protected static function checkCache(): void
-    {
-        if (empty(static::$cache)) {
-            throw new CacheException('Cache not initialized');
-        }
+        static::getCache()->clear();
     }
 }

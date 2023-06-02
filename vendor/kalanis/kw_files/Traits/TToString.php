@@ -1,9 +1,9 @@
 <?php
 
-namespace kalanis\kw_menu\Traits;
+namespace kalanis\kw_files\Traits;
 
 
-use kalanis\kw_menu\MenuException;
+use kalanis\kw_files\FilesException;
 
 
 /**
@@ -16,23 +16,24 @@ trait TToString
     use TLang;
 
     /**
+     * @param string $target
      * @param mixed $content
-     * @throws MenuException
+     * @throws FilesException
      * @return string
      */
-    protected function toString($content): string
+    protected function toString(string $target, $content): string
     {
         if (is_null($content)) {
-            throw new MenuException($this->getMnLang()->mnProblematicData());
+            throw new FilesException($this->getLang()->flCannotLoadFile($target));
         } elseif (is_bool($content)) {
-            throw new MenuException($this->getMnLang()->mnProblematicData());
+            throw new FilesException($this->getLang()->flCannotLoadFile($target));
         } elseif (is_resource($content)) {
             rewind($content);
             $data = stream_get_contents($content, -1, 0);
             if (false === $data) {
                 // @codeCoverageIgnoreStart
                 // must die something with stream reading
-                throw new MenuException($this->getMnLang()->mnCannotOpen());
+                throw new FilesException($this->getLang()->flCannotLoadFile($target));
             }
             // @codeCoverageIgnoreEnd
             return strval($data);
@@ -40,7 +41,7 @@ trait TToString
             try {
                 return strval($content);
             } catch (\Error $ex) {
-                throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
+                throw new FilesException($ex->getMessage(), $ex->getCode(), $ex);
             }
         }
     }

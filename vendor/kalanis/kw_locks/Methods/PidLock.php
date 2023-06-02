@@ -6,6 +6,7 @@ namespace kalanis\kw_locks\Methods;
 use kalanis\kw_locks\Interfaces\IKLTranslations;
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
+use kalanis\kw_locks\Traits\TLang;
 
 
 /**
@@ -15,8 +16,8 @@ use kalanis\kw_locks\LockException;
  */
 class PidLock implements IPassedKey
 {
-    /** @var IKLTranslations */
-    protected $lang = null;
+    use TLang;
+
     /** @var string */
     protected $tempPath = '';
     /** @var string */
@@ -29,12 +30,12 @@ class PidLock implements IPassedKey
      */
     public function __construct(string $tempPath, ?IKLTranslations $lang = null)
     {
-        $this->lang = $lang ?: new Translations();
+        $this->setKlLang($lang);
         if (\defined('PHP_OS_FAMILY') && in_array(PHP_OS_FAMILY, ['Windows', 'Unknown']) ) {
-            throw new LockException($this->lang->iklCannotUseOS());
+            throw new LockException($this->getKlLang()->iklCannotUseOS());
         }
         if (\DIRECTORY_SEPARATOR === '\\') {
-            throw new LockException($this->lang->iklCannotUseOS());
+            throw new LockException($this->getKlLang()->iklCannotUseOS());
         }
         $this->tempPath = $tempPath;
     }
@@ -62,7 +63,7 @@ class PidLock implements IPassedKey
             if (in_array($lockingPid, $otherOnes)) {
                 return true;
             }
-            throw new LockException($this->lang->iklLockedByOther());
+            throw new LockException($this->getKlLang()->iklLockedByOther());
         }
         return false;
     }

@@ -3,12 +3,14 @@
 namespace kalanis\kw_menu\MetaSource;
 
 
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_menu\Interfaces\IMetaFileParser;
 use kalanis\kw_menu\Interfaces\IMetaSource;
 use kalanis\kw_menu\Interfaces\IMNTranslations;
 use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
-use kalanis\kw_menu\Traits\TToString;
+use kalanis\kw_menu\Traits\TLang;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_storage\Interfaces\IStorage;
@@ -22,6 +24,7 @@ use kalanis\kw_storage\StorageException;
  */
 class Storage implements IMetaSource
 {
+    use TLang;
     use TToString;
 
     /** @var string[] */
@@ -62,8 +65,9 @@ class Storage implements IMetaSource
     public function load(): Menu
     {
         try {
-            return $this->parser->unpack($this->toString($this->storage->read(Stuff::arrayToPath($this->key))));
-        } catch (StorageException | PathsException $ex) {
+            $pt = Stuff::arrayToPath($this->key);
+            return $this->parser->unpack($this->toString($pt, $this->storage->read($pt)));
+        } catch (StorageException | PathsException | FilesException $ex) {
             throw new MenuException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }

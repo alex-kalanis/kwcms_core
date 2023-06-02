@@ -1,14 +1,14 @@
 <?php
 
-namespace kalanis\kw_locks\Methods;
+namespace kalanis\kw_locks;
 
 
 use kalanis\kw_locks\Interfaces\IKLTranslations;
 
 
 /**
- * Class StorageLock
- * @package kalanis\kw_locks\Methods
+ * Class Translations
+ * @package kalanis\kw_locks
  */
 class Translations implements IKLTranslations
 {

@@ -24,7 +24,7 @@ class Dual implements ICache
         $this->reloadCache = $reloadCache ?: $storageCache;
     }
 
-    public function init(string $what): void
+    public function init(array $what): void
     {
         $this->storageCache->init($what);
         $this->reloadCache->init($what);
@@ -41,7 +41,7 @@ class Dual implements ICache
         if (false === $result) {
             return false;
         }
-        # remove signal to save
+        // remove signal to save
         if ($this->reloadCache->exists()) {
             $this->reloadCache->clear();
         }

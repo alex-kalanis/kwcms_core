@@ -55,7 +55,7 @@ class MessageAdapter
         $mapper = $this->record->getMapper();
         /** @var ATable $mapper */
         $mapper->setFormat(SeparatedElements::class);
-        $mapper->setSource($path);
+        $mapper->setCombinedPath(explode(DIRECTORY_SEPARATOR, $path));
         return $this->record;
     }
 

@@ -17,11 +17,12 @@ interface IProcessFiles
     /**
      * @param string[] $entry
      * @param string|resource $content
+     * @param int<0, max>|null $offset null for complete rewrite, number for insert somewhere
      * @throws FilesException
      * @throws PathsException
      * @return bool
      */
-    public function saveFile(array $entry, $content): bool;
+    public function saveFile(array $entry, $content, ?int $offset = null): bool;
 
     /**
      * @param string[] $entry

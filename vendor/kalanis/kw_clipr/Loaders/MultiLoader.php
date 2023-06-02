@@ -4,6 +4,7 @@ namespace kalanis\kw_clipr\Loaders;
 
 
 use kalanis\kw_clipr\Interfaces\ILoader;
+use kalanis\kw_clipr\Interfaces\ISubLoaders;
 use kalanis\kw_clipr\Tasks\ATask;
 
 
@@ -12,7 +13,7 @@ use kalanis\kw_clipr\Tasks\ATask;
  * @package kalanis\kw_clipr\Tasks
  * Load from multiple sources
  */
-class MultiLoader implements ILoader
+class MultiLoader implements ILoader, ISubLoaders
 {
     /** @var ILoader[] */
     protected $subLoaders = [];
@@ -43,5 +44,10 @@ class MultiLoader implements ILoader
             }
         }
         return null;
+    }
+
+    public function getLoaders(): array
+    {
+        return $this->subLoaders;
     }
 }
