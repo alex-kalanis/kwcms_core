@@ -15,6 +15,7 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -33,7 +34,7 @@ class Rss extends AModule
     {
         Config::load(static::getClassName(static::class));
         $this->userDir = new UserDir(Stored::getPath());
-        $this->libExternal = new ExternalLink(Stored::getPath());
+        $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
     }
 
     public function process(): void

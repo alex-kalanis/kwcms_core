@@ -5,6 +5,7 @@ namespace KWCMS\modules\Images;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -17,7 +18,8 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
-use kalanis\kw_tree\Tree;
+use kalanis\kw_tree\DataSources;
+use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
 
 
@@ -37,7 +39,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
     protected $createForm = null;
     /** @var UserDir|null */
     protected $userDir = null;
-    /** @var Tree|null */
+    /** @var ITree|null */
     protected $tree = null;
     /** @var bool */
     protected $processed = false;
@@ -46,7 +48,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         $this->createForm = new Forms\DirNewForm('dirNewForm');
-        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(new ProcessDir()));
         $this->userDir = new UserDir(Stored::getPath());
     }
 
@@ -61,11 +63,11 @@ class MakeDir extends AAuthModule implements IModuleTitle
         try {
             $this->userDir->setUserPath($this->user->getDir());
             $this->userDir->process();
-            $this->tree->canRecursive(true);
-            $this->tree->startFromPath($this->userDir->getHomeDir());
+            $this->tree->wantDeep(true);
+            $this->tree->setStartPath($this->userDir->getHomeDir());
             $this->tree->setFilterCallback([$this, 'filterDirs']);
             $this->tree->process();
-            $this->createForm->composeForm($this->tree->getTree(),'#');
+            $this->createForm->composeForm($this->tree->getRoot(),'#');
             $this->createForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->createForm->process()) {
                 $libAction = $this->getLibDirAction();

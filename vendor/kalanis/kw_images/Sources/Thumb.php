@@ -52,10 +52,10 @@ class Thumb extends AFiles
             array_merge($sourceDir, [$this->config->getThumbDir(), $fileName]),
             array_merge($targetDir, [$this->config->getThumbDir(), $fileName]),
             $overwrite,
-            $this->getLang()->imThumbCannotFind(),
-            $this->getLang()->imThumbAlreadyExistsHere(),
-            $this->getLang()->imThumbCannotRemoveOld(),
-            $this->getLang()->imThumbCannotCopyBase()
+            $this->getImLang()->imThumbCannotFind(),
+            $this->getImLang()->imThumbAlreadyExistsHere(),
+            $this->getImLang()->imThumbCannotRemoveOld(),
+            $this->getImLang()->imThumbCannotCopyBase()
         );
     }
 
@@ -74,10 +74,10 @@ class Thumb extends AFiles
             array_merge($sourceDir, [$this->config->getThumbDir(), $fileName]),
             array_merge($targetDir, [$this->config->getThumbDir(), $fileName]),
             $overwrite,
-            $this->getLang()->imThumbCannotFind(),
-            $this->getLang()->imThumbAlreadyExistsHere(),
-            $this->getLang()->imThumbCannotRemoveOld(),
-            $this->getLang()->imThumbCannotMoveBase()
+            $this->getImLang()->imThumbCannotFind(),
+            $this->getImLang()->imThumbAlreadyExistsHere(),
+            $this->getImLang()->imThumbCannotRemoveOld(),
+            $this->getImLang()->imThumbCannotMoveBase()
         );
     }
 
@@ -96,10 +96,10 @@ class Thumb extends AFiles
             array_merge($path, [$this->config->getThumbDir(), $sourceName]),
             array_merge($path, [$this->config->getThumbDir(), $targetName]),
             $overwrite,
-            $this->getLang()->imThumbCannotFind(),
-            $this->getLang()->imThumbAlreadyExistsHere(),
-            $this->getLang()->imThumbCannotRemoveOld(),
-            $this->getLang()->imThumbCannotRenameBase()
+            $this->getImLang()->imThumbCannotFind(),
+            $this->getImLang()->imThumbAlreadyExistsHere(),
+            $this->getImLang()->imThumbCannotRemoveOld(),
+            $this->getImLang()->imThumbCannotRenameBase()
         );
     }
 
@@ -114,7 +114,7 @@ class Thumb extends AFiles
     {
         return $this->dataRemove(
             $this->getPath(array_merge($sourceDir, [$fileName])),
-            $this->getLang()->imThumbCannotRemove()
+            $this->getImLang()->imThumbCannotRemove()
         );
     }
 

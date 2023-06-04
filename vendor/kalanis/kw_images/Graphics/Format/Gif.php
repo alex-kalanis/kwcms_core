@@ -20,10 +20,10 @@ class Gif extends AFormat
      */
     public function __construct(?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setImLang($lang);
         if (!function_exists('imagecreatefromgif') || !function_exists('imagegif')) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
+            throw new ImagesException($this->getImLang()->imImageMagicLibNotPresent());
         }
         // @codeCoverageIgnoreEnd
     }
@@ -33,17 +33,17 @@ class Gif extends AFormat
         $result = imagecreatefromgif($path);
         if (false === $result) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imCannotCreateFromResource());
+            throw new ImagesException($this->getImLang()->imCannotCreateFromResource());
         }
         // @codeCoverageIgnoreEnd
         return $result;
     }
 
-    public function save(string $path, $resource): void
+    public function save(?string $path, $resource): void
     {
         if (!imagegif($resource, $path)) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imCannotSaveResource());
+            throw new ImagesException($this->getImLang()->imCannotSaveResource());
         }
         // @codeCoverageIgnoreEnd
     }

@@ -4,7 +4,7 @@ namespace kalanis\kw_images\Graphics\Format;
 
 
 use kalanis\kw_images\ImagesException;
-use kalanis\kw_images\TLang;
+use kalanis\kw_images\Traits\TLang;
 
 
 /**
@@ -23,9 +23,9 @@ abstract class AFormat
     abstract public function load(string $path);
 
     /**
-     * @param string $path
+     * @param string|null $path path for target, null for direct render (allowed php behavior)
      * @param \GdImage|resource $resource
      * @throws ImagesException
      */
-    abstract public function save(string $path, $resource): void;
+    abstract public function save(?string $path, $resource): void;
 }

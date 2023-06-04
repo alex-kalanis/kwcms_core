@@ -18,6 +18,7 @@ use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\Processing\Support;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -57,7 +58,7 @@ class AdminMenu extends AModule
     {
         Config::load('Core', 'page');
         Config::load('Menu');
-        $this->externalLink = new ExternalLink(Stored::getPath());
+        $this->externalLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->moduleProcessor = $processor ?: new Modules($this->getCorrectProcessor());
         $this->tmplLine = new Lib\LineTemplate();
         $this->tmplSep = new Lib\SeparatorTemplate();

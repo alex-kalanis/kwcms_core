@@ -9,7 +9,7 @@ use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_images\Sources;
-use kalanis\kw_images\TLang;
+use kalanis\kw_images\Traits\TLang;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_paths\PathsException;
 
@@ -32,7 +32,7 @@ class ImageSize
 
     public function __construct(Graphics $graphics, ISizes $config, Sources\Image $image, ?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setImLang($lang);
         $this->libImage = $image;
         $this->libGraphics = $graphics;
         $this->config = $config;
@@ -57,12 +57,12 @@ class ImageSize
         // get from the storage
         $resource = $this->libImage->get($sourceFull);
         if (empty($resource)) {
-            throw new FilesException($this->getLang()->imThumbCannotGetBaseImage());
+            throw new FilesException($this->getImLang()->imThumbCannotGetBaseImage());
         }
 
         if (false === @file_put_contents($tempPath, $resource)) {
             // @codeCoverageIgnoreStart
-            throw new FilesException($this->getLang()->imThumbCannotStoreTemporaryImage());
+            throw new FilesException($this->getImLang()->imThumbCannotStoreTemporaryImage());
         }
         // @codeCoverageIgnoreEnd
 
@@ -73,7 +73,7 @@ class ImageSize
         $result = @file_get_contents($tempPath);
         if (false === $result) {
             // @codeCoverageIgnoreStart
-            throw new FilesException($this->getLang()->imThumbCannotLoadTemporaryImage());
+            throw new FilesException($this->getImLang()->imThumbCannotLoadTemporaryImage());
         }
         // @codeCoverageIgnoreEnd
 

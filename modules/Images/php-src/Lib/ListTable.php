@@ -24,7 +24,7 @@ use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
-use kalanis\kw_tree\Tree;
+use kalanis\kw_tree\Interfaces\ITree;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
@@ -53,13 +53,13 @@ class ListTable
     }
 
     /**
-     * @param Tree $tree
+     * @param ITree $tree
      * @return Table
      * @throws FormsException
      * @throws ConnectException
      * @throws TableException
      */
-    public function getTable(Tree $tree): Table
+    public function getTable(ITree $tree): Table
     {
         // full table init
         $table = new Table();
@@ -101,7 +101,7 @@ class ListTable
         $table->addColumn(Lang::get('images.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $table->addDataSetConnector(new ConnectArray($tree->getTree()->getSubNodes(), $this->whereDir, $this->libFiles));
+        $table->addDataSetConnector(new ConnectArray($tree->getRoot()->getSubNodes(), $this->whereDir, $this->libFiles));
         $table->setOutput(new KwRenderer($table));
         return $table;
     }

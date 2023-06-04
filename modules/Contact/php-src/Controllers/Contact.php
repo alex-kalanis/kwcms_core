@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Contact;
+namespace KWCMS\modules\Contact\Controllers;
 
 
 use kalanis\kw_confs\Config;
@@ -10,7 +10,7 @@ use kalanis\kw_modules\Output;
 
 /**
  * Class Contact
- * @package KWCMS\modules\Contact
+ * @package KWCMS\modules\Contact\Controllers
  * Contact as module
  */
 class Contact extends AModule

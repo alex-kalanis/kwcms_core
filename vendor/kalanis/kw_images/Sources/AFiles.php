@@ -7,7 +7,7 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Extended\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
-use kalanis\kw_images\TLang;
+use kalanis\kw_images\Traits\TLang;
 use kalanis\kw_paths\PathsException;
 
 
@@ -27,7 +27,7 @@ abstract class AFiles
 
     public function __construct(CompositeAdapter $lib, Config $config, ?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setImLang($lang);
         $this->lib = $lib;
         $this->config = $config;
     }

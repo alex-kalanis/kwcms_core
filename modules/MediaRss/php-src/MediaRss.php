@@ -16,6 +16,7 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\FileNode;
 use kalanis\kw_tree\Tree;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;
@@ -42,8 +43,8 @@ class MediaRss extends AModule
     {
         Config::load(static::getClassName(static::class));
         $this->userDir = new UserDir(Stored::getPath());
-        $this->libExternal = new ExternalLink(Stored::getPath());
-        $this->libInternal = new InternalLink(Stored::getPath());
+        $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->libInternal = new InternalLink(Stored::getPath(), StoreRouted::getPath());
     }
 
     public function process(): void
@@ -109,7 +110,7 @@ class MediaRss extends AModule
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $passedPath = Stored::getPath()->getPath();
+        $passedPath = StoreRouted::getPath()->getPath();
         $realPath = $this->libInternal->shortContent($passedPath);
         if (empty($realPath)) {
             return $messages;

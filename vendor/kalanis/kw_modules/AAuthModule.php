@@ -13,6 +13,7 @@ use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -98,7 +99,7 @@ abstract class AAuthModule extends AModule implements IModuleUser
                 $output = new Output\Raw();
                 return $output->setContent('Authorize first');
             } else {
-                $link = new Linking\ExternalLink(Stored::getPath());
+                $link = new Linking\ExternalLink(Stored::getPath(), StoreRouted::getPath());
                 new Redirect($link->linkVariant('login'), Redirect::TARGET_TEMPORARY, 5);
                 $output = new Output\Html();
                 return $output->setContent(sprintf('<h1>%s</h1>', 'Authorize first'));

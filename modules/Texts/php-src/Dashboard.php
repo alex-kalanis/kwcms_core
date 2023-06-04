@@ -13,6 +13,7 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\Adapters\ArrayAdapter;
 use kalanis\kw_tree\Tree;
 use kalanis\kw_tree_controls\TWhereDir;
@@ -39,7 +40,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
         $this->tree = new Tree(Stored::getPath(), new ProcessDir());
         $this->userDir = new UserDir(Stored::getPath());
         $this->newFileForm = new Lib\NewFileForm('newFileForm');

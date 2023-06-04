@@ -46,7 +46,7 @@ class DirThumb extends AFiles
     public function delete(array $whichDir): bool
     {
         $whatPath = $this->getPath($whichDir);
-        return $this->dataRemove($whatPath, $this->getLang()->imDirThumbCannotRemove());
+        return $this->dataRemove($whatPath, $this->getImLang()->imDirThumbCannotRemove());
     }
 
     public function getPath(array $path): array

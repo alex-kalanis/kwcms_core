@@ -3,9 +3,10 @@
 namespace kalanis\kw_images;
 
 
-use kalanis\kw_images\Graphics\TSizes;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Interfaces\ISizes;
+use kalanis\kw_images\Traits\TSizes;
+use kalanis\kw_images\Traits\TType;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
 
@@ -17,7 +18,7 @@ use kalanis\kw_mime\MimeException;
  */
 class Graphics
 {
-    use TLang;
+    use TType;
     use TSizes;
 
     /** @var Graphics\Processor */
@@ -29,9 +30,8 @@ class Graphics
 
     public function __construct(Graphics\Processor $libGraphics, IMime $libMime, ?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->initType($libMime, $lang);
         $this->libGraphics = $libGraphics;
-        $this->libMime = $libMime;
     }
 
     public function setSizes(ISizes $sizes): self
@@ -48,14 +48,14 @@ class Graphics
     public function check(string $tempPath): bool
     {
         if (!$this->libSizes) {
-            throw new ImagesException($this->getLang()->imSizesNotSet());
+            throw new ImagesException($this->getImLang()->imSizesNotSet());
         }
         $size = @filesize($tempPath);
         if (false === $size) {
-            throw new ImagesException($this->getLang()->imImageSizeExists());
+            throw new ImagesException($this->getImLang()->imImageSizeExists());
         }
         if ($this->libSizes->getMaxSize() < $size) {
-            throw new ImagesException($this->getLang()->imImageSizeTooLarge());
+            throw new ImagesException($this->getImLang()->imImageSizeTooLarge());
         }
         return true;
     }
@@ -71,7 +71,7 @@ class Graphics
     public function resize(string $tempPath, array $realSourceName, ?array $realTargetName = null): bool
     {
         if (!$this->libSizes) {
-            throw new ImagesException($this->getLang()->imSizesNotSet());
+            throw new ImagesException($this->getImLang()->imSizesNotSet());
         }
         $realTargetName = is_null($realTargetName) ? $realSourceName : $realTargetName;
         $this->libGraphics->load($this->getType($realSourceName), $tempPath);
@@ -84,21 +84,5 @@ class Graphics
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
         $this->libGraphics->save($this->getType($realTargetName), $tempPath);
         return true;
-    }
-
-    /**
-     * @param string[] $path
-     * @throws ImagesException
-     * @throws MimeException
-     * @return string
-     */
-    protected function getType(array $path): string
-    {
-        $mime = $this->libMime->getMime($path);
-        list($type, $app) = explode('/', $mime);
-        if ('image' !== $type) {
-            throw new ImagesException($this->getLang()->imWrongMime($mime));
-        }
-        return $app;
     }
 }

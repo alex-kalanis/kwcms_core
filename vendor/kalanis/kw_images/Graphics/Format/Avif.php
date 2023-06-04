@@ -25,10 +25,10 @@ class Avif extends AFormat
      */
     public function __construct(?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setImLang($lang);
         if (!function_exists('imagecreatefromavif') || !function_exists('imageavif')) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageMagicLibNotPresent());
+            throw new ImagesException($this->getImLang()->imImageMagicLibNotPresent());
         }
         // @codeCoverageIgnoreEnd
     }
@@ -38,17 +38,17 @@ class Avif extends AFormat
         $result = imagecreatefromavif($path);
         if (false === $result) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imCannotCreateFromResource());
+            throw new ImagesException($this->getImLang()->imCannotCreateFromResource());
         }
         // @codeCoverageIgnoreEnd
         return $result;
     }
 
-    public function save(string $path, $resource): void
+    public function save(?string $path, $resource): void
     {
         if (!imageavif($resource, $path)) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imCannotSaveResource());
+            throw new ImagesException($this->getImLang()->imCannotSaveResource());
         }
         // @codeCoverageIgnoreEnd
     }

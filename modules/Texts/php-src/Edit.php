@@ -14,6 +14,7 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_storage\StorageException;
 use kalanis\kw_styles\Styles;
@@ -36,7 +37,7 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
         $this->initTTexts(Stored::getPath());
         $this->editFileForm = new Lib\EditFileForm('editFileForm');
     }

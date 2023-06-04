@@ -16,6 +16,7 @@ use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_rules\Interfaces\IRules;
 use kalanis\kw_scripts\Scripts;
 
@@ -71,7 +72,7 @@ class Login extends AAuthModule implements IModuleTitle
             $this->form->process('login');
         }
 
-        $link = new ExternalLink(Stored::getPath());
+        $link = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         if ($this->user) { // logged in
             if ($this->isJson()) {
                 // create json with status info

@@ -7,6 +7,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\RoutedPath;
 
 
 /**
@@ -28,13 +29,17 @@ class ExternalLink
     const MOD_NORMAL = 'm:'; # show in normal mode
     const MOD_SINGLE = 'ms:'; # show module as single window
 
+    /** @var Path */
     protected $path = null;
+    /** @var RoutedPath */
+    protected $routedPath = null;
     protected $moreUsers = false;
     protected $moreLangs = false;
 
-    public function __construct(Path $path, ?bool $moreUsers = null, ?bool $moreLangs = null)
+    public function __construct(Path $path, RoutedPath $routedPath, ?bool $moreUsers = null, ?bool $moreLangs = null)
     {
         $this->path = $path;
+        $this->routedPath = $routedPath;
         $this->moreUsers = is_null($moreUsers) ? boolval(Config::get('Core', 'site.more_users', false)) : $moreUsers ;
         $this->moreLangs = is_null($moreLangs) ? boolval(Config::get('Core', 'page.more_lang', false)) : $moreLangs ;
         $this->connectBy = boolval(Config::get('Core', 'site.use_rewrite', false))
@@ -68,9 +73,9 @@ class ExternalLink
     */
     public function linkVariant(?string $path=null, string $module='', bool $single=false, string $lang=null): string
     {
-        $renderUser = $this->moreUsers ? $this->path->getUser() : '' ;
-        $renderPath = (is_null($path)) ? $this->path->getPath() : $path ;
-        $renderLang = ($this->moreLangs && (is_null($path) || !is_null($lang))) ? ($lang ?: $this->path->getLang()) : '' ;
+        $renderUser = $this->moreUsers ? $this->routedPath->getUser() : '' ;
+        $renderPath = (is_null($path)) ? $this->routedPath->getPath() : $path ;
+        $renderLang = ($this->moreLangs && (is_null($path) || !is_null($lang))) ? ($lang ?: $this->routedPath->getLang()) : '' ;
         $renderModule = '';
         if (strlen($module) > 0) {
             $renderModule = ($single) ? self::MOD_SINGLE : self::MOD_NORMAL ;
@@ -93,10 +98,10 @@ class ExternalLink
     */
     public function linkStatic(string $path=null, string $addr='', ?string $lang=null): ?string
     {
-        $pt = (is_null($path)) ? $this->path->getPath() : $path ;
+        $pt = (is_null($path)) ? $this->routedPath->getPath() : $path ;
         $ad = !empty($addr) ? $addr : IPaths::SPLITTER_SLASH ;
-        $langs = ($this->moreLangs && (is_null($path) || ($lang))) ? ($lang ?: $this->path->getLang()) : '' ;
-        $link = $this->path->getUser().$langs.$pt; // full
+        $langs = ($this->moreLangs && (is_null($path) || ($lang))) ? ($lang ?: $this->routedPath->getLang()) : '' ;
+        $link = $this->routedPath->getUser().$langs.$pt; // full
 //print_r($this);
 //print_r(array($pt,$ad,$link));
         return (@file_exists($this->path->getDocumentRoot().$this->path->getPathToSystemRoot().$link))

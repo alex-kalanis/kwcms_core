@@ -11,6 +11,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_storage\StorageException;
 
 
@@ -33,7 +34,7 @@ class Preview extends AAuthModule
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
         $this->initTTexts(Stored::getPath());
         $this->mime = new MimeType(true);
     }

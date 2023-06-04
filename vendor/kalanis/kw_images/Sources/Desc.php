@@ -61,10 +61,10 @@ class Desc extends AFiles
             array_merge($sourceDir, [$this->config->getDescDir(), $fileName . $this->config->getDescExt()]),
             array_merge($targetDir, [$this->config->getDescDir(), $fileName . $this->config->getDescExt()]),
             $overwrite,
-            $this->getLang()->imDescCannotFind(),
-            $this->getLang()->imDescAlreadyExistsHere(),
-            $this->getLang()->imDescCannotRemoveOld(),
-            $this->getLang()->imDescCannotCopyBase()
+            $this->getImLang()->imDescCannotFind(),
+            $this->getImLang()->imDescAlreadyExistsHere(),
+            $this->getImLang()->imDescCannotRemoveOld(),
+            $this->getImLang()->imDescCannotCopyBase()
         );
     }
 
@@ -83,10 +83,10 @@ class Desc extends AFiles
             array_merge($sourceDir, [$this->config->getDescDir(), $fileName . $this->config->getDescExt()]),
             array_merge($targetDir, [$this->config->getDescDir(), $fileName . $this->config->getDescExt()]),
             $overwrite,
-            $this->getLang()->imDescCannotFind(),
-            $this->getLang()->imDescAlreadyExistsHere(),
-            $this->getLang()->imDescCannotRemoveOld(),
-            $this->getLang()->imDescCannotMoveBase()
+            $this->getImLang()->imDescCannotFind(),
+            $this->getImLang()->imDescAlreadyExistsHere(),
+            $this->getImLang()->imDescCannotRemoveOld(),
+            $this->getImLang()->imDescCannotMoveBase()
         );
     }
 
@@ -105,10 +105,10 @@ class Desc extends AFiles
             array_merge($path, [$this->config->getDescDir(), $sourceName . $this->config->getDescExt()]),
             array_merge($path, [$this->config->getDescDir(), $targetName . $this->config->getDescExt()]),
             $overwrite,
-            $this->getLang()->imDescCannotFind(),
-            $this->getLang()->imDescAlreadyExistsHere(),
-            $this->getLang()->imDescCannotRemoveOld(),
-            $this->getLang()->imDescCannotRenameBase()
+            $this->getImLang()->imDescCannotFind(),
+            $this->getImLang()->imDescAlreadyExistsHere(),
+            $this->getImLang()->imDescCannotRemoveOld(),
+            $this->getImLang()->imDescCannotRenameBase()
         );
     }
 
@@ -123,7 +123,7 @@ class Desc extends AFiles
     {
         return $this->dataRemove(
             array_merge($sourceDir, [$this->config->getDescDir(), $fileName . $this->config->getDescExt()]),
-            $this->getLang()->imDescCannotRemove()
+            $this->getImLang()->imDescCannotRemove()
         );
     }
 

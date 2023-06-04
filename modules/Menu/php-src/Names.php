@@ -11,6 +11,7 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
 
@@ -32,7 +33,7 @@ class Names extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
         $this->initTMenu(Stored::getPath());
     }
 

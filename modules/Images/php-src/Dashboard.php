@@ -14,12 +14,12 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
-use kalanis\kw_tree\Tree;
+use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Images\Lib\TLibAction;
 use SplFileInfo;
 
@@ -37,7 +37,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     /** @var UserDir|null */
     protected $userDir = null;
-    /** @var Tree|null */
+    /** @var ITree|null */
     protected $tree = null;
     protected $availableTypes = ['bmp', 'gif', 'jpeg', 'jpg', 'pic', 'png', 'tif', 'tiff', 'wbmp', 'webp', ];
 
@@ -65,8 +65,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         $this->userDir->setUserPath($this->user->getDir());
         $this->userDir->process();
-        $this->tree->canRecursive(false);
-        $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
+        $this->tree->wantDeep(false);
+        $this->tree->setStartPath($this->userDir->getHomeDir() . $this->getWhereDir());
         $this->tree->setFilterCallback([$this, 'filterFiles']);
         $this->tree->process();
     }
@@ -111,7 +111,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         } else {
             $out = new Output\Json();
             $out->setContent([
-                'files' => $this->tree->getTree(),
+                'files' => $this->tree->getRoot(),
             ]);
             return $out;
         }

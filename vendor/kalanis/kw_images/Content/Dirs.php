@@ -8,7 +8,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Sources;
-use kalanis\kw_images\TLang;
+use kalanis\kw_images\Traits\TLang;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_paths\PathsException;
 
@@ -35,7 +35,7 @@ class Dirs
 
     public function __construct(ImageSize $sizes, Sources\Thumb $thumb, Sources\DirDesc $dirDesc, Sources\DirThumb $dirThumb, Processor $ext, ?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setImLang($lang);
         $this->libThumb = $thumb;
         $this->libDirDesc = $dirDesc;
         $this->libDirThumb = $dirThumb;
@@ -122,7 +122,7 @@ class Dirs
     {
         if ($this->libDirThumb->isHere($path)) {
             if (!$this->libDirThumb->delete($path)) {
-                throw new FilesException($this->getLang()->imDirThumbCannotRemoveCurrent());
+                throw new FilesException($this->getImLang()->imDirThumbCannotRemoveCurrent());
             }
         }
         return true;

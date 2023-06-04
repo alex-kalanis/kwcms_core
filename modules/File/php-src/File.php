@@ -13,6 +13,7 @@ use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -35,7 +36,7 @@ class File extends AModule
     {
         Config::load(static::getClassName(static::class));
         $this->mime = new MimeType(true);
-        $this->intLink = new InternalLink(Stored::getPath());
+        $this->intLink = new InternalLink(Stored::getPath(), StoreRouted::getPath());
     }
 
     public function process(): void
@@ -45,7 +46,7 @@ class File extends AModule
     public function output(): AOutput
     {
         $out = new Raw();
-        $filePath = $this->intLink->userContent(Stored::getPath()->getPath());
+        $filePath = $this->intLink->userContent(StoreRouted::getPath()->getPath());
         $protocol = $this->inputs->getInArray('SERVER_PROTOCOL', [IEntry::SOURCE_SERVER]);
         if (!$filePath) {
             Headers::setCustomCode(strval(reset($protocol)), 404);

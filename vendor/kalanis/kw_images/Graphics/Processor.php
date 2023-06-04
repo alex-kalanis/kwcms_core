@@ -5,7 +5,7 @@ namespace kalanis\kw_images\Graphics;
 
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
-use kalanis\kw_images\TLang;
+use kalanis\kw_images\Traits\TLang;
 
 
 /**
@@ -29,7 +29,7 @@ class Processor
      */
     public function __construct(Format\Factory $factory, ?IIMTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setImLang($lang);
 
         if (!(function_exists('imagecreatetruecolor')
             && function_exists('imagecolorallocate')
@@ -40,7 +40,7 @@ class Processor
             && function_exists('imagesy')
         )) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imGdLibNotPresent());
+            throw new ImagesException($this->getImLang()->imGdLibNotPresent());
         }
         // @codeCoverageIgnoreEnd
 
@@ -55,7 +55,7 @@ class Processor
      */
     public function load(string $type, string $tempPath): self
     {
-        $processor = $this->factory->getByType($type, $this->getLang());
+        $processor = $this->factory->getByType($type, $this->getImLang());
         $this->resource = $processor->load($tempPath);
         return $this;
     }
@@ -68,9 +68,8 @@ class Processor
      */
     public function save(string $type, string $tempPath): self
     {
-        $this->checkResource();
-        $processor = $this->factory->getByType($type, $this->getLang());
-        $processor->save($tempPath, $this->resource);
+        $processor = $this->factory->getByType($type, $this->getImLang());
+        $processor->save($tempPath, $this->getResource());
         return $this;
     }
 
@@ -83,19 +82,18 @@ class Processor
      */
     public function resize(?int $width = null, ?int $height = null): self
     {
-        $this->checkResource();
         $fromWidth = $this->width();
         $fromHeight = $this->height();
         $width = (!is_null($width) && (0 < $width)) ? intval($width) : $fromWidth;
         $height = (!is_null($height) && (0 < $height)) ? intval($height) : $fromHeight;
         $resource = $this->create($width, $height);
-        if (false === imagecopyresized($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
+        if (false === imagecopyresized($resource, $this->getResource(), 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
             // @codeCoverageIgnoreStart
             imagedestroy($resource);
-            throw new ImagesException($this->getLang()->imImageCannotResize());
+            throw new ImagesException($this->getImLang()->imImageCannotResize());
         }
         // @codeCoverageIgnoreEnd
-        imagedestroy($this->resource);
+        imagedestroy($this->getResource());
         $this->resource = $resource;
         return $this;
     }
@@ -109,19 +107,18 @@ class Processor
      */
     public function resample(?int $width = null, ?int $height = null)
     {
-        $this->checkResource();
         $fromWidth = $this->width();
         $fromHeight = $this->height();
         $width = (!is_null($width) && (0 < $width)) ? intval($width) : $fromWidth;
         $height = (!is_null($height) && (0 < $height)) ? intval($height) : $fromHeight;
         $resource = $this->create($width, $height);
-        if (false === imagecopyresampled($resource, $this->resource, 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
+        if (false === imagecopyresampled($resource, $this->getResource(), 0, 0, 0, 0, $width, $height, $fromWidth, $fromHeight)) {
             // @codeCoverageIgnoreStart
             imagedestroy($resource);
-            throw new ImagesException($this->getLang()->imImageCannotResample());
+            throw new ImagesException($this->getImLang()->imImageCannotResample());
         }
         // @codeCoverageIgnoreEnd
-        imagedestroy($this->resource);
+        imagedestroy($this->getResource());
         $this->resource = $resource;
         return $this;
     }
@@ -138,7 +135,7 @@ class Processor
         $resource = imagecreatetruecolor($width, $height);
         if (false === $resource) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageCannotCreateEmpty());
+            throw new ImagesException($this->getImLang()->imImageCannotCreateEmpty());
         }
         // @codeCoverageIgnoreEnd
         return $resource;
@@ -150,11 +147,10 @@ class Processor
      */
     public function width(): int
     {
-        $this->checkResource();
-        $size = imagesx($this->resource);
+        $size = imagesx($this->getResource());
         if (false === $size) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageCannotGetSize());
+            throw new ImagesException($this->getImLang()->imImageCannotGetSize());
         }
         // @codeCoverageIgnoreEnd
         return intval($size);
@@ -166,11 +162,10 @@ class Processor
      */
     public function height(): int
     {
-        $this->checkResource();
-        $size = imagesy($this->resource);
+        $size = imagesy($this->getResource());
         if (false === $size) {
             // @codeCoverageIgnoreStart
-            throw new ImagesException($this->getLang()->imImageCannotGetSize());
+            throw new ImagesException($this->getImLang()->imImageCannotGetSize());
         }
         // @codeCoverageIgnoreEnd
         return intval($size);
@@ -178,11 +173,13 @@ class Processor
 
     /**
      * @throws ImagesException
+     * @return \GdImage|resource
      */
-    protected function checkResource(): void
+    public function getResource()
     {
         if (empty($this->resource)) {
-            throw new ImagesException($this->getLang()->imImageLoadFirst());
+            throw new ImagesException($this->getImLang()->imImageLoadFirst());
         }
+        return $this->resource;
     }
 }

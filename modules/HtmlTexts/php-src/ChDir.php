@@ -7,6 +7,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -21,7 +22,7 @@ class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
     public function __construct()
     {
         parent::__construct();
-        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
     }
 
     protected function htmlContent(string $content): Output\AOutput

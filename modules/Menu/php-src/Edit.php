@@ -17,6 +17,7 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
 
@@ -42,7 +43,7 @@ class Edit extends AAuthModule implements IModuleTitle
 
     public function __construct()
     {
-        $this->initTModuleTemplate(Stored::getPath());
+        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
         $this->initTMenu(Stored::getPath());
         $this->form = new Forms\EditNamesForm('editName');
         $this->forward = new Forward();

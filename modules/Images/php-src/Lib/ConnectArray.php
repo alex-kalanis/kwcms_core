@@ -6,7 +6,7 @@ namespace KWCMS\modules\Images\Lib;
 use kalanis\kw_connect\arrays\Connector;
 use kalanis\kw_connect\core\Interfaces\IRow;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
 

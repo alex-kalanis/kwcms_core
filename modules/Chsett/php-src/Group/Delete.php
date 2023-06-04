@@ -18,6 +18,7 @@ use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -45,7 +46,7 @@ class Delete extends AAuthModule
         Lang::load('Chsett');
         Lang::load('Admin');
         $this->libGroups = Auth::getGroups();
-        $this->links = new ExternalLink(Stored::getPath());
+        $this->links = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }

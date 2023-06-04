@@ -6,6 +6,7 @@ namespace KWCMS\modules\Pedigree\Lib;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -22,7 +23,7 @@ trait TModuleTemplate
         Lang::load('Pedigree');
         Lang::load('Admin');
         \kalanis\kw_pedigree\Config::init();
-        $this->links = new ExternalLink(Stored::getPath());
+        $this->links = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
     }
 
     protected function outModuleTemplate(string $content): string

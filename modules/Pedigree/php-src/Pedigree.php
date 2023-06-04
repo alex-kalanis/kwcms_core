@@ -17,6 +17,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_templates\HtmlElement;
 use KWCMS\modules\Layout\Layout;
 
@@ -46,7 +47,7 @@ class Pedigree extends AModule
     public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
         Config::load(static::getClassName(static::class));
-        $this->externalLink = new ExternalLink(Stored::getPath());
+        $this->externalLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->loader = $loader;
         $this->processor = $processor;
         Lang::load(static::getClassName(static::class));

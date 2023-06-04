@@ -81,10 +81,10 @@ class Image extends AFiles
             array_merge($sourceDir, [$fileName]),
             array_merge($targetDir, [$fileName]),
             $overwrite,
-            $this->getLang()->imImageCannotFind(),
-            $this->getLang()->imImageAlreadyExistsHere(),
-            $this->getLang()->imImageCannotRemoveOld(),
-            $this->getLang()->imImageCannotCopyBase()
+            $this->getImLang()->imImageCannotFind(),
+            $this->getImLang()->imImageAlreadyExistsHere(),
+            $this->getImLang()->imImageCannotRemoveOld(),
+            $this->getImLang()->imImageCannotCopyBase()
         );
     }
 
@@ -103,10 +103,10 @@ class Image extends AFiles
             array_merge($sourceDir, [$fileName]),
             array_merge($targetDir, [$fileName]),
             $overwrite,
-            $this->getLang()->imImageCannotFind(),
-            $this->getLang()->imImageAlreadyExistsHere(),
-            $this->getLang()->imImageCannotRemoveOld(),
-            $this->getLang()->imImageCannotMoveBase()
+            $this->getImLang()->imImageCannotFind(),
+            $this->getImLang()->imImageAlreadyExistsHere(),
+            $this->getImLang()->imImageCannotRemoveOld(),
+            $this->getImLang()->imImageCannotMoveBase()
         );
     }
 
@@ -125,10 +125,10 @@ class Image extends AFiles
             array_merge($path, [$sourceName]),
             array_merge($path, [$targetName]),
             $overwrite,
-            $this->getLang()->imImageCannotFind(),
-            $this->getLang()->imImageAlreadyExistsHere(),
-            $this->getLang()->imImageCannotRemoveOld(),
-            $this->getLang()->imImageCannotRenameBase()
+            $this->getImLang()->imImageCannotFind(),
+            $this->getImLang()->imImageAlreadyExistsHere(),
+            $this->getImLang()->imImageCannotRemoveOld(),
+            $this->getImLang()->imImageCannotRenameBase()
         );
     }
 
@@ -142,7 +142,7 @@ class Image extends AFiles
     public function delete(array $sourceDir, string $fileName): bool
     {
         $whatPath = $this->getPath(array_merge($sourceDir, [$fileName]));
-        return $this->dataRemove($whatPath, $this->getLang()->imImageCannotRemove());
+        return $this->dataRemove($whatPath, $this->getImLang()->imImageCannotRemove());
     }
 
     public function getPath(array $path): array

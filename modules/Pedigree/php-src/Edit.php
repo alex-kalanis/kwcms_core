@@ -14,6 +14,7 @@ use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_scripts\Scripts;
 
@@ -36,7 +37,7 @@ class Edit extends APedigree
     {
         parent::__construct();
         $this->form = new Lib\MessageForm('editPedigree');
-        $this->extLink = new ExternalLink(Stored::getPath());
+        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
     }
 
     public function run(): void

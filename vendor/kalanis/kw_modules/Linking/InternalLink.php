@@ -6,6 +6,7 @@ namespace kalanis\kw_modules\Linking;
 use kalanis\kw_confs\Config;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
+use kalanis\kw_routed_paths\RoutedPath;
 
 
 /**
@@ -15,19 +16,23 @@ use kalanis\kw_paths\Path;
  */
 class InternalLink
 {
+    /** @var Path */
     protected $path = null;
+    /** @var RoutedPath */
+    protected $routedPath = null;
     protected $userPath = '';
     protected $langPath = '';
     protected $moreUsers = false;
     protected $moreLangs = false;
 
-    public function __construct(Path $path, ?bool $moreUsers = null, ?bool $moreLangs = null)
+    public function __construct(Path $path, RoutedPath $routedPath, ?bool $moreUsers = null, ?bool $moreLangs = null)
     {
         $this->path = $path;
+        $this->routedPath = $routedPath;
         $this->moreUsers = is_null($moreUsers) ? boolval(Config::get('Core', 'site.more_users', false)) : $moreUsers ;
         $this->moreLangs = is_null($moreLangs) ? boolval(Config::get('Core', 'page.more_lang', false)) : $moreLangs ;
-        $this->setUser($path->getUser());
-        $this->setLang($path->getLang());
+        $this->setUser($routedPath->getUser());
+        $this->setLang($routedPath->getLang());
     }
 
     public function setUser(string $userPath): self
@@ -70,7 +75,7 @@ class InternalLink
     public function userContent(?string $path = null, bool $withLang = false, bool $checkPath = true): ?string
     {
         $lang = $withLang ? $this->langPath : '' ;
-        $path = is_null($path) ? $this->path->getPath() : $path ;
+        $path = is_null($path) ? $this->routedPath->getPath() : $path ;
         $target = implode(DIRECTORY_SEPARATOR, array_filter(
             [$this->path->getDocumentRoot() . $this->path->getPathToSystemRoot(), $this->userPath, $lang, $path]
         ));
@@ -80,7 +85,7 @@ class InternalLink
     public function shortContent(?string $path = null, bool $withLang = false, bool $checkPath = true): ?string
     {
         $lang = $withLang ? $this->langPath : '' ;
-        $path = is_null($path) ? $this->path->getPath() : $path ;
+        $path = is_null($path) ? $this->routedPath->getPath() : $path ;
         $target = implode(DIRECTORY_SEPARATOR, array_filter(
             [$this->userPath, $lang, $path]
         ));

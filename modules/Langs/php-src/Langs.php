@@ -12,6 +12,7 @@ use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -30,8 +31,8 @@ class Langs extends AModule
     {
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
-        $this->extLink = new ExternalLink(Stored::getPath());
-        $this->intLink = new InternalLink(Stored::getPath());
+        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->intLink = new InternalLink(Stored::getPath(), StoreRouted::getPath());
     }
 
     public function process(): void

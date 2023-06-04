@@ -21,6 +21,7 @@ use kalanis\kw_paths\Extras\DirectoryListing;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 
 
 /**
@@ -61,8 +62,8 @@ class Dirlist extends AModule
         $this->templateMain = new Templates\Main();
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
-        $this->linkInternal = new InternalLink(Stored::getPath());
-        $this->linkExternal = new ExternalLink(Stored::getPath());
+        $this->linkInternal = new InternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->linkExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->libImages = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
         $this->dirList = new DirectoryListing();
     }
