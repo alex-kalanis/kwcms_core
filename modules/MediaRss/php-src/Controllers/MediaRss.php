@@ -1,50 +1,61 @@
 <?php
 
-namespace KWCMS\modules\MediaRss;
+namespace KWCMS\modules\MediaRss\Controllers;
 
 
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
-use kalanis\kw_files\Processing\Volume\ProcessDir;
+use kalanis\kw_images\Content\Images;
+use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
-use kalanis\kw_tree\FileNode;
-use kalanis\kw_tree\Tree;
-use KWCMS\modules\Images\Interfaces\IProcessFiles;
+use kalanis\kw_tree\DataSources\Files;
+use kalanis\kw_tree\Essentials\FileNode;
+use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Images\Lib\TLibAction;
+use KWCMS\modules\MediaRss\Lib;
 
 
 /**
  * Class MediaRss
- * @package KWCMS\modules\Rss
+ * @package KWCMS\modules\MediaRss\Controllers
  * Site's MediaRss feed - images in path
  */
 class MediaRss extends AModule
 {
     use TLibAction;
 
-    /** @var UserDir|null */
-    protected $userDir = null;
-    /** @var ExternalLink|null */
+    /** @var ExternalLink */
     protected $libExternal = null;
-    /** @var InternalLink|null */
-    protected $libInternal = null;
+    /** @var ArrayPath */
+    protected $arrPath = null;
+    /** @var InnerLinks */
+    protected $innerLink = null;
+    /** @var Images */
+    protected $sources = null;
 
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->userDir = new UserDir(Stored::getPath());
         $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
-        $this->libInternal = new InternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->arrPath = new ArrayPath();
+        $this->innerLink = new InnerLinks(
+            StoreRouted::getPath(),
+            boolval(Config::get('Core', 'site.more_users', false)),
+            boolval(Config::get('Core', 'page.more_lang', false))
+        );
+        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
     }
 
     public function process(): void
@@ -79,19 +90,20 @@ class MediaRss extends AModule
         Config::load('Logo');
         $out = new Output\Raw();
         try {
-            $libTree = new Tree(Stored::getPath(), new ProcessDir());
+            $libTree = new Files((new Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
 
             $tmpl = new Lib\MainTemplate();
-            return $out->setContent($tmpl->setData(
-                $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
-                Config::get('Core', 'page.site_name'),
-                $this->libExternal->linkVariant(),
-                $this->getLibDirAction()->getDesc()
-            )->addItems(
-                implode('', $this->getItems($libTree, $this->getLibFileAction()))
-            )->render()
+            return $out->setContent(
+                $tmpl->setData(
+                    $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
+                    Config::get('Core', 'page.site_name'),
+                    $this->libExternal->linkVariant(),
+                    $this->getLibDirAction()->getDesc()
+                )->addItems(
+                    implode('', $this->getItems($libTree))
+                )->render()
             );
-        } catch (ImagesException | FilesException $ex) {
+        } catch (ImagesException | FilesException | PathsException $ex) {
             $error = $ex;
         }
         if (isset($error)) {
@@ -101,35 +113,35 @@ class MediaRss extends AModule
     }
 
     /**
-     * @param Tree $libTree
-     * @param IProcessFiles $libFiles
+     * @param ITree $libTree
      * @throws FilesException
+     * @throws PathsException
      * @return string[]
      */
-    protected function getItems(Tree $libTree, IProcessFiles $libFiles): array
+    protected function getItems(ITree $libTree): array
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
         $passedPath = StoreRouted::getPath()->getPath();
-        $realPath = $this->libInternal->shortContent($passedPath);
-        if (empty($realPath)) {
+        $realPath = $this->innerLink->toFullPath($passedPath);
+        if (!$this->sources->exists($realPath)) {
             return $messages;
         }
-        $libTree->startFromPath($realPath);
-        $libTree->canRecursive(false);
+        $libTree->setStartPath($realPath);
+        $libTree->wantDeep(false);
         $libTree->setFilterCallback([$this, 'filterImages']);
         $libTree->process();
-        if ($libTree->getTree()) {
-            foreach ($libTree->getTree()->getSubNodes() as $item) {
+        if ($libTree->getRoot()) {
+            foreach ($libTree->getRoot()->getSubNodes() as $item) {
                 /** @var FileNode $item */
-                $path = $realPath . '/' . $item->getName();
-                $desc = $libFiles->readDesc($path);
+                $strPath = $this->arrPath->setArray($item->getPath())->getString();
+                $desc = $this->sources->getDescription($item->getPath());
                 $messages[] = $tmplItem->reset()->setData(
-                    $this->libExternal->linkVariant($passedPath . '/' . $item->getName(), 'image', true),
+                    $this->libExternal->linkVariant($strPath, 'image', true),
                     $desc,
                     $desc,
-                    $this->libExternal->linkVariant($libFiles->reverseThumb($path), 'image', true),
-                    $this->libExternal->linkVariant($passedPath . '/' . $item->getName(), 'image', true)
+                    $this->libExternal->linkVariant($this->sources->reverseThumbPath($item->getPath()), 'image', true),
+                    $this->libExternal->linkVariant($strPath, 'image', true)
                 )->render();
             }
         }

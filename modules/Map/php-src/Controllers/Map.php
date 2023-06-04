@@ -1,16 +1,17 @@
 <?php
 
-namespace KWCMS\modules\Map;
+namespace KWCMS\modules\Map\Controllers;
 
 
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
+use KWCMS\modules\Map\MapTemplate;
 
 
 /**
  * Class Map
- * @package KWCMS\modules\Map
+ * @package KWCMS\modules\Map\Controllers
  * Map included as module
  */
 class Map extends AModule
@@ -25,12 +26,12 @@ class Map extends AModule
         $template->setIfImage(!empty($this->getFromParam('im', '')));
         $template->setTemplateName((string)$this->getFromParam('map', 'osm'));
         $template->setData(
-            (string)$this->getFromParam('id', '0'),
-            (string)$this->getFromParam('ns', '50'),
-            (string)$this->getFromParam('ew', '0'),
-            (string)$this->getFromParam('lv', '10'),
-            (string)$this->getFromParam('w', '200'),
-            (string)$this->getFromParam('h', '200')
+            (string) $this->getFromParam('id', '0'),
+            (string) $this->getFromParam('ns', '50'),
+            (string) $this->getFromParam('ew', '0'),
+            (string) $this->getFromParam('lv', '10'),
+            (string) $this->getFromParam('w', '200'),
+            (string) $this->getFromParam('h', '200')
         );
         $out = new Html();
         return $out->setContent($template->render());

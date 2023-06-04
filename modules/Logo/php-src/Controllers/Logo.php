@@ -1,43 +1,41 @@
 <?php
 
-namespace KWCMS\modules\Watermark\Controllers;
+namespace KWCMS\modules\Logo\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
-use kalanis\kw_files\Access\Factory as access_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
-use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
+use kalanis\kw_modules\Traits\TInitFilesLib;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
-use KWCMS\modules\Watermark\Libs;
+use KWCMS\modules\Logo\Template;
+use KWCMS\modules\Logo\Libs;
 
 
 /**
- * Class Watermark
- * @package KWCMS\modules\Watermark\Controllers
- * Watermark over images
+ * Class Logo
+ * @package KWCMS\modules\Logo\Controllers
+ * Site logo
  */
-class Watermark extends AModule
+class Logo extends AModule
 {
+    use TInitFilesLib;
+
     /** @var MimeType */
     protected $mime = null;
-    /** @var string[] */
-    protected $imagePath = [];
-    /** @var bool */
-    protected $repeat = false;
     /** @var ArrayPath */
     protected $arrPath = null;
     /** @var ExternalLink */
@@ -47,6 +45,12 @@ class Watermark extends AModule
     /** @var Libs\ImageFill */
     protected $processor = null;
 
+    /**
+     * @throws FilesException
+     * @throws ImagesException
+     * @throws PathsException
+     * @throws ConfException
+     */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
@@ -62,88 +66,78 @@ class Watermark extends AModule
     }
 
     /**
-     * @param string $webRootDir
+     * @param string|array<string|int, string|int|float|bool|object>|object $factoryData
      * @param array<string, string|int> $params
      * @throws FilesException
      * @throws ImagesException
      * @throws PathsException
      * @return Libs\ImageFill
      */
-    protected function getFillLib(string $webRootDir, array $params = []): Libs\ImageFill
+    protected function getFillLib($factoryData, array $params = []): Libs\ImageFill
     {
-        $compositeFactory = new access_factory();
-        $libProcess = $compositeFactory->getClass($webRootDir);
         return new Libs\ImageFill(
             new Libs\ImageProcessor(
                 new Graphics\Format\Factory()
             ),
             (new Graphics\ImageConfig())->setData($params),
-            new Sources\Image($libProcess, (new \kalanis\kw_files\Extended\Config())->setData($params))
+            new Sources\Image($this->getFilesLib($factoryData), (new \kalanis\kw_files\Extended\Config())->setData($params))
         );
     }
 
     public function process(): void
     {
-        $repeat = $this->inputs->getInArray('repeat', [
-            IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
-        ]);
-        $this->repeat = !empty($repeat);
-        $this->imagePath = StoreRouted::getPath()->getPath();
     }
 
     public function output(): Output\AOutput
     {
-        if ($this->params[ISitePart::KEY_LEVEL] != ISitePart::SITE_RESPONSE) {
-            $out = new Output\Raw();
-            return $out->setContent('Wrong module run level for watermark image!');
-        }
+        return ($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_RESPONSE) ? $this->outContent() : $this->outTemplate() ;
+    }
+
+    protected function outContent(): Output\AOutput
+    {
         $out = new Output\DumpingCallback();
         return $out->setCallback([$this, 'createImage']);
     }
 
     /**
-     * Create image with watermark
-     * @throws FilesException
      * @throws ImagesException
-     * @throws PathsException
      * @throws MimeException
      * @return string
      */
     public function createImage(): string
     {
         try {
-            $this->arrPath->setArray($this->imagePath);
-
-            // get image itself first
-            $imagePath = $this->innerLink->toFullPath($this->imagePath);
-            if (!$this->processor->exists($imagePath)) {
-                throw new ModuleException('No image with this path!');
+            // get logo image
+            $logoPath = $this->innerLink->toUserPath($this->arrPath->setString(Config::get('Logo', 'path'))->getArray());
+            if (!$this->processor->exists($logoPath)) {
+                $logoPath = $this->innerLink->toModulePath('Logo', ['logo.png']);
+            }
+            if (!$this->processor->exists($logoPath)) {
+                $logoPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'logo.png';
             }
 
-            // then get watermark
-            $watermarkPath = $this->innerLink->toUserPath(['watermark.png']);
-            if (!$this->processor->exists($watermarkPath)) {
-                $watermarkPath = $this->innerLink->toModulePath('Watermark', ['watermark.png']);
-            }
-            if (!$this->processor->exists($watermarkPath)) {
-                $watermarkPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'watermark.png';
-            }
+            $this->processor->process($logoPath);
 
-            $this->processor->process($imagePath, $watermarkPath, $this->repeat);
-
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $this->processor->created($imagePath)) );
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $this->processor->created($logoPath)) );
             header('Content-Type: ' . $this->mime->mimeByPath($this->arrPath->getFileName()));
-            header('Content-Disposition: filename="' . $this->arrPath->getFileName(). '"');
 
-            $this->processor->render($imagePath);
-
+            $this->processor->render($logoPath);
             return '';
-        } catch (ModuleException $ex) {
+
+        } catch (ImagesException | FilesException | PathsException $ex) {
             return $ex->getMessage();
 
         } finally {
-
             $this->processor->close();
         }
+    }
+
+    protected function outTemplate(): Output\AOutput
+    {
+        $out = new Output\Html();
+        $tmpl = new Template();
+        return $out->setContent($tmpl->setData(
+            $this->extLink->linkVariant(null, 'Logo', true)
+        )->render());
     }
 }

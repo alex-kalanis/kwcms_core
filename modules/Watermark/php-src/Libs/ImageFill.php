@@ -137,4 +137,13 @@ class ImageFill
     {
         $this->processor1->render($this->getType($sourcePath));
     }
+
+    /**
+     * @throws ImagesException
+     */
+    public function close(): void
+    {
+        imagedestroy($this->processor1->getResource());
+        imagedestroy($this->processor2->getResource());
+    }
 }

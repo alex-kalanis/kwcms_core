@@ -124,11 +124,17 @@ class InnerLinks
         );
     }
 
+    /**
+     * @return string[]
+     */
     protected function addModuleSeparator(): array
     {
         return [IPaths::DIR_MODULE];
     }
 
+    /**
+     * @return string[]
+     */
     protected function addPrefixSeparator(): array
     {
         return [IPaths::DIR_USER];
@@ -144,6 +150,9 @@ class InnerLinks
         return $this->arrPath->setString($user)->getArray();
     }
 
+    /**
+     * @return string[]
+     */
     protected function addDataSeparator(): array
     {
         return [IPaths::DIR_DATA];
@@ -151,8 +160,8 @@ class InnerLinks
 
     /**
      * @param string $lang
-     * @return string[]
      * @throws PathsException
+     * @return string[]
      */
     protected function addLang(string $lang): array
     {

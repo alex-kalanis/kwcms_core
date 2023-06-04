@@ -82,27 +82,27 @@ class InternalLink
         return $checkPath ? ( realpath($target) ? $target : null ) : $target ;
     }
 
-    public function shortContent(?string $path = null, bool $withLang = false, bool $checkPath = true): ?string
-    {
-        $lang = $withLang ? $this->langPath : '' ;
-        $path = is_null($path) ? $this->routedPath->getPath() : $path ;
-        $target = implode(DIRECTORY_SEPARATOR, array_filter(
-            [$this->userPath, $lang, $path]
-        ));
-        return $checkPath ? ( realpath($this->path->getDocumentRoot() . $this->path->getPathToSystemRoot() . DIRECTORY_SEPARATOR . $target) ? $target : null ) : $target ;
-    }
-
-    /**
-     * Output statical (and real) path to file in system dirs
-     * @param string $module
-     * @param string $path path to file
-     * @return string|null Correct path
-     */
-    public function moduleContent(string $module, string $path): ?string
-    {
-        $link = implode(DIRECTORY_SEPARATOR, array_filter(
-            [$this->path->getDocumentRoot(), $this->path->getPathToSystemRoot(), IPaths::DIR_MODULE, $module, $path]
-        ));
-        return realpath($link) ? $link : null;
-    }
+//    public function shortContent(?string $path = null, bool $withLang = false, bool $checkPath = true): ?string
+//    {
+//        $lang = $withLang ? $this->langPath : '' ;
+//        $path = is_null($path) ? $this->routedPath->getPath() : $path ;
+//        $target = implode(DIRECTORY_SEPARATOR, array_filter(
+//            [$this->userPath, $lang, $path]
+//        ));
+//        return $checkPath ? ( realpath($this->path->getDocumentRoot() . $this->path->getPathToSystemRoot() . DIRECTORY_SEPARATOR . $target) ? $target : null ) : $target ;
+//    }
+//
+//    /**
+//     * Output statical (and real) path to file in system dirs
+//     * @param string $module
+//     * @param string $path path to file
+//     * @return string|null Correct path
+//     */
+//    public function moduleContent(string $module, string $path): ?string
+//    {
+//        $link = implode(DIRECTORY_SEPARATOR, array_filter(
+//            [$this->path->getDocumentRoot(), $this->path->getPathToSystemRoot(), IPaths::DIR_MODULE, $module, $path]
+//        ));
+//        return realpath($link) ? $link : null;
+//    }
 }

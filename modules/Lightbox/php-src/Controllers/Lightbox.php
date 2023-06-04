@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Lightbox;
+namespace KWCMS\modules\Lightbox\Controllers;
 
 
 use kalanis\kw_modules\AModule;
@@ -11,7 +11,7 @@ use kalanis\kw_styles\Styles;
 
 /**
  * Class Lightbox
- * @package KWCMS\modules\Lightbox
+ * @package KWCMS\modules\Lightbox\Controllers
  * Lightbox as module
  */
 class Lightbox extends AModule

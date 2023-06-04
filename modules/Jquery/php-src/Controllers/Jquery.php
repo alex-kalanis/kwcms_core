@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Jquery;
+namespace KWCMS\modules\Jquery\Controllers;
 
 
 use kalanis\kw_modules\AModule;
@@ -10,7 +10,7 @@ use kalanis\kw_scripts\Scripts;
 
 /**
  * Class Jquery
- * @package KWCMS\modules\Jquery
+ * @package KWCMS\modules\Jquery\Controllers
  * JQuery as module
  */
 class Jquery extends AModule
