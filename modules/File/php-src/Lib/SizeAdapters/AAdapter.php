@@ -20,7 +20,7 @@ abstract class AAdapter
         $this->seek = new Seek();
     }
 
-    abstract public function fillFileDetails(string $filePath, int $fileSize, int $stepBy): void;
+    abstract public function fillFileDetails(int $fileSize, int $stepBy): void;
 
     public function parseRanges(string $range): void
     {
@@ -82,11 +82,6 @@ abstract class AAdapter
     public function getStepBy(): int
     {
         return $this->seek->getStepBy();
-    }
-
-    public function getFilePath(): string
-    {
-        return $this->seek->getFilePath();
     }
 
     public function getMax(): int

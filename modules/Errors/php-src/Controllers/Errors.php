@@ -1,20 +1,23 @@
 <?php
 
-namespace KWCMS\modules\Errors;
+namespace KWCMS\modules\Errors\Controllers;
 
 
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\JsonError;
-use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Errors\Lib;
 
 
 /**
  * Class Errors
- * @package KWCMS\modules\Errors
+ * @package KWCMS\modules\Errors\Controllers
  * Error sign as page filler
  */
 class Errors extends AModule
@@ -24,8 +27,12 @@ class Errors extends AModule
     /** @var int */
     protected $code = 0;
 
+    /** @var int[] */
     protected static $acceptable_errors = [400,401,403,404,405,406,407,408,409,410,411,413,414,415,500,501,502,503,504,505];
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         Lang::load(static::getClassName(static::class));
@@ -41,7 +48,8 @@ class Errors extends AModule
         } elseif (!empty($codesFromError)) {
             $code = reset($codesFromError);
         } else {
-            $code = Stuff::fileBase(Stuff::filename(Stored::getPath()->getPath()));
+            $arrPt = new ArrayPath();
+            $code = Stuff::fileBase($arrPt->setArray(StoreRouted::getPath()->getPath())->getFileName());
         }
 
         $this->code = in_array((int)$code, static::$acceptable_errors) ? $code : 403 ;

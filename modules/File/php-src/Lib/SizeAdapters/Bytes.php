@@ -9,10 +9,10 @@ namespace KWCMS\modules\File\Lib\SizeAdapters;
  */
 class Bytes extends AAdapter
 {
-    public function fillFileDetails(string $filePath, int $fileSize, int $stepBy): void
+    public function fillFileDetails(int $fileSize, int $stepBy): void
     {
         $this->seek
-            ->setData($filePath, $fileSize - 1)
+            ->setData($fileSize - 1)
             ->setLimits(0, $fileSize - 1)
             ->setStepBy($stepBy)
         ;

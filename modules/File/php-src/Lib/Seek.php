@@ -10,12 +10,17 @@ namespace KWCMS\modules\File\Lib;
  */
 class Seek
 {
+    /** @var int */
     protected $stepBy = 16384; // 1024 * 16
+    /** @var bool */
     protected $flushEachStep = false;
+    /** @var bool */
     protected $usedRange = false;
-    protected $filePath = '';
+    /** @var int */
     protected $max = 0;
+    /** @var int */
     protected $start = 0;
+    /** @var int */
     protected $end = 0;
 
     public function useRange(bool $useRange): self
@@ -34,9 +39,8 @@ class Seek
         return $this->flushEachStep;
     }
 
-    public function setData(string $filePath, int $seekMax): self
+    public function setData(int $seekMax): self
     {
-        $this->filePath = $filePath;
         $this->max = $seekMax; // (file size - 1) -> ex: size 7344, range 0-7343
         return $this;
     }
@@ -57,11 +61,6 @@ class Seek
     public function getStepBy(): int
     {
         return $this->stepBy;
-    }
-
-    public function getFilePath(): string
-    {
-        return $this->filePath;
     }
 
     public function getMax(): int

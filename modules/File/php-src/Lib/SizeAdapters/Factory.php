@@ -10,9 +10,9 @@ namespace KWCMS\modules\File\Lib\SizeAdapters;
 class Factory
 {
     protected static $map = [
-        'none' => '\KWCMS\modules\File\Lib\SizeAdapters\None',
-        'seek' => '\KWCMS\modules\File\Lib\SizeAdapters\Seek',
-        'bytes' => '\KWCMS\modules\File\Lib\SizeAdapters\Bytes',
+        'none' => None::class,
+        'seek' => Seek::class,
+        'bytes' => Bytes::class,
     ];
 
     public static function getAdapter(string $unit): AAdapter

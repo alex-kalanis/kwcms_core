@@ -1,24 +1,31 @@
 <?php
 
-namespace KWCMS\modules\File;
+namespace KWCMS\modules\File\Controllers;
 
 
 use kalanis\kw_address_handler\Headers;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\File\Lib;
 
 
 /**
  * Class File
- * @package KWCMS\modules\File
+ * @package KWCMS\modules\File\Controllers
  * Users files - for access that which are not available the direct way
  * @link https://stackoverflow.com/questions/3303029/http-range-header
  *
@@ -26,29 +33,53 @@ use kalanis\kw_routed_paths\StoreRouted;
  */
 class File extends AModule
 {
+    /** @var MimeType */
     protected $mime = null;
-    protected $extLink = null;
-    protected $intLink = null;
     /** @var Lib\SizeAdapters\AAdapter|null */
     protected $sizeAdapter = null;
+    /** @var ArrayPath */
+    protected $arrPath = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
+    /** @var InnerLinks */
+    protected $innerLink = null;
 
+    /**
+     * @throws ConfException
+     * @throws FilesException
+     * @throws PathsException
+     */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
         $this->mime = new MimeType(true);
-        $this->intLink = new InternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->arrPath = new ArrayPath();
+        $this->innerLink = new InnerLinks(
+            StoreRouted::getPath(),
+            boolval(Config::get('Core', 'site.more_users', false)),
+            boolval(Config::get('Core', 'page.more_lang', false))
+        );
+        $this->files = (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
     }
 
     public function process(): void
     {
     }
 
+    /**
+     * @throws FilesException
+     * @throws MimeException
+     * @throws PathsException
+     * @return AOutput
+     */
     public function output(): AOutput
     {
         $out = new Raw();
-        $filePath = $this->intLink->userContent(StoreRouted::getPath()->getPath());
+        $filePath = $this->innerLink->toFullPath(StoreRouted::getPath()->getPath());
         $protocol = $this->inputs->getInArray('SERVER_PROTOCOL', [IEntry::SOURCE_SERVER]);
-        if (!$filePath) {
+        if (!$this->files->exists($filePath)) {
             Headers::setCustomCode(strval(reset($protocol)), 404);
             return $out;
         }
@@ -71,12 +102,13 @@ class File extends AModule
             $this->sizeAdapter->onlyPart($maxTransferSize);
         }
 
+        $name = $this->arrPath->setArray($filePath)->getFileName();
         // headers
-        header('Content-Type: ' . $this->mime->mimeByPath($filePath));
+        header('Content-Type: ' . $this->mime->mimeByPath($name));
         header('Cache-Control: public, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         header('Accept-Ranges: bytes, seek');
-        header('Last-Modified: ' . date('r', filemtime($filePath)));
+        header('Last-Modified: ' . date('r', $this->files->created($filePath)));
 
         if ($wantOnlyHeaders) {
             header('Content-Length: ' . $this->sizeAdapter->getMaxLength());
@@ -86,7 +118,6 @@ class File extends AModule
         header('Content-Transfer-Encoding: binary');
 
         // pass name and download flag
-        $name = Stuff::filename($filePath);
         $down = $this->inputs->getInArray('download');
         if (!empty($down) && boolval(intval(strval(reset($down))))) {
             header('Content-Disposition: attachment; filename="' . $name . '"');
@@ -94,8 +125,8 @@ class File extends AModule
             header('Content-Disposition: inline; filename="' . $name . '"');
         }
 
+        $result = new Lib\Output($this->files, $name, $filePath);
         if ($this->sizeAdapter->usedRange()) {
-            $result = new Lib\Output();
             Headers::setCustomCode(strval(reset($protocol)), 206);
             if ($contentRange = $this->sizeAdapter->contentRange()) {
                 header($contentRange);
@@ -103,14 +134,18 @@ class File extends AModule
             return $result->setAdapter($this->sizeAdapter);
         }
 
-        // TODO: out - everything through Lib\Output
-        // left just headers for files larger than limit
-        return $out->setContent(strval(@file_get_contents($filePath)));
+        return $result;
     }
 
-    protected function isAccessible(string $filePath): bool
+    /**
+     * @param string[] $filePath
+     * @throws FilesException
+     * @throws PathsException
+     * @return bool
+     */
+    protected function isAccessible(array $filePath): bool
     {
-        return is_file($filePath) && is_readable($filePath);
+        return $this->files->isFile($filePath) && $this->files->isReadable($filePath);
     }
 
     protected function onlyHeaders(): bool
@@ -120,21 +155,23 @@ class File extends AModule
     }
 
     /**
+     * @param string[]
      * @link https://www.php.net/manual/en/function.fread.php#84115
      * @link http://tools.ietf.org/id/draft-ietf-http-range-retrieval-00.txt
      * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
-     * !! BEWARE !! Chrome want the whole file even if it's too large -> return only first segment with 206 header
+     * !! BEWARE !! Chrome wants the whole file even if it's too large -> return only first segment with 206 header
+     * @throws FilesException
+     * @throws PathsException
      */
-    protected function parseRanges(string $filePath): void
+    protected function parseRanges(array $filePath): void
     {
-        $fileSize = filesize($filePath);
+        $fileSize = $this->files->size($filePath);
         $range = $this->inputs->getInArray('HTTP_RANGE', [IEntry::SOURCE_SERVER]);
         if (!empty($range)) {
             $line = strval(reset($range));
             list($sizeUnit, $range) = explode('=', $line, 2);
             $this->sizeAdapter = Lib\SizeAdapters\Factory::getAdapter($sizeUnit);
             $this->sizeAdapter->fillFileDetails(
-                $filePath,
                 $fileSize,
                 intval(strval(Config::get('File', 'step_by', 16384)))
             );
@@ -142,11 +179,9 @@ class File extends AModule
         } else {
             $this->sizeAdapter = new Lib\SizeAdapters\Bytes();
             $this->sizeAdapter->fillFileDetails(
-                $filePath,
                 $fileSize,
                 intval(strval(Config::get('File', 'step_by', 16384)))
             );
         }
-
     }
 }

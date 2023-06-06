@@ -3,7 +3,11 @@
 namespace KWCMS\modules\File\Lib;
 
 
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_modules\Output\AOutput;
+use kalanis\kw_paths\PathsException;
 use KWCMS\modules\File\Lib\SizeAdapters\AAdapter;
 
 
@@ -15,8 +19,23 @@ use KWCMS\modules\File\Lib\SizeAdapters\AAdapter;
  */
 class Output extends AOutput
 {
+    use TToString;
+
+    /** @var CompositeAdapter */
+    protected $files = null;
     /** @var AAdapter|null */
     protected $sizeAdapter = null;
+    /** @var string */
+    protected $name = '';
+    /** @var string[] */
+    protected $path = [];
+
+    public function __construct(CompositeAdapter $files, string $name, array $path)
+    {
+        $this->files = $files;
+        $this->path = $path;
+        $this->name = $name;
+    }
 
     public function setAdapter(AAdapter $adapter): self
     {
@@ -24,28 +43,35 @@ class Output extends AOutput
         return $this;
     }
 
+    /**
+     * @throws FilesException
+     * @throws PathsException
+     * @return string
+     */
     public function output(): string
     {
-        if ($this->sizeAdapter && $this->sizeAdapter->getFilePath() && $this->sizeAdapter->getMax()) {
+        if ($this->sizeAdapter && $this->sizeAdapter->getMax()) {
             // is from what file
             header('Content-Length: ' . $this->sizeAdapter->getUsableLength());
 
-            $fp = fopen($this->sizeAdapter->getFilePath(), 'rb');
             $cur = $this->sizeAdapter->getStart();
-            fseek($fp, $cur, SEEK_SET);
 
-            while ((!feof($fp)) && $this->sizeAdapter->canContinue($cur) && (CONNECTION_NORMAL == connection_status())) {
+            while ($this->sizeAdapter->canContinue($cur) && (CONNECTION_NORMAL == connection_status())) {
                 // reset time limit for big files
                 set_time_limit(0);
-                print fread($fp, $this->sizeAdapter->readLength($cur));
+                print $this->toString($this->name, $this->files->readFile(
+                    $this->path,
+                    $cur,
+                    $this->sizeAdapter->readLength($cur)
+                ));
                 if ($this->sizeAdapter->flush()) {
                     flush();
                     ob_flush();
                 }
                 $cur += $this->sizeAdapter->getStepBy();
             };
-            fclose($fp);
+            return '';
         }
-        return '';
+        return $this->toString($this->name, $this->files->readFile($this->path));
     }
 }
