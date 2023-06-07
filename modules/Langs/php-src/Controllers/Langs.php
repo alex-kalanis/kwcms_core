@@ -98,6 +98,7 @@ class Langs extends AModule
         $this->treeList->wantDeep(false);
         $this->treeList->setStartPath($this->innerLink->toFullPath([]));
         $this->treeList->setFilterCallback([$this, 'justDirsCallback']);
+        $this->treeList->process();
         // which langs are available by both code and user
         $result = [];
         foreach ($this->treeList->getRoot()->getSubNodes() as $node) {
@@ -154,8 +155,8 @@ class Langs extends AModule
                 $this->extLink->linkVariant('', '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
                 $this->extLink->linkModule('sysimage', 'images/flags/' . $lang . '.png'),
-                (string)$this->getFromParam('vsize', ''),
-                (string)$this->getFromParam('hsize', '')
+                (string) $this->getFromParam('vsize', ''),
+                (string) $this->getFromParam('hsize', '')
             )->render();
         }
 

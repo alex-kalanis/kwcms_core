@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Layout;
+namespace KWCMS\modules\Layout\Controllers;
 
 
 use kalanis\kw_confs\Config;
@@ -20,11 +20,14 @@ use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\Processing\Support;
 use kalanis\kw_modules\SubModules;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Layout\BodyTemplate;
+use KWCMS\modules\Layout\LayoutTemplate;
 
 
 /**
  * Class Layout
- * @package KWCMS\modules\Layout
+ * @package KWCMS\modules\Layout\Controllers
  * Site's layout
  * What to sent back on http level - Layout to fill
  * - parse page making basic structure into blocks and load content of that blocks
@@ -52,7 +55,7 @@ class Layout extends AModule
     {
         $this->moduleProcessor->setLevel(ISitePart::SITE_LAYOUT);
         $defaultModuleName = Config::get('Core', 'page.default_display_module', 'Page');
-        $wantModuleName = Stored::getPath()->getModule() ?: $defaultModuleName ;
+        $wantModuleName = StoreRouted::getPath()->getModule() ?: $defaultModuleName ;
         $moduleRecord = $this->moduleProcessor->readNormalized($wantModuleName);
         $moduleRecord = $moduleRecord ?? $this->moduleProcessor->readNormalized($defaultModuleName);
 
@@ -79,7 +82,7 @@ class Layout extends AModule
         if ($this->inputIsOnlyHead()) {
             return new Raw(); // empty body for HEAD
         }
-        $isSolo = Stored::getPath()->isSingle() || $this->inputWantBeSingle();
+        $isSolo = StoreRouted::getPath()->isSingle() || $this->inputWantBeSingle();
         return ($result->canWrap() && !$isSolo) ? $this->wrapped($result) : $result ;
     }
 
@@ -100,8 +103,8 @@ class Layout extends AModule
     /**
      * @param AOutput $content
      * @param bool $useBody
-     * @return AOutput
      * @throws ModuleException
+     * @return AOutput
      */
     public function wrapped(AOutput $content, bool $useBody = true): AOutput
     {
