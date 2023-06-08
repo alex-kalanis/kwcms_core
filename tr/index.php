@@ -48,7 +48,7 @@ $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_pa
 // pass parsed params as external source
 $argv = isset($argv) ? $argv : [] ;
 $source = new \kalanis\kw_input\Sources\Basic();
-$source->setCli($argv)->setExternal($params->getParams()); // argv is for params from cli
+$source->setCli($argv)->setExternal($routedPaths->getArray()); // argv is for params from cli
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
 

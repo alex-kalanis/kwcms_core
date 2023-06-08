@@ -19,11 +19,10 @@ class ModulePath extends AChain
     public function getModule(): IModule
     {
         $defaultModuleName = strval(Config::get('Core', 'page.default_display_module', 'Dashboard'));
-        $wantModuleName = $this->path->getPath() ?: $defaultModuleName;
-        $wantModulesController = Stuff::pathToArray($wantModuleName);
+        $wantModuleName = $this->path->getPath() ?: Stuff::pathToArray($defaultModuleName);
         return $this->moduleInit(
-            Support::normalizeNamespacedName(array_shift($wantModulesController)),
-            Support::normalizeNamespacedName(Stuff::arrayToPath($wantModulesController))
+            Support::normalizeNamespacedName(array_shift($wantModuleName)),
+            Support::normalizeNamespacedName(Stuff::arrayToPath($wantModuleName))
         );
     }
 }

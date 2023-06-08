@@ -6,6 +6,7 @@ namespace kalanis\kw_modules\Templates;
 use kalanis\kw_confs\Config;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_templates\Template\TFile;
 use kalanis\kw_templates\TemplateException;
 
@@ -47,7 +48,7 @@ abstract class ATemplate extends \kalanis\kw_templates\ATemplate
     protected function templatePath(): string
     {
         $documentRoot = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot();
-        $userDir = Stored::getPath()->getUser() ? Stored::getPath()->getUser() : '' ;
+        $userDir = StoreRouted::getPath()->getUser() ? StoreRouted::getPath()->getUser() : '' ;
         $defaultStyle = Config::get('Core', 'page.default_style');
         foreach (static::$paths as $path) {
             $path = sprintf($path,

@@ -9,7 +9,7 @@ use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_paths\Path;
+use kalanis\kw_routed_paths\RoutedPath;
 
 
 /**
@@ -27,14 +27,14 @@ abstract class AChain
     protected $module = null;
     /** @var ILoader */
     protected $loader = null;
-    /** @var Path */
+    /** @var RoutedPath */
     protected $path = null;
     /** @var string[]|Entry[] */
     protected $params = [];
     /** @var int */
     protected $keyLevel = 0;
 
-    public function __construct(ILoader $loader, Path $path, int $keyLevel = ISitePart::SITE_ROUTED)
+    public function __construct(ILoader $loader, RoutedPath $path, int $keyLevel = ISitePart::SITE_ROUTED)
     {
         $this->loader = $loader;
         $this->path = $path;

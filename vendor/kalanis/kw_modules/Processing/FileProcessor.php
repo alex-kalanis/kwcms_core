@@ -102,7 +102,7 @@ class FileProcessor implements IModuleProcessor
                 if (empty($line) || ('#' == $line[0])) {
                     continue;
                 }
-                list($name, $params, $rest) = explode(static::SEPARATOR, $line, 3);
+                list($name, $params, ) = explode(static::SEPARATOR, $line, 3);
                 $record = clone $this->baseRecord;
                 $record->setModuleName($name);
                 $record->updateParams($params);

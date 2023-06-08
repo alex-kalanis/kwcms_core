@@ -8,7 +8,6 @@ use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\Support;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
@@ -23,7 +22,6 @@ class LoginForm extends Form
      * @param ArrayAccess $cookie
      * @param ArrayAccess $session
      * @return $this
-     * @throws RuleException
      */
     public function fill(ArrayAccess $cookie, ArrayAccess $session): self
     {

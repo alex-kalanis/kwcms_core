@@ -76,6 +76,9 @@ class SubModules
                     $moduleClass = $this->initModule($module, $inputs, [], array_merge(
                         $sharedParams, $configParams, $templateParams, [ISitePart::KEY_LEVEL => $level]
                     ));
+                    if (!$moduleClass) {
+                        break;
+                    }
                     $moduleClass->process();
                     $template->change($contentToChange, $moduleClass->output()->output());
                 }
@@ -90,12 +93,15 @@ class SubModules
      * @param mixed[] $constructParams
      * @param string[] $passedParams
      * @param string|null $constructPath
-     * @return IModule
+     * @return IModule|null
      * @throws ModuleException
      */
-    public function initModule(string $module, IFiltered $inputs, array $constructParams, array $passedParams, ?string $constructPath = null): IModule
+    public function initModule(string $module, IFiltered $inputs, array $constructParams, array $passedParams, ?string $constructPath = null): ?IModule
     {
         $moduleClass = $this->loader->load($module, $constructPath, $constructParams);
+        if (!$moduleClass) {
+            return null;
+        }
         $moduleClass->init($inputs, $passedParams);
         return $moduleClass;
     }

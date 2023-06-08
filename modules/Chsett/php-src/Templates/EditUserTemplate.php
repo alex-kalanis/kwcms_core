@@ -33,6 +33,9 @@ class EditUserTemplate extends ATemplate
         $this->addInput('{LABEL_CLASS}');
         $this->addInput('{INPUT_CLASS}');
         $this->addInput('{ERROR_CLASS}');
+        $this->addInput('{LABEL_STATUS}');
+        $this->addInput('{INPUT_STATUS}');
+        $this->addInput('{ERROR_STATUS}');
         $this->addInput('{LABEL_DIR}');
         $this->addInput('{INPUT_DIR}');
         $this->addInput('{ERROR_DIR}');
@@ -66,6 +69,9 @@ class EditUserTemplate extends ATemplate
         $this->updateItem('{LABEL_CLASS}', $form->getControl('class')->renderLabel());
         $this->updateItem('{INPUT_CLASS}', $form->getControl('class')->renderInput());
         $this->updateItem('{ERROR_CLASS}', $form->renderControlErrors('class'));
+        $this->updateItem('{LABEL_STATUS}', $form->getControl('status')->renderLabel());
+        $this->updateItem('{INPUT_STATUS}', $form->getControl('status')->renderInput());
+        $this->updateItem('{ERROR_STATUS}', $form->renderControlErrors('status'));
         $this->updateItem('{LABEL_DIR}', $form->getControl('dir')->renderLabel());
         $this->updateItem('{INPUT_DIR}', $form->getControl('dir')->renderInput());
         $this->updateItem('{ERROR_DIR}', $form->renderControlErrors('dir'));

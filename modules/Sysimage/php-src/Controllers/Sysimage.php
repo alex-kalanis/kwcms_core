@@ -45,6 +45,13 @@ class Sysimage extends AModule
         if (!$this->imagePath) {
             $this->imagePath = realpath(implode(DIRECTORY_SEPARATOR,
                 array_merge([
+                    __DIR__, '..', '..', 'images', $module
+                ], $pathArray)
+            ));
+        }
+        if (!$this->imagePath) {
+            $this->imagePath = realpath(implode(DIRECTORY_SEPARATOR,
+                array_merge([
                     __DIR__, '..', '..', 'images'
                 ], $pathArray)
             ));

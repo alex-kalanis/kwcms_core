@@ -31,7 +31,7 @@ $systemPaths->setPathToSystemRoot('/..');
 
 // load virtual parts - if exists
 $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Server(
-    strval(getenv('VIRTUAL_DIRECTORY') ?: 'dir_from_config/')
+    strval(getenv('VIRTUAL_DIRECTORY') ?: 'web/')
 ));
 \kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
 
@@ -46,7 +46,7 @@ session_start();
 // pass parsed params as external source
 $argv = isset($argv) ? $argv : [] ;
 $source = new \kalanis\kw_input\Sources\Basic();
-$source->setCli($argv)->setExternal($params->getParams()); // argv is for params from cli
+$source->setCli($argv)->setExternal($routedPaths->getArray()); // argv is for params from cli
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
 $session = new \kalanis\kw_input\Simplified\SessionAdapter();
@@ -112,10 +112,13 @@ $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handl
         new \kalanis\kw_auth\Methods\HttpCerts($authenticator,
             new \kalanis\kw_auth\Methods\UrlCerts($authenticator,
                 new \kalanis\kw_auth\Methods\TimedSessions($authenticator,
-                    new \kalanis\kw_auth\Methods\CountedSessions($authenticator,
+                    new \kalanis\kw_auth\Methods\Sessions($authenticator,
+//                    new \kalanis\kw_auth\Methods\CountedSessions($authenticator,
                         null,
                         $session,
-                        100// \kalanis\kw_confs\Config::get('Admin', 'admin.max_log_count', 10)
+                        $server
+//                        $server,
+//                        100// \kalanis\kw_confs\Config::get('Admin', 'admin.max_log_count', 10)
                     ),
                     $session,
                     $server
@@ -156,7 +159,12 @@ try {
     );
     $module = new \kalanis\kw_modules\Module(
         new \kalanis\kw_input\Filtered\Variables($inputs),'',
-        new \kalanis\kw_modules\Processing\Modules($processor)
+        new \kalanis\kw_modules\Processing\Modules($processor),
+        new \kalanis\kw_modules\Loaders\ClassLoader([
+            new \kalanis\kw_modules\Loaders\KwAdminLoader(),
+//            new \kalanis\kw_modules\Loaders\KwApiLoader(),
+            new \kalanis\kw_modules\Loaders\KwLoader(),
+        ])
     );
     echo $module->process('Core')->get(); // dump output
 } catch (\Exception $ex) {

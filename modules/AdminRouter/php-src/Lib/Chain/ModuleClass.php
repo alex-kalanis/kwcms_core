@@ -19,11 +19,9 @@ class ModuleClass extends AChain
     public function getModule(): IModule
     {
         $defaultModuleName = strval(Config::get('Core', 'page.default_display_module', 'Dashboard'));
-        $wantModuleName = $this->path->getPath() ?: $defaultModuleName;
-        $wantModulesBackupController = Stuff::pathToArray($wantModuleName);
-        $sameName = array_shift($wantModulesBackupController);
+        $wantModuleName = $this->path->getPath() ?: Stuff::pathToArray($defaultModuleName);
         return $this->moduleInit(
-            Support::normalizeNamespacedName($sameName),
+            Support::normalizeNamespacedName(array_shift($wantModuleName)),
             null
         );
     }

@@ -17,8 +17,8 @@ interface ILoader
      * @param string $module which module it will be looked for
      * @param string|null $constructPath next parts in target
      * @param array $constructParams params passed into __construct, mainly DI
-     * @return IModule The module
+     * @return IModule|null The module or null
      * @throws ModuleException when module is not found
      */
-    public function load(string $module, ?string $constructPath = null, array $constructParams = []): IModule;
+    public function load(string $module, ?string $constructPath = null, array $constructParams = []): ?IModule;
 }

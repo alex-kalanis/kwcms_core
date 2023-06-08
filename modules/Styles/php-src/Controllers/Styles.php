@@ -154,12 +154,13 @@ class Styles extends AModule
         $this->treeList->wantDeep(false);
         $this->treeList->setFilterCallback([$this, 'filterCss']);
         $this->treeList->process();
-        return $this->treeList->getRoot()->getSubNodes();
+        $data = $this->treeList->getRoot();
+        return $data ? $data->getSubNodes() : [];
     }
 
     public function filterCss(Node $file): bool
     {
-        return $file->isFile()
+        return $file->isDir() || $file->isFile()
             && in_array(Stuff::fileExt(
                 $this->arrPath->setArray($file->getPath())->getFileName()
             ), ['css']);

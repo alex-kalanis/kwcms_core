@@ -10,6 +10,7 @@ use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuthTree;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
@@ -40,21 +41,27 @@ abstract class AAuthModule extends AModule implements IModuleUser
         try {
             $sources = [IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET];
             $authTree = $this->getAuthTree();
-            $authTree->findMethod($this->inputs->getInObject(null, $sources));
-            if ($authTree->getMethod() && $authTree->getMethod()->isAuthorized()) {
-                $this->user = $authTree->getMethod()->getLoggedUser();
-                if (in_array($this->user->getClass(), $this->allowedAccessClasses())) {
-                    $this->run();
+            if ($authTree) {
+                $authTree->findMethod($this->inputs->getInObject(null, $sources));
+                if ($authTree->getMethod() && $authTree->getMethod()->isAuthorized()) {
+                    $this->user = $authTree->getMethod()->getLoggedUser();
+                    if (in_array($this->user->getClass(), $this->allowedAccessClasses())) {
+                        $this->run();
+                    } else {
+                        throw new AuthException('Restricted access', 405);
+                    }
                 } else {
                     throw new AuthException('Restricted access', 405);
                 }
+            } else {
+                throw new MapperException('No auth methods available!', 400);
             }
         } catch (AuthException $ex) {
             $this->error = $ex;
         }
     }
 
-    protected function getAuthTree(): IAuthTree
+    protected function getAuthTree(): ?IAuthTree
     {
         return Auth::getTree();
     }

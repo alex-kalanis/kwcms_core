@@ -56,7 +56,7 @@ class Module
         if (!$this->module) {
             throw new ModuleException(sprintf('Controller for wanted default module *%s* not found', $defaultModule));
         }
-        $this->module->init($this->inputs, $this->inputs->getInArray(null, [IEntry::SOURCE_EXTERNAL]));
+        $this->module->init($this->inputs, $this->inputs->getInArray(null, [IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_GET, IEntry::SOURCE_POST]));
         return $this;
     }
 

@@ -22,6 +22,7 @@ $lang = [
         'chsett.table.dir' => 'Directory',
         'chsett.table.group' => 'Group',
         'chsett.table.class' => 'Class',
+        'chsett.table.status' => 'Status',
         'chsett.table.name' => 'Display name',
         'chsett.table.actions' => 'Actions',
 
@@ -33,11 +34,18 @@ $lang = [
         'chsett.selected_group_empty' => 'The selected group is empty!',
         'chsett.selected_class' => 'System class',
         'chsett.selected_class_empty' => 'The selected class is empty!',
+        'chsett.selected_status' => 'Account status',
         'chsett.from_dir' => 'From directory',
         'chsett.pass' => 'Password',
         'chsett.pass_empty' => 'The password is empty!',
         'chsett.public_key' => 'Public key',
         'chsett.public_salt' => 'Shared salt',
+
+        'chsett.status_unknown' => 'Does not run',
+        'chsett.status_disabled' => 'Disabled',
+        'chsett.status_fully_enabled' => 'Enabled all',
+        'chsett.status_only_login' => 'Only login',
+        'chsett.status_only_certs' => 'Only certs',
 
         'chsett.add_user' => 'Add user',
         'chsett.edit_user' => 'Edit user',
@@ -71,6 +79,7 @@ $lang = [
         'chsett.table.dir' => 'Složka',
         'chsett.table.group' => 'Skupina',
         'chsett.table.class' => 'Třída',
+        'chsett.table.status' => 'Stav',
         'chsett.table.name' => 'Zobrazované jméno',
         'chsett.table.actions' => 'Operace',
 
@@ -82,11 +91,18 @@ $lang = [
         'chsett.selected_group_empty' => 'Skupina uživatelů je prázdná!',
         'chsett.selected_class' => 'Třída v systému',
         'chsett.selected_class_empty' => 'Vybraná třída je prázdná!',
+        'chsett.selected_status' => 'Stav účtu',
         'chsett.from_dir' => 'Počáteční složka',
         'chsett.pass' => 'Heslo',
         'chsett.pass_empty' => 'Heslo je prázdné!',
         'chsett.public_key' => 'Veřejný klíč',
         'chsett.public_salt' => 'Sdílená sůl',
+
+        'chsett.status_unknown' => 'Nefunguje',
+        'chsett.status_disabled' => 'Zakázáno',
+        'chsett.status_fully_enabled' => 'Vše povoleno',
+        'chsett.status_only_login' => 'Jen přihlašování',
+        'chsett.status_only_certs' => 'Jen certifikáty',
 
         'chsett.add_user' => 'Přidat uživatele',
         'chsett.edit_user' => 'Upravit uživatele',

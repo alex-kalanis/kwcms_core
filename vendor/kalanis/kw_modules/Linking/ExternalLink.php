@@ -74,7 +74,7 @@ class ExternalLink
     public function linkVariant(?string $path=null, string $module='', bool $single=false, string $lang=null): string
     {
         $renderUser = $this->moreUsers ? $this->routedPath->getUser() : '' ;
-        $renderPath = (is_null($path)) ? $this->routedPath->getPath() : $path ;
+        $renderPath = (is_null($path)) ? implode(IPaths::SPLITTER_SLASH, $this->routedPath->getPath()) : $path ;
         $renderLang = ($this->moreLangs && (is_null($path) || !is_null($lang))) ? ($lang ?: $this->routedPath->getLang()) : '' ;
         $renderModule = '';
         if (strlen($module) > 0) {

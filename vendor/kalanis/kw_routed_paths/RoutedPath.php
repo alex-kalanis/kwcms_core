@@ -3,6 +3,7 @@
 namespace kalanis\kw_routed_paths;
 
 
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 
@@ -106,7 +107,7 @@ class RoutedPath
         return [
             'user' => $this->user,
             'lang' => $this->lang,
-            'path' => $this->path,
+            'path' => implode(IPaths::SPLITTER_SLASH, $this->path),
             'module' => $this->module,
             'isSingle' => $this->isSingle,
             'staticPath' => $this->staticPath,

@@ -22,3 +22,6 @@ php-tests/external/
 
 # discarded files
 *discard*
+
+# user data
+/user

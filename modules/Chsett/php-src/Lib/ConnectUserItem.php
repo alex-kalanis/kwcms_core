@@ -25,6 +25,7 @@ class ConnectUserItem implements IRow
             'dir' => $user->getDir(),
             'group' => $user->getGroup(),
             'class' => $user->getClass(),
+            'status' => is_null($user->getStatus()) ? '' : $user->getStatus(),
             'name' => $user->getDisplayName(),
             'canCerts' => $user instanceof IUserCert,
         ];

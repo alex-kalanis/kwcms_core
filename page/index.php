@@ -32,7 +32,7 @@ $systemPaths->setPathToSystemRoot('/..');
 
 // load virtual parts - if exists
 $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Server(
-    strval(getenv('VIRTUAL_DIRECTORY') ?: 'dir_from_config/')
+    strval(getenv('VIRTUAL_DIRECTORY') ?: 'web/')
 ));
 \kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
 
@@ -40,6 +40,7 @@ $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_pa
 \kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
+\kalanis\kw_confs\Config::set('Core', 'site.default_display_module', 'Layout'); // overwrite default display
 
 // init styles and scripts
 \kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($systemPaths, $routedPaths));
@@ -48,10 +49,9 @@ $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_pa
 // pass parsed params as external source
 $argv = isset($argv) ? $argv : [] ;
 $source = new \kalanis\kw_input\Sources\Basic();
-$source->setCli($argv)->setExternal($params->getParams()); // argv is for params from cli
+$source->setCli($argv)->setExternal($routedPaths->getArray()); // argv is for params from cli
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
-\kalanis\kw_paths\Stored::init($paths);
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
 \kalanis\kw_langs\Lang::init(
@@ -83,7 +83,7 @@ class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
 try {
     $processor = new ExProcessor(
         new \kalanis\kw_modules\Processing\ModuleRecord(),
-        $paths->getDocumentRoot() . $paths->getPathToSystemRoot()
+        $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
     );
     $module = new \kalanis\kw_modules\Module(
         new \kalanis\kw_input\Filtered\Variables($inputs),'',

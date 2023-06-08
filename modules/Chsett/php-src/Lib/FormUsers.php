@@ -10,7 +10,6 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
@@ -31,12 +30,13 @@ use kalanis\kw_rules\Interfaces\IRules;
  */
 class FormUsers extends Form
 {
+    use TStatuses;
+
     /**
      * @param IUser $user
      * @param IGroup[] $groups
      * @param string[] $classes
      * @return $this
-     * @throws RuleException
      */
     public function composeForm(IUser $user, array $groups, array $classes): self
     {
@@ -49,6 +49,8 @@ class FormUsers extends Form
             ->addRule(IRules::IS_NOT_EMPTY, Lang::get('chsett.selected_group_empty'));
         $this->addSelect('class', Lang::get('chsett.selected_class'), $user->getClass(), $classes)
             ->addRule(IRules::IS_NOT_EMPTY, Lang::get('chsett.selected_class_empty'));
+        $origStat = is_null($user->getStatus()) ? '' : $user->getStatus();
+        $this->addSelect('status', Lang::get('chsett.selected_status'), $origStat, $this->statuses());
         $this->addText('dir', Lang::get('chsett.from_dir'), $user->getDir());
         $this->addSubmit('saveProp', Lang::get('dashboard.button_set'));
         $this->addReset('resetProp', Lang::get('dashboard.button_reset'));
@@ -70,10 +72,6 @@ class FormUsers extends Form
         return $group->getGroupName();
     }
 
-    /**
-     * @return $this
-     * @throws RuleException
-     */
     public function wantPass(): self
     {
         $this->addPassword('pass', Lang::get('chsett.pass'))

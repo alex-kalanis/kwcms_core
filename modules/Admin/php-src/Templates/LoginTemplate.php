@@ -37,8 +37,8 @@ class LoginTemplate extends ATemplate
     /**
      * @param LoginForm $form
      * @param string $langLink
-     * @return $this
      * @throws RenderException
+     * @return $this
      */
     public function setData(LoginForm $form, string $langLink = ''): self
     {

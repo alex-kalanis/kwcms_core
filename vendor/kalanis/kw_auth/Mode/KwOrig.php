@@ -68,13 +68,10 @@ class KwOrig implements IMode
      */
     private function makeHash(string $word): string
     {
-        if (function_exists('mhash')) {
-            return (string) mhash(MHASH_SHA256, $word);
-        }
-        // @codeCoverageIgnoreStart
         if (function_exists('hash')) {
             return (string) hash('sha256', $word);
         }
+        // @codeCoverageIgnoreStart
         throw new AuthException($this->getAuLang()->kauHashFunctionNotFound());
         // @codeCoverageIgnoreEnd
     }

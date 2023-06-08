@@ -19,11 +19,10 @@ class AdminModule extends AChain
     public function getModule(): IModule
     {
         $defaultModuleName = strval(Config::get('Core', 'page.default_display_module', 'Dashboard'));
-        $wantModuleName = $this->path->getPath() ?: $defaultModuleName;
-        $wantArray = Stuff::pathToArray($wantModuleName);
+        $wantModuleName = $this->path->getPath() ?: Stuff::pathToArray($defaultModuleName);
         return $this->moduleInit(
             'Admin',
-            Support::normalizeNamespacedName(Stuff::arrayToPath($wantArray))
+            Support::normalizeNamespacedName(Stuff::arrayToPath($wantModuleName))
         );
     }
 }

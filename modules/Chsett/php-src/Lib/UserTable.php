@@ -37,6 +37,8 @@ use KWCMS\modules\Admin\Shared\SimplifiedPager;
  */
 class UserTable
 {
+    use TStatuses;
+
     /** @var IFiltered|null */
     protected $variables = null;
     /** @var ExternalLink|null */
@@ -108,6 +110,8 @@ class UserTable
         $classes = $this->libClasses->readClasses();
         $this->table->addOrderedColumn(Lang::get('chsett.table.class'), new Columns\Map('class', $classes), new Fields\Options($classes));
         $this->table->addOrderedColumn(Lang::get('chsett.table.name'), new Columns\Bold('name'), new Fields\TextContains());
+        $statuses = $this->statuses();
+        $this->table->addOrderedColumn(Lang::get('chsett.table.status'), new Columns\Map('status', $statuses), new Fields\Options($statuses));
 
         $columnActions = new Columns\Multi('&nbsp;&nbsp;', 'id');
         $columnActions->addColumn(new Columns\Func('id', [$this, 'editLink']));
