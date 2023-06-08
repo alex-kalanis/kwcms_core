@@ -3,8 +3,10 @@
 namespace KWCMS\modules\Core\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\ILoader;
@@ -34,6 +36,12 @@ class Core extends AModule
     /** @var Modules */
     protected $moduleProcessor = null;
 
+    /**
+     * @param ILoader|null $loader
+     * @param Modules|null $processor
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct(?ILoader $loader, ?Modules $processor)
     {
         Config::load(static::getClassName(static::class), 'site');
@@ -73,7 +81,7 @@ class Core extends AModule
 
     /**
      * Real modules with basic templates - admin, page, ...
-     * @return array
+     * @return string[]
      */
     protected function modulesWithPassingParams(): array
     {

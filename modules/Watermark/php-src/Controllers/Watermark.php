@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Watermark\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\Factory as access_factory;
 use kalanis\kw_files\FilesException;
@@ -10,6 +11,7 @@ use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_mime\Check\LocalVolume1;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
@@ -47,6 +49,12 @@ class Watermark extends AModule
     /** @var Libs\ImageFill */
     protected $processor = null;
 
+    /**
+     * @throws ConfException
+     * @throws FilesException
+     * @throws ImagesException
+     * @throws PathsException
+     */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
@@ -73,12 +81,15 @@ class Watermark extends AModule
     {
         $compositeFactory = new access_factory();
         $libProcess = $compositeFactory->getClass($webRootDir);
+        $mime = new LocalVolume1();
+        $mime->canUse($webRootDir);
         return new Libs\ImageFill(
             new Libs\ImageProcessor(
                 new Graphics\Format\Factory()
             ),
             (new Graphics\ImageConfig())->setData($params),
-            new Sources\Image($libProcess, (new \kalanis\kw_files\Extended\Config())->setData($params))
+            new Sources\Image($libProcess, (new \kalanis\kw_files\Extended\Config())->setData($params)),
+            $mime
         );
     }
 

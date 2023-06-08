@@ -3,11 +3,15 @@
 namespace KWCMS\modules\Page\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Loaders\KwLoader;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
@@ -16,8 +20,12 @@ use kalanis\kw_modules\Processing\FileProcessor;
 use kalanis\kw_modules\Processing\ModuleRecord;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_modules\SubModules;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Page\DummyTemplate;
 
 
@@ -30,13 +38,26 @@ use KWCMS\modules\Page\DummyTemplate;
  */
 class Page extends AModule
 {
+    use TToString;
+
     /** @var SubModules */
     protected $subModules = null;
-    /** @var InternalLink */
-    protected $link = null;
     /** @var string */
     protected $content = '';
+    /** @var ArrayPath */
+    protected $arrPath = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
+    /** @var InnerLinks */
+    protected $innerLink = null;
 
+    /**
+     * @param ILoader|null $loader
+     * @param Modules|null $processor
+     * @throws FilesException
+     * @throws PathsException
+     * @throws ConfException
+     */
     public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
         Config::load('Core', 'page');
@@ -44,18 +65,47 @@ class Page extends AModule
         $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() ));
         $moduleProcessor->setLevel(ISitePart::SITE_CONTENT);
         $this->subModules = new SubModules($loader, $moduleProcessor);
-        $this->link = new InternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->arrPath = new ArrayPath();
+        $this->innerLink = new InnerLinks(
+            StoreRouted::getPath(),
+            boolval(Config::get('Core', 'site.more_users', false)),
+            false
+        );
+        $this->files = (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
     }
 
+    /**
+     * @throws FilesException
+     * @throws ModuleException
+     * @throws PathsException
+     */
     public function process(): void
     {
-        $path = $this->link->userContent();
-        if (empty($path) || is_dir($path)) {
-            $path = $this->link->userContent('index.htm', false, false);
+        $userPath = $this->innerLink->toFullPath(StoreRouted::getPath()->getPath());
+        $content = null;
+        if ($this->files->isFile($userPath)) {
+            $content = $this->toString(Stuff::arrayToPath($userPath), $this->files->readFile($userPath));
         }
-        $content = @file_get_contents($path);
-        if (false === $content) {
-            throw new ModuleException(sprintf('Cannot load content on path *%s*', StoreRouted::getPath()->getPath()));
+
+        $indexPath = array_merge($userPath, ['index.htm']);
+        if (!$content && $this->files->isDir($userPath) && $this->files->isFile($indexPath)) {
+            $content = $this->toString(Stuff::arrayToPath($indexPath), $this->files->readFile($indexPath));
+        }
+
+        $indexPath = array_merge($userPath, ['index.html']);
+        if (!$content && $this->files->isDir($userPath) && $this->files->isFile($indexPath)) {
+            $content = $this->toString(Stuff::arrayToPath($indexPath), $this->files->readFile($indexPath));
+        }
+
+        $indexPath = array_merge($userPath, ['default.html']);
+        if (!$content && $this->files->isDir($userPath) && $this->files->isFile($indexPath)) {
+            $content = $this->toString(Stuff::arrayToPath($indexPath), $this->files->readFile($indexPath));
+        }
+
+        if (!$content) {
+            throw new ModuleException(sprintf('Cannot load content on path *%s*', Stuff::arrayToPath(StoreRouted::getPath()->getPath())), 404);
         }
         $this->content = strval($content);
     }

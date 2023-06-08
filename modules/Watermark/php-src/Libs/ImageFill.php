@@ -10,6 +10,7 @@ use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_images\Sources;
 use kalanis\kw_images\Traits\TLang;
 use kalanis\kw_images\Traits\TType;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_paths\PathsException;
 
@@ -33,13 +34,14 @@ class ImageFill
     /** @var ISizes */
     protected $config = null;
 
-    public function __construct(ImageProcessor $processor, ISizes $config, Sources\Image $image, ?IIMTranslations $lang = null)
+    public function __construct(ImageProcessor $processor, ISizes $config, Sources\Image $image, IMime $mime, ?IIMTranslations $lang = null)
     {
         $this->setImLang($lang);
         $this->libImage = $image;
         $this->processor1 = clone $processor;
         $this->processor2 = clone $processor;
         $this->config = $config;
+        $this->initType($mime, $lang);
     }
 
     /**
@@ -109,21 +111,20 @@ class ImageFill
             $this->processor2->load($this->getType($watermarkPath), $watermarkPath);
         }
 
-
         $imX = $this->processor1->width();
         $imY = $this->processor1->height();
         $wmX = $this->processor2->width();
         $wmY = $this->processor2->height();
 
-        imagecopy($this->processor1->getResource(), $this->processor2->getResource(), ($imX/2)-($wmX/2), ($imY/2)-($wmY/2), 0, 0, $wmX, $wmY);
+        imagecopy($this->processor1->getResource(), $this->processor2->getResource(), intval(($imX/2)-($wmX/2)), intval(($imY/2)-($wmY/2)), 0, 0, $wmX, $wmY);
 
         if ($repeat) {
             $waterless = $imX - $wmX;
             $rest = ceil($waterless/($wmX/2));
 
             for ($n=1; $n<=$rest; $n++) {
-                imagecopy($this->processor1->getResource(), $this->processor2->getResource(), (($imX/2)-($wmX/2))-($wmX*$n), ($imY/2)-($wmY/2), 0, 0, $wmX, $wmY);
-                imagecopy($this->processor1->getResource(), $this->processor2->getResource(), (($imX/2)-($wmX/2))+($wmX*$n), ($imY/2)-($wmY/2), 0, 0, $wmX, $wmY);
+                imagecopy($this->processor1->getResource(), $this->processor2->getResource(), intval((($imX/2)-($wmX/2))-($wmX*$n)), intval(($imY/2)-($wmY/2)), 0, 0, $wmX, $wmY);
+                imagecopy($this->processor1->getResource(), $this->processor2->getResource(), intval((($imX/2)-($wmX/2))+($wmX*$n)), intval(($imY/2)-($wmY/2)), 0, 0, $wmX, $wmY);
             }
         }
     }

@@ -8,6 +8,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -23,6 +24,7 @@ use kalanis\kw_modules\SubModules;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\SinglePage\PageTemplate;
@@ -37,6 +39,8 @@ use KWCMS\modules\SinglePage\PageTemplate;
  */
 class SinglePage extends AModule
 {
+    use TToString;
+
     /** @var SubModules */
     protected $subModules = null;
     /** @var InternalLink */
@@ -90,7 +94,7 @@ class SinglePage extends AModule
         if (!$this->files->isFile($path)) {
             throw new ModuleException(sprintf('Cannot load content on path *%s*', $configPath));
         }
-        $this->content = $this->files->readFile($path);
+        $this->content = $this->toString(Stuff::arrayToPath($path), $this->files->readFile($path));
     }
 
     public function output(): AOutput

@@ -28,7 +28,7 @@ use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Image\Template;
-use KWCMS\modules\Layout\Layout;
+use KWCMS\modules\Layout\Controllers\Layout;
 
 
 /**
