@@ -7,6 +7,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -24,10 +25,9 @@ class Create extends ADir
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        try {
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+        $this->userDir->setUserPath($this->getUserDir());
 
+        try {
             $this->dirForm->composeCreateDir();
             $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
 
@@ -36,7 +36,7 @@ class Create extends ADir
                 $this->processed[$item] = $this->getLibAction()->createDir($item);
                 $this->dirForm->composeCreateDir(); // again, changes in tree
             }
-        } catch (FilesException | FormsException $ex) {
+        } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;
         }
     }

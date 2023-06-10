@@ -5,6 +5,7 @@ namespace kalanis\kw_locks\Methods;
 
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_locks\Interfaces\IKLTranslations;
 use kalanis\kw_locks\Interfaces\IPassedKey;
 use kalanis\kw_locks\LockException;
@@ -20,6 +21,7 @@ use kalanis\kw_paths\PathsException;
 class FilesLock implements IPassedKey
 {
     use TLang;
+    use TToString;
 
     /** @var ArrayPath */
     protected $arrPt = null;
@@ -65,7 +67,7 @@ class FilesLock implements IPassedKey
             if (!$this->files->exists($this->specialKey)) {
                 return false;
             }
-            if ($this->checkContent == strval($this->files->readFile($this->specialKey))) {
+            if ($this->checkContent == $this->toString('lock', $this->files->readFile($this->specialKey))) {
                 return true;
             }
             throw new LockException($this->getKlLang()->iklLockedByOther());

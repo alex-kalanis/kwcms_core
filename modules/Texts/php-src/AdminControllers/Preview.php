@@ -1,23 +1,27 @@
 <?php
 
-namespace KWCMS\modules\Texts;
+namespace KWCMS\modules\Texts\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_storage\StorageException;
+use KWCMS\modules\Texts\Lib;
+use KWCMS\modules\Texts\TextsException;
 
 
 /**
  * Class Preview
- * @package KWCMS\modules\Texts
+ * @package KWCMS\modules\Texts\AdminControllers
  * Site's text preview - show what will be rendered and saved
  */
 class Preview extends AAuthModule
@@ -59,16 +63,19 @@ class Preview extends AAuthModule
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }
-        $path = Stuff::sanitize($this->userDir->getHomeDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
+
         try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
+
             $externalContent = $this->inputs->getInArray('content', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
             $this->displayContent = (!empty($externalContent))
                 ? strval(reset($externalContent))
-                : ( $this->storage->exists($path)
-                    ? $this->storage->get($path)
+                : ( $this->files->isFile($fullPath)
+                    ? $this->files->readFile($fullPath)
                     : ''
                 );
-        } catch (StorageException $ex) {
+        } catch (FilesException | PathsException $ex) {
             $this->error = $ex;
         }
     }

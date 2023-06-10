@@ -14,12 +14,12 @@ use kalanis\kw_menu\Menu\Entry;
  * Class EditNamesForm
  * @package KWCMS\modules\Menu\Forms
  * Edit Names of items in menu
- * @property Controls\Text current
- * @property Controls\Text menuName
- * @property Controls\Text menuDesc
- * @property Controls\Text menuGoSub
- * @property Controls\Submit saveFile
- * @property Controls\Reset resetFile
+ * @property Controls\Text $current
+ * @property Controls\Text $menuName
+ * @property Controls\Text $menuDesc
+ * @property Controls\Text $menuGoSub
+ * @property Controls\Submit $saveFile
+ * @property Controls\Reset $resetFile
  */
 class EditNamesForm extends Form
 {

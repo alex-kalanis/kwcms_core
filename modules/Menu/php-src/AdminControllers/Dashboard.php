@@ -1,26 +1,34 @@
 <?php
 
-namespace KWCMS\modules\Menu;
+namespace KWCMS\modules\Menu\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Menu\Forms;
+use KWCMS\modules\Menu\Lib;
+use KWCMS\modules\Menu\Templates;
 
 
 /**
  * Class Dashboard
- * @package KWCMS\modules\Menu
+ * @package KWCMS\modules\Menu\AdminControllers
  * Site's Menu - list available actions
  */
 class Dashboard extends AAuthModule implements IModuleTitle
@@ -33,6 +41,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $isProcessed = false;
 
+    /**
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
@@ -53,10 +65,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
             if (empty($item->getFile())) {
                 $item->setData($this->getWhereDir(), $item->getName(), $item->getTitle(), $item->getDisplayCount());
             }
-        } catch (MenuException $ex) {
+        } catch (MenuException | PathsException $ex) {
             $item = new \kalanis\kw_menu\Menu\Menu();
             $item->setData(
-                $this->getWhereDir(),
+                Stuff::filename($this->getWhereDir()),
                 $this->getWhereDir(),
                 $this->getWhereDir(),
                 0
@@ -67,9 +79,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $this->editPropsForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editPropsForm->process()) {
                 $this->libMenu->getMeta()->updateInfo(
-                    (string)$this->editPropsForm->getControl('menuName')->getValue(),
-                    (string)$this->editPropsForm->getControl('menuDesc')->getValue(),
-                    (int)$this->editPropsForm->getControl('menuCount')->getValue()
+                    strval($this->editPropsForm->getControl('menuName')->getValue()),
+                    strval($this->editPropsForm->getControl('menuDesc')->getValue()),
+                    intval($this->editPropsForm->getControl('menuCount')->getValue())
                 );
                 $this->libMenu->getMeta()->save();
                 $this->libSemaphore->want();
@@ -80,6 +92,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -87,18 +103,26 @@ class Dashboard extends AAuthModule implements IModuleTitle
             : $this->outHtml();
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outHtml(): Output\AOutput
     {
         $out = new Output\Html();
         if (!empty($this->error)) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
-        Styles::want('Menu', 'menu.css');
-        Scripts::want('Menu', 'counter.js');
+        Styles::want('menu', 'menu.css');
+        Scripts::want('menu', 'counter.js');
         $page = new Templates\DashboardTemplate();
         return $out->setContent($this->outModuleTemplate($page->setData($this->editPropsForm)->render()));
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

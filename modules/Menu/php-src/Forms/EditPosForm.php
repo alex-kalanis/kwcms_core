@@ -15,15 +15,22 @@ use kalanis\kw_menu\Menu\Entry;
  * Class EditPosForm
  * @package KWCMS\modules\Menu\Forms
  * Edit positions in menu
- * @property Controls\Submit saveFile
- * @property Controls\Reset resetFile
+ * @property Controls\Submit $saveFile
+ * @property Controls\Reset $resetFile
  * Contains extra functions because it's necessary to pass data as 2-dimensional array and fill them as 1-dimensional
  */
 class EditPosForm extends Form
 {
+    /** @var InputPosition[] */
     protected $inputs = [];
+    /** @var array<string, int> */
     protected $filledValues = [];
 
+    /**
+     * @param Entry[] $items
+     * @param int $displayCounter
+     * @return EditPosForm
+     */
     public function composeForm(array $items, int $displayCounter): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
@@ -34,6 +41,10 @@ class EditPosForm extends Form
         return $this;
     }
 
+    /**
+     * @param Entry $item
+     * @param string|int $key
+     */
     protected function addItemControl(Entry $item, $key): void
     {
         $input = new InputPosition();
@@ -42,6 +53,9 @@ class EditPosForm extends Form
         $this->inputs[] = $input;
     }
 
+    /**
+     * @return InputPosition[]
+     */
     public function getInputs(): array
     {
         return $this->inputs;
@@ -67,6 +81,12 @@ class EditPosForm extends Form
         return $result;
     }
 
+    /**
+     * @param array<string, int> $result
+     * @param array<string, int> $entry
+     * @param string $key
+     * @return array<string, int>
+     */
     protected function addArrayFill(&$result, array $entry, $key)
     {
         foreach ($entry as $subKey => $item) {

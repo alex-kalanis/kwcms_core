@@ -43,4 +43,19 @@ class Translations implements IMNTranslations, ISMTranslations
     {
         return Lang::get('menu.error.problematic_data');
     }
+
+    public function mnNoAvailableEntrySource(): string
+    {
+        return Lang::get('menu.error.no_entry_source');
+    }
+
+    public function mnNoAvailableMetaSource(): string
+    {
+        return Lang::get('menu.error.no_meta_source');
+    }
+
+    public function mnCannotGetSemaphoreClass(): string
+    {
+        return Lang::get('menu.error.no_semaphore');
+    }
 }

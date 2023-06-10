@@ -5,21 +5,26 @@ namespace KWCMS\modules\Files\AdminControllers\File;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
+use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_styles\Styles;
-use kalanis\kw_tree\Tree;
+use kalanis\kw_tree\DataSources;
+use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Files\Lib;
 
 
@@ -35,13 +40,13 @@ class Read extends AAuthModule implements IModuleTitle
     use Lib\TParams;
     use TWhereDir;
 
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
-    /** @var Tree|null */
+    /** @var ITree */
     protected $tree = null;
-    /** @var Lib\FileForm|null */
+    /** @var Lib\FileForm */
     protected $fileForm = null;
-    /** @var MimeType|null */
+    /** @var MimeType */
     protected $libFileMime = null;
     /** @var string */
     protected $fileMime = '';
@@ -50,11 +55,14 @@ class Read extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $processed = false;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->userDir = new UserDir();
         $this->fileForm = new Lib\FileForm('readFileForm');
         $this->libFileMime = new MimeType(true);
     }
@@ -67,15 +75,18 @@ class Read extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        try {
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+        $this->userDir->setUserPath($this->getUserDir());
 
-            $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
-            $this->tree->canRecursive(false);
-            $this->tree->setFilterCallback([$this, 'filterFiles']);
+        try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+
+            $this->tree->setStartPath($fullPath);
+            $this->tree->wantDeep(false);
+            $this->tree->setFilterCallback([$this, 'filterFileTree']);
             $this->tree->process();
-            $this->fileForm->composeReadFile($this->tree->getTree());
+
+            $this->fileForm->composeReadFile($this->tree->getRoot());
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->fileForm->process()) {
@@ -84,7 +95,7 @@ class Read extends AAuthModule implements IModuleTitle
                 $this->fileMime = $this->libFileMime->mimeByPath($item);
                 $this->processed = true;
             }
-        } catch (FilesException | FormsException $ex) {
+        } catch (FilesException | FormsException | PathsException | MimeException $ex) {
             $this->error = $ex;
         }
     }
@@ -94,6 +105,10 @@ class Read extends AAuthModule implements IModuleTitle
         return $this->user->getDir();
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -138,6 +153,10 @@ class Read extends AAuthModule implements IModuleTitle
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

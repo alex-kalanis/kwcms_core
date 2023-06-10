@@ -1,28 +1,32 @@
 <?php
 
-namespace KWCMS\modules\Texts;
+namespace KWCMS\modules\Texts\AdminControllers;
 
 
 use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
-use kalanis\kw_storage\StorageException;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Texts\Lib;
+use KWCMS\modules\Texts\TextsException;
 
 
 /**
  * Class Edit
- * @package KWCMS\modules\Texts
+ * @package KWCMS\modules\Texts\AdminControllers
  * Site's text content - edit correct file
  */
 class Edit extends AAuthModule implements IModuleTitle
@@ -35,6 +39,10 @@ class Edit extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $isProcessed = false;
 
+    /**
+     * @throws FilesException
+     * @throws PathsException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
@@ -60,9 +68,12 @@ class Edit extends AAuthModule implements IModuleTitle
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }
-        $path = Stuff::sanitize($this->userDir->getHomeDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
+
         try {
-            $content = $this->storage->exists($path) ? $this->storage->get($path) : '{CREATE_NEW_FREE_FILE}';
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
+
+            $content = $this->files->isFile($fullPath) ? $this->files->readFile($fullPath) : '{CREATE_NEW_FREE_FILE}';
             $this->editFileForm->composeForm($content, $fileName, $this->links->linkVariant($this->targetPreview()));
             $this->editFileForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->editFileForm->process()) {
@@ -73,9 +84,9 @@ class Edit extends AAuthModule implements IModuleTitle
                         throw new TextsException(Lang::get('texts.file_wrong_content'));
                     }
                 }
-                $this->isProcessed = $this->storage->set($path, $content);
+                $this->isProcessed = $this->files->saveFile($fullPath, $content);
             }
-        } catch (TextsException | StorageException | FormsException $ex) {
+        } catch (TextsException | FilesException | PathsException | FormsException $ex) {
             $this->error = $ex;
         }
     }
@@ -90,6 +101,10 @@ class Edit extends AAuthModule implements IModuleTitle
         return 'texts/preview';
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -122,6 +137,10 @@ class Edit extends AAuthModule implements IModuleTitle
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

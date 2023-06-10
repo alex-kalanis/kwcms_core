@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\MdTexts;
+namespace KWCMS\modules\MdTexts\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
@@ -8,14 +8,15 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\MdTexts\Lib;
 
 
 /**
  * Class ChDir
- * @package KWCMS\modules\MdTexts
+ * @package KWCMS\modules\MdTexts\AdminControllers
  * Change directory - by md-texts
  */
-class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
 {
     use Lib\TModuleTemplate;
 

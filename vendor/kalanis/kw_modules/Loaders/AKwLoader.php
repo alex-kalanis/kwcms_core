@@ -37,7 +37,7 @@ abstract class AKwLoader implements ILoader
         $classPath = $this->getClassName($module, $constructPath);
         try {
             $reflection = new \ReflectionClass($classPath);
-        } catch (AutoloadException $ex) {
+        } catch (AutoloadException | \ReflectionException $ex) {
             return null;
         }
         if ($reflection->isInstantiable()) {

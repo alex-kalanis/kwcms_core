@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Texts;
+namespace KWCMS\modules\Menu\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
@@ -8,16 +8,17 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Menu\Templates;
 
 
 /**
  * Class ChDir
- * @package KWCMS\modules\Texts
+ * @package KWCMS\modules\Menu\AdminControllers
  * Change directory - by texts
  */
-class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
 {
-    use Lib\TModuleTemplate;
+    use Templates\TModuleTemplate;
 
     public function __construct()
     {
@@ -33,6 +34,6 @@ class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
 
     public function getTitle(): string
     {
-        return Lang::get('texts.page') . ' - ' . Lang::get('dashboard.dir_select');
+        return Lang::get('menu.page') . ' - ' . Lang::get('dashboard.dir_select');
     }
 }

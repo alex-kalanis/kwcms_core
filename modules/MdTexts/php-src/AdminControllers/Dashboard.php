@@ -1,17 +1,18 @@
 <?php
 
-namespace KWCMS\modules\MdTexts;
+namespace KWCMS\modules\MdTexts\AdminControllers;
 
 
 use KWCMS\modules\Texts;
+use KWCMS\modules\MdTexts\Lib;
 
 
 /**
  * Class Dashboard
- * @package KWCMS\modules\MdTexts
+ * @package KWCMS\modules\MdTexts\AdminControllers
  * Site's text content - list available files in directory
  */
-class Dashboard extends Texts\Dashboard
+class Dashboard extends Texts\AdminControllers\Dashboard
 {
     use Lib\TModuleTemplate;
 

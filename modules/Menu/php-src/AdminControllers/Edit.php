@@ -1,14 +1,17 @@
 <?php
 
-namespace KWCMS\modules\Menu;
+namespace KWCMS\modules\Menu\AdminControllers;
 
 
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_menu\Menu\Entry;
 use kalanis\kw_menu\MenuException;
@@ -16,15 +19,19 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Menu\Forms;
+use KWCMS\modules\Menu\Lib;
+use KWCMS\modules\Menu\Templates;
 
 
 /**
  * Class Edit
- * @package KWCMS\modules\Menu
+ * @package KWCMS\modules\Menu\AdminControllers
  * Site's short messages - edit form
  */
 class Edit extends AAuthModule implements IModuleTitle
@@ -41,6 +48,10 @@ class Edit extends AAuthModule implements IModuleTitle
     /** @var Forward */
     protected $forward = null;
 
+    /**
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
@@ -74,7 +85,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
-        } catch (FormsException | MenuException | SemaphoreException $ex) {
+        } catch (FormsException | MenuException | SemaphoreException | PathsException $ex) {
             $this->error = $ex;
         }
     }
@@ -106,6 +117,10 @@ class Edit extends AAuthModule implements IModuleTitle
         return $item;
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -132,6 +147,10 @@ class Edit extends AAuthModule implements IModuleTitle
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

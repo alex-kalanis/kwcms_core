@@ -11,10 +11,12 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_tree_controls\TWhereDir;
 use KWCMS\modules\Files\Lib;
 
@@ -35,6 +37,9 @@ class Upload extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $processed = false;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
@@ -65,7 +70,7 @@ class Upload extends AAuthModule implements IModuleTitle
                 $usedName = $libAction->findFreeName($file->getValue());
                 $this->processed = $libAction->uploadFile($file, $usedName);
             }
-        } catch (FilesException | FormsException $ex) {
+        } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;
         }
     }
@@ -94,7 +99,7 @@ class Upload extends AAuthModule implements IModuleTitle
                 Notification::addSuccess(Lang::get('files.uploaded', $this->fileForm->getControl('uploadedFile')->getValue()));
             }
             return $out->setContent($this->outModuleTemplate($page->setData($this->fileForm)->render()));
-        } catch (FilesException | FormsException $ex) {
+        } catch (FormsException $ex) {
             $this->error = $ex;
         }
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));

@@ -1,67 +1,130 @@
 <?php
 
-namespace KWCMS\modules\Menu;
+namespace KWCMS\modules\Menu\Controllers;
 
 
+use kalanis\kw_cache\CacheException;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
-use kalanis\kw_cache\Storage as CacheStorage;
+use kalanis\kw_cache\Files as CacheStorage;
 use kalanis\kw_cache\Interfaces\ICache;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_menu\MenuException;
+use kalanis\kw_menu\MenuFactory;
+use kalanis\kw_menu\MoreEntries;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
-use kalanis\kw_storage\Storage;
-use kalanis\kw_storage\StorageException;
+use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Menu\Lib;
+use KWCMS\modules\Menu\Lib\Translations;
+use KWCMS\modules\Menu\Templates;
 
 
 /**
  * Class Menu
- * @package KWCMS\modules\Menu
+ * @package KWCMS\modules\Menu\Controllers
  * Menu included as module
  */
 class Menu extends AModule
 {
+    /** @var bool */
     protected $canCache = false;
+    /** @var ICache */
     protected $libCache = null;
+    /** @var ExternalLink */
     protected $externalLink = null;
-    protected $internalLink = null;
-    protected $tree = null;
+    /** @var ITree */
+    protected $menuTree = null;
+    /** @var Templates\Open */
     protected $tmplOpen = null;
+    /** @var Templates\Display */
     protected $tmplDisplay = null;
 
+    /**
+     * @throws CacheException
+     * @throws ConfException
+     * @throws FilesException
+     * @throws MenuException
+     * @throws PathsException
+     */
     public function __construct()
     {
         Config::load('Menu');
-        $this->canCache = (bool)Config::get('Menu', 'use_cache', false);
+        $this->canCache = boolval(Config::get('Menu', 'use_cache', false));
         $this->externalLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
-        $this->internalLink = new InternalLink(Stored::getPath(), StoreRouted::getPath());
-        $this->tree = new Lib\Tree($this->internalLink);
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
-        $this->libCache = $this->getCache();
+        $innerLink = new InnerLinks(
+            StoreRouted::getPath(),
+            boolval(Config::get('Core', 'site.more_users', false)),
+            boolval(Config::get('Core', 'site.more_lang', false))
+        );
+        $files = $this->getFiles();
+        $this->menuTree = new Lib\Tree($this->getEntriesProcessor($files), $innerLink);
+        $this->libCache = $this->getCache($files, $innerLink);
     }
 
-    protected function getCache(): ICache
+    /**
+     * @throws FilesException
+     * @throws PathsException
+     * @return CompositeAdapter
+     */
+    protected function getFiles(): CompositeAdapter
     {
-        $cachePath = Stored::getPath()->getDocumentRoot() . DIRECTORY_SEPARATOR . IPaths::DIR_TEMP;
-        Storage\Key\DirKey::setDir($cachePath. DIRECTORY_SEPARATOR);
-        $storage = new Storage\Factory(new Storage\Key\Factory(), new Storage\Target\Factory());
-        $cache = new CacheStorage\Semaphore($storage->getStorage('volume'), $this->getSemaphore());
-        $cache->init(['Menu']);
+        return (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
+    }
+
+    /**
+     * @param CompositeAdapter $files
+     * @param InnerLinks $innerLink
+     * @throws CacheException
+     * @throws PathsException
+     * @return ICache
+     */
+    protected function getCache(CompositeAdapter $files, InnerLinks $innerLink): ICache
+    {
+        $cache = new CacheStorage\Semaphore($files, $this->getSemaphore($files, $innerLink));
+        $cache->init(array_merge($innerLink->toFullPath([]), ['Menu']));
         return $cache;
     }
 
-    protected function getSemaphore(): ISemaphore
+    /**
+     * @param CompositeAdapter $files
+     * @param InnerLinks $innerLink
+     * @throws PathsException
+     * @return ISemaphore
+     */
+    protected function getSemaphore(CompositeAdapter $files, InnerLinks $innerLink): ISemaphore
     {
-        return new Semaphore\Volume($this->internalLink->userContent(
-            Config::get('Menu', 'meta_regen'), true, false
+        return new Semaphore\Files($files, array_merge(
+            $innerLink->toFullPath([]),
+            [strval(Config::get('Menu', 'meta_regen'))]
         ));
+    }
+
+    /**
+     * @param CompositeAdapter $files
+     * @throws FilesException
+     * @throws MenuException
+     * @throws PathsException
+     * @return MoreEntries
+     */
+    protected function getEntriesProcessor(CompositeAdapter $files): MoreEntries
+    {
+        return (new MenuFactory(new Translations()))->getMenu($files);
     }
 
     public function process(): void
@@ -82,7 +145,7 @@ class Menu extends AModule
             } else {
                 $content = $this->getRendered();
             }
-        } catch (StorageException $ex) {
+        } catch (CacheException $ex) {
             // Add logging when done
             $content = $this->getRendered();
         }
@@ -92,7 +155,7 @@ class Menu extends AModule
     protected function getRendered(): string
     {
         $tmplMain = new Templates\Main();
-        $menu = $this->tree->output('');
+        $menu = $this->menuTree->output([]);
         $headerContent = $this->addHeader($menu);
         $inputContent = $this->addInputs($menu);
         return $tmplMain->setData($this->tmplOpen->reset()->setData($headerContent . $inputContent)->render())->render();

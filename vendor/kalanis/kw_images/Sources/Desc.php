@@ -4,7 +4,9 @@ namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -14,6 +16,8 @@ use kalanis\kw_paths\PathsException;
  */
 class Desc extends AFiles
 {
+    use TToString;
+
     /**
      * @param string[] $path
      * @param bool $errorOnFail
@@ -24,8 +28,7 @@ class Desc extends AFiles
     public function get(array $path, bool $errorOnFail = false): string
     {
         try {
-            $content = $this->lib->readFile($this->getPath($path));
-            return is_resource($content) ? strval(stream_get_contents($content, 0, -1)) : strval($content);
+            return $this->toString(Stuff::arrayToPath($path), $this->lib->readFile($this->getPath($path)));
         } catch (FilesException $ex) {
             if (!$errorOnFail) {
                 return '';

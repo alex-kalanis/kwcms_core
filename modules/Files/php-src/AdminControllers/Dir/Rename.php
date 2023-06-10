@@ -7,6 +7,8 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -24,15 +26,18 @@ class Rename extends ADir
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        try {
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+        $this->userDir->setUserPath($this->getUserDir());
 
-            $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
-            $this->tree->canRecursive(false);
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
+        try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+
+            $this->tree->setStartPath($fullPath);
+            $this->tree->wantDeep(false);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
-            $this->dirForm->composeRenameDir($this->tree->getTree());
+
+            $this->dirForm->composeRenameDir($this->tree->getRoot());
             $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->dirForm->process()) {
@@ -42,9 +47,9 @@ class Rename extends ADir
                     $this->dirForm->getControl('targetPath')->getValue()
                 );
                 $this->tree->process();
-                $this->dirForm->composeRenameDir($this->tree->getTree()); // again, changes in tree
+                $this->dirForm->composeRenameDir($this->tree->getRoot()); // again, changes in tree
             }
-        } catch (FilesException | FormsException $ex) {
+        } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;
         }
     }

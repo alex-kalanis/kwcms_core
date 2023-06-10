@@ -9,6 +9,8 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Interfaces\IMultiValue;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -26,20 +28,23 @@ class Move extends ADir
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        try {
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+        $this->userDir->setUserPath($this->getUserDir());
 
-            $this->tree->startFromPath($this->userDir->getHomeDir());
-            $this->tree->canRecursive(true);
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
+        try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+
+            $this->tree->setStartPath($userPath);
+            $this->tree->wantDeep(true);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
-            $targetTree = $this->tree->getTree();
-            $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
-            $this->tree->canRecursive(false);
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
+            $targetTree = $this->tree->getRoot();
+
+            $this->tree->setStartPath($fullPath);
+            $this->tree->wantDeep(false);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
-            $sourceTree = $this->tree->getTree();
+            $sourceTree = $this->tree->getRoot();
 
             $this->dirForm->composeMoveDir($sourceTree, $targetTree);
             $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
@@ -56,12 +61,12 @@ class Move extends ADir
                     );
                 }
                 $this->tree->process();
-                $sourceTree = $this->tree->getTree();
+                $sourceTree = $this->tree->getRoot();
                 $this->dirForm->composeMoveDir($sourceTree, $targetTree); // again, changes in tree
                 $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
                 $this->dirForm->setSentValues();
             }
-        } catch (FilesException | FormsException $ex) {
+        } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;
         }
     }

@@ -4,15 +4,14 @@ namespace KWCMS\modules\Menu\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_menu\EntriesSource;
 use kalanis\kw_menu\Menu\Entry;
 use kalanis\kw_menu\Menu\Menu;
 use kalanis\kw_menu\MenuException;
-use kalanis\kw_menu\MetaProcessor;
 use kalanis\kw_menu\MoreEntries;
-use kalanis\kw_menu\MetaSource;
-use kalanis\kw_modules\Linking\InternalLink;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_user_paths\InnerLinks;
 
 
 /**
@@ -22,45 +21,53 @@ use kalanis\kw_paths\Stuff;
  */
 class Tree
 {
-    protected $link = null;
     /** @var MoreEntries|null */
     protected $processor = null;
+    /** @var ITree */
+    protected $tree = null;
+    /** @var InnerLinks */
+    protected $innerLink = null;
 
-    public function __construct(InternalLink $link)
+    public function __construct(MoreEntries $processor, InnerLinks $innerLink)
     {
         // set path from link is a bit aggressive, so do not set real volume path in advance
-        $this->link = $link;
+        $this->processor = $processor;
+        $this->innerLink = $innerLink;
     }
 
-    public function output(string $startPath): ?Menu
+    /**
+     * @param string[] $startPath
+     * @return Menu|null
+     */
+    public function output(array $startPath): ?Menu
     {
-        $path = $this->link->userContent($startPath, true, false);
         try {
-            $lang = new Translations();
-            $this->processor = new MoreEntries(
-                new MetaProcessor(new MetaSource\Volume($path, new MetaSource\FileParser(), $lang), $lang),
-                new EntriesSource\Volume($path)
-            );
-            $this->processor->setMeta(strval(Config::get('Menu','meta')));
+            $path = $this->innerLink->toFullPath($startPath);
+            $this->processor->setGroupKey($path);
+            $this->processor->setMeta(array_merge($path, [strval(Config::get('Menu','meta'))]));
             $menu = $this->processor->load()->getMeta()->getMenu();
-        } catch (MenuException $ex) {
+        } catch (MenuException | PathsException $ex) {
             return null;
         }
         foreach ($menu->getEntries() as $item) {
-            $this->loadSub($item, '');
+            $this->loadSub($item, $path);
         }
         return $menu;
     }
 
-    protected function loadSub(Entry $item, string $deepLink): void
+    /**
+     * @param Entry $item
+     * @param string[] $deepLink
+     */
+    protected function loadSub(Entry $item, array $deepLink): void
     {
         if (!$item->canGoSub()) {
             return;
         }
-        $localPath = $deepLink . DIRECTORY_SEPARATOR . Stuff::fileBase($item->getName());
         try {
+            $localPath = array_merge($deepLink, [Stuff::fileBase($item->getName())]);
             $this->processor->setGroupKey($localPath);
-            $this->processor->setMeta($localPath . DIRECTORY_SEPARATOR . strval(Config::get('Menu','meta')));
+            $this->processor->setMeta(array_merge($localPath, [strval(Config::get('Menu','meta'))]));
             $menu = $this->processor->load()->getMeta()->getMenu();
             if (!empty($menu)) {
                 foreach ($menu->getEntries() as $item) {
@@ -68,7 +75,7 @@ class Tree
                 }
                 $item->addSubmenu($menu);
             }
-        } catch (MenuException $ex) {
+        } catch (MenuException | PathsException $ex) {
             // pass
         }
     }

@@ -5,6 +5,7 @@ namespace KWCMS\modules\Menu\Lib;
 
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\MetaProcessor;
@@ -37,9 +38,10 @@ class ItemTable
 
     /**
      * @param MetaProcessor $data
-     * @return string
      * @throws ConnectException
      * @throws TableException
+     * @throws RenderException
+     * @return string
      */
     public function prepareHtml(MetaProcessor $data)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Texts;
+namespace KWCMS\modules\Texts\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
@@ -11,17 +11,22 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
-use kalanis\kw_tree\Adapters\ArrayAdapter;
-use kalanis\kw_tree\Tree;
+use kalanis\kw_tree\DataSources;
+use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Admin\Shared\ArrayAdapter;
+use KWCMS\modules\Texts\Lib;
+use KWCMS\modules\Texts\TextsException;
 
 
 /**
  * Class Dashboard
- * @package KWCMS\modules\Texts
+ * @package KWCMS\modules\Texts\AdminControllers
  * Site's text content - list available files in directory
  */
 class Dashboard extends AAuthModule implements IModuleTitle
@@ -29,9 +34,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
 
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
-    /** @var Tree|null */
+    /** @var ITree */
     protected $tree = null;
     /** @var Lib\NewFileForm|null */
     protected $newFileForm = null;
@@ -41,8 +46,8 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
-        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->userDir = new UserDir();
         $this->newFileForm = new Lib\NewFileForm('newFileForm');
         $this->openFileForm = new Lib\OpenFileForm('openFileForm');
     }
@@ -56,13 +61,21 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         $this->userDir->setUserPath($this->user->getDir());
-        $this->userDir->process();
-        $this->tree->canRecursive(false);
-        $this->tree->startFromPath($this->userDir->getHomeDir() . $this->getWhereDir());
-        $this->tree->setFilterCallback([$this->getParams(), 'filterFiles']);
-        $this->tree->process();
-        $this->newFileForm->composeForm($this->links->linkVariant($this->getTargetEdit()));
-        $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getTree(), $this->links->linkVariant($this->getTargetEdit()));
+
+        try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+
+            $this->tree->setStartPath($fullPath);
+            $this->tree->wantDeep(false);
+            $this->tree->setFilterCallback([$this->getParams(), 'filterFiles']);
+            $this->tree->process();
+
+            $this->newFileForm->composeForm($this->links->linkVariant($this->getTargetEdit()));
+            $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getRoot(), $this->links->linkVariant($this->getTargetEdit()));
+        } catch (TextsException | PathsException $ex) {
+            $this->error = $ex;
+        }
     }
 
     protected function getParams(): Lib\Params
@@ -106,7 +119,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $out->setContent([
                 'form_result' => 0,
                 'form_errors' => [],
-                'tree' => $transform->pack($this->tree->getTree()),
+                'tree' => $transform->pack($this->tree->getRoot()),
             ]);
             return $out;
         }

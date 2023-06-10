@@ -1,17 +1,18 @@
 <?php
 
-namespace KWCMS\modules\HtmlTexts;
+namespace KWCMS\modules\HtmlTexts\AdminControllers;
 
 
 use KWCMS\modules\Texts;
+use KWCMS\modules\HtmlTexts\Lib;
 
 
 /**
  * Class Preview
- * @package KWCMS\modules\HtmlTexts
+ * @package KWCMS\modules\HtmlTexts\AdminControllers
  * Site's text preview - show what will be rendered and saved
  */
-class Preview extends Texts\Preview
+class Preview extends Texts\AdminControllers\Preview
 {
     use Lib\TModuleTemplate;
 

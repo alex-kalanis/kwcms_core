@@ -1,26 +1,33 @@
 <?php
 
-namespace KWCMS\modules\Menu;
+namespace KWCMS\modules\Menu\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Menu\Forms;
+use KWCMS\modules\Menu\Lib;
+use KWCMS\modules\Menu\Templates;
 
 
 /**
  * Class Positions
- * @package KWCMS\modules\Menu
+ * @package KWCMS\modules\Menu\AdminControllers
  * Site's Menu - update positions of each item
  */
 class Positions extends AAuthModule implements IModuleTitle
@@ -33,6 +40,10 @@ class Positions extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $isProcessed = false;
 
+    /**
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
@@ -60,11 +71,15 @@ class Positions extends AAuthModule implements IModuleTitle
                 $this->editPosForm->composeForm($this->libMenu->getMeta()->getWorking(), $this->libMenu->getMeta()->getMenu()->getDisplayCount());
                 $this->isProcessed = true;
             }
-        } catch (FormsException | MenuException | SemaphoreException $ex) {
+        } catch (FormsException | MenuException | SemaphoreException | PathsException $ex) {
             $this->error = $ex;
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -72,6 +87,10 @@ class Positions extends AAuthModule implements IModuleTitle
             : $this->outHtml();
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outHtml(): Output\AOutput
     {
         $out = new Output\Html();
@@ -89,6 +108,10 @@ class Positions extends AAuthModule implements IModuleTitle
         return $out->setContent($this->outModuleTemplate($page->setData($this->editPosForm, implode('', $entries))->render()));
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

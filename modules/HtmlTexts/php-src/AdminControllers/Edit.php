@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\HtmlTexts;
+namespace KWCMS\modules\HtmlTexts\AdminControllers;
 
 
 use kalanis\kw_address_handler\Redirect;
@@ -11,14 +11,15 @@ use kalanis\kw_notify\Notification;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use KWCMS\modules\Texts;
+use KWCMS\modules\HtmlTexts\Lib;
 
 
 /**
  * Class Edit
- * @package KWCMS\modules\HtmlTexts
+ * @package KWCMS\modules\HtmlTexts\AdminControllers
  * Site's text content - edit correct file
  */
-class Edit extends Texts\Edit
+class Edit extends Texts\AdminControllers\Edit
 {
     use Lib\TModuleTemplate;
 

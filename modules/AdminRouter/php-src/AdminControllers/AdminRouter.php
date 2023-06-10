@@ -6,6 +6,7 @@ namespace KWCMS\modules\AdminRouter\AdminControllers;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
@@ -107,16 +108,17 @@ class AdminRouter extends AModule
 
     /**
      * @param AOutput $content
+     * @throws LangException
      * @throws ModuleException
      * @return AOutput
      */
     protected function wrapped(AOutput $content): AOutput
     {
         Lang::load('Admin');
-        Styles::want('Styles', 'admin/admstyle.css');
-        Styles::want('Styles', 'admin/admstylem.css');
-        Styles::want('Styles', 'admin/admprint.css');
-        Scripts::want('Scripts', 'admin/themes.js');
+        Styles::want('styles', 'admin/admstyle.css');
+        Styles::want('styles', 'admin/admstylem.css');
+        Styles::want('styles', 'admin/admprint.css');
+        Scripts::want('scripts', 'admin/themes.js');
         $out = new Raw();
         $template = new Templates\RouterTemplate();
         $template->setData(

@@ -3,12 +3,12 @@
 namespace KWCMS\modules\Files\Lib;
 
 
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces;
-use kalanis\kw_files\Node;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 
 
@@ -19,87 +19,115 @@ use kalanis\kw_paths\Stuff;
  */
 class Processor
 {
-    /** @var Node */
-    protected $currentNode = null;
-    /** @var Interfaces\IProcessDirs */
-    protected $dirProcessor = null;
-    /** @var Interfaces\IProcessFiles */
-    protected $fileProcessor = null;
-    /** @var Interfaces\IProcessNodes */
-    protected $nodeProcessor = null;
+    /** @var string[] */
+    protected $userPath = [];
+    /** @var string[] */
+    protected $workPath = [];
+    /** @var CompositeAdapter */
+    protected $files = null;
 
-    public function __construct(Interfaces\IProcessNodes $nodeProcessor, Interfaces\IProcessFiles $fileProcessor, Interfaces\IProcessDirs $dirProcessor, Node $currentNode)
+    /**
+     * @param CompositeAdapter $files
+     * @param string[] $userPath
+     * @param string[] $workPath
+     */
+    public function __construct(CompositeAdapter $files, array $userPath, array $workPath)
     {
-        $this->currentNode = $currentNode;
-        $this->dirProcessor = $dirProcessor;
-        $this->fileProcessor = $fileProcessor;
-        $this->nodeProcessor = $nodeProcessor;
+        $this->userPath = $userPath;
+        $this->workPath = $workPath;
+        $this->files = $files;
     }
 
     /**
      * @param string $entry
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function createDir(string $entry): bool
     {
-        $path = $this->currentNode->getPath() + [Stuff::filename($entry)];
-        return $this->dirProcessor->createDir($path);
+        return $this->files->createDir(array_merge($this->userPath, $this->workPath, [Stuff::filename($entry)]));
     }
 
     /**
      * @param string $entry
      * @param string $to
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function copyDir(string $entry, string $to): bool
     {
-        $source = $this->currentNode->getPath() + Stuff::pathToArray($entry);
-        $target = Stuff::pathToArray($to) + [Stuff::filename($entry)];
-        return $this->dirProcessor->copyDir($source, $target);
+        return $this->files->copyDir(array_merge(
+            $this->userPath,
+            $this->workPath,
+            Stuff::pathToArray($entry)
+        ), array_merge(
+            $this->userPath,
+            Stuff::pathToArray($to),
+            [Stuff::filename($entry)]
+        ));
     }
 
     /**
      * @param string $entry
      * @param string $to
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function moveDir(string $entry, string $to): bool
     {
-        $source = $this->currentNode->getPath() + Stuff::pathToArray($entry);
-        $target = Stuff::pathToArray($to) + [Stuff::filename($entry)];
-        return $this->dirProcessor->moveDir($source, $target);
+        return $this->files->moveDir(array_merge(
+            $this->userPath,
+            $this->workPath,
+            Stuff::pathToArray($entry)
+        ), array_merge(
+            $this->userPath,
+            Stuff::pathToArray($to),
+            [Stuff::filename($entry)]
+        ));
     }
 
     /**
      * @param string $entry
      * @param string $to
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function renameDir(string $entry, string $to): bool
     {
-        $source = $this->currentNode->getPath() + Stuff::pathToArray($entry);
-        $target = $this->currentNode->getPath() + Stuff::pathToArray($to);
-        return $this->dirProcessor->moveDir($source, $target);
+        return $this->files->moveDir(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ), array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($to)]
+        ));
     }
 
     /**
      * @param string $entry
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function deleteDir(string $entry): bool
     {
-        $path = $this->currentNode->getPath() + [Stuff::filename($entry)];
-        return $this->dirProcessor->deleteDir($path);
+        return $this->files->deleteDir(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ));
     }
 
     /**
      * @param string $name
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function findFreeName(string $name): string
@@ -110,21 +138,25 @@ class Processor
             $ext = IPaths::SPLITTER_DOT . $ext;
         }
         $fileName = Stuff::fileBase($name);
-        $lib = new FindFreeName($this->nodeProcessor);
-        return $lib->findFreeName($this->currentNode->getPath(), $fileName, $ext);
+        $lib = new FindFreeName($this->files->getNode());
+        return $lib->findFreeName(array_merge($this->userPath, $this->workPath), $fileName, $ext);
     }
 
     /**
      * @param IFileEntry $file
      * @param string $targetName
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function uploadFile(IFileEntry $file, string $targetName): bool
     {
         $stream = fopen($file->getTempName(), 'rb+');
-        $path = $this->currentNode->getPath() + [Stuff::filename($targetName)];
-        return $this->fileProcessor->saveFile($path, $stream);
+        return $this->files->saveFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            Stuff::filename($targetName)
+        ), $stream);
     }
 
     /**
@@ -132,60 +164,90 @@ class Processor
      * @param int|null $offset
      * @param int|null $length
      * @throws FilesException
+     * @throws PathsException
      * @return string
      */
     public function readFile(string $entry, ?int $offset = null, ?int $length = null): string
     {
-        return $this->fileProcessor->readFile(Stuff::pathToArray($entry), $offset, $length);
+        return $this->files->readFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ), $offset, $length);
     }
 
     /**
      * @param string $entry
      * @param string $to
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function copyFile(string $entry, string $to): bool
     {
-        $source = $this->currentNode->getPath() + Stuff::pathToArray($entry);
-        $target = Stuff::pathToArray($to) + [Stuff::filename($entry)];
-        return $this->fileProcessor->copyFile($source, $target);
+        return $this->files->copyFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            Stuff::pathToArray($entry)
+        ), array_merge(
+            $this->userPath,
+            Stuff::pathToArray($to),
+            [Stuff::filename($entry)]
+        ));
     }
 
     /**
      * @param string $entry
      * @param string $to
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function moveFile(string $entry, string $to): bool
     {
-        $source = $this->currentNode->getPath() + Stuff::pathToArray($entry);
-        $target = Stuff::pathToArray($to) + [Stuff::filename($entry)];
-        return $this->fileProcessor->moveFile($source, $target);
+        return $this->files->moveFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            Stuff::pathToArray($entry)
+        ), array_merge(
+            $this->userPath,
+            Stuff::pathToArray($to),
+            [Stuff::filename($entry)]
+        ));
     }
 
     /**
      * @param string $entry
      * @param string $to
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function renameFile(string $entry, string $to): bool
     {
-        $source = $this->currentNode->getPath() + Stuff::pathToArray($entry);
-        $target = $this->currentNode->getPath() + Stuff::pathToArray($to);
-        return $this->fileProcessor->moveFile($source, $target);
+        return $this->files->moveFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ), array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($to)]
+        ));
     }
 
     /**
      * @param string $entry
      * @throws FilesException
+     * @throws PathsException
      * @return bool
      */
     public function deleteFile(string $entry): bool
     {
-        $path = $this->currentNode->getPath() + [Stuff::filename($entry)];
-        return $this->fileProcessor->deleteFile($path);
+        return $this->files->deleteFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ));
     }
 }

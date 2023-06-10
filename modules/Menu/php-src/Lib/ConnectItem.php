@@ -9,6 +9,7 @@ use kalanis\kw_menu\Menu\Entry;
 
 class ConnectItem implements IRow
 {
+    /** @var array<string, string|int> */
     protected $array;
 
     public function __construct(Entry $item)

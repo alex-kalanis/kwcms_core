@@ -5,17 +5,20 @@ namespace KWCMS\modules\Files\AdminControllers\Dir;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Stored;
-use kalanis\kw_tree\Tree;
+use kalanis\kw_tree\DataSources;
+use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_tree\Traits\TVolumeDirs;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Files\Lib;
 
 
@@ -30,21 +33,25 @@ abstract class ADir extends AAuthModule implements IModuleTitle
     use Lib\TModuleTemplate;
     use Lib\TParams;
     use TWhereDir;
+    use TVolumeDirs;
 
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
-    /** @var Tree|null */
+    /** @var ITree */
     protected $tree = null;
     /** @var Lib\DirForm|null */
     protected $dirForm = null;
     /** @var bool[] */
     protected $processed = [];
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->userDir = new UserDir();
         $this->dirForm = new Lib\DirForm($this->getFormAlias());
     }
 
@@ -60,6 +67,10 @@ abstract class ADir extends AAuthModule implements IModuleTitle
         return $this->user->getDir();
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -98,6 +109,10 @@ abstract class ADir extends AAuthModule implements IModuleTitle
 
     abstract protected function getFailureLangKey(): string;
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

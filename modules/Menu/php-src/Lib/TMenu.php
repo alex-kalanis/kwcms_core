@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Menu\Lib;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -12,12 +13,15 @@ use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MetaProcessor;
 use kalanis\kw_menu\MetaSource;
 use kalanis\kw_menu\MoreEntries;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
-use kalanis\kw_paths\Extras\UserDir;
 use kalanis\kw_paths\Path;
-use kalanis\kw_paths\Stuff;
+use kalanis\kw_tree\DataSources;
+use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
 
 
 /**
@@ -29,36 +33,43 @@ trait TMenu
 {
     use TWhereDir;
 
-    /** @var UserDir|null */
-    protected $userDir = null;
-    /** @var MoreEntries|null */
+    /** @var MoreEntries */
     protected $libMenu = null;
-    /** @var ISemaphore|null */
+    /** @var ISemaphore */
     protected $libSemaphore = null;
+    /** @var ITree */
+    protected $tree = null;
+    /** @var UserDir */
+    protected $userDir = null;
 
+    /**
+     * @param Path $path
+     * @throws ConfException
+     */
     protected function initTMenu(Path $path)
     {
         Config::load('Menu');
-        $this->userDir = new UserDir($path);
-        $this->libMenu = new MoreEntries($this->initMetaProcessor(), $this->initMenuVolume());
-        $this->libSemaphore = $this->initMenuSemaphore();
+        $this->tree = new DataSources\Volume($path->getDocumentRoot() . $path->getPathToSystemRoot());
+        $this->userDir = new UserDir();
+        $this->libMenu = new MoreEntries($this->initMetaProcessor($path), $this->initMenuVolume($path));
+        $this->libSemaphore = $this->initMenuSemaphore($path);
     }
 
-    protected function initMenuVolume(): Interfaces\IEntriesSource
+    protected function initMenuVolume(Path $path): Interfaces\IEntriesSource
     {
-        return new EntriesSource\Volume($this->userDir->getWebRootDir());
+        return new EntriesSource\Volume($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
     }
 
-    protected function initMetaProcessor(): MetaProcessor
+    protected function initMetaProcessor(Path $path): MetaProcessor
     {
         $lang = new Translations();
-        return new MetaProcessor(new MetaSource\Volume($this->userDir->getWebRootDir(), new MetaSource\FileParser(), $lang), $lang);
+        return new MetaProcessor(new MetaSource\Volume($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR, new MetaSource\FileParser(), $lang), $lang);
     }
 
-    protected function initMenuSemaphore(): ISemaphore
+    protected function initMenuSemaphore(Path $path): ISemaphore
     {
         return new Semaphore\Volume(
-            $this->userDir->getWebRootDir() . $this->userDir->getWorkDir() . Config::get('Menu', 'meta_regen'),
+            $path->getDocumentRoot() . $path->getPathToSystemRoot() . Config::get('Menu', 'meta_regen'),
             new Translations()
         );
     }
@@ -67,21 +78,18 @@ trait TMenu
      * @param IFiltered $inputs
      * @param string $userDir
      * @throws MenuException
+     * @throws PathsException
      */
     protected function runTMenu(IFiltered $inputs, string $userDir): void
     {
         $this->initWhereDir(new SessionAdapter(), $inputs);
         $this->userDir->setUserPath($userDir);
-        $this->userDir->process();
-
-        $this->libMenu->setGroupKey(
-            Stuff::removeEndingSlash($this->userDir->getRealDir()) . DIRECTORY_SEPARATOR
-            . Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR
+        $fullPath = array_merge(array_values(
+            $this->userDir->process()->getFullPath()->getArray()),
+            Stuff::linkToArray($this->getWhereDir())
         );
-        $this->libMenu->setMeta(
-            Stuff::removeEndingSlash($this->userDir->getRealDir()) . DIRECTORY_SEPARATOR
-            . Stuff::removeEndingSlash($this->getWhereDir()) . DIRECTORY_SEPARATOR . $this->getMenuMeta()
-        );
+        $this->libMenu->setGroupKey($fullPath);
+        $this->libMenu->setMeta(array_merge($fullPath, [$this->getMenuMeta()]));
         $this->libMenu->load();
     }
 

@@ -1,24 +1,30 @@
 <?php
 
-namespace KWCMS\modules\Menu;
+namespace KWCMS\modules\Menu\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
+use KWCMS\modules\Menu\Lib;
+use KWCMS\modules\Menu\Templates;
 
 
 /**
  * Class Names
- * @package KWCMS\modules\Menu
+ * @package KWCMS\modules\Menu\AdminControllers
  * Site's Menu - Names of files
  */
 class Names extends AAuthModule implements IModuleTitle
@@ -31,6 +37,10 @@ class Names extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $isProcessed = false;
 
+    /**
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
@@ -46,7 +56,7 @@ class Names extends AAuthModule implements IModuleTitle
     {
         try {
             $this->runTMenu($this->inputs, $this->user->getDir());
-        } catch (MenuException $ex) {
+        } catch (MenuException | PathsException $ex) {
             $this->error = $ex;
         }
     }
@@ -66,7 +76,7 @@ class Names extends AAuthModule implements IModuleTitle
             try {
                 Styles::want('Menu', 'menu.css');
                 return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->libMenu->getMeta())));
-            } catch (ConnectException | TableException $ex) {
+            } catch (ConnectException | TableException | RenderException $ex) {
                 $this->error = $ex;
             }
         }
@@ -84,7 +94,7 @@ class Names extends AAuthModule implements IModuleTitle
         $table = new Lib\ItemTable($this->links);
         try {
             return $out->setContent($table->prepareJson($this->libMenu->load()->getMeta()));
-        } catch (ConnectException | TableException | MenuException $ex) {
+        } catch (ConnectException | TableException | MenuException | PathsException $ex) {
             $this->error = $ex;
         }
 

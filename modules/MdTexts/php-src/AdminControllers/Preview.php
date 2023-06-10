@@ -1,10 +1,11 @@
 <?php
 
-namespace KWCMS\modules\MdTexts;
+namespace KWCMS\modules\MdTexts\AdminControllers;
 
 
 use kalanis\kw_modules\Output;
 use KWCMS\modules\Texts;
+use KWCMS\modules\MdTexts\Lib;
 use Michelf\MarkdownExtra\MarkdownExtra;
 
 
@@ -13,7 +14,7 @@ use Michelf\MarkdownExtra\MarkdownExtra;
  * @package KWCMS\modules\MdTexts
  * Site's text preview - show what will be rendered and saved
  */
-class Preview extends Texts\Preview
+class Preview extends Texts\AdminControllers\Preview
 {
     use Lib\TModuleTemplate;
 

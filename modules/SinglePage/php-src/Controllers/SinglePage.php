@@ -12,7 +12,6 @@ use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Linking\InternalLink;
 use kalanis\kw_modules\Loaders\KwLoader;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
@@ -43,8 +42,6 @@ class SinglePage extends AModule
 
     /** @var SubModules */
     protected $subModules = null;
-    /** @var InternalLink */
-    protected $link = null;
     /** @var string */
     protected $content = '';
     /** @var ArrayPath */
@@ -68,7 +65,6 @@ class SinglePage extends AModule
         $path = Stored::getPath();
         $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), $path->getDocumentRoot() . $path->getPathToSystemRoot() ));
         $this->subModules = new SubModules($loader, $moduleProcessor);
-        $this->link = new InternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),

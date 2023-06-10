@@ -14,12 +14,12 @@ use kalanis\kw_menu\Menu\Menu;
  * Class EditPropsForm
  * @package KWCMS\modules\Menu\Forms
  * Edit properties of key in menu
- * @property Controls\Text current
- * @property Controls\Text menuName
- * @property Controls\Text menuDesc
- * @property Controls\Text menuCount
- * @property Controls\Submit saveFile
- * @property Controls\Reset resetFile
+ * @property Controls\Text $current
+ * @property Controls\Text $menuName
+ * @property Controls\Text $menuDesc
+ * @property Controls\Text $menuCount
+ * @property Controls\Submit $saveFile
+ * @property Controls\Reset $resetFile
  */
 class EditPropsForm extends Form
 {

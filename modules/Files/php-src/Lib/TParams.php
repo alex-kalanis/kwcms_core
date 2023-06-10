@@ -13,6 +13,11 @@ use kalanis\kw_files\Node;
  */
 trait TParams
 {
+    public function filterFileTree(\SplFileInfo $info): bool
+    {
+        return $info->isFile();
+    }
+
     public function filterFiles(Node $info): bool
     {
         return $info->isFile();

@@ -10,7 +10,7 @@ use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuthTree;
 use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_mapper\MapperException;
+use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\Interfaces\IModuleUser;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
@@ -54,9 +54,9 @@ abstract class AAuthModule extends AModule implements IModuleUser
                     throw new AuthException('Restricted access', 405);
                 }
             } else {
-                throw new MapperException('No auth methods available!', 400);
+                throw new AuthException('No auth methods available!', 400);
             }
-        } catch (AuthException $ex) {
+        } catch (AuthException | LockException $ex) {
             $this->error = $ex;
         }
     }

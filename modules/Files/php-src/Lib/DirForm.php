@@ -6,10 +6,10 @@ namespace KWCMS\modules\Files\Lib;
 use kalanis\kw_forms\Controls;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\Controls\DirCheckboxes;
 use kalanis\kw_tree_controls\Controls\DirSelect;
-use kalanis\kw_tree_controls\Controls\FileRadio;
+use kalanis\kw_tree_controls\Controls\DirRadio;
 
 
 /**
@@ -66,7 +66,7 @@ class DirForm extends AForm
     {
         $this->setMethod(IEntry::SOURCE_POST);
 
-        $radios = new FileRadio();
+        $radios = new DirRadio();
         $radios->set('sourceName', '', Lang::get('files.dir.select'), $tree);
         $this->addControlDefaultKey($radios);
 

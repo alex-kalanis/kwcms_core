@@ -50,7 +50,9 @@ class AdminMenu extends AModule
     protected $tmplSep = null;
     protected $tmplListing = null;
 
+    /** @var string */
     protected $menuKey = '';
+    /** @var int */
     protected $maxPos = 0;
     /** @var IModuleRecord[] */
     protected $entries = [];
@@ -80,7 +82,7 @@ class AdminMenu extends AModule
     {
         // list only enabled for currently set menu
         $this->moduleProcessor->setLevel(ISitePart::SITE_ROUTED);
-        $this->menuKey = (string)$this->getFromParam('menuKey', '');
+        $this->menuKey = strval($this->getFromParam('menuKey', ''));
         $listModules = $this->moduleProcessor->listing();
         $allModules = array_combine($listModules, array_map([$this, 'readModule'], $listModules));
         $allModules = array_filter($allModules); // now we have only possible ones
