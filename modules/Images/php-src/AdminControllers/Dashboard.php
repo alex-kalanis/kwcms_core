@@ -63,11 +63,6 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $this->userDir = new UserDir();
     }
 
-    protected function getUserDir(): string
-    {
-        return $this->user->getDir();
-    }
-
     public function allowedAccessClasses(): array
     {
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];

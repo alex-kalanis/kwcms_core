@@ -163,7 +163,7 @@ class PedigreeTable
     {
         $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
         return sprintf('<a href="%s" title="%s" class="button button-preview"> &#x1F50D; </a>',
-            $this->link->linkVariant('pedigree/pedigree/?key=' . $key),
+            $this->link->linkVariant('pedigree/' . $key, 'pedigree'),
             Lang::get('pedigree.show')
         );
     }

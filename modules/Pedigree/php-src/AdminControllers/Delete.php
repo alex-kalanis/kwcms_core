@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
@@ -13,7 +13,7 @@ use kalanis\kw_pedigree\PedigreeException;
 
 /**
  * Class Delete
- * @package KWCMS\modules\Pedigree
+ * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - delete record
  */
 class Delete extends APedigree

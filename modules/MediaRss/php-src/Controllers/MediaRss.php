@@ -3,6 +3,7 @@
 namespace KWCMS\modules\MediaRss\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
@@ -44,7 +45,15 @@ class MediaRss extends AModule
     protected $innerLink = null;
     /** @var Images */
     protected $sources = null;
+    /** @var string[] */
+    protected $acceptTypes = [];
 
+    /**
+     * @throws ConfException
+     * @throws FilesException
+     * @throws ImagesException
+     * @throws PathsException
+     */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
@@ -56,20 +65,11 @@ class MediaRss extends AModule
             boolval(Config::get('Core', 'page.more_lang', false))
         );
         $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->acceptTypes = (array) Config::get(static::getClassName(static::class), 'accept_types', []);
     }
 
     public function process(): void
     {
-    }
-
-    protected function getUserDir(): string
-    {
-        return '';
-    }
-
-    protected function getWhereDir(): string
-    {
-        return '';
     }
 
     public function output(): Output\AOutput
@@ -86,11 +86,13 @@ class MediaRss extends AModule
 
     public function outResponse(): Output\AOutput
     {
-        Config::load('Core', 'page');
-        Config::load('Logo');
         $out = new Output\Raw();
         try {
+            Config::load('Core', 'page');
+
             $libTree = new Files((new Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+            $userPath = $this->innerLink->toFullPath([]);
+            $currentPath = array_filter(StoreRouted::getPath()->getPath());
 
             $tmpl = new Lib\MainTemplate();
             return $out->setContent(
@@ -98,12 +100,12 @@ class MediaRss extends AModule
                     $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
                     Config::get('Core', 'page.site_name'),
                     $this->libExternal->linkVariant(),
-                    $this->getLibDirAction()->getDesc()
+                    $this->getLibDirAction($userPath, $currentPath)->getDesc()
                 )->addItems(
-                    implode('', $this->getItems($libTree))
+                    implode('', $this->getItems($libTree, $userPath, $currentPath))
                 )->render()
             );
-        } catch (ImagesException | FilesException | PathsException $ex) {
+        } catch (ConfException | ImagesException | FilesException | PathsException $ex) {
             $error = $ex;
         }
         if (isset($error)) {
@@ -114,33 +116,32 @@ class MediaRss extends AModule
 
     /**
      * @param ITree $libTree
+     * @param string[] $userPath
+     * @param string[] $currentPath
      * @throws FilesException
      * @throws PathsException
      * @return string[]
      */
-    protected function getItems(ITree $libTree): array
+    protected function getItems(ITree $libTree, array $userPath, array $currentPath): array
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $passedPath = StoreRouted::getPath()->getPath();
-        $realPath = $this->innerLink->toFullPath($passedPath);
-        if (!$this->sources->exists($realPath)) {
-            return $messages;
-        }
-        $libTree->setStartPath($realPath);
+        $libTree->setStartPath(array_merge($userPath, $currentPath));
         $libTree->wantDeep(false);
         $libTree->setFilterCallback([$this, 'filterImages']);
         $libTree->process();
         if ($libTree->getRoot()) {
             foreach ($libTree->getRoot()->getSubNodes() as $item) {
                 /** @var FileNode $item */
-                $strPath = $this->arrPath->setArray($item->getPath())->getString();
-                $desc = $this->sources->getDescription($item->getPath());
+                $strPath = $this->arrPath->setArray(array_merge($currentPath, $item->getPath()))->getString();
+                $desc = $this->sources->getDescription(array_merge($userPath, $currentPath, $item->getPath()));
                 $messages[] = $tmplItem->reset()->setData(
                     $this->libExternal->linkVariant($strPath, 'image', true),
                     $desc,
                     $desc,
-                    $this->libExternal->linkVariant($this->sources->reverseThumbPath($item->getPath()), 'image', true),
+                    $this->libExternal->linkVariant(Stuff::arrayToLink($this->sources->reverseThumbPath(
+                        array_merge($currentPath, $item->getPath())
+                    )), 'image', true),
                     $this->libExternal->linkVariant($strPath, 'image', true)
                 )->render();
             }
@@ -150,8 +151,10 @@ class MediaRss extends AModule
 
     public function filterImages(Node $info): bool
     {
-        $name = array_slice($info->getPath(), -1, 1);
-        $name = reset($name);
-        return in_array(Stuff::fileExt($name), (array)Config::get(static::getClassName(static::class), 'accept_types', []));
+        if (empty($info->getPath())) {
+            // root
+            return true;
+        }
+        return in_array(Stuff::fileExt($this->arrPath->setArray($info->getPath())->getFileName()), $this->acceptTypes);
     }
 }

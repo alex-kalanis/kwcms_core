@@ -59,11 +59,6 @@ abstract class AEdit extends AAuthModule
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
     }
 
-    protected function getUserDir(): string
-    {
-        return $this->user->getDir();
-    }
-
     public function result(): Output\AOutput
     {
         return $this->isJson()

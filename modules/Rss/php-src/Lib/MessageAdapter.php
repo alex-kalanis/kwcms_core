@@ -3,8 +3,14 @@
 namespace KWCMS\modules\Rss\Lib;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_mapper\MapperException;
+use kalanis\kw_paths\Path;
+use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Rss\RssException;
 
 
@@ -15,52 +21,58 @@ use KWCMS\modules\Rss\RssException;
  */
 class MessageAdapter
 {
+    /** @var CompositeAdapter */
+    protected $files = null;
+    /** @var Path */
+    protected $systemPath = null;
+    /** @var ShortMessage */
     protected $record = null;
-    protected $targetDir = null;
+    /** @var string[] */
+    protected $targetPath = [];
 
-    public function __construct(string $targetDir)
+    /**
+     * @param CompositeAdapter $files
+     * @param Path $systemPath
+     * @param string[] $targetDir
+     * @throws MapperException
+     * @throws ConfException
+     */
+    public function __construct(CompositeAdapter $files, Path $systemPath, array $targetDir)
     {
         Config::load('Rss');
         $this->record = new ShortMessage();
-        $this->targetDir = $targetDir;
+        $this->files = $files;
+        $this->targetPath = $this->describePath($targetDir);
+        $this->systemPath = $systemPath;
     }
 
     /**
+     * @throws MapperException
+     * @throws FilesException
+     * @throws PathsException
      * @throws RssException
-     */
-    public function createRecordFile(): void
-    {
-        $path = $this->describePath($this->targetDir);
-        if (file_exists($path)) {
-            return;
-        }
-        if (false === file_put_contents($path, '')) {
-            throw new RssException(Lang::get('rss.cannot_write'));
-        }
-    }
-
-    /**
      * @return ShortMessage
-     * @throws RssException
      */
     public function getRecord(): ShortMessage
     {
-        $path = realpath($this->describePath($this->targetDir));
-        if (false === $path || !is_file($path)) {
-            throw new RssException(Lang::get('rss.cannot_read'));
+        if ((!$this->files->exists($this->targetPath)) || !$this->files->isFile($this->targetPath)) {
+            throw new RssException(Lang::get('short.cannot_read'));
         }
         $mapper = $this->record->getMapper();
-        /** @var \kalanis\kw_mapper\Mappers\File\ATable $mapper */
-        $mapper->setFormat('\KWCMS\modules\Rss\Lib\SeparatedElements');
-        $mapper->setFile($path);
+        /** @var ShortMessageMapper $mapper */
+        $mapper->setAccessing($this->files);
+        $mapper->setCombinedPath($this->targetPath);
         return $this->record;
     }
 
-    protected function describePath(string $dirPath): string
+    /**
+     * @param string[] $dirPath
+     * @return string[]
+     */
+    protected function describePath(array $dirPath): array
     {
-        return $dirPath . DIRECTORY_SEPARATOR
-            . Config::get('Rss', 'name', 'index')
-            . Config::get('Rss', 'suff', '.short')
-            ;
+        return array_merge(array_filter($dirPath), [
+            Config::get('Rss', 'name', 'index') . Config::get('Rss', 'suff', '.short')
+        ]);
     }
 }

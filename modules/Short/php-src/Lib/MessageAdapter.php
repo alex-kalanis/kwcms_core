@@ -9,10 +9,8 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\File\ATable;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Short\ShortException;
 
 
@@ -76,9 +74,9 @@ class MessageAdapter
             throw new ShortException(Lang::get('short.cannot_read'));
         }
         $mapper = $this->record->getMapper();
-        /** @var ATable $mapper */
-        $mapper->setFormat(SeparatedElements::class);
-        $mapper->setCombinedPath($this->recordPath());
+        /** @var ShortMessageMapper $mapper */
+        $mapper->setAccessing($this->files);
+        $mapper->setCombinedPath($this->targetPath);
         return $this->record;
     }
 
@@ -91,17 +89,5 @@ class MessageAdapter
         return array_merge(array_filter($dirPath), [
             Config::get('Short', 'name', 'index') . Config::get('Short', 'suff', '.short')
         ]);
-    }
-
-    /**
-     * @throws PathsException
-     * @return string[]
-     */
-    protected function recordPath(): array
-    {
-        return array_merge(
-            Stuff::linkToArray($this->systemPath->getDocumentRoot() . $this->systemPath->getPathToSystemRoot()),
-            $this->targetPath
-        );
     }
 }

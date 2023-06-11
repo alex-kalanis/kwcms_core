@@ -3,9 +3,8 @@
 namespace KWCMS\modules\Short\Lib;
 
 
-use kalanis\kw_files\Processing\Volume\ProcessFile;
+use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_mapper\Mappers;
-use kalanis\kw_mapper\Storage\Shared\FormatFiles;
 
 
 /**
@@ -16,13 +15,17 @@ class ShortMessageMapper extends Mappers\File\ATable
 {
     protected function setMap(): void
     {
-        $this->setFileAccessor(new ProcessFile());
-        $this->setFormat(FormatFiles\SeparatedElements::class);
+        $this->setFormat(SeparatedElements::class);
         $this->orderFromFirst(false);
         $this->setRelation('id', 0);
         $this->setRelation('date', 1);
         $this->setRelation('title', 2);
         $this->setRelation('content', 3);
         $this->addPrimaryKey('id');
+    }
+
+    public function setAccessing(IProcessFiles $files): void
+    {
+        $this->setFileAccessor($files);
     }
 }

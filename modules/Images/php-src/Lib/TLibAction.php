@@ -55,6 +55,4 @@ trait TLibAction
             $currentPath
         );
     }
-
-    abstract protected function getUserDir(): string;
 }

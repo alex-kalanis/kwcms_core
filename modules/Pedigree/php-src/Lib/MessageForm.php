@@ -11,17 +11,16 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\Interfaces;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
 /**
  * Class MessageForm
  * @package KWCMS\modules\Pedigree\Lib
- * @property Controls\Select fatherId
- * @property Controls\Select motherId
- * @property Controls\Submit postRecord
- * @property Controls\Reset clearRecord
+ * @property Controls\Select $fatherId
+ * @property Controls\Select $motherId
+ * @property Controls\Submit $postRecord
+ * @property Controls\Reset $clearRecord
  */
 class MessageForm extends Form
 {
@@ -33,7 +32,6 @@ class MessageForm extends Form
      * @param string $targetHelper
      * @return MessageForm
      * @throws MapperException
-     * @throws RuleException
      */
     public function composeForm(GetEntries $entry, string $targetHelper): self
     {
@@ -98,7 +96,6 @@ class MessageForm extends Form
 
     /**
      * @return MessageForm
-     * @throws RuleException
      */
     public function addIdentifier(): self
     {

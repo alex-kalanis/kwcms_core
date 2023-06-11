@@ -99,7 +99,11 @@ class Short extends AModule
                 $results = $this->search->getResults();
                 foreach ($results as $orm) {
                     /** @var Lib\ShortMessage $orm */
-                    $messages[] = $tmpl->reset()->setData(intval($orm->date), strval($orm->title), strval($orm->content))->render();
+                    $messages[] = $tmpl->reset()->setData(
+                        intval($orm->date),
+                        strval($orm->title),
+                        strval($orm->content)
+                    )->render();
                 }
             } catch (MapperException $ex) {
                 $this->error = $ex;

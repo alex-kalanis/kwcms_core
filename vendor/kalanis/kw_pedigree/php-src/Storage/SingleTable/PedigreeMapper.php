@@ -46,7 +46,7 @@ class PedigreeMapper extends Mappers\Database\ADatabase
         }
         $query .= ' ORDER BY `%3$s` ASC, `%2$s` ASC LIMIT 0, 30;';
 
-        $result = $this->database->query(sprintf($query,
+        $result = $this->getReadDatabase()->query(sprintf($query,
             $this->relations['id'],
             $this->relations['name'],
             $this->relations['kennel'],

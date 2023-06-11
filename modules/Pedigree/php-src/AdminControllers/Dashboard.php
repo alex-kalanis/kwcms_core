@@ -1,9 +1,10 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -17,11 +18,12 @@ use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use kalanis\kw_table\core\TableException;
+use KWCMS\modules\Pedigree\Lib;
 
 
 /**
  * Class Dashboard
- * @package KWCMS\modules\Pedigree
+ * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - admin table
  */
 class Dashboard extends AAuthModule implements IModuleTitle
@@ -33,6 +35,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
     /** @var MapperException|ConnectException|null */
     protected $error = null;
 
+    /**
+     * @throws ConfException
+     */
     public function __construct()
     {
         Config::load('Pedigree');
@@ -72,7 +77,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $table = new Lib\PedigreeTable($this->inputs, $this->links, $this->entries);
         try {
             return $out->setContent($this->outModuleTemplate($table->prepareHtml()));
-        } catch (MapperException | ConnectException | TableException | FormsException | \PDOException $ex) {
+        } catch (MapperException | ConnectException | TableException | FormsException $ex) {
             $this->error = $ex;
         }
 

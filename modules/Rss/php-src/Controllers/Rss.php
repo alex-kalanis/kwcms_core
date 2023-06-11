@@ -1,9 +1,12 @@
 <?php
 
-namespace KWCMS\modules\Rss;
+namespace KWCMS\modules\Rss\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Simplified\ServerAdapter;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
@@ -12,29 +15,43 @@ use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Rss\Lib;
+use KWCMS\modules\Rss\RssException;
 
 
 /**
  * Class Rss
- * @package KWCMS\modules\Rss
+ * @package KWCMS\modules\Rss\Controllers
  * Site's short messages - render as Rss feed
  */
 class Rss extends AModule
 {
-    /** @var UserDir|null */
-    protected $userDir = null;
-    /** @var ExternalLink|null */
+    /** @var ExternalLink */
     protected $libExternal = null;
+    /** @var ArrayPath */
+    protected $arrPath = null;
+    /** @var InnerLinks */
+    protected $innerLink = null;
 
+    /**
+     * @throws ConfException
+     */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->userDir = new UserDir(Stored::getPath());
         $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->arrPath = new ArrayPath();
+        $this->innerLink = new InnerLinks(
+            StoreRouted::getPath(),
+            boolval(Config::get('Core', 'site.more_users', false)),
+            false
+        );
     }
 
     public function process(): void
@@ -56,7 +73,6 @@ class Rss extends AModule
     public function outResponse(): Output\AOutput
     {
         Config::load('Core', 'page');
-        Config::load('Logo');
         $out = new Output\Raw();
         try {
             $tmpl = new Lib\MainTemplate();
@@ -72,7 +88,7 @@ class Rss extends AModule
                 implode('', $this->getItems())
             )->render()
             );
-        } catch (MapperException $ex) {
+        } catch (ConfException | MapperException | FilesException | PathsException | RssException $ex) {
             $error = $ex;
         }
         if (isset($error)) {
@@ -82,37 +98,46 @@ class Rss extends AModule
     }
 
     /**
-     * @return string[]
+     * @throws ConfException
+     * @throws FilesException
      * @throws MapperException
+     * @throws PathsException
+     * @throws RssException
+     * @return string[]
      */
     protected function getItems(): array
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        try {
-            $adapter = new Lib\MessageAdapter(
-                $this->userDir->getWebRootDir()
-                . Stuff::removeEndingSlash($this->getFromParam('target', '')) . DIRECTORY_SEPARATOR
-            );
-            $search = new Search($adapter->getRecord());
-            $search->offset((int)strval($this->getFromParam('offset', 0)));
-            $search->limit((int)strval($this->getFromParam('limit', Config::get('Rss', 'count', 10))));
-            $search->orderBy('id', IQueryBuilder::ORDER_DESC);
-            $results = $search->getResults();
-        } catch (RssException $ex) {
-            // no feed in path
-            return [];
-        }
+        $files = (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
+        $adapter = new Lib\MessageAdapter($files, Stored::getPath(), $this->innerLink->toFullPath($this->pathLookup()));
+        $search = new Search($adapter->getRecord());
+        $search->offset(intval(strval($this->getFromParam('offset', 0))));
+        $search->limit(intval(strval($this->getFromParam('limit', Config::get('Rss', 'count', 10)))));
+        $search->orderBy('id', IQueryBuilder::ORDER_DESC);
+        $results = $search->getResults();
+
         foreach ($results as $orm) {
             /** @var Lib\ShortMessage $orm */
             $messages[] = $tmplItem->reset()->setData(
                 $this->libExternal->linkVariant(null, ''),
-                (string)$orm->title,
-                (int)$orm->date,
-                (string)$orm->content
+                strval($orm->title),
+                intval($orm->date),
+                strval($orm->content)
             )->render();
         }
         return $messages;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function pathLookup(): array
+    {
+        $this->arrPath->setArray(StoreRouted::getPath()->getPath());
+        return array_merge($this->arrPath->getArrayDirectory(), [Stuff::fileBase($this->arrPath->getFileName())]);
     }
 
     protected function getImage(): string

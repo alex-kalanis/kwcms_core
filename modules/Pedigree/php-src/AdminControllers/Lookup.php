@@ -1,9 +1,10 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
@@ -16,7 +17,7 @@ use kalanis\kw_pedigree\Storage;
 
 /**
  * Class Lookup
- * @package KWCMS\modules\Pedigree
+ * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - lookup
  */
 class Lookup extends AAuthModule
@@ -28,6 +29,9 @@ class Lookup extends AAuthModule
     /** @var GetEntries */
     protected $entry = null;
 
+    /**
+     * @throws ConfException
+     */
     public function __construct()
     {
         Config::load('Pedigree');
@@ -47,7 +51,7 @@ class Lookup extends AAuthModule
                 strval($this->getFromParam('key')),
                 $this->getFromParam('sex')
             );
-        } catch (PedigreeException | \PDOException $ex) {
+        } catch (PedigreeException $ex) {
             $this->error = $ex;
         }
     }
@@ -70,6 +74,11 @@ class Lookup extends AAuthModule
         }
     }
 
+    /**
+     * @param ARecord $record
+     * @throws MapperException
+     * @return array<string, string>
+     */
     protected function getItems(ARecord $record): array
     {
         $source = $this->entry->getStorage();

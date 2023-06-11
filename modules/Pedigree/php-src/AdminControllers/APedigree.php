@@ -1,11 +1,12 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
@@ -13,11 +14,12 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_pedigree\Storage;
+use KWCMS\modules\Pedigree\Lib;
 
 
 /**
  * Class APedigree
- * @package KWCMS\modules\Pedigree
+ * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - basics
  */
 abstract class APedigree extends AAuthModule implements IModuleTitle
@@ -31,6 +33,9 @@ abstract class APedigree extends AAuthModule implements IModuleTitle
     /** @var Forward */
     protected $forward = null;
 
+    /**
+     * @throws ConfException
+     */
     public function __construct()
     {
         Config::load('Pedigree');

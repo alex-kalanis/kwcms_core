@@ -1,10 +1,11 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
@@ -17,11 +18,12 @@ use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_scripts\Scripts;
+use KWCMS\modules\Pedigree\Lib;
 
 
 /**
  * Class Add
- * @package KWCMS\modules\Pedigree
+ * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - add form
  */
 class Add extends APedigree
@@ -53,7 +55,7 @@ class Add extends APedigree
                 $ex = new DataExchange($this->entry->getRecord());
                 $ex->addExclude('fatherId');
                 $ex->addExclude('motherId');
-                if ((bool)$ex->import($this->form->getValues())) {
+                if ((bool) $ex->import($this->form->getValues())) {
                     if ($this->entry->getRecord()->save(true)) {
                         $this->entry->getRecord()->load();
                         $this->entry->getStorage()->setRecord($this->entry->getRecord());
@@ -90,6 +92,10 @@ class Add extends APedigree
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     protected function outJson(): Output\AOutput
     {
         if ($this->error) {

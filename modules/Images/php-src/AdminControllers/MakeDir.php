@@ -103,11 +103,6 @@ class MakeDir extends AAuthModule implements IModuleTitle
         }
     }
 
-    protected function getUserDir(): string
-    {
-        return $this->user->getDir();
-    }
-
     public function result(): Output\AOutput
     {
         return $this->isJson()

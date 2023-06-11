@@ -101,11 +101,6 @@ class Upload extends AAuthModule implements IModuleTitle
         }
     }
 
-    protected function getUserDir(): string
-    {
-        return $this->user->getDir();
-    }
-
     /**
      * @throws RenderException
      * @return Output\AOutput

@@ -1,25 +1,30 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_templates\HtmlElement;
-use KWCMS\modules\Layout\Layout;
+use KWCMS\modules\Layout\Controllers\Layout;
+use KWCMS\modules\Pedigree\Lib;
 
 
 /**
@@ -44,6 +49,12 @@ class Pedigree extends AModule
     /** @var Modules|null */
     protected $processor = null;
 
+    /**
+     * @param ILoader|null $loader
+     * @param Modules|null $processor
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
         Config::load(static::getClassName(static::class));
@@ -70,7 +81,7 @@ class Pedigree extends AModule
         $out = new Output\Html();
         $tmplLink = new Lib\ExtLinkTemplate();
         $tmplLink->setData(
-            $this->createLink($this->getFromParam('key')),
+            $this->createLink($this->getName()),
             $this->externalLink->linkVariant('pedigree/ped.png','sysimage', true)
         );
         return $out->setContent($tmplLink->render());
@@ -81,7 +92,7 @@ class Pedigree extends AModule
         try {
             $this->depth = $this->limitedDepth();
             $this->entries = new GetEntries($this->getRecord());
-            $tree = $this->getTree(strval($this->getFromParam('key')));
+            $tree = $this->getTree($this->getName());
         } catch (MapperException | PedigreeException $ex) {
             $this->error = $ex;
         }
@@ -105,6 +116,21 @@ class Pedigree extends AModule
         }
     }
 
+    protected function getName(): string
+    {
+        $path = StoreRouted::getPath()->getPath();
+        $possibleKey = strval(end($path));
+        if (!empty($possibleKey) && ('pedigree' != $possibleKey)) {
+            return Stuff::fileBase($possibleKey);
+        }
+        return $this->getFromParam('key');
+    }
+
+    /**
+     * @param Output\AOutput $output
+     * @throws ModuleException
+     * @return Output\AOutput
+     */
     protected function outLayout(Output\AOutput $output): Output\AOutput
     {
         $out = new Layout($this->loader, $this->processor);
@@ -130,8 +156,8 @@ class Pedigree extends AModule
 
     /**
      * @param string $key
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      * I DO NOT want to know how I wrote it...
      */
     protected function getTree(string $key): array
@@ -187,8 +213,8 @@ class Pedigree extends AModule
 
     /**
      * @param ARecord|null $record
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     protected function getDescendants(?ARecord $record): array
     {
@@ -203,8 +229,8 @@ class Pedigree extends AModule
 
     /**
      * @param string $id
-     * @return ARecord|null
      * @throws MapperException
+     * @return ARecord|null
      */
     protected function readData(string $id): ?ARecord
     {
@@ -274,7 +300,7 @@ class Pedigree extends AModule
             $storage = $this->entries->getStorage();
             $storage->setRecord($tree[$position]);
             $libCell->setData(
-                (string)$span,
+                strval($span),
                 $storage->getName(),
                 $storage->getFamily(),
                 $this->createLink($storage->getId()),
@@ -307,9 +333,7 @@ class Pedigree extends AModule
 
     protected function createLink(string $key): string
     {
-        $link = $this->externalLink->linkVariant('pedigree/pedigree'); // for now, not final one...
-        $link .= '?key=' . $key;
-        return $link;
+        return $this->externalLink->linkVariant('pedigree/' . $key, 'pedigree');
     }
 
     protected function countCells(int $actual, int $left): int

@@ -1,10 +1,11 @@
 <?php
 
-namespace KWCMS\modules\Pedigree;
+namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
@@ -17,11 +18,12 @@ use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_scripts\Scripts;
+use KWCMS\modules\Pedigree\Lib;
 
 
 /**
  * Class Edit
- * @package KWCMS\modules\Pedigree
+ * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - edit form
  */
 class Edit extends APedigree
@@ -92,6 +94,10 @@ class Edit extends APedigree
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     protected function outJson(): Output\AOutput
     {
         if ($this->error) {
