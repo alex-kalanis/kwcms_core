@@ -10,10 +10,10 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 /**
  * Class ShortMessage
  * @package KWCMS\modules\Short\Lib
- * @property int id
- * @property int date
- * @property string title
- * @property string content
+ * @property int $id
+ * @property int $date
+ * @property string $title
+ * @property string $content
  */
 class ShortMessage extends ASimpleRecord
 {

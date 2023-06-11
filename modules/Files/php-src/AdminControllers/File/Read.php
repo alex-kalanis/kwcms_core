@@ -4,6 +4,7 @@ namespace KWCMS\modules\Files\AdminControllers\File;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -56,12 +57,14 @@ class Read extends AAuthModule implements IModuleTitle
     protected $processed = false;
 
     /**
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
         $this->userDir = new UserDir();
         $this->fileForm = new Lib\FileForm('readFileForm');
         $this->libFileMime = new MimeType(true);
@@ -83,7 +86,7 @@ class Read extends AAuthModule implements IModuleTitle
 
             $this->tree->setStartPath($fullPath);
             $this->tree->wantDeep(false);
-            $this->tree->setFilterCallback([$this, 'filterFileTree']);
+            $this->tree->setFilterCallback([$this, 'filterFilesTree']);
             $this->tree->process();
 
             $this->fileForm->composeReadFile($this->tree->getRoot());

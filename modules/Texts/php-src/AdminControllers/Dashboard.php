@@ -4,7 +4,8 @@ namespace KWCMS\modules\Texts\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_files\Processing\Volume\ProcessDir;
+use kalanis\kw_files\Access;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -43,10 +44,14 @@ class Dashboard extends AAuthModule implements IModuleTitle
     /** @var Lib\OpenFileForm|null */
     protected $openFileForm = null;
 
+    /**
+     * @throws PathsException
+     * @throws FilesException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
-        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
         $this->userDir = new UserDir();
         $this->newFileForm = new Lib\NewFileForm('newFileForm');
         $this->openFileForm = new Lib\OpenFileForm('openFileForm');

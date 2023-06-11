@@ -5,6 +5,8 @@ namespace KWCMS\modules\Menu\Lib;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_menu\EntriesSource;
@@ -45,11 +47,13 @@ trait TMenu
     /**
      * @param Path $path
      * @throws ConfException
+     * @throws FilesException
+     * @throws PathsException
      */
     protected function initTMenu(Path $path)
     {
         Config::load('Menu');
-        $this->tree = new DataSources\Volume($path->getDocumentRoot() . $path->getPathToSystemRoot());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot()));
         $this->userDir = new UserDir();
         $this->libMenu = new MoreEntries($this->initMetaProcessor($path), $this->initMenuVolume($path));
         $this->libSemaphore = $this->initMenuSemaphore($path);

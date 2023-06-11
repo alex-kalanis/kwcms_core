@@ -4,6 +4,8 @@ namespace KWCMS\modules\Admin\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Access;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -16,7 +18,7 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
-use kalanis\kw_tree\Traits\TVolumeDirs;
+use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Admin\Forms;
@@ -32,7 +34,7 @@ use KWCMS\modules\Admin\Shared\ArrayAdapter;
 abstract class ChDir extends AAuthModule
 {
     use TWhereDir;
-    use TVolumeDirs;
+    use TFilesDirs;
 
     /** @var UserDir */
     protected $userDir = null;
@@ -44,12 +46,14 @@ abstract class ChDir extends AAuthModule
     protected $processedForm = false;
 
     /**
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
         Lang::load('Admin');
-        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
         $this->chDirForm = new Forms\ChDirForm('chdirForm');
         $this->userDir = new UserDir();
     }
@@ -60,6 +64,7 @@ abstract class ChDir extends AAuthModule
     }
 
     /**
+     * @throws FilesException
      * @throws FormsException
      * @throws PathsException
      */

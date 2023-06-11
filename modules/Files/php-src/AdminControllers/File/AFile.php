@@ -4,6 +4,7 @@ namespace KWCMS\modules\Files\AdminControllers\File;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -13,10 +14,11 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
-use kalanis\kw_tree\Traits\TVolumeDirs;
+use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Files\Lib;
@@ -33,7 +35,7 @@ abstract class AFile extends AAuthModule implements IModuleTitle
     use Lib\TModuleTemplate;
     use Lib\TParams;
     use TWhereDir;
-    use TVolumeDirs;
+    use TFilesDirs;
 
     /** @var UserDir */
     protected $userDir = null;
@@ -45,12 +47,14 @@ abstract class AFile extends AAuthModule implements IModuleTitle
     protected $processed = [];
 
     /**
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new DataSources\Volume(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
         $this->userDir = new UserDir();
         $this->fileForm = new Lib\FileForm($this->getFormAlias());
     }

@@ -6,6 +6,7 @@ namespace KWCMS\modules\Menu\AdminControllers;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
@@ -40,6 +41,8 @@ class Names extends AAuthModule implements IModuleTitle
     /**
      * @throws ConfException
      * @throws LangException
+     * @throws FilesException
+     * @throws PathsException
      */
     public function __construct()
     {

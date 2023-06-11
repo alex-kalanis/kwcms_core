@@ -18,6 +18,14 @@ trait TParams
         return $info->isFile();
     }
 
+    public function filterFilesTree(Node $info): bool
+    {
+        if (empty($info->getPath())) {
+            return true;
+        }
+        return $info->isFile();
+    }
+
     public function filterFiles(Node $info): bool
     {
         return $info->isFile();

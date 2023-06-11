@@ -1,29 +1,38 @@
 <?php
 
-namespace KWCMS\modules\Short;
+namespace KWCMS\modules\Short\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Short\Lib;
+use KWCMS\modules\Short\ShortException;
 
 
 /**
  * Class Dashboard
- * @package KWCMS\modules\Short
+ * @package KWCMS\modules\Short\AdminControllers
  * Site's short messages - admin table
  */
 class Dashboard extends AAuthModule implements IModuleTitle
@@ -33,16 +42,27 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     /** @var Search|null */
     protected $search = null;
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
     /** @var MapperException|ConnectException|null */
     protected $error = null;
 
+    /**
+     * @throws ConfException
+     * @throws FilesException
+     * @throws LangException
+     * @throws PathsException
+     */
     public function __construct()
     {
         Config::load('Short');
         $this->initTModuleTemplate();
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->userDir = new UserDir();
+        $this->files = (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
     }
 
     public function allowedAccessClasses(): array
@@ -52,13 +72,16 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function run(): void
     {
+        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+
         try {
-            $this->initWhereDir(new SessionAdapter(), $this->inputs);
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
-            $adapter = new Lib\MessageAdapter($this->userDir->getWebRootDir() . $this->userDir->getHomeDir() . $this->getWhereDir());
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
+
+            $adapter = new Lib\MessageAdapter($this->files, Stored::getPath(), array_merge($userPath, $currentPath));
             $this->search = new Search($adapter->getRecord());
-        } catch (MapperException | ShortException $ex) {
+        } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;
         }
     }

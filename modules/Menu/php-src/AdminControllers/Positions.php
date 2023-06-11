@@ -5,6 +5,7 @@ namespace KWCMS\modules\Menu\AdminControllers;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\ConfException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -43,6 +44,8 @@ class Positions extends AAuthModule implements IModuleTitle
     /**
      * @throws ConfException
      * @throws LangException
+     * @throws FilesException
+     * @throws PathsException
      */
     public function __construct()
     {

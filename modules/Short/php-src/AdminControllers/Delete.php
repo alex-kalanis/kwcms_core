@@ -1,27 +1,36 @@
 <?php
 
-namespace KWCMS\modules\Short;
+namespace KWCMS\modules\Short\AdminControllers;
 
 
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Short\Lib;
+use KWCMS\modules\Short\ShortException;
 
 
 /**
  * Class Delete
- * @package KWCMS\modules\Short
+ * @package KWCMS\modules\Short\AdminControllers
  * Site's short messages - delete record
  */
 class Delete extends AAuthModule implements IModuleTitle
@@ -31,20 +40,31 @@ class Delete extends AAuthModule implements IModuleTitle
 
     /** @var MapperException|null */
     protected $error = null;
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
     /** @var bool */
     protected $isProcessed = false;
     /** @var Forward */
     protected $forward = null;
 
+    /**
+     * @throws ConfException
+     * @throws FilesException
+     * @throws LangException
+     * @throws PathsException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
         Config::load('Short');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->userDir = new UserDir();
+        $this->files = (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
     }
 
     public function allowedAccessClasses(): array
@@ -54,15 +74,18 @@ class Delete extends AAuthModule implements IModuleTitle
 
     public function run(): void
     {
+        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+
         try {
-            $this->initWhereDir(new SessionAdapter(), $this->inputs);
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
-            $adapter = new Lib\MessageAdapter($this->userDir->getWebRootDir() . $this->userDir->getHomeDir() . $this->getWhereDir());
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
+
+            $adapter = new Lib\MessageAdapter($this->files, Stored::getPath(), array_merge($userPath, $currentPath));
             $record = $adapter->getRecord();
             $record->id = strval($this->getFromParam('id'));
             $this->isProcessed = $record->delete();
-        } catch (MapperException | ShortException $ex) {
+        } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;
         }
     }

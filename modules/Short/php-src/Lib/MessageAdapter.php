@@ -3,10 +3,16 @@
 namespace KWCMS\modules\Short\Lib;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\File\ATable;
+use kalanis\kw_paths\Path;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Short\ShortException;
 
 
@@ -17,53 +23,85 @@ use KWCMS\modules\Short\ShortException;
  */
 class MessageAdapter
 {
+    /** @var CompositeAdapter */
+    protected $files = null;
+    /** @var Path */
+    protected $systemPath = null;
+    /** @var ShortMessage */
     protected $record = null;
-    protected $targetDir = null;
+    /** @var string[] */
+    protected $targetPath = [];
 
-    public function __construct(string $targetDir)
+    /**
+     * @param CompositeAdapter $files
+     * @param Path $systemPath
+     * @param string[] $targetDir
+     * @throws MapperException
+     * @throws ConfException
+     */
+    public function __construct(CompositeAdapter $files, Path $systemPath, array $targetDir)
     {
         Config::load('Short');
         $this->record = new ShortMessage();
-        $this->targetDir = $targetDir;
+        $this->files = $files;
+        $this->targetPath = $this->describePath($targetDir);
+        $this->systemPath = $systemPath;
     }
 
     /**
+     * @throws FilesException
+     * @throws PathsException
      * @throws ShortException
      */
     public function createRecordFile(): void
     {
-        $path = $this->describePath($this->targetDir);
-        if (file_exists($path)) {
+        if ($this->files->exists($this->targetPath) && $this->files->isFile($this->targetPath)) {
             return;
         }
-        if (false === file_put_contents($path, '')) {
+        if (!$this->files->saveFile($this->targetPath, '')) {
             throw new ShortException(Lang::get('short.cannot_write'));
         }
     }
 
     /**
      * @throws MapperException
+     * @throws FilesException
+     * @throws PathsException
      * @throws ShortException
      * @return ShortMessage
      */
     public function getRecord(): ShortMessage
     {
-        $path = realpath($this->describePath($this->targetDir));
-        if (false === $path || !is_file($path)) {
+        if ((!$this->files->exists($this->targetPath)) || !$this->files->isFile($this->targetPath)) {
             throw new ShortException(Lang::get('short.cannot_read'));
         }
         $mapper = $this->record->getMapper();
         /** @var ATable $mapper */
         $mapper->setFormat(SeparatedElements::class);
-        $mapper->setCombinedPath(explode(DIRECTORY_SEPARATOR, $path));
+        $mapper->setCombinedPath($this->recordPath());
         return $this->record;
     }
 
-    protected function describePath(string $dirPath): string
+    /**
+     * @param string[] $dirPath
+     * @return string[]
+     */
+    protected function describePath(array $dirPath): array
     {
-        return $dirPath . DIRECTORY_SEPARATOR
-            . Config::get('Short', 'name', 'index')
-            . Config::get('Short', 'suff', '.short')
-            ;
+        return array_merge(array_filter($dirPath), [
+            Config::get('Short', 'name', 'index') . Config::get('Short', 'suff', '.short')
+        ]);
+    }
+
+    /**
+     * @throws PathsException
+     * @return string[]
+     */
+    protected function recordPath(): array
+    {
+        return array_merge(
+            Stuff::linkToArray($this->systemPath->getDocumentRoot() . $this->systemPath->getPathToSystemRoot()),
+            $this->targetPath
+        );
     }
 }

@@ -7,6 +7,7 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\ConfException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -51,6 +52,8 @@ class Edit extends AAuthModule implements IModuleTitle
     /**
      * @throws ConfException
      * @throws LangException
+     * @throws FilesException
+     * @throws PathsException
      */
     public function __construct()
     {

@@ -5,6 +5,7 @@ namespace KWCMS\modules\Menu\AdminControllers;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\ConfException;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -36,14 +37,16 @@ class Dashboard extends AAuthModule implements IModuleTitle
     use Lib\TMenu;
     use Templates\TModuleTemplate;
 
-    /** @var Forms\EditPropsForm|null */
+    /** @var Forms\EditPropsForm */
     protected $editPropsForm = null;
     /** @var bool */
     protected $isProcessed = false;
 
     /**
      * @throws ConfException
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
