@@ -1,28 +1,36 @@
 <?php
 
-namespace KWCMS\modules\Upload;
+namespace KWCMS\modules\Upload\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use kalanis\UploadPerPartes\Exceptions\UploadException;
 use kalanis\UploadPerPartes\Response;
 use KWCMS\modules\Files\Lib as FileLib;
+use KWCMS\modules\Upload\Lib;
+use KWCMS\modules\Upload\UploadTemplate;
 
 
 /**
  * Class Upload
- * @package KWCMS\modules\Sysinfo
+ * @package KWCMS\modules\Upload\AdminControllers
  * Upload files
  */
 class Upload extends AAuthModule implements IModuleTitle
@@ -35,6 +43,10 @@ class Upload extends AAuthModule implements IModuleTitle
     /** @var Lib\Uploader */
     protected $lib = null;
 
+    /**
+     * @throws ConfException
+     * @throws UploadException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
@@ -50,7 +62,7 @@ class Upload extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
-        $pathArray = Stuff::pathToArray(Stored::getPath()->getPath());
+        $pathArray = StoreRouted::getPath()->getPath();
         if ('steps' == reset($pathArray)) {
             $this->inSteps = next($pathArray);
         }
@@ -96,12 +108,22 @@ class Upload extends AAuthModule implements IModuleTitle
         return $out;
     }
 
+    /**
+     * @throws PathsException
+     * @return Response\AResponse
+     */
     protected function stepInit(): Response\AResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
-        $userDir = $this->getUserDirLib();
+        $stored = Stored::getPath();
+        $userDir = new UserDir();
+        $userDir->setUserPath($this->user->getDir());
         return $this->lib->init(
-            $userDir->getWebRootDir() . $userDir->getHomeDir() . $this->getWhereDir() . DIRECTORY_SEPARATOR,
+            Stuff::arrayToPath(array_merge(
+                Stuff::pathToArray($stored->getDocumentRoot() . $stored->getPathToSystemRoot()),
+                $userDir->process()->getFullPath()->getArray(),
+                Stuff::linkToArray($this->getWhereDir())
+            )),
             strval($inputs['fileName']),
             strval($inputs['fileSize'])
         );
@@ -142,6 +164,11 @@ class Upload extends AAuthModule implements IModuleTitle
         );
     }
 
+    /**
+     * @throws FilesException
+     * @throws PathsException
+     * @return Response\AResponse
+     */
     protected function stepDone(): Response\AResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
@@ -153,7 +180,7 @@ class Upload extends AAuthModule implements IModuleTitle
         $act = $this->getLibAction();
         $act->renameFile(
             Stuff::filename($result->getTemporaryLocation()),
-            Stuff::filename($act->findFreeName($result->getFileName()))
+            Stuff::filename($result->getFileName())
         );
 
         return $result;

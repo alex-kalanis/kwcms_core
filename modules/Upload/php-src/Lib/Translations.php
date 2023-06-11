@@ -117,4 +117,14 @@ class Translations implements IUPPTranslations
     {
         return Lang::get('upload.vendor.segment_not_uploaded');
     }
+
+    public function uppKeyVariantIsWrong(string $className): string
+    {
+        return Lang::get('upload.vendor.key_variant_is_wrong');
+    }
+
+    public function uppDriveFileVariantIsWrong(string $className): string
+    {
+        return Lang::get('upload.vendor.file_variant_is_wrong');
+    }
 }

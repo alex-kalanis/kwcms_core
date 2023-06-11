@@ -1,19 +1,20 @@
 <?php
 
-namespace KWCMS\modules\Upload;
+namespace KWCMS\modules\Upload\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Upload\Lib;
 
 
 /**
  * Class ChDir
- * @package KWCMS\modules\Upload
+ * @package KWCMS\modules\Upload\AdminControllers
  * Change directory - by Upload
  */
-class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
 {
     use Lib\TModuleTemplate;
 
