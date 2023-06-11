@@ -13,8 +13,11 @@ $config = [
     'page.default_lang'=>'cze', //FILELIST;path=/lang;help=default language#
     'page.use_lang'=>'cze', //DIRLIST;path=~;help=use language#
     'page.encoding_lang'=>'cz', //STRING;help=encoding by W3C#
-    'page.default_style'=>'default', //DIRLIST;path=/style;help=default style#
+    'page.default_style'=>'atonika', //DIRLIST;path=/style;help=default style#
     'page.default_user'=>'data', //DIRLIST;path=/users;help=default user#
+    'page.system_prefix'=>true, //BOOLEAN;help=use users directory as path prefix#
+    'page.image_prefix'=>'', //STRING;help=prefix for directory lookup other than users#
+    'page.data_separator'=>false, //BOOLEAN;help=use data directory as infix between user and path#
     'page.site_name'=>'Kiosek Master', //STRING;help=name of site#
     'page.page_title'=>'Kiosková spojka', //STRING;help=title of site#
     'page.contact'=>'nikam&#x0040;me.cz', //STRING;help=contact to owner#

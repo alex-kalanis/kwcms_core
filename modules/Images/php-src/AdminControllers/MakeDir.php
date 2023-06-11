@@ -1,31 +1,37 @@
 <?php
 
-namespace KWCMS\modules\Images;
+namespace KWCMS\modules\Images\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Access;
-use kalanis\kw_files\Processing\Volume\ProcessDir;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Images\Lib;
+use KWCMS\modules\Images\Forms;
+use KWCMS\modules\Images\Templates;
 
 
 /**
  * Class MakeDir
- * @package KWCMS\modules\Images
+ * @package KWCMS\modules\Images\AdminControllers
  * Directory creation in another path
  */
 class MakeDir extends AAuthModule implements IModuleTitle
@@ -35,21 +41,26 @@ class MakeDir extends AAuthModule implements IModuleTitle
     use Templates\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Forms\DirNewForm|null */
+    /** @var Forms\DirNewForm */
     protected $createForm = null;
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
-    /** @var ITree|null */
+    /** @var ITree */
     protected $tree = null;
     /** @var bool */
     protected $processed = false;
 
+    /**
+     * @throws FilesException
+     * @throws LangException
+     * @throws PathsException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
         $this->createForm = new Forms\DirNewForm('dirNewForm');
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass(new ProcessDir()));
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+        $this->userDir = new UserDir();
     }
 
     public function allowedAccessClasses(): array
@@ -60,17 +71,21 @@ class MakeDir extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+
         try {
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
+
+            $this->tree->setStartPath($userPath);
             $this->tree->wantDeep(true);
-            $this->tree->setStartPath($this->userDir->getHomeDir());
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
+            $this->tree->setFilterCallback([$this, 'filterDirNodes']);
             $this->tree->process();
+
             $this->createForm->composeForm($this->tree->getRoot(),'#');
             $this->createForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->createForm->process()) {
-                $libAction = $this->getLibDirAction();
+                $libAction = $this->getLibDirAction($userPath, $currentPath);
                 $this->processed = $libAction->createDir(
                     strval($this->createForm->getControl('where')->getValue()),
                     strval($this->createForm->getControl('name')->getValue())
@@ -78,12 +93,12 @@ class MakeDir extends AAuthModule implements IModuleTitle
                 if (!empty($this->createForm->getControl('into')->getValue())) {
                     $this->updateWhereDir(
                         strval($this->createForm->getControl('where')->getValue())
-                        . DIRECTORY_SEPARATOR
+                        . IPaths::SPLITTER_SLASH
                         . strval($this->createForm->getControl('name')->getValue())
                     );
                 }
             }
-        } catch (ImagesException | FormsException | FilesException $ex) {
+        } catch (ImagesException | FormsException | FilesException | PathsException $ex) {
             $this->error = $ex;
         }
     }

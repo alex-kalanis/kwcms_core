@@ -14,10 +14,10 @@ use kalanis\kw_rules\Interfaces\IRules;
  * Class FileUploadForm
  * @package KWCMS\modules\Images\Forms
  * Upload new file - image
- * @property Controls\File uploadedFile
- * @property Controls\Text description
- * @property Controls\Submit saveDir
- * @property Controls\Reset resetDir
+ * @property Controls\File $uploadedFile
+ * @property Controls\Text $description
+ * @property Controls\Submit $saveDir
+ * @property Controls\Reset $resetDir
  */
 class FileUploadForm extends Form
 {

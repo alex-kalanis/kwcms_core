@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Images\Edit;
+namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 
 use kalanis\kw_files\FilesException;
@@ -9,17 +9,19 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Forms;
 
 
 /**
  * Class Delete
- * @package KWCMS\modules\Images\Edit
+ * @package KWCMS\modules\Images\AdminControllers\Edit
  * Images - delete one
  */
 class Delete extends AEdit
 {
-    /** @var Forms\FileDeleteForm|null */
+    /** @var Forms\FileDeleteForm */
     protected $deleteForm = null;
 
     public function __construct()
@@ -30,20 +32,22 @@ class Delete extends AEdit
 
     public function run(): void
     {
+        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+
         try {
-            $this->initWhereDir(new SessionAdapter(), $this->inputs);
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
 
             $fileName = strval($this->getFromParam('name'));
             $this->deleteForm->composeForm('#');
             $this->deleteForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->deleteForm->process()) {
-                $libAction = $this->getLibFileAction();
-                $this->checkExistence($libAction->getLibImage(), $this->getWhereDir(), $fileName);
+                $libAction = $this->getLibFileAction($userPath, $currentPath);
+                $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->deleteFile($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
             }
-        } catch (FormsException | ImagesException | FilesException $ex) {
+        } catch (FormsException | ImagesException | FilesException | PathsException $ex) {
             $this->error = $ex;
         }
     }

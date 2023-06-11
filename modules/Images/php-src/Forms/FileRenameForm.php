@@ -13,9 +13,9 @@ use kalanis\kw_langs\Lang;
  * Class FileRenameForm
  * @package KWCMS\modules\Images\Forms
  * Rename file
- * @property Controls\Text newName
- * @property Controls\Submit saveFile
- * @property Controls\Reset resetFile
+ * @property Controls\Text $newName
+ * @property Controls\Submit $saveFile
+ * @property Controls\Reset $resetFile
  */
 class FileRenameForm extends Form
 {

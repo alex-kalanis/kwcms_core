@@ -76,7 +76,10 @@ class Image extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
+            boolval(Config::get('Core', 'page.more_lang', false)),
+            array_filter(Stuff::linkToArray(Config::get('Core', 'page.image_prefix', ''))),
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
     }
@@ -168,8 +171,8 @@ class Image extends AModule
     protected function imagePath(array $path): string
     {
         $linkPath = $this->arrPath->setArray($path)->getString();
-        $hasWatermark = (bool)Config::get('Image', 'watermark', false);
-        $canWatermark = (array)Config::get('Image', 'accept_watermark', []);
+        $hasWatermark = (bool) Config::get('Image', 'watermark', false);
+        $canWatermark = (array) Config::get('Image', 'accept_watermark', []);
         return $hasWatermark && in_array(Stuff::fileExt($this->arrPath->getFileName()), $canWatermark)
             ? $this->extLink->linkVariant($linkPath, 'watermark', true)
             : $this->extLink->linkVariant($linkPath, 'image', true) ;

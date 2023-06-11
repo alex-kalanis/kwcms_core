@@ -5,7 +5,6 @@ namespace KWCMS\modules\Images\Lib;
 
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
@@ -39,12 +38,18 @@ class ListTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var string */
-    protected $whereDir = '';
+    /** @var string[] */
+    protected $whereDir = [];
     /** @var IProcessFiles */
     protected $libFiles = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link, IProcessFiles $libFiles, string $whereDir)
+    /**
+     * @param IFiltered $inputs
+     * @param ExternalLink $link
+     * @param IProcessFiles $libFiles
+     * @param string[] $whereDir
+     */
+    public function __construct(IFiltered $inputs, ExternalLink $link, IProcessFiles $libFiles, array $whereDir)
     {
         $this->variables = $inputs;
         $this->link = $link;
@@ -56,7 +61,6 @@ class ListTable
      * @param ITree $tree
      * @return Table
      * @throws FormsException
-     * @throws ConnectException
      * @throws TableException
      */
     public function getTable(ITree $tree): Table

@@ -18,53 +18,55 @@ class ProcessDir implements IProcessDirs
 {
     /** @var Content\Dirs|null */
     protected $libDirs = null;
-    /** @var string */
-    protected $sourcePath = '';
+    /** @var string[] */
+    protected $userDir = [];
+    /** @var string[] */
+    protected $currentDir = [];
 
-    public function __construct(Content\Dirs $dirs, string $sourcePath)
+    public function __construct(Content\Dirs $dirs, array $userDir, array $currentDir)
     {
         $this->libDirs = $dirs;
-        $this->sourcePath = $sourcePath;
+        $this->userDir = $userDir;
+        $this->currentDir = $currentDir;
     }
 
     public function canUse(): bool
     {
-        return $this->libDirs->canUse(Stuff::linkToArray($this->sourcePath));
+        return $this->libDirs->canUse(array_merge($this->userDir, $this->currentDir));
     }
 
     public function createDir(string $target, string $name): bool
     {
-        $path = array_merge(Stuff::linkToArray($target), [Stuff::canonize($name)]);
-        return $this->libDirs->create($path);
+        return $this->libDirs->create(array_merge($this->userDir, Stuff::linkToArray($target), [Stuff::canonize($name)]));
     }
 
     public function createExtra(): bool
     {
-        return $this->libDirs->createExtra(Stuff::linkToArray($this->sourcePath));
+        return $this->libDirs->createExtra(array_merge($this->userDir, $this->currentDir));
     }
 
     public function getDesc(): string
     {
-        return $this->libDirs->getDescription(Stuff::linkToArray($this->sourcePath));
+        return $this->libDirs->getDescription(array_merge($this->userDir, $this->currentDir));
     }
 
     public function updateDesc(string $content): bool
     {
-        return $this->libDirs->updateDescription(Stuff::linkToArray($this->sourcePath), $content);
+        return $this->libDirs->updateDescription(array_merge($this->userDir, $this->currentDir), $content);
     }
 
     public function getThumb()
     {
-        return $this->libDirs->getThumb(Stuff::linkToArray($this->sourcePath));
+        return $this->libDirs->getThumb(array_merge($this->userDir, $this->currentDir));
     }
 
     public function updateThumb(string $filePath): bool
     {
-        return $this->libDirs->updateThumb(Stuff::linkToArray($this->sourcePath), Stuff::sanitize($filePath));
+        return $this->libDirs->updateThumb(array_merge($this->userDir, $this->currentDir), Stuff::sanitize($filePath));
     }
 
     public function removeThumb(): bool
     {
-        return $this->libDirs->removeThumb(Stuff::linkToArray($this->sourcePath));
+        return $this->libDirs->removeThumb(array_merge($this->userDir, $this->currentDir));
     }
 }

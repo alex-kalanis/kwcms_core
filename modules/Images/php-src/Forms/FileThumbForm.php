@@ -13,7 +13,7 @@ use kalanis\kw_langs\Lang;
  * Class FileThumbForm
  * @package KWCMS\modules\Images\Forms
  * Set files's thumb as primary for the whole gallery or regenerate it
- * @property Controls\Submit saveFile
+ * @property Controls\Submit $saveFile
  */
 class FileThumbForm extends Form
 {

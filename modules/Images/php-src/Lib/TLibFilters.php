@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Lib;
 
 
+use kalanis\kw_files\Node;
 use SplFileInfo;
 
 
@@ -14,6 +15,11 @@ use SplFileInfo;
 trait TLibFilters
 {
     public function filterDirs(SplFileInfo $info): bool
+    {
+        return $info->isDir();
+    }
+
+    public function filterDirNodes(Node $info): bool
     {
         return $info->isDir();
     }

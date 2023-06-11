@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Images;
+namespace KWCMS\modules\Images\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
@@ -14,12 +14,18 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Images\Lib;
+use KWCMS\modules\Images\Forms;
+use KWCMS\modules\Images\Templates;
 
 
 /**
  * Class Properties
- * @package KWCMS\modules\Images
+ * @package KWCMS\modules\Images\AdminControllers
  * Directory properties - description, thumb
  */
 class Properties extends AAuthModule implements IModuleTitle
@@ -28,10 +34,12 @@ class Properties extends AAuthModule implements IModuleTitle
     use Templates\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Forms\DescForm|null */
+    /** @var Forms\DescForm */
     protected $descForm = null;
-    /** @var Forms\DirExtraForm|null */
+    /** @var Forms\DirExtraForm */
     protected $extraForm = null;
+    /** @var UserDir */
+    protected $userDir = null;
     /** @var bool */
     protected $hasExtra = false;
     /** @var bool */
@@ -42,6 +50,7 @@ class Properties extends AAuthModule implements IModuleTitle
         $this->initTModuleTemplate();
         $this->descForm = new Forms\DescForm('dirPropsForm');
         $this->extraForm = new Forms\DirExtraForm('dirPropsForm');
+        $this->userDir = new UserDir();
     }
 
     public function allowedAccessClasses(): array
@@ -52,8 +61,13 @@ class Properties extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+
         try {
-            $libAction = $this->getLibDirAction();
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
+
+            $libAction = $this->getLibDirAction($userPath, $currentPath);
             $this->hasExtra = $libAction->canUse();
             if ($this->hasExtra) {
                 $this->descForm->composeForm($libAction->getDesc(),'#');
@@ -68,7 +82,7 @@ class Properties extends AAuthModule implements IModuleTitle
                     $this->processed = $libAction->createExtra();
                 }
             }
-        } catch (ImagesException | FormsException | FilesException $ex) {
+        } catch (ImagesException | FormsException | FilesException | PathsException $ex) {
             $this->error = $ex;
         }
     }

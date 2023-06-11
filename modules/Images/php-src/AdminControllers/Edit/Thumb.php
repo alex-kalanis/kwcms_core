@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Images\Edit;
+namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 
 use kalanis\kw_files\FilesException;
@@ -9,19 +9,22 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_mime\MimeException;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Forms;
 
 
 /**
  * Class Thumb
- * @package KWCMS\modules\Images\Edit
+ * @package KWCMS\modules\Images\AdminControllers\Edit
  * Images - Regenerate thumb
  */
 class Thumb extends AEdit
 {
     /** @var string */
     protected $fileName = '';
-    /** @var Forms\FileThumbForm|null */
+    /** @var Forms\FileThumbForm */
     protected $thumbForm = null;
 
     public function __construct()
@@ -32,23 +35,25 @@ class Thumb extends AEdit
 
     public function run(): void
     {
-        try {
-            $this->initWhereDir(new SessionAdapter(), $this->inputs);
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
 
-            $fileName = strval($this->getFromParam('name'));
-            $libFiles = $this->getLibFileAction();
-            $this->checkExistence($libFiles->getLibImage(), $this->getWhereDir(), $fileName);
+        try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
+
+            $this->fileName = strval($this->getFromParam('name'));
+            $libAction = $this->getLibFileAction($userPath, $currentPath);
+            $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->thumbForm->composeForm('#');
             $this->thumbForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->thumbForm->process()) {
-                $libFiles->updateThumb($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
+                $libAction->updateThumb($this->fileName);
                 $this->isProcessed = true;
             }
-        } catch (FormsException | ImagesException | FilesException $ex) {
+        } catch (FormsException | ImagesException | FilesException | PathsException | MimeException $ex) {
             $this->error = $ex;
         }
     }

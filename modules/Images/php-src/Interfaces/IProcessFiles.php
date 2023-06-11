@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images\Interfaces;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_mime\MimeException;
@@ -125,4 +126,6 @@ interface IProcessFiles
      * @return string
      */
     public function reverseThumb(string $path): string;
+
+    public function getLibImage(): Images;
 }

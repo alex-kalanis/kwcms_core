@@ -13,7 +13,7 @@ use kalanis\kw_langs\Lang;
  * Class FileDeleteForm
  * @package KWCMS\modules\Images\Forms
  * Delete this file
- * @property Controls\Submit removeFile
+ * @property Controls\Submit $removeFile
  */
 class FileDeleteForm extends Form
 {

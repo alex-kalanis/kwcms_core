@@ -22,21 +22,21 @@ class ConnectItem implements IRow
 
     /**
      * @param FileNode $item
-     * @param string $whereDir
+     * @param string[] $whereDir
      * @param IProcessFiles $libFiles
      * @throws FilesException
      * @throws PathsException
      */
-    public function __construct(FileNode $item, string $whereDir, IProcessFiles $libFiles)
+    public function __construct(FileNode $item, array $whereDir, IProcessFiles $libFiles)
     {
         $pats = new ArrayPath();
-        $pats->setArray($item->getPath());
+        $pats->setArray(array_merge($whereDir, $item->getPath()));
         $this->array = [
             'name' => $pats->getFileName(),
             'dir' => $pats->getStringDirectory(),
             'size' => $item->getSize(),
-            'desc' => $libFiles->readDesc($whereDir . DIRECTORY_SEPARATOR . $item->getPath()),
-            'thumb' => $libFiles->reverseThumb($whereDir . DIRECTORY_SEPARATOR . $item->getPath()),
+            'desc' => $libFiles->readDesc($pats->getFileName()),
+            'thumb' => $libFiles->reverseThumb($pats->getFileName()),
         ];
     }
 

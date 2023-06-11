@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Images\Edit;
+namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 
 use kalanis\kw_files\FilesException;
@@ -9,21 +9,21 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\Output;
-use kalanis\kw_notify\Notification;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Forms;
 
 
 /**
  * Class Rename
- * @package KWCMS\modules\Images\Edit
+ * @package KWCMS\modules\Images\AdminControllers\Edit
  * Images - Rename one
  */
 class Rename extends AEdit
 {
     /** @var string */
     protected $targetName = '';
-    /** @var Forms\FileRenameForm|null */
+    /** @var Forms\FileRenameForm */
     protected $renameForm = null;
 
     public function __construct()
@@ -34,25 +34,27 @@ class Rename extends AEdit
 
     public function run(): void
     {
+        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+
         try {
-            $this->initWhereDir(new SessionAdapter(), $this->inputs);
-            $this->userDir->setUserPath($this->user->getDir());
-            $this->userDir->process();
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $currentPath = Stuff::linkToArray($this->getWhereDir());
 
             $fileName = strval($this->getFromParam('name'));
             $this->renameForm->composeForm($fileName, '#');
             $this->renameForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->renameForm->process()) {
                 $newName = strval($this->renameForm->getControl('newName')->getValue());
-                $libAction = $this->getLibFileAction();
-                $this->checkExistence($libAction->getLibImage(), $this->getWhereDir(), $fileName);
+                $libAction = $this->getLibFileAction($userPath, $currentPath);
+                $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->renameFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,
                     $newName
                 );
                 $this->targetName = $this->isProcessed ? $newName : $fileName ;
             }
-        } catch (FormsException | ImagesException | FilesException $ex) {
+        } catch (FormsException | ImagesException | FilesException | PathsException $ex) {
             $this->error = $ex;
         }
     }

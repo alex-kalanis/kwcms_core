@@ -1,26 +1,27 @@
 <?php
 
-namespace KWCMS\modules\Images\Edit;
+namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Extras\UserDir;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Templates;
 
 
 /**
  * Class AEdit
- * @package KWCMS\modules\Images\Edit
+ * @package KWCMS\modules\Images\AdminControllers\Edit
  * Images - Actions in edit
  */
 abstract class AEdit extends AAuthModule
@@ -33,20 +34,24 @@ abstract class AEdit extends AAuthModule
 
     /** @var ImagesException|null */
     protected $error = null;
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
     /** @var bool */
     protected $isProcessed = false;
     /** @var Forward */
     protected $forward = null;
 
+    /**
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
         Config::load('Images');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->userDir = new UserDir();
     }
 
     public function allowedAccessClasses(): array

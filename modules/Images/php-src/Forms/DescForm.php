@@ -13,9 +13,9 @@ use kalanis\kw_langs\Lang;
  * Class DescForm
  * @package KWCMS\modules\Images\Forms
  * Edit description of dir/file
- * @property Controls\Text description
- * @property Controls\Submit saveDesc
- * @property Controls\Reset resetDesc
+ * @property Controls\Text $description
+ * @property Controls\Submit $saveDesc
+ * @property Controls\Reset $resetDesc
  */
 class DescForm extends Form
 {

@@ -6,9 +6,8 @@ namespace KWCMS\modules\Images\Lib;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
-use kalanis\kw_paths\Extras\UserDir;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
-use kalanis\kw_paths\Stuff;
 use KWCMS\modules\Images\Interfaces;
 
 
@@ -20,41 +19,42 @@ use KWCMS\modules\Images\Interfaces;
 trait TLibAction
 {
     /**
+     * @param string[] $userPath
+     * @param string[] $currentPath
      * @throws FilesException
      * @throws ImagesException
+     * @throws PathsException
      * @return Interfaces\IProcessFiles
      */
-    protected function getLibFileAction(): Interfaces\IProcessFiles
+    protected function getLibFileAction(array $userPath, array $currentPath): Interfaces\IProcessFiles
     {
-        $userDir = new UserDir(Stored::getPath());
-        $userDir->setUserPath($this->getUserDir());
-        $userDir->process();
-        $webRootDir = $userDir->getWebRootDir() . $userDir->getHomeDir();
+        $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
         return new ProcessFile(
             FilesHelper::getOperations($webRootDir),
             FilesHelper::getUpload($webRootDir),
             FilesHelper::getImages($webRootDir),
-            Stuff::sanitize($this->getWhereDir()) . DIRECTORY_SEPARATOR
+            $userPath,
+            $currentPath
         );
     }
 
     /**
+     * @param string[] $userPath
+     * @param string[] $currentPath
      * @throws FilesException
      * @throws ImagesException
+     * @throws PathsException
      * @return Interfaces\IProcessDirs
      */
-    protected function getLibDirAction(): Interfaces\IProcessDirs
+    protected function getLibDirAction(array $userPath, array $currentPath): Interfaces\IProcessDirs
     {
-        $userDir = new UserDir(Stored::getPath());
-        $userDir->setUserPath($this->getUserDir());
-        $userDir->process();
+        $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
         return new ProcessDir(
-            FilesHelper::getDirs($userDir->getWebRootDir() . $userDir->getHomeDir()),
-            Stuff::sanitize($this->getWhereDir()) . DIRECTORY_SEPARATOR
+            FilesHelper::getDirs($webRootDir),
+            $userPath,
+            $currentPath
         );
     }
 
     abstract protected function getUserDir(): string;
-
-    abstract protected function getWhereDir(): string;
 }

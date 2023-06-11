@@ -1,23 +1,31 @@
 <?php
 
-namespace KWCMS\modules\Images;
+namespace KWCMS\modules\Images\AdminControllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Images\Templates;
 
 
 /**
  * Class ChDir
- * @package KWCMS\modules\Images
+ * @package KWCMS\modules\Images\AdminControllers
  * Change directory - by Images
  */
-class ChDir extends \KWCMS\modules\Admin\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
+    /**
+     * ChDir constructor.
+     * @throws ConfException
+     * @throws LangException
+     */
     public function __construct()
     {
         parent::__construct();

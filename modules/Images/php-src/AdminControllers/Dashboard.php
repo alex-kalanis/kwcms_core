@@ -1,51 +1,66 @@
 <?php
 
-namespace KWCMS\modules\Images;
+namespace KWCMS\modules\Images\AdminControllers;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Processing\Volume\ProcessDir;
+use kalanis\kw_files\Access;
+use kalanis\kw_files\Node;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
+use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
-use KWCMS\modules\Images\Lib\TLibAction;
-use SplFileInfo;
+use KWCMS\modules\Images\Lib;
+use KWCMS\modules\Images\Templates;
 
 
 /**
  * Class Dashboard
- * @package KWCMS\modules\Images
+ * @package KWCMS\modules\Images\AdminControllers
  * Site's image content - list available files in current dir
  */
 class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
     use TWhereDir;
-    use TLibAction;
+    use Lib\TLibAction;
 
-    /** @var UserDir|null */
+    /** @var UserDir */
     protected $userDir = null;
-    /** @var ITree|null */
+    /** @var ITree */
     protected $tree = null;
+    /** @var string[] */
     protected $availableTypes = ['bmp', 'gif', 'jpeg', 'jpg', 'pic', 'png', 'tif', 'tiff', 'wbmp', 'webp', ];
+    /** @var string[] */
+    protected $userPath = [];
+    /** @var string[] */
+    protected $currentPath = [];
 
+    /**
+     * @throws FilesException
+     * @throws LangException
+     * @throws PathsException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new Tree(Stored::getPath(), new ProcessDir());
-        $this->userDir = new UserDir(Stored::getPath());
+        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+        $this->userDir = new UserDir();
     }
 
     protected function getUserDir(): string
@@ -58,22 +73,41 @@ class Dashboard extends AAuthModule implements IModuleTitle
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
     }
 
+    /**
+     * @throws FilesException
+     */
     public function run(): void
     {
         // get list of files to display
         // depends on current dir and passed dir
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
         $this->userDir->setUserPath($this->user->getDir());
-        $this->userDir->process();
-        $this->tree->wantDeep(false);
-        $this->tree->setStartPath($this->userDir->getHomeDir() . $this->getWhereDir());
-        $this->tree->setFilterCallback([$this, 'filterFiles']);
-        $this->tree->process();
+
+        try {
+            $this->userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $this->currentPath = Stuff::linkToArray($this->getWhereDir());
+
+            $this->tree->setStartPath(array_merge($this->userPath, $this->currentPath));
+            $this->tree->wantDeep(false);
+            $this->tree->setFilterCallback([$this, 'filterFiles']);
+            $this->tree->process();
+
+        } catch (PathsException $ex) {
+            $this->error = $ex;
+        }
     }
 
-    public function filterFiles(SplFileInfo $info): bool
+    public function filterFiles(Node $info): bool
     {
-        return $info->isFile() && in_array($info->getExtension(), $this->availableTypes);
+        if (empty($info->getPath())) {
+            return true; // init node
+        }
+        $pt = array_values($info->getPath());
+        $end = end($pt);
+        if (empty($end)) {
+            return false;
+        }
+        return $info->isFile() && in_array(strtolower(Stuff::fileExt(strval($end))), $this->availableTypes);
     }
 
     public function result(): Output\AOutput
@@ -94,11 +128,11 @@ class Dashboard extends AAuthModule implements IModuleTitle
             $table = new Lib\ListTable(
                 $this->inputs,
                 $this->links,
-                $this->getLibFileAction(),
-                $this->getWhereDir()
+                $this->getLibFileAction($this->userPath, $this->currentPath),
+                array_merge($this->userPath, $this->currentPath)
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
-        } catch ( FormsException | TableException | ConnectException | ImagesException | FilesException $ex) {
+        } catch ( FormsException | TableException | ConnectException | ImagesException | FilesException | PathsException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

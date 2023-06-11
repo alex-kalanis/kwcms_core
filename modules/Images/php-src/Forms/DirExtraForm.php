@@ -13,7 +13,7 @@ use kalanis\kw_langs\Lang;
  * Class DirExtraForm
  * @package KWCMS\modules\Images\Forms
  * Set dir as usable for extra data
- * @property Controls\Submit saveDir
+ * @property Controls\Submit $saveDir
  */
 class DirExtraForm extends Form
 {
