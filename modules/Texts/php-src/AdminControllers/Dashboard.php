@@ -9,6 +9,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -45,8 +46,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
     protected $openFileForm = null;
 
     /**
-     * @throws PathsException
      * @throws FilesException
+     * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
@@ -78,7 +80,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
             $this->newFileForm->composeForm($this->links->linkVariant($this->getTargetEdit()));
             $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getRoot(), $this->links->linkVariant($this->getTargetEdit()));
-        } catch (TextsException | PathsException $ex) {
+        } catch (FilesException | PathsException | TextsException $ex) {
             $this->error = $ex;
         }
     }

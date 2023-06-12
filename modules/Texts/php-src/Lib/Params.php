@@ -3,7 +3,8 @@
 namespace KWCMS\modules\Texts\Lib;
 
 
-use SplFileInfo;
+use kalanis\kw_files\Node;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -13,9 +14,16 @@ use SplFileInfo;
  */
 class Params
 {
-    public function filterFiles(SplFileInfo $info): bool
+    public function filterFiles(Node $info): bool
     {
-        return $info->isFile() && in_array($info->getExtension(), $this->filteredTypes());
+        if (empty($info->getPath())) {
+            // root
+            return true;
+        }
+        $path = $info->getPath();
+        $file = end($path);
+        $ext = Stuff::fileExt(strval($file));
+        return $info->isFile() && in_array($ext, $this->filteredTypes());
     }
 
     public function filteredTypes(): array

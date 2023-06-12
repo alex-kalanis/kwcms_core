@@ -40,6 +40,8 @@ $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_pa
 \kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
 \kalanis\kw_confs\Config::load('Core', 'site'); // autoload core config
 \kalanis\kw_confs\Config::load('Core', 'page'); // autoload core config
+\kalanis\kw_confs\Config::set('Core', 'site.default_display_module', 'Layout'); // overwrite default display
+\kalanis\kw_confs\Config::set('Core', 'page.default_display_module', 'Transcode'); // overwrite default display
 
 // init styles and scripts
 \kalanis\kw_scripts\Scripts::init(new \kalanis\kw_scripts\Loaders\PhpLoader($systemPaths, $routedPaths));

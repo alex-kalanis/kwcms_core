@@ -1,10 +1,10 @@
 -----------
 
-# KWCMS3 - kwcms_core
+# KWCMS4 - kwcms_core
 
 ------------
 
-Basic idea about KWCMS3 is framework with its own modular system. It contains basic tree in
+Basic idea about KWCMS is framework with its own modular system. It contains basic tree in
 which the application should exists on their own and without dependency on databases.
 
 A many things has been ported from KWCMS1 and used here and many are brand new as necessity
@@ -18,7 +18,7 @@ Here you get larger control over the input and output. Object way. This makes te
 more simple. For both modules and libraries. Most of libraries are in separated projects where
 they can be accessed as extra and contains simple tests. But the basics is here, in this project.
 
-This is only example of work with KWCMS3, it should be treated that way.
+This is only example of work with KWCMS, it should be treated that way.
 
 ### So what is that
 
@@ -78,3 +78,15 @@ here is need of file access. It's on your developer to choose which parts will b
 limits. Some parts like caches can stay on each node without problems, some need to be shared
 across the all instances. Then some things might to be problematic - nearly all loaders are
 filesystem-dependent.
+
+KWCMS4 introduced usage of libraries *kw_files* which serves as interface to access files on
+different storage engines. Many modules now works through it.
+
+### Changes across the ages
+
+- v1 -> initial one, really simple modules, can happen things with cross of admin and presentation
+- v2 -> different way with objects, autoloading, different tree structure, playing with forms
+- v3 -> total rewrite to changed autoloading, yet many things persists like hard-coded dependency
+  on file system and paths as strings 
+- v4 -> separation of controllers in modules, uses arrays as paths, user data are now available
+  via appropriate libraries, direct access to user data need no more

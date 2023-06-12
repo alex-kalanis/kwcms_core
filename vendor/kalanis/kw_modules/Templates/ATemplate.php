@@ -36,7 +36,9 @@ abstract class ATemplate extends \kalanis\kw_templates\ATemplate
         '%2$s%1$s%7$s%1$s%9$s%1$s%11$s%13$s',
     ];
 
+    /** @var string */
     protected $moduleName = '';
+    /** @var string */
     protected $templateName = '';
 
     use TFile;

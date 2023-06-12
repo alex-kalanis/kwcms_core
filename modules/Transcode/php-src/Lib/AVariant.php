@@ -9,7 +9,9 @@ namespace KWCMS\modules\Transcode\Lib;
  */
 abstract class AVariant
 {
-    abstract public function getSeparator(): string;
+    abstract public function getSeparatorFrom(): string;
+
+    abstract public function getSeparatorTo(): string;
 
     abstract public function getAllowed(): string;
 

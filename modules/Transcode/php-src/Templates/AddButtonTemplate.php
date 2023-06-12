@@ -17,6 +17,6 @@ class AddButtonTemplate extends ATemplate
 
     public function loadTemplate(): string
     {
-        return '<span class="select-button add-button" data-content=\'{ESC_LETTER}\'>{LETTER}</span>';
+        return '<span class="select-button add-button" data-content=\'{ESC_LETTER}\'>{LETTER}</span> ';
     }
 }

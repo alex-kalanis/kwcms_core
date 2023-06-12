@@ -12,7 +12,12 @@ use KWCMS\modules\Transcode\Lib\ASharedArrayVariant;
  */
 class Azbuka extends ASharedArrayVariant
 {
-    public function getSeparator(): string
+    public function getSeparatorFrom(): string
+    {
+        return '';
+    }
+
+    public function getSeparatorTo(): string
     {
         return '';
     }

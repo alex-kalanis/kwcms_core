@@ -1,11 +1,15 @@
 <?php
 
-namespace KWCMS\modules\Transcode;
+namespace KWCMS\modules\Transcode\Controllers;
 
 
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
+use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Transcode\Lib;
+use KWCMS\modules\Transcode\Templates;
 
 
 class Transcode extends AModule
@@ -29,6 +33,9 @@ class Transcode extends AModule
         $this->libFactory = new Lib\VariantFactory();
     }
 
+    /**
+     * @throws FormsException
+     */
     public function process(): void
     {
         $what = $this->inputs->getInArray('what');
@@ -52,6 +59,10 @@ class Transcode extends AModule
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function output(): Output\AOutput
     {
         $out = new Output\Raw();
@@ -63,6 +74,10 @@ class Transcode extends AModule
         return $out->setContent($defaultTemplate->render());
     }
 
+    /**
+     * @throws RenderException
+     * @return string
+     */
     protected function getContent(): string
     {
         $what = $this->inputs->getInArray('what');
@@ -87,7 +102,11 @@ class Transcode extends AModule
         return $indexInfo->render();
     }
 
-    protected function getForm()
+    /**
+     * @throws RenderException
+     * @return string
+     */
+    protected function getForm(): string
     {
         $indexInfo = new Templates\FormTemplate();
         $indexInfo->change('{FORM_ITSELF}', $this->form->render());
@@ -97,7 +116,11 @@ class Transcode extends AModule
         return $indexInfo->render();
     }
 
-    protected function getCodingButtons($letters)
+    /**
+     * @param string[] $letters
+     * @return string
+     */
+    protected function getCodingButtons(array $letters): string
     {
         $buttons = new Templates\AddButtonTemplate();
         $r = '';
@@ -110,7 +133,7 @@ class Transcode extends AModule
         return $r;
     }
 
-    protected function getRemoveButton()
+    protected function getRemoveButton(): string
     {
         $button = new Templates\RmButtonTemplate();
         $button->change('{LETTER}', '&lt--');
@@ -118,18 +141,37 @@ class Transcode extends AModule
         return $button->render();
     }
 
+    /**
+     * @return string[]
+     */
     public function getMappedFrom(): array
     {
-        return array_map([$this, 'getMapped'], $this->libVariant->getFrom());
+        return array_map([$this, 'getSepMappedFrom'], $this->libVariant->getFrom());
     }
 
+    /**
+     * @return string[]
+     */
     public function getMappedTo(): array
     {
-        return array_map([$this, 'getMapped'], $this->libVariant->getTo());
+        return array_map([$this, 'getSepMappedTo'], $this->libVariant->getTo());
     }
 
-    public function getMapped($input): string
+    /**
+     * @param string $input
+     * @return string
+     */
+    public function getSepMappedFrom($input): string
     {
-        return $input . $this->libVariant->getSeparator();
+        return $input . $this->libVariant->getSeparatorFrom();
+    }
+
+    /**
+     * @param string $input
+     * @return string
+     */
+    public function getSepMappedTo($input): string
+    {
+        return $input . $this->libVariant->getSeparatorTo();
     }
 }
