@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Texts\Lib;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
 
@@ -28,8 +29,8 @@ class EditTemplate extends ATemplate
 
     /**
      * @param EditFileForm $form
+     * @throws RenderException
      * @return $this
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(EditFileForm $form): self
     {

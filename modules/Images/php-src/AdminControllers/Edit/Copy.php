@@ -58,7 +58,7 @@ class Copy extends AEdit
 
             $this->tree->setStartPath(array_merge($userPath, $currentPath));
             $this->tree->wantDeep(true);
-            $this->tree->setFilterCallback([$this, 'filterDirNodes']);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
 
             $this->fileName = strval($this->getFromParam('name'));

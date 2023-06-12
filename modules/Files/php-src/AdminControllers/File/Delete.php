@@ -36,7 +36,7 @@ class Delete extends AFile
 
             $this->tree->setStartPath($fullPath);
             $this->tree->wantDeep(false);
-            $this->tree->setFilterCallback([$this, 'filterFilesTree']);
+            $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
 
             $this->fileForm->composeDeleteFile($this->tree->getRoot());

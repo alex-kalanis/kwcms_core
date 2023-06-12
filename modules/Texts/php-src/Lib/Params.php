@@ -23,10 +23,10 @@ class Params
         $path = $info->getPath();
         $file = end($path);
         $ext = Stuff::fileExt(strval($file));
-        return $info->isFile() && in_array($ext, $this->filteredTypes());
+        return $info->isFile() && in_array($ext, $this->whichExtsIWant());
     }
 
-    public function filteredTypes(): array
+    public function whichExtsIWant(): array
     {
         return ['htm', 'html', 'xhtm', 'xhtml', 'txt', 'mkd', 'md', 'ini', 'inf', ];
     }

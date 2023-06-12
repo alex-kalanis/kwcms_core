@@ -46,6 +46,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
      * @throws ConfException
      * @throws FilesException
      * @throws LangException
+     * @throws MenuException
      * @throws PathsException
      */
     public function __construct()
@@ -68,7 +69,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
             if (empty($item->getFile())) {
                 $item->setData($this->getWhereDir(), $item->getName(), $item->getTitle(), $item->getDisplayCount());
             }
-        } catch (MenuException | PathsException $ex) {
+        } catch (MenuException | PathsException | SemaphoreException $ex) {
             $item = new \kalanis\kw_menu\Menu\Menu();
             $item->setData(
                 Stuff::filename($this->getWhereDir()),

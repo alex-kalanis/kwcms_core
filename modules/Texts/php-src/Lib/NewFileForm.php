@@ -13,9 +13,9 @@ use kalanis\kw_langs\Lang;
  * Class NewFileForm
  * @package KWCMS\modules\Texts\Lib
  * Create new file / open undeclared file
- * @property Controls\Text fileName
- * @property Controls\Submit openFile
- * @property Controls\Reset resetFile
+ * @property Controls\Text $fileName
+ * @property Controls\Submit $openFile
+ * @property Controls\Reset $resetFile
  */
 class NewFileForm extends Form
 {

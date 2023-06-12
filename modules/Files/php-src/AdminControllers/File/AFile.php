@@ -19,6 +19,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\Traits\TFilesDirs;
+use kalanis\kw_tree\Traits\TFilesFile;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Files\Lib;
@@ -33,9 +34,9 @@ abstract class AFile extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
     use Lib\TModuleTemplate;
-    use Lib\TParams;
     use TWhereDir;
     use TFilesDirs;
+    use TFilesFile;
 
     /** @var UserDir */
     protected $userDir = null;

@@ -42,7 +42,7 @@ class Move extends AFile
 
             $this->tree->setStartPath($fullPath);
             $this->tree->wantDeep(false);
-            $this->tree->setFilterCallback([$this, 'filterFilesTree']);
+            $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
             $sourceTree = $this->tree->getRoot();
 

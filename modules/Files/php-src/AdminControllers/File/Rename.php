@@ -34,7 +34,7 @@ class Rename extends AFile
 
             $this->tree->setStartPath($fullPath);
             $this->tree->wantDeep(false);
-            $this->tree->setFilterCallback([$this, 'filterFilesTree']);
+            $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
 
             $this->fileForm->composeRenameFile($this->tree->getRoot());

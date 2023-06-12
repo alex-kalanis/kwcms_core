@@ -22,6 +22,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Images\Lib;
@@ -38,9 +39,9 @@ class Edit extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
     use Lib\TLibExistence;
-    use Lib\TLibFilters;
     use Templates\TModuleTemplate;
     use TWhereDir;
+    use TFilesDirs;
 
     /** @var string */
     protected $fileName = '';
@@ -110,7 +111,7 @@ class Edit extends AAuthModule implements IModuleTitle
 
             $this->tree->wantDeep(true);
             $this->tree->setStartPath($userPath);
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
 
             // target links are redirects - action outside and then response somewhere (not necessary here)

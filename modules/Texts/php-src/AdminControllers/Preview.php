@@ -7,6 +7,7 @@ use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
@@ -36,6 +37,11 @@ class Preview extends AAuthModule
     /** @var string */
     protected $displayContent = '';
 
+    /**
+     * @throws FilesException
+     * @throws LangException
+     * @throws PathsException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
@@ -59,7 +65,7 @@ class Preview extends AAuthModule
         }
         $fileName = reset($fileName);
         $this->ext = Stuff::fileExt(Stuff::filename($fileName));
-        if (!in_array($this->ext, $this->getParams()->filteredTypes())) {
+        if (!in_array($this->ext, $this->getParams()->whichExtsIWant())) {
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }

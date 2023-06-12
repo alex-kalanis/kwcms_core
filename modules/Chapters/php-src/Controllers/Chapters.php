@@ -7,6 +7,7 @@ use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Node;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
@@ -88,8 +89,9 @@ class Chapters extends AModule
         $this->position = $this->getPosition();
     }
 
-    public function isUsable(string $file): bool
+    public function isUsable(Node $file): bool
     {
+        $file = $this->arrPath->setArray($file->getPath())->getFileName();
         if ('.' == $file[0]) {
             return false;
         }

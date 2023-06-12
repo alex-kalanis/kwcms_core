@@ -8,6 +8,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Access;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -22,6 +23,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Images\Lib;
@@ -37,9 +39,9 @@ use KWCMS\modules\Images\Templates;
 class MakeDir extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
-    use Lib\TLibFilters;
     use Templates\TModuleTemplate;
     use TWhereDir;
+    use TFilesDirs;
 
     /** @var Forms\DirNewForm */
     protected $createForm = null;
@@ -79,7 +81,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
 
             $this->tree->setStartPath($userPath);
             $this->tree->wantDeep(true);
-            $this->tree->setFilterCallback([$this, 'filterDirNodes']);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
 
             $this->createForm->composeForm($this->tree->getRoot(),'#');
@@ -103,6 +105,10 @@ class MakeDir extends AAuthModule implements IModuleTitle
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -128,6 +134,10 @@ class MakeDir extends AAuthModule implements IModuleTitle
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

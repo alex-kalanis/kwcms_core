@@ -24,6 +24,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
+use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Menu\Lib;
@@ -57,6 +58,7 @@ class Menu extends AModule
      * @throws FilesException
      * @throws MenuException
      * @throws PathsException
+     * @throws SemaphoreException
      */
     public function __construct()
     {
@@ -92,6 +94,7 @@ class Menu extends AModule
      * @param InnerLinks $innerLink
      * @throws CacheException
      * @throws PathsException
+     * @throws SemaphoreException
      * @return ICache
      */
     protected function getCache(CompositeAdapter $files, InnerLinks $innerLink): ICache
@@ -105,14 +108,18 @@ class Menu extends AModule
      * @param CompositeAdapter $files
      * @param InnerLinks $innerLink
      * @throws PathsException
+     * @throws SemaphoreException
      * @return ISemaphore
      */
     protected function getSemaphore(CompositeAdapter $files, InnerLinks $innerLink): ISemaphore
     {
-        return new Semaphore\Files($files, array_merge(
-            $innerLink->toFullPath([]),
-            [strval(Config::get('Menu', 'meta_regen'))]
-        ));
+        return (new Semaphore\Factory())->getSemaphore([
+            'semaphore' => $files,
+            'semaphore_root' => array_merge(
+                $innerLink->toFullPath([]),
+                [strval(Config::get('Menu', 'meta_regen'))]
+            ),
+        ]);
     }
 
     /**

@@ -15,9 +15,9 @@ use kalanis\kw_tree_controls\Controls\FileRadio;
  * Class OpenFileForm
  * @package KWCMS\modules\Texts\Lib
  * Open file
- * @property FileRadio fileName
- * @property Controls\Submit openFile
- * @property Controls\Reset resetFile
+ * @property FileRadio $fileName
+ * @property Controls\Submit $openFile
+ * @property Controls\Reset $resetFile
  */
 class OpenFileForm extends Form
 {

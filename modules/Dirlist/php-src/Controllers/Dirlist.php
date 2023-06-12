@@ -161,17 +161,12 @@ class Dirlist extends AModule
 
     public function isUsable(Node $file): bool
     {
-        if (empty(array_diff($file->getPath(), $this->dir))) {
-            // root node must stay!
-            return true;
-        }
-
         $this->arrPath->setArray($file->getPath());
-        if ('.' == $this->arrPath->getFileName()[0]) {
+        if (!$file->isFile()) {
             return false;
         }
 
-        if (!$file->isFile()) {
+        if ('.' == $this->arrPath->getFileName()[0]) {
             return false;
         }
 

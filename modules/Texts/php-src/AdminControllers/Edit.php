@@ -10,6 +10,7 @@ use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -41,6 +42,7 @@ class Edit extends AAuthModule implements IModuleTitle
 
     /**
      * @throws FilesException
+     * @throws LangException
      * @throws PathsException
      */
     public function __construct()
@@ -64,7 +66,7 @@ class Edit extends AAuthModule implements IModuleTitle
             return;
         }
         $ext = Stuff::fileExt(Stuff::filename($fileName));
-        if (!in_array($ext, $this->getParams()->filteredTypes())) {
+        if (!in_array($ext, $this->getParams()->whichExtsIWant())) {
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }

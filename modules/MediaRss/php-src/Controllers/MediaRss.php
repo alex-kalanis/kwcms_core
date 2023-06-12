@@ -151,10 +151,6 @@ class MediaRss extends AModule
 
     public function filterImages(Node $info): bool
     {
-        if (empty($info->getPath())) {
-            // root
-            return true;
-        }
         return in_array(Stuff::fileExt($this->arrPath->setArray($info->getPath())->getFileName()), $this->acceptTypes);
     }
 }

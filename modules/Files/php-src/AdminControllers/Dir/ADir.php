@@ -33,7 +33,6 @@ abstract class ADir extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
     use Lib\TModuleTemplate;
-    use Lib\TParams;
     use TWhereDir;
     use TFilesDirs;
 

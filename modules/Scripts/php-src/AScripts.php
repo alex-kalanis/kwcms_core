@@ -147,7 +147,7 @@ abstract class AScripts extends AModule
 
     public function filterJs(Node $file): bool
     {
-        return $file->isDir() || $file->isFile()
+        return $file->isFile()
             && in_array(Stuff::fileExt(
                 $this->arrPath->setArray($file->getPath())->getFileName()
             ), ['js']);

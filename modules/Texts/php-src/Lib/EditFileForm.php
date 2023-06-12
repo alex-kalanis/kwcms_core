@@ -13,9 +13,9 @@ use kalanis\kw_langs\Lang;
  * Class EditFileForm
  * @package KWCMS\modules\Texts\Lib
  * Edit file
- * @property Controls\Textarea content
- * @property Controls\Submit saveFile
- * @property Controls\Reset resetFile
+ * @property Controls\Textarea $content
+ * @property Controls\Submit $saveFile
+ * @property Controls\Reset $resetFile
  */
 class EditFileForm extends Form
 {

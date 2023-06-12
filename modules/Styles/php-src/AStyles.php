@@ -147,7 +147,7 @@ abstract class AStyles extends AModule
 
     public function filterCss(Node $file): bool
     {
-        return $file->isDir() || $file->isFile()
+        return $file->isFile()
             && in_array(Stuff::fileExt(
                 $this->arrPath->setArray($file->getPath())->getFileName()
             ), ['css']);

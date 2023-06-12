@@ -24,6 +24,7 @@ use kalanis\kw_paths\Stuff;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_tree\Traits\TFilesFile;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Files\Lib;
@@ -38,8 +39,8 @@ class Read extends AAuthModule implements IModuleTitle
 {
     use Lib\TLibAction;
     use Lib\TModuleTemplate;
-    use Lib\TParams;
     use TWhereDir;
+    use TFilesFile;
 
     /** @var UserDir */
     protected $userDir = null;
@@ -86,7 +87,7 @@ class Read extends AAuthModule implements IModuleTitle
 
             $this->tree->setStartPath($fullPath);
             $this->tree->wantDeep(false);
-            $this->tree->setFilterCallback([$this, 'filterFilesTree']);
+            $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
 
             $this->fileForm->composeReadFile($this->tree->getRoot());

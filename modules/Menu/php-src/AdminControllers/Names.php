@@ -17,6 +17,7 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
 use KWCMS\modules\Menu\Lib;
@@ -40,8 +41,9 @@ class Names extends AAuthModule implements IModuleTitle
 
     /**
      * @throws ConfException
-     * @throws LangException
      * @throws FilesException
+     * @throws LangException
+     * @throws MenuException
      * @throws PathsException
      */
     public function __construct()
@@ -59,7 +61,7 @@ class Names extends AAuthModule implements IModuleTitle
     {
         try {
             $this->runTMenu($this->inputs, $this->user->getDir());
-        } catch (MenuException | PathsException $ex) {
+        } catch (MenuException | PathsException | SemaphoreException $ex) {
             $this->error = $ex;
         }
     }

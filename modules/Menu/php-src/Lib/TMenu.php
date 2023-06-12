@@ -9,19 +9,15 @@ use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_input\Simplified\SessionAdapter;
-use kalanis\kw_menu\EntriesSource;
-use kalanis\kw_menu\Interfaces;
 use kalanis\kw_menu\MenuException;
-use kalanis\kw_menu\MetaProcessor;
-use kalanis\kw_menu\MetaSource;
+use kalanis\kw_menu\MenuFactory;
 use kalanis\kw_menu\MoreEntries;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_paths\Path;
-use kalanis\kw_tree\DataSources;
-use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 
@@ -39,8 +35,8 @@ trait TMenu
     protected $libMenu = null;
     /** @var ISemaphore */
     protected $libSemaphore = null;
-    /** @var ITree */
-    protected $tree = null;
+    /** @var Access\CompositeAdapter */
+    protected $files = null;
     /** @var UserDir */
     protected $userDir = null;
 
@@ -48,34 +44,15 @@ trait TMenu
      * @param Path $path
      * @throws ConfException
      * @throws FilesException
+     * @throws MenuException
      * @throws PathsException
      */
     protected function initTMenu(Path $path)
     {
         Config::load('Menu');
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot()));
         $this->userDir = new UserDir();
-        $this->libMenu = new MoreEntries($this->initMetaProcessor($path), $this->initMenuVolume($path));
-        $this->libSemaphore = $this->initMenuSemaphore($path);
-    }
-
-    protected function initMenuVolume(Path $path): Interfaces\IEntriesSource
-    {
-        return new EntriesSource\Volume($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
-    }
-
-    protected function initMetaProcessor(Path $path): MetaProcessor
-    {
-        $lang = new Translations();
-        return new MetaProcessor(new MetaSource\Volume($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR, new MetaSource\FileParser(), $lang), $lang);
-    }
-
-    protected function initMenuSemaphore(Path $path): ISemaphore
-    {
-        return new Semaphore\Volume(
-            $path->getDocumentRoot() . $path->getPathToSystemRoot() . Config::get('Menu', 'meta_regen'),
-            new Translations()
-        );
+        $this->files = (new Access\Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot());
+        $this->libMenu = (new MenuFactory())->getMenu($this->files);
     }
 
     /**
@@ -83,6 +60,7 @@ trait TMenu
      * @param string $userDir
      * @throws MenuException
      * @throws PathsException
+     * @throws SemaphoreException
      */
     protected function runTMenu(IFiltered $inputs, string $userDir): void
     {
@@ -92,6 +70,16 @@ trait TMenu
             $this->userDir->process()->getFullPath()->getArray()),
             Stuff::linkToArray($this->getWhereDir())
         );
+
+        // cannot init earlier due need of known user directory
+        $this->libSemaphore = (new Semaphore\Factory())->getSemaphore([
+            'semaphore' => $this->files,
+            'semaphore_root' => array_merge(
+                array_values($this->userDir->process()->getFullPath()->getArray()),
+                [Config::get('Menu', 'meta_regen')]
+            ),
+        ]);
+
         $this->libMenu->setGroupKey($fullPath);
         $this->libMenu->setMeta(array_merge($fullPath, [$this->getMenuMeta()]));
         $this->libMenu->load();

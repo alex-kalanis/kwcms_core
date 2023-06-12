@@ -51,8 +51,9 @@ class Edit extends AAuthModule implements IModuleTitle
 
     /**
      * @throws ConfException
-     * @throws LangException
      * @throws FilesException
+     * @throws LangException
+     * @throws MenuException
      * @throws PathsException
      */
     public function __construct()

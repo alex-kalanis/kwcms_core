@@ -10,7 +10,7 @@ namespace KWCMS\modules\HtmlTexts\Lib;
  */
 class Params extends \KWCMS\modules\Texts\Lib\Params
 {
-    public function filteredTypes(): array
+    public function whichExtsIWant(): array
     {
         return ['htm', 'html', 'xhtm', 'xhtml'];
     }

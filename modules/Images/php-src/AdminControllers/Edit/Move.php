@@ -56,7 +56,7 @@ class Move extends AEdit
 
             $this->tree->setStartPath(array_merge($userPath, $currentPath));
             $this->tree->wantDeep(true);
-            $this->tree->setFilterCallback([$this, 'filterDirs']);
+            $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
 
             $fileName = strval($this->getFromParam('name'));

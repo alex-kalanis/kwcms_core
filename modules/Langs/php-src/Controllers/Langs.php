@@ -132,8 +132,8 @@ class Langs extends AModule
                 $this->extLink->linkVariant(StoreRouted::getPath()->getPath(), '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
                 $this->extLink->linkModule('sysimage', 'images/flags/' . $lang . '.png'),
-                (string) $this->getFromParam('vsize', ''),
-                (string) $this->getFromParam('hsize', '')
+                strval($this->getFromParam('vsize', '')),
+                strval($this->getFromParam('hsize', ''))
             )->render();
         }
 
@@ -155,8 +155,8 @@ class Langs extends AModule
                 $this->extLink->linkVariant('', '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
                 $this->extLink->linkModule('sysimage', 'images/flags/' . $lang . '.png'),
-                (string) $this->getFromParam('vsize', ''),
-                (string) $this->getFromParam('hsize', '')
+                strval($this->getFromParam('vsize', '')),
+                strval($this->getFromParam('hsize', ''))
             )->render();
         }
 

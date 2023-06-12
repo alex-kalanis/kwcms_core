@@ -13,6 +13,7 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Images\Lib;
@@ -28,9 +29,9 @@ abstract class AEdit extends AAuthModule
 {
     use Lib\TLibAction;
     use Lib\TLibExistence;
-    use Lib\TLibFilters;
     use Templates\TModuleTemplate;
     use TWhereDir;
+    use TFilesDirs;
 
     /** @var ImagesException|null */
     protected $error = null;

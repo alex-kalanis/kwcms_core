@@ -16,6 +16,11 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 
+/**
+ * Class Volume
+ * @package kalanis\kw_tree\DataSources
+ * The source is local volume
+ */
 class Volume extends ASources
 {
     /** @var string */
@@ -48,6 +53,7 @@ class Volume extends ASources
 
         /** @var FileNode[] $nodes */
         $nodes = [];
+        // sometimes the root node is filtered out - put it there for each situation
         $initNode = new SplFileInfo($path);
         $nodes[''] = $this->fillNode($initNode, '');
 
@@ -142,7 +148,7 @@ class Volume extends ASources
     {
         $isKnown = mb_strpos($what, $start);
         if (0 === $isKnown) {
-            return mb_substr($what, mb_strlen($start));
+            return mb_substr($what, mb_strlen($start) + 1);
         } else {
             // @codeCoverageIgnoreStart
             // false for unknown or higher number for elsewhere

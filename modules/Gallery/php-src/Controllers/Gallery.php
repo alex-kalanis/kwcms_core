@@ -23,17 +23,12 @@ class Gallery extends Dirlist
 
     public function isUsable(Node $file): bool
     {
-        if (empty(array_diff($file->getPath(), $this->dir))) {
-            // root node must stay!
-            return true;
+        if (!$file->isFile()) {
+            return false;
         }
 
         $this->arrPath->setArray($file->getPath());
         if ('.' == $this->arrPath->getFileName()[0]) {
-            return false;
-        }
-
-        if (!$file->isFile()) {
             return false;
         }
 
