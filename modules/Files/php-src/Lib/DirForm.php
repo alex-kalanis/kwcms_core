@@ -33,7 +33,7 @@ class DirForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new DirCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
@@ -50,7 +50,7 @@ class DirForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new DirCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
@@ -67,7 +67,7 @@ class DirForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $radios = new DirRadio();
-        $radios->set('sourceName', '', Lang::get('files.dir.select'), $tree);
+        $radios->set('sourceName', '', Lang::get('files.dir.select'), $tree, false);
         $this->addControlDefaultKey($radios);
 
         $this->addText('targetPath', Lang::get('files.dir.newName'));
@@ -81,7 +81,7 @@ class DirForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new DirCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $tree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $tree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new Controls\RadioSet();

@@ -18,13 +18,15 @@ abstract class ATreeControl extends Controls\AControl
     protected $templateInput = '%1$s'; // by our own!
     /** @var ControlNode|null */
     protected $tree = null;
-    /** @var Controls\AControl[]|Controls\Checkbox[]|Controls\Radio[] */
+    /** @var Controls\AControl[]|Controls\Checkbox[]|Controls\Radio[]|Controls\SelectOption[] */
     protected $inputs = [];
+    /** @var bool */
+    protected $wantEmptySub = true;
 
-    public function set(string $key, string $value = '', string $label = '', ?FileNode $tree = null): self
+    public function set(string $key, string $value = '', string $label = '', ?FileNode $tree = null, bool $wantRootControl = true): self
     {
         $this->setEntry($key, $value, $label);
-        $this->tree = $this->fillTreeControl($tree);
+        $this->tree = $this->fillTreeControl($tree, $wantRootControl);
         $this->setValue($value);
         return $this;
     }
@@ -35,16 +37,20 @@ abstract class ATreeControl extends Controls\AControl
         return $this->wrapIt(sprintf($this->templateInput, $this->renderTree($this->tree)), $this->wrappersInput);
     }
 
-    protected function fillTreeControl(?FileNode $baseNode): ?ControlNode
+    protected function fillTreeControl(?FileNode $baseNode, bool $wantRootControl): ?ControlNode
     {
         if (!$baseNode) {
             return null;
         }
         $node = $this->getControlNode();
-        $node->setControl($this->getInput($baseNode));
+        if ($wantRootControl) {
+            $node->setControl($this->getInput($baseNode));
+        } elseif ($this->wantEmptySub) {
+            $node->setControl($this->getEmpty($baseNode));
+        } // no else -> no control
         $node->setNode($baseNode);
         foreach ($baseNode->getSubNodes() as $subNode) {
-            if ($subControl = $this->fillTreeControl($subNode)) {
+            if ($subControl = $this->fillTreeControl($subNode, true)) {
                 $node->addSubNode($subControl);
             }
         }
@@ -57,6 +63,13 @@ abstract class ATreeControl extends Controls\AControl
     }
 
     abstract protected function getInput(FileNode $node): Controls\AControl;
+
+    protected function getEmpty(FileNode $node): Controls\AControl
+    {
+        $input = new EmptyControl();
+        $input->set($this->getKey(), null, $this->stringName($node));
+        return $input;
+    }
 
     abstract protected function renderTree(?ControlNode $baseNode): string;
 

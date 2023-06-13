@@ -5,6 +5,7 @@ namespace KWCMS\modules\Logo\Controllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
@@ -15,7 +16,6 @@ use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
-use kalanis\kw_modules\Traits\TInitFilesLib;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
@@ -32,8 +32,6 @@ use KWCMS\modules\Logo\Libs;
  */
 class Logo extends AModule
 {
-    use TInitFilesLib;
-
     /** @var MimeType */
     protected $mime = null;
     /** @var ArrayPath */
@@ -80,7 +78,9 @@ class Logo extends AModule
                 new Graphics\Format\Factory()
             ),
             (new Graphics\ImageConfig())->setData($params),
-            new Sources\Image($this->getFilesLib($factoryData), (new \kalanis\kw_files\Extended\Config())->setData($params))
+            new Sources\Image((new Factory())->getClass(
+                $factoryData
+            ), (new \kalanis\kw_files\Extended\Config())->setData($params))
         );
     }
 

@@ -35,7 +35,7 @@ class FileForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileRadio();
-        $checkboxes->set('sourceName', '', Lang::get('files.file.select'), $sourceTree);
+        $checkboxes->set('sourceName', '', Lang::get('files.file.select'), $sourceTree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -48,7 +48,7 @@ class FileForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
@@ -65,7 +65,7 @@ class FileForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
@@ -82,7 +82,7 @@ class FileForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $radios = new FileRadio();
-        $radios->set('sourceName', '', Lang::get('files.file.select'), $tree);
+        $radios->set('sourceName', '', Lang::get('files.file.select'), $tree, false);
         $this->addControlDefaultKey($radios);
 
         $this->addText('targetPath', Lang::get('files.file.newName'));
@@ -96,7 +96,7 @@ class FileForm extends AForm
         $this->setMethod(IEntry::SOURCE_POST);
 
         $checkboxes = new FileCheckboxes();
-        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $tree);
+        $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $tree, false);
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new Controls\RadioSet();

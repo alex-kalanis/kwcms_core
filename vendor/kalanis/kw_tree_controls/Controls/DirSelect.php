@@ -18,6 +18,9 @@ class DirSelect extends ATreeControl
 {
     use TSimpleValue;
 
+    /** @var bool */
+    protected $wantEmptySub = false;
+
     /**
      * @param ControlNode|null $baseNode
      * @throws RenderException
