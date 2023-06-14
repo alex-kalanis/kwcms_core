@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Menu\Templates;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Menu\Forms\EditNamesForm;
 
@@ -36,8 +37,8 @@ class EditTemplate extends ATemplate
     /**
      * @param EditNamesForm $form
      * @param string $action
+     * @throws RenderException
      * @return $this
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(EditNamesForm $form, string $action): self
     {

@@ -15,7 +15,6 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
-use kalanis\kw_storage\StorageException;
 use KWCMS\modules\Texts\Lib;
 use KWCMS\modules\Texts\TextsException;
 

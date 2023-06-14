@@ -58,11 +58,11 @@ class Image extends AModule
     /***
      * @param ILoader|null $loader
      * @param Modules|null $processor
-     * @throws FilesException
-     * @throws PathsException
      * @throws ConfException
+     * @throws FilesException
      * @throws ImagesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
@@ -89,6 +89,7 @@ class Image extends AModule
     }
 
     /**
+     * @throws ConfException
      * @throws FilesException
      * @throws MimeException
      * @throws ModuleException
@@ -153,6 +154,7 @@ class Image extends AModule
 
     /**
      * @param Output\AOutput $output
+     * @throws ConfException
      * @throws ModuleException
      * @return Output\AOutput
      */

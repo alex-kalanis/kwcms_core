@@ -8,7 +8,9 @@ use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\Interfaces;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -43,6 +45,9 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $redirect = false;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
@@ -59,6 +64,10 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
         return [Interfaces\IAccessClasses::CLASS_MAINTAINER ];
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -101,6 +110,10 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
 
     abstract protected function getSuccessTitle(string $name): string;
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

@@ -4,6 +4,7 @@ namespace KWCMS\modules\Menu\Templates;
 
 
 use kalanis\kw_modules\Templates\ATemplate;
+use kalanis\kw_templates\TemplateException;
 
 
 /**
@@ -22,6 +23,11 @@ class Display extends ATemplate
         'item',
     ];
 
+    /**
+     * @param string $name
+     * @throws TemplateException
+     * @return $this
+     */
     public function setTemplateName(string $name): self
     {
         if (in_array($name, static::$styles)) {

@@ -3,8 +3,10 @@
 namespace KWCMS\modules\Admin\AdminControllers;
 
 
+use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -20,12 +22,18 @@ class Logout extends AAuthModule implements IModuleTitle
 {
     protected $logoutTemplate = null;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         Lang::load('Admin');
         $this->logoutTemplate = new Templates\LogoutTemplate();
     }
 
+    /**
+     * @throws AuthException
+     */
     protected function run(): void
     {
         $method = $this->getAuthTree()->getMethod();

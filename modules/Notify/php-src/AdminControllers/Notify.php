@@ -9,6 +9,7 @@ use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_notify\Interfaces\INotify;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use KWCMS\modules\Notify\Template;
@@ -36,6 +37,10 @@ class Notify extends AModule
 //        Notification::addInfo('Notifications loaded 4.');
     }
 
+    /**
+     * @throws NotifyException
+     * @return AOutput
+     */
     public function output(): AOutput
     {
         Styles::want(static::getClassName(static::class), 'notify.css');

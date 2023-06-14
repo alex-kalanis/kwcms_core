@@ -4,6 +4,7 @@ namespace KWCMS\modules\AdminMenu\AdminControllers;
 
 
 use kalanis\kw_address_handler\Handler;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -42,12 +43,16 @@ use KWCMS\modules\AdminMenu\Lib;
  */
 class AdminMenu extends AModule
 {
+    /** @var ExternalLink */
     protected $externalLink = null;
     /** @var Modules */
     protected $moduleProcessor = null;
 
+    /** @var Lib\LineTemplate */
     protected $tmplLine = null;
+    /** @var Lib\SeparatorTemplate */
     protected $tmplSep = null;
+    /** @var Lib\ListingTemplate */
     protected $tmplListing = null;
 
     /** @var string */
@@ -57,6 +62,11 @@ class AdminMenu extends AModule
     /** @var IModuleRecord[] */
     protected $entries = [];
 
+    /**
+     * @param ILoader|null $loader
+     * @param Modules|null $processor
+     * @throws ConfException
+     */
     public function __construct(?ILoader $loader = null, ?Modules $processor = null)
     {
         Config::load('Core', 'page');

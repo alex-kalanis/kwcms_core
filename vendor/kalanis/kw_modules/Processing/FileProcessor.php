@@ -7,6 +7,7 @@ use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\IModuleProcessor;
 use kalanis\kw_modules\Interfaces\IModuleRecord;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 
 
@@ -33,6 +34,10 @@ class FileProcessor implements IModuleProcessor
         $this->baseRecord = $baseRecord;
     }
 
+    /**
+     * @param int $level
+     * @throws PathsException
+     */
     public function setModuleLevel(int $level): void
     {
         $this->records = [];

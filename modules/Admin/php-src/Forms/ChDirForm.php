@@ -14,8 +14,8 @@ use kalanis\kw_tree_controls\Controls;
  * Class ChDirForm
  * @package KWCMS\modules\Admin\Forms
  * Admin change directory form
- * @property Controls\DirRadio dir
- * @property Submit changeDir
+ * @property Controls\DirRadio $dir
+ * @property Submit $changeDir
  */
 class ChDirForm extends Form
 {

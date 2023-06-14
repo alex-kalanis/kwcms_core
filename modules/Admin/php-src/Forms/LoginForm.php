@@ -5,6 +5,7 @@ namespace KWCMS\modules\Admin\Forms;
 
 use ArrayAccess;
 use kalanis\kw_forms\Form;
+use kalanis\kw_forms\Controls;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\Support;
@@ -15,6 +16,11 @@ use kalanis\kw_rules\Interfaces\IRules;
  * Class LoginForm
  * @package KWCMS\modules\Admin\Forms
  * Admin login form
+ * @property Controls\Text $user
+ * @property Controls\Password $pass
+ * @property Controls\Select $lang
+ * @property Controls\Security\Csrf|null $csrf
+ * @property Controls\Submit $login
  */
 class LoginForm extends Form
 {

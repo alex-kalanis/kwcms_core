@@ -5,6 +5,7 @@ namespace KWCMS\modules\Video\Templates;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
+use kalanis\kw_templates\TemplateException;
 
 
 /**
@@ -27,6 +28,11 @@ class Player extends ATemplate
         'nothing' => false,
     ];
 
+    /**
+     * @param string $name
+     * @throws TemplateException
+     * @return $this
+     */
     public function setTemplateName(string $name): self
     {
         if (in_array($name, array_keys(static::$styles))) {

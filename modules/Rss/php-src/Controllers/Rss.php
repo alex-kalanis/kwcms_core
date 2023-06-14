@@ -58,6 +58,10 @@ class Rss extends AModule
     {
     }
 
+    /**
+     * @throws ConfException
+     * @return Output\AOutput
+     */
     public function output(): Output\AOutput
     {
         return ($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_RESPONSE) ? $this->outResponse() : $this->outLink() ;
@@ -70,6 +74,10 @@ class Rss extends AModule
         return $out->setContent($template->setData($this->libExternal->linkVariant('', 'rss', true))->render());
     }
 
+    /**
+     * @throws ConfException
+     * @return Output\AOutput
+     */
     public function outResponse(): Output\AOutput
     {
         Config::load('Core', 'page');

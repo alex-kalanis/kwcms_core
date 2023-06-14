@@ -10,7 +10,6 @@ use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_locks\LockException;
-use kalanis\kw_rules\Exceptions\RuleException;
 
 
 /**
@@ -59,7 +58,7 @@ class Edit extends AUsers
                 $this->redirect = true;
             }
 
-        } catch (AuthException | FormsException | LockException | RuleException $ex) {
+        } catch (AuthException | LockException | FormsException $ex) {
             $this->error = $ex;
         }
     }

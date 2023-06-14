@@ -5,6 +5,7 @@ namespace KWCMS\modules\Map;
 
 use kalanis\kw_modules\Templates\ATemplate;
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_templates\TemplateException;
 
 
 /**
@@ -30,6 +31,11 @@ class MapTemplate extends ATemplate
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @throws TemplateException
+     * @return MapTemplate
+     */
     public function setTemplateName(string $name): self
     {
         if (in_array($name, array_keys(static::$maps))) {

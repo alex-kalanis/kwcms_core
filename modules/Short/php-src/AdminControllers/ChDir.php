@@ -5,10 +5,12 @@ namespace KWCMS\modules\Short\AdminControllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Short\Lib;
 
 
@@ -22,9 +24,10 @@ class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModu
     use Lib\TModuleTemplate;
 
     /**
-     * ChDir constructor.
      * @throws ConfException
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {

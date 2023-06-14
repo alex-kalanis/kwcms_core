@@ -46,6 +46,11 @@ class Groups extends AAuthModule implements IModuleTitle
     {
     }
 
+    /**
+     * @throws AuthException
+     * @throws LockException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -62,11 +67,16 @@ class Groups extends AAuthModule implements IModuleTitle
         try {
             $table = new Lib\GroupTable($this->inputs, $this->links, $this->libGroups, $this->user);
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
-        } catch ( FormsException | TableException | ConnectException | AuthException | LockException $ex) {
+        } catch ( AuthException | ConnectException | FormsException | LockException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
 
+    /**
+     * @throws AuthException
+     * @throws LockException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

@@ -9,12 +9,12 @@ use kalanis\kw_address_handler\Sources;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -61,8 +61,8 @@ class GroupTable
     /**
      * @return Table
      * @throws AuthException
-     * @throws ConnectException
      * @throws FormsException
+     * @throws LangException
      * @throws LockException
      * @throws TableException
      */
@@ -109,9 +109,13 @@ class GroupTable
         return $table;
     }
 
-    public function idLink($id)
+    /**
+     * @param string|int $id
+     * @return string
+     */
+    public function idLink($id): string
     {
-        $this->forward->setLink($this->link->linkVariant('chsett/group/edit/?id=' . $id));
+        $this->forward->setLink($this->link->linkVariant('chsett/group/edit/?id=' . strval($id)));
         $this->forward->setForward($this->link->linkVariant('chsett/groups'));
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
@@ -119,9 +123,13 @@ class GroupTable
         );
     }
 
-    public function editLink($id)
+    /**
+     * @param string|int $id
+     * @return string
+     */
+    public function editLink($id): string
     {
-        $this->forward->setLink($this->link->linkVariant('chsett/group/edit/?id=' . $id));
+        $this->forward->setLink($this->link->linkVariant('chsett/group/edit/?id=' . strval($id)));
         $this->forward->setForward($this->link->linkVariant('chsett/groups'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
             $this->forward->getLink(),
@@ -129,9 +137,13 @@ class GroupTable
         );
     }
 
-    public function deleteLink($id)
+    /**
+     * @param string|int $id
+     * @return string
+     */
+    public function deleteLink($id): string
     {
-        $this->forward->setLink($this->link->linkVariant('chsett/group/delete/?id=' . $id));
+        $this->forward->setLink($this->link->linkVariant('chsett/group/delete/?id=' . strval($id)));
         $this->forward->setForward($this->link->linkVariant('chsett/groups'));
         return sprintf('<a href="%s" title="%s" class="button button-delete"> &#x1F7AE; </a>',
             $this->forward->getLink(),

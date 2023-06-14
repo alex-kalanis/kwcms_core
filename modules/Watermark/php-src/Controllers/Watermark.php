@@ -16,7 +16,6 @@ use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
@@ -42,8 +41,6 @@ class Watermark extends AModule
     protected $repeat = false;
     /** @var ArrayPath */
     protected $arrPath = null;
-    /** @var ExternalLink */
-    protected $extLink = null;
     /** @var InnerLinks */
     protected $innerLink = null;
     /** @var Libs\ImageFill */
@@ -59,7 +56,6 @@ class Watermark extends AModule
     {
         Config::load(static::getClassName(static::class));
         $this->mime = new MimeType(true);
-        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),

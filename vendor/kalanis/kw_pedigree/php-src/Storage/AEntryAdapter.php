@@ -184,6 +184,12 @@ abstract class AEntryAdapter implements IEntry
         return strval($this->record->text);
     }
 
+    /**
+     * @param string $what
+     * @param string|null $sex
+     * @throws MapperException
+     * @return ARecord[]
+     */
     public function getLike(string $what, $sex): array
     {
         return $this->record->getMapper()->getLike($what, empty($sex) ? null : strval($sex));

@@ -4,10 +4,13 @@ namespace KWCMS\modules\Chsett\AdminControllers;
 
 
 use kalanis\kw_auth\Auth;
+use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
+use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -25,6 +28,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
@@ -39,6 +45,11 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
     }
 
+    /**
+     * @throws AuthException
+     * @throws LockException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -62,11 +73,16 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->user
             );
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
-        } catch ( FormsException | TableException | ConnectException $ex) {
+        } catch ( AuthException | ConnectException | FormsException | LangException | LockException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
 
+    /**
+     * @throws AuthException
+     * @throws LockException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

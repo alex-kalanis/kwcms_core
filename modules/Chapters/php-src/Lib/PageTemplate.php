@@ -4,6 +4,7 @@ namespace KWCMS\modules\Chapters\Lib;
 
 
 use kalanis\kw_modules\Templates\ATemplate;
+use kalanis\kw_templates\TemplateException;
 
 
 /**
@@ -23,6 +24,11 @@ class PageTemplate extends ATemplate
         'next_page',
     ];
 
+    /**
+     * @param string $name
+     * @throws TemplateException
+     * @return PageTemplate
+     */
     public function setTemplateName(string $name): self
     {
         if (in_array($name, static::$styles)) {

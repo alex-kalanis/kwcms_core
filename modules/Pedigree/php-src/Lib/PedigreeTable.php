@@ -13,6 +13,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
@@ -63,6 +64,7 @@ class PedigreeTable
      * @return string
      * @throws ConnectException
      * @throws FormsException
+     * @throws LangException
      * @throws MapperException
      * @throws TableException
      */
@@ -148,7 +150,12 @@ class PedigreeTable
         return $table->getOutput()->renderData();
     }
 
-    public function idLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function idLink($id): string
     {
         $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
         $this->forward->setLink($this->link->linkVariant('pedigree/edit/?key=' . $key));
@@ -159,7 +166,12 @@ class PedigreeTable
         );
     }
 
-    public function showLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function showLink($id): string
     {
         $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
         return sprintf('<a href="%s" title="%s" class="button button-preview"> &#x1F50D; </a>',
@@ -168,7 +180,12 @@ class PedigreeTable
         );
     }
 
-    public function editLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function editLink($id): string
     {
         $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
         $this->forward->setLink($this->link->linkVariant('pedigree/edit/?key=' . $key));
@@ -179,7 +196,12 @@ class PedigreeTable
         );
     }
 
-    public function deleteLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function deleteLink($id): string
     {
         $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
         $this->forward->setLink($this->link->linkVariant('pedigree/delete/?key=' . $key));

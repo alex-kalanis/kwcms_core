@@ -15,10 +15,10 @@ use kalanis\kw_rules\Interfaces\IRules;
  * Class FormGroups
  * @package KWCMS\modules\Chsett\Lib
  * Edit group props
- * @property Controls\Text name
- * @property Controls\Text desc
- * @property Controls\Submit saveProp
- * @property Controls\Reset resetProp
+ * @property Controls\Text $name
+ * @property Controls\Text $desc
+ * @property Controls\Submit $saveProp
+ * @property Controls\Reset $resetProp
  */
 class FormGroups extends Form
 {

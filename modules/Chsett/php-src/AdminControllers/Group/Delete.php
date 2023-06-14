@@ -10,8 +10,8 @@ use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_auth\Interfaces\IAccessGroups;
 use kalanis\kw_auth\Interfaces\IGroup;
-use kalanis\kw_auth\Sources\Files;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -41,6 +41,9 @@ class Delete extends AAuthModule
     /** @var ExternalLink|null */
     protected $links = null;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         Lang::load('Chsett');

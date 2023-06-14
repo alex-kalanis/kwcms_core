@@ -13,6 +13,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -53,12 +54,13 @@ class MessageTable
 
     /**
      * @param Search $search
-     * @return string
      * @throws ConnectException
      * @throws FormsException
+     * @throws LangException
      * @throws TableException
+     * @return string
      */
-    public function prepareHtml(Search $search)
+    public function prepareHtml(Search $search): string
     {
         // full table init
         $table = new Table();
@@ -115,10 +117,10 @@ class MessageTable
 
     /**
      * @param Search $search
-     * @return mixed
      * @throws ConnectException
      * @throws FormsException
      * @throws TableException
+     * @return mixed
      */
     public function prepareJson(Search $search)
     {
@@ -137,9 +139,13 @@ class MessageTable
         return $table->getOutput()->renderData();
     }
 
+    /**
+     * @param string|int $id
+     * @return string
+     */
     public function idLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . $id));
+        $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . strval($id)));
         $this->forward->setForward($this->link->linkVariant('short/dashboard'));
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
@@ -147,9 +153,13 @@ class MessageTable
         );
     }
 
+    /**
+     * @param string|int $id
+     * @return string
+     */
     public function editLink($id)
     {
-        $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . $id));
+        $this->forward->setLink($this->link->linkVariant('short/edit/?id=' . strval($id)));
         $this->forward->setForward($this->link->linkVariant('short/dashboard'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
             $this->forward->getLink(),
@@ -157,9 +167,13 @@ class MessageTable
         );
     }
 
-    public function deleteLink($id)
+    /**
+     * @param string|int $id
+     * @return string
+     */
+    public function deleteLink($id): string
     {
-        $this->forward->setLink($this->link->linkVariant('short/delete/?id=' . $id));
+        $this->forward->setLink($this->link->linkVariant('short/delete/?id=' . strval($id)));
         $this->forward->setForward($this->link->linkVariant('short/dashboard'));
         return sprintf('<a href="%s" title="%s" class="button button-delete"> &#x1F7AE; </a>',
             $this->forward->getLink(),

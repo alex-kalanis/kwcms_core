@@ -23,6 +23,11 @@ class ProcessDir implements IProcessDirs
     /** @var string[] */
     protected $currentDir = [];
 
+    /**
+     * @param Content\Dirs $dirs
+     * @param string[] $userDir where is user set with his account
+     * @param string[] $currentDir where is user walking now
+     */
     public function __construct(Content\Dirs $dirs, array $userDir, array $currentDir)
     {
         $this->libDirs = $dirs;

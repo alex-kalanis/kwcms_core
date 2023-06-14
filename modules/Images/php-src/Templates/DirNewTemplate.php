@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Templates;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Images\Forms\DirNewForm;
@@ -34,8 +35,8 @@ class DirNewTemplate extends ATemplate
 
     /**
      * @param DirNewForm $form
+     * @throws RenderException
      * @return $this
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(DirNewForm $form): self
     {
@@ -54,8 +55,8 @@ class DirNewTemplate extends ATemplate
 
     /**
      * @param DirNewForm $form
+     * @throws RenderException
      * @return DirNewTemplate
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function useTarget(DirNewForm $form): self
     {

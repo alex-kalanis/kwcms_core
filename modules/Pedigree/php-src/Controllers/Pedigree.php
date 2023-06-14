@@ -23,6 +23,7 @@ use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_templates\HtmlElement;
+use kalanis\kw_templates\TemplateException;
 use KWCMS\modules\Layout\Controllers\Layout;
 use KWCMS\modules\Pedigree\Lib;
 
@@ -68,6 +69,13 @@ class Pedigree extends AModule
     {
     }
 
+    /**
+     * @throws ConfException
+     * @throws MapperException
+     * @throws ModuleException
+     * @throws TemplateException
+     * @return Output\AOutput
+     */
     public function output(): Output\AOutput
     {
         return ($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_CONTENT)
@@ -87,6 +95,11 @@ class Pedigree extends AModule
         return $out->setContent($tmplLink->render());
     }
 
+    /**
+     * @throws MapperException
+     * @throws TemplateException
+     * @return Output\AOutput
+     */
     protected function outTemplate(): Output\AOutput
     {
         try {
@@ -128,6 +141,7 @@ class Pedigree extends AModule
 
     /**
      * @param Output\AOutput $output
+     * @throws ConfException
      * @throws ModuleException
      * @return Output\AOutput
      */
@@ -246,6 +260,12 @@ class Pedigree extends AModule
         return $record;
     }
 
+    /**
+     * @param ARecord[] $tree
+     * @param ARecord[] $descendants
+     * @throws TemplateException
+     * @return string
+     */
     protected function printTable(array $tree, array $descendants): string
     {
         $posFromBeginning = 1;
@@ -264,6 +284,10 @@ class Pedigree extends AModule
         return $content;
     }
 
+    /**
+     * @param ARecord[] $descendants
+     * @return string
+     */
     protected function printDescendants(array $descendants): string
     {
         $tmpl = new Lib\DescLinkTemplate();
@@ -280,6 +304,14 @@ class Pedigree extends AModule
         return implode('', $r);
     }
 
+    /**
+     * @param ARecord[] $tree
+     * @param int $span
+     * @param int $cnt
+     * @param int $position
+     * @throws TemplateException
+     * @return string
+     */
     protected function printCell(array $tree, int $span, int $cnt, int $position): string
     {
         # return content of actual cell

@@ -9,6 +9,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\AAuthModule;
@@ -37,6 +38,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     /**
      * @throws ConfException
+     * @throws LangException
      */
     public function __construct()
     {
@@ -77,7 +79,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $table = new Lib\PedigreeTable($this->inputs, $this->links, $this->entries);
         try {
             return $out->setContent($this->outModuleTemplate($table->prepareHtml()));
-        } catch (MapperException | ConnectException | TableException | FormsException $ex) {
+        } catch (ConnectException | FormsException | LangException | MapperException | TableException $ex) {
             $this->error = $ex;
         }
 
@@ -94,7 +96,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         $table = new Lib\PedigreeTable($this->inputs, $this->links, $this->entries);
         try {
             return $out->setContent($table->prepareJson());
-        } catch (MapperException | ConnectException | TableException | FormsException $ex) {
+        } catch (ConnectException | FormsException | MapperException | TableException $ex) {
             $this->error = $ex;
         }
 

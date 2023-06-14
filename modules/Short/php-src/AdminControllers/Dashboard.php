@@ -100,7 +100,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         if ($this->search) {
             try {
                 return $out->setContent($this->outModuleTemplate($table->prepareHtml($this->search)));
-            } catch (ConnectException | TableException | FormsException $ex) {
+            } catch (ConnectException | FormsException | LangException | TableException $ex) {
                 $this->error = $ex;
             }
         }

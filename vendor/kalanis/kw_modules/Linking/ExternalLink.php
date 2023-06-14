@@ -6,7 +6,6 @@ namespace kalanis\kw_modules\Linking;
 use kalanis\kw_confs\Config;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\RoutedPath;
 
 
@@ -82,31 +81,6 @@ class ExternalLink
             $renderModule .= $module.IPaths::SPLITTER_SLASH;
         }
         return $this->connectBy.$renderModule.$renderUser.$renderLang.$renderPath;
-    }
-
-    /*
-        Function: link_static()
-        output statical (and real) path to file in user dir
-
-        Parametres:
-          $path - string, path to file, if null, more lang add current lang as part of path
-          $addr - boolean, use address
-          $lang - boolean, need system-defined lang
-
-        Returns:
-          Correct path
-    */
-    public function linkStatic(string $path=null, string $addr='', ?string $lang=null): ?string
-    {
-        $pt = (is_null($path)) ? $this->routedPath->getPath() : $path ;
-        $ad = !empty($addr) ? $addr : IPaths::SPLITTER_SLASH ;
-        $langs = ($this->moreLangs && (is_null($path) || ($lang))) ? ($lang ?: $this->routedPath->getLang()) : '' ;
-        $link = $this->routedPath->getUser().$langs.$pt; // full
-//print_r($this);
-//print_r(array($pt,$ad,$link));
-        return (@file_exists($this->path->getDocumentRoot().$this->path->getPathToSystemRoot().$link))
-            ? Stuff::sanitize($ad.$link)
-            : null ;
     }
 
     /**

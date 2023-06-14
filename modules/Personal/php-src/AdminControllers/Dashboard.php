@@ -12,13 +12,14 @@ use kalanis\kw_auth\Interfaces\IUser;
 use kalanis\kw_auth\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_rules\Exceptions\RuleException;
 use KWCMS\modules\Personal\Lib;
 use KWCMS\modules\Personal\Templates;
 
@@ -43,6 +44,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
     /** @var bool */
     protected $isProcessed = false;
 
+    /**
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();
@@ -90,11 +94,15 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->isProcessed = true;
             }
 
-        } catch (AuthException | FormsException | LockException | RuleException $ex) {
+        } catch (AuthException | FormsException | LockException $ex) {
             $this->error = $ex;
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isJson()
@@ -123,6 +131,10 @@ class Dashboard extends AAuthModule implements IModuleTitle
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {

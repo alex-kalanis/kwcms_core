@@ -16,7 +16,6 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_routed_paths\StoreRouted;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_scripts\Scripts;
 use KWCMS\modules\Pedigree\Lib;
 
@@ -68,7 +67,7 @@ class Add extends APedigree
                 );
                 $this->isProcessed = $processEntry || (true === $processFamily);
             }
-        } catch (MapperException | FormsException | RuleException | PedigreeException | \PDOException $ex) {
+        } catch (MapperException | FormsException | PedigreeException $ex) {
             $this->error = $ex;
         }
     }

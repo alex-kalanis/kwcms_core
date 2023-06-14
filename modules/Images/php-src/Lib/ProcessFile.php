@@ -31,8 +31,8 @@ class ProcessFile implements IProcessFiles
      * @param Content\BasicOperations $libOper
      * @param Content\ImageUpload $libUpload
      * @param Content\Images $libImages
-     * @param string[] $userDir
-     * @param string[] $currentDir
+     * @param string[] $userDir where is user set with his account
+     * @param string[] $currentDir where is user walking now
      */
     public function __construct(Content\BasicOperations $libOper, Content\ImageUpload $libUpload, Content\Images $libImages, array $userDir, array $currentDir)
     {

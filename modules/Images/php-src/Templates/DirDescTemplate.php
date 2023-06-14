@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Templates;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Images\Forms\DescForm;
@@ -30,8 +31,8 @@ class DirDescTemplate extends ATemplate
 
     /**
      * @param DescForm $form
+     * @throws RenderException
      * @return $this
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(DescForm $form): self
     {

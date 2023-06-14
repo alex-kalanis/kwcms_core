@@ -37,8 +37,8 @@ class DashboardTemplate extends ATemplate
 
     /**
      * @param EditPropsForm $form
-     * @return $this
      * @throws RenderException
+     * @return $this
      */
     public function setData(EditPropsForm $form): self
     {

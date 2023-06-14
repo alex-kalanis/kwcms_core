@@ -28,8 +28,8 @@ class Processor
 
     /**
      * @param CompositeAdapter $files
-     * @param string[] $userPath
-     * @param string[] $workPath
+     * @param string[] $userPath where is user set with his account
+     * @param string[] $workPath where is user walking now
      */
     public function __construct(CompositeAdapter $files, array $userPath, array $workPath)
     {

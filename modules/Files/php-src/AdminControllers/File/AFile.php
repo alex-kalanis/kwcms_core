@@ -102,7 +102,7 @@ abstract class AFile extends AAuthModule implements IModuleTitle
                 $this->fileForm,
                 Lang::get($this->getFormTitleLangKey())
             )->render()));
-        } catch (FilesException | FormsException $ex) {
+        } catch (FormsException $ex) {
             $this->error = $ex;
         }
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));

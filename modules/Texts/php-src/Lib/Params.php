@@ -26,6 +26,9 @@ class Params
         return $info->isFile() && in_array($ext, $this->whichExtsIWant());
     }
 
+    /**
+     * @return string[]
+     */
     public function whichExtsIWant(): array
     {
         return ['htm', 'html', 'xhtm', 'xhtml', 'txt', 'mkd', 'md', 'ini', 'inf', ];

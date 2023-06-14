@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Short\Lib;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_modules\Templates\ATemplate;
 
 
@@ -29,8 +30,8 @@ class EditTemplate extends ATemplate
     /**
      * @param MessageForm $form
      * @param string $action
-     * @return EditTemplate
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
+     * @throws RenderException
+     * @return $this
      */
     public function setData(MessageForm $form, string $action): self
     {

@@ -25,6 +25,7 @@ use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_semaphore\SemaphoreException;
+use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Menu\Lib;
@@ -138,6 +139,10 @@ class Menu extends AModule
     {
     }
 
+    /**
+     * @throws TemplateException
+     * @return AOutput
+     */
     public function output(): AOutput
     {
         $out = new Html();
@@ -159,6 +164,10 @@ class Menu extends AModule
         return $out->setContent($content);
     }
 
+    /**
+     * @throws TemplateException
+     * @return string
+     */
     protected function getRendered(): string
     {
         $tmplMain = new Templates\Main();
@@ -168,6 +177,12 @@ class Menu extends AModule
         return $tmplMain->setData($this->tmplOpen->reset()->setData($headerContent . $inputContent)->render())->render();
     }
 
+    /**
+     * @param \kalanis\kw_menu\Menu\Menu|null $menu
+     * @param string $deepLink
+     * @throws TemplateException
+     * @return string
+     */
     protected function addInputs(?\kalanis\kw_menu\Menu\Menu $menu, string $deepLink = ''): string
     {
         if (empty($menu) || empty($menu->getDisplayCount())) {
@@ -200,6 +215,11 @@ class Menu extends AModule
         return implode('', $result);
     }
 
+    /***
+     * @param \kalanis\kw_menu\Menu\Menu|null $menu
+     * @throws TemplateException
+     * @return string
+     */
     protected function addHeader(?\kalanis\kw_menu\Menu\Menu $menu): string
     {
         if (empty($menu) || empty($menu->getDisplayCount())) {

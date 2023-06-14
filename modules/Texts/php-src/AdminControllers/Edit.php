@@ -88,7 +88,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 }
                 $this->isProcessed = $this->files->saveFile($fullPath, $content);
             }
-        } catch (TextsException | FilesException | PathsException | FormsException $ex) {
+        } catch (FilesException | FormsException | PathsException | TextsException $ex) {
             $this->error = $ex;
         }
     }

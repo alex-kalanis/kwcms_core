@@ -3,6 +3,7 @@
 namespace KWCMS\modules\AdminRouter\AdminControllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
@@ -51,6 +52,11 @@ class AdminRouter extends AModule
     /** @var Lib\Chain\Processor */
     protected $chainProcessor = null;
 
+    /**
+     * @param ILoader|null $loader
+     * @param Modules|null $processor
+     * @throws ConfException
+     */
     public function __construct(?ILoader $loader, ?Modules $processor)
     {
         Config::load('Core', 'page');
@@ -82,6 +88,11 @@ class AdminRouter extends AModule
         $this->module->process();
     }
 
+    /**
+     * @throws LangException
+     * @throws ModuleException
+     * @return AOutput
+     */
     public function output(): AOutput
     {
         $result = $this->module->output();

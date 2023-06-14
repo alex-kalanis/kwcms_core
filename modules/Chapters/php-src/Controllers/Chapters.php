@@ -39,7 +39,7 @@ class Chapters extends AModule
     /** @var Lib\PageTemplate */
     protected $tmplPage = null;
     /** @var string */
-    protected $file = '';
+    protected $currentFile = '';
     /** @var string */
     protected $mask = '';
     /** @var FileNode[] */
@@ -74,7 +74,7 @@ class Chapters extends AModule
     public function process(): void
     {
         $this->arrPath->setArray($this->innerLink->toFullPath(StoreRouted::getPath()->getPath()));
-        $this->file = $this->arrPath->getFileName();
+        $this->currentFile = $this->arrPath->getFileName();
         $this->mask = Config::get('Chapters', 'regexp_name', 'chapter_([0-9]{1,4})\.htm');
 
         $this->treeList
@@ -106,7 +106,7 @@ class Chapters extends AModule
     protected function getPosition(): ?int
     {
         foreach ($this->availableFiles as $index => $file) {
-            if ($this->file == $file) {
+            if ($this->currentFile == $file) {
                 return (int) $index;
             }
         }

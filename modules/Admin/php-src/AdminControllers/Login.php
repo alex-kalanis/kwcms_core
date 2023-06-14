@@ -7,9 +7,11 @@ use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_input\Simplified\CookieAdapter;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_langs\Support;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -41,6 +43,9 @@ class Login extends AAuthModule implements IModuleTitle
         $this->form = new Forms\LoginForm('login');
     }
 
+    /**
+     * @throws LangException
+     */
     public function process(): void
     {
         try {
@@ -65,6 +70,10 @@ class Login extends AAuthModule implements IModuleTitle
         return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function output(): Output\AOutput
     {
         if ($this->error) { // fill form with error say

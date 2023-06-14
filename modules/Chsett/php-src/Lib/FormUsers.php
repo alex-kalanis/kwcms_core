@@ -17,16 +17,16 @@ use kalanis\kw_rules\Interfaces\IRules;
  * Class FormUsers
  * @package KWCMS\modules\Chsett\Lib
  * Edit user props
- * @property Controls\Text name
- * @property Controls\Text desc
- * @property Controls\Select group
- * @property Controls\Select class
- * @property Controls\Text dir
- * @property Controls\Password pass
- * @property Controls\Textarea pubKey
- * @property Controls\Text pubSalt
- * @property Controls\Submit saveProp
- * @property Controls\Reset resetProp
+ * @property Controls\Text $name
+ * @property Controls\Text $desc
+ * @property Controls\Select $group
+ * @property Controls\Select $class
+ * @property Controls\Text $dir
+ * @property Controls\Password $pass
+ * @property Controls\Textarea $pubKey
+ * @property Controls\Text $pubSalt
+ * @property Controls\Submit $saveProp
+ * @property Controls\Reset $resetProp
  */
 class FormUsers extends Form
 {

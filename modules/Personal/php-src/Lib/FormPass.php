@@ -7,7 +7,6 @@ use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_rules\Exceptions\RuleException;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
@@ -15,18 +14,14 @@ use kalanis\kw_rules\Interfaces\IRules;
  * Class FormPass
  * @package KWCMS\modules\Personal\Lib
  * Edit password
- * @property Controls\Password currentPass
- * @property Controls\Password newPass
- * @property Controls\Password newPass2
- * @property Controls\Submit saveDesc
- * @property Controls\Reset resetDesc
+ * @property Controls\Password $currentPass
+ * @property Controls\Password $newPass
+ * @property Controls\Password $newPass2
+ * @property Controls\Submit $saveDesc
+ * @property Controls\Reset $resetDesc
  */
 class FormPass extends Form
 {
-    /**
-     * @return $this
-     * @throws RuleException
-     */
     public function composeForm(): self
     {
         $this->setMethod(IEntry::SOURCE_POST);

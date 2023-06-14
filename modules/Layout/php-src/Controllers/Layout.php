@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Layout\Controllers;
 
 
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_modules\AModule;
@@ -43,6 +44,11 @@ class Layout extends AModule
     /** @var SubModules */
     protected $subModules = null;
 
+    /**
+     * @param ILoader|null $loader
+     * @param Modules|null $processor
+     * @throws ConfException
+     */
     public function __construct(?ILoader $loader, ?Modules $processor)
     {
         Config::load('Core', 'page');

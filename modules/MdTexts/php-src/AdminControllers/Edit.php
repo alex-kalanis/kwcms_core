@@ -41,7 +41,7 @@ class Edit extends Texts\AdminControllers\Edit
             return;
         }
         $ext = Stuff::fileExt(Stuff::filename($fileName));
-        if (!in_array($ext, $this->getParams()->filteredTypes())) {
+        if (!in_array($ext, $this->getParams()->whichExtsIWant())) {
             $this->error = new Texts\TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }

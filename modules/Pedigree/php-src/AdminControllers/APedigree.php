@@ -8,6 +8,7 @@ use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\AAuthModule;
@@ -35,6 +36,7 @@ abstract class APedigree extends AAuthModule implements IModuleTitle
 
     /**
      * @throws ConfException
+     * @throws LangException
      */
     public function __construct()
     {

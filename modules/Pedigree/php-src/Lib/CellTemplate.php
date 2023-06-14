@@ -5,6 +5,7 @@ namespace KWCMS\modules\Pedigree\Lib;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
+use kalanis\kw_templates\TemplateException;
 
 
 /**
@@ -24,6 +25,11 @@ class CellTemplate extends ATemplate
         'no_info',
     ];
 
+    /**
+     * @param string $name
+     * @throws TemplateException
+     * @return $this
+     */
     public function setTemplateName(string $name): self
     {
         if (in_array($name, static::$styles)) {

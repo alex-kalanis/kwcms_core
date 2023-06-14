@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Images\Templates;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Images\Forms\FileUploadForm;
@@ -33,8 +34,8 @@ class UploadTemplate extends ATemplate
 
     /**
      * @param FileUploadForm $form
+     * @throws RenderException
      * @return $this
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(FileUploadForm $form): self
     {

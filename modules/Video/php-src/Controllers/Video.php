@@ -12,6 +12,7 @@ use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\Essentials\FileNode;
 use KWCMS\modules\Dirlist\Controllers\Dirlist;
 use KWCMS\modules\Video\Templates;
@@ -131,6 +132,12 @@ class Video extends Dirlist
         return $this->getIcon($ext);
     }
 
+    /**
+     * @throws FilesException
+     * @throws PathsException
+     * @throws TemplateException
+     * @return Output\AOutput
+     */
     public function output(): Output\AOutput
     {
         $out = new Output\Html();

@@ -23,7 +23,6 @@ use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Admin\Shared\ArrayAdapter;
 use KWCMS\modules\Texts\Lib;
-use KWCMS\modules\Texts\TextsException;
 
 
 /**
@@ -80,7 +79,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
             $this->newFileForm->composeForm($this->links->linkVariant($this->getTargetEdit()));
             $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getRoot(), $this->links->linkVariant($this->getTargetEdit()));
-        } catch (FilesException | PathsException | TextsException $ex) {
+        } catch (FilesException | PathsException $ex) {
             $this->error = $ex;
         }
     }
@@ -109,7 +108,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
         try {
             $page->setData($this->newFileForm, $this->openFileForm);
             return $out->setContent($this->outModuleTemplate($page->render()));
-        } catch (TextsException | FormsException $ex) {
+        } catch (FormsException $ex) {
             $this->error = $ex;
         }
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));

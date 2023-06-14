@@ -6,6 +6,7 @@ namespace KWCMS\modules\Map\Controllers;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
+use kalanis\kw_templates\TemplateException;
 use KWCMS\modules\Map\MapTemplate;
 
 
@@ -20,6 +21,10 @@ class Map extends AModule
     {
     }
 
+    /**
+     * @throws TemplateException
+     * @return AOutput
+     */
     public function output(): AOutput
     {
         $template = new MapTemplate();

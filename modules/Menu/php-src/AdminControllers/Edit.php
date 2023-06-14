@@ -89,7 +89,7 @@ class Edit extends AAuthModule implements IModuleTitle
                 $this->libSemaphore->want();
                 $this->isProcessed = true;
             }
-        } catch (FormsException | MenuException | SemaphoreException | PathsException $ex) {
+        } catch (FormsException | MenuException | PathsException | SemaphoreException $ex) {
             $this->error = $ex;
         }
     }

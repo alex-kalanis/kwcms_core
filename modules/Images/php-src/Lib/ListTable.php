@@ -10,6 +10,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
@@ -59,9 +60,10 @@ class ListTable
 
     /**
      * @param ITree $tree
-     * @return Table
      * @throws FormsException
+     * @throws LangException
      * @throws TableException
+     * @return Table
      */
     public function getTable(ITree $tree): Table
     {
@@ -110,19 +112,27 @@ class ListTable
         return $table;
     }
 
-    public function imageLink($data)
+    /**
+     * @param array<string|int> $data
+     * @return string
+     */
+    public function imageLink($data): string
     {
         return sprintf('<a href="%s" class="button"><img src="%s" title="%s"></a>',
-            $this->link->linkVariant('images/edit/?name=' . $data[1]),
-            $this->link->linkVariant($data[0], 'image', true, false),
+            $this->link->linkVariant('images/edit/?name=' . strval($data[1])),
+            $this->link->linkVariant(strval($data[0]), 'image', true, false),
             strval($data[1])
         );
     }
 
-    public function editLink($name)
+    /**
+     * @param string|int $name
+     * @return string
+     */
+    public function editLink($name): string
     {
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x1F589; </a>',
-            $this->link->linkVariant('images/edit/?name=' . $name),
+            $this->link->linkVariant('images/edit/?name=' . strval($name)),
             Lang::get('images.update_item')
         );
     }

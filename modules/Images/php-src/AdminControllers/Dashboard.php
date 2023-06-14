@@ -127,7 +127,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 array_merge($this->userPath, $this->currentPath)
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
-        } catch ( FormsException | TableException | ConnectException | ImagesException | FilesException | PathsException $ex) {
+        } catch ( ConnectException | FilesException | FormsException | ImagesException | LangException | PathsException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

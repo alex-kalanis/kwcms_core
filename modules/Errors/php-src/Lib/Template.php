@@ -18,14 +18,15 @@ class Template extends ATemplate
 
     protected function fillInputs(): void
     {
-        $this->addInput('{ERROR_IMAGE_LINK}', '/ms:sysimage/alert.png');
+        $this->addInput('{ERROR_IMAGE_LINK}', '/ms:sysimage/system/alert.png');
         $this->addInput('{CATCH_ERROR}', Lang::get('error.text'));
         $this->addInput('{ERROR_NUMBER}');
         $this->addInput('{ERROR_DESCRIPTION}');
     }
 
-    public function setData(string $errNo, string $errDesc): self
+    public function setData(string $errNo, string $errDesc, string $imgLink): self
     {
+        $this->updateItem('{ERROR_IMAGE_LINK}', $imgLink);
         $this->updateItem('{ERROR_NUMBER}', $errNo);
         $this->updateItem('{ERROR_DESCRIPTION}', $errDesc);
         return $this;

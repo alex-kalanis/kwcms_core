@@ -18,8 +18,6 @@ use kalanis\kw_paths\PathsException;
  */
 interface IProcessFiles
 {
-    const FREE_NAME_SEPARATOR = '_';
-
     /**
      * @param string $name
      * @throws FilesException

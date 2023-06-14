@@ -10,6 +10,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -45,6 +46,7 @@ class Upload extends AAuthModule implements IModuleTitle
 
     /**
      * @throws ConfException
+     * @throws LangException
      * @throws UploadException
      */
     public function __construct()

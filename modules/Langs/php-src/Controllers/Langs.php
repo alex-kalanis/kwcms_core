@@ -131,7 +131,7 @@ class Langs extends AModule
             $inputs[] = $tmplItem->reset()->setData(
                 $this->extLink->linkVariant(StoreRouted::getPath()->getPath(), '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
-                $this->extLink->linkModule('sysimage', 'images/flags/' . $lang . '.png'),
+                $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true, false),
                 strval($this->getFromParam('vsize', '')),
                 strval($this->getFromParam('hsize', ''))
             )->render();
@@ -154,7 +154,7 @@ class Langs extends AModule
             $inputs[] = $tmplLang->reset()->setData(
                 $this->extLink->linkVariant('', '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
-                $this->extLink->linkModule('sysimage', 'images/flags/' . $lang . '.png'),
+                $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true, false),
                 strval($this->getFromParam('vsize', '')),
                 strval($this->getFromParam('hsize', ''))
             )->render();

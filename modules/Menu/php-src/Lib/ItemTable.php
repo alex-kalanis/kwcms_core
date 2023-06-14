@@ -94,9 +94,13 @@ class ItemTable
         return $output->renderData();
     }
 
-    public function idLink($name)
+    /**
+     * @param string|int $name
+     * @return string
+     */
+    public function idLink($name): string
     {
-        $this->forward->setLink($this->link->linkVariant('menu/edit/?id=' . $name));
+        $this->forward->setLink($this->link->linkVariant('menu/edit/?id=' . strval($name)));
         $this->forward->setForward($this->link->linkVariant('menu/names'));
         return sprintf('<a href="%s" class="button">%s</a>',
             $this->forward->getLink(),
@@ -104,9 +108,13 @@ class ItemTable
         );
     }
 
-    public function editLink($name)
+    /**
+     * @param string|int $name
+     * @return string
+     */
+    public function editLink($name): string
     {
-        $this->forward->setLink($this->link->linkVariant('menu/edit/?id=' . $name));
+        $this->forward->setLink($this->link->linkVariant('menu/edit/?id=' . strval($name)));
         $this->forward->setForward($this->link->linkVariant('menu/names'));
         return sprintf('<a href="%s" title="%s" class="button button-edit"> &#x25B6; </a>',
             $this->forward->getLink(),

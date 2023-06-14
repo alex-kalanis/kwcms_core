@@ -4,6 +4,7 @@ namespace kalanis\kw_modules\Processing;
 
 
 use kalanis\kw_modules\Interfaces\IModuleRecord;
+use stdClass;
 
 
 /**
@@ -11,9 +12,11 @@ use kalanis\kw_modules\Interfaces\IModuleRecord;
  * @package kalanis\kw_modules
  * Single record about module
  */
-class ModuleRecord implements IModuleRecord
+class ModuleRecord extends stdClass implements IModuleRecord
 {
+    /** @var string */
     protected $moduleName = '';
+    /** @var string */
     protected $params = '';
 
     public function setModuleName(string $moduleName): void

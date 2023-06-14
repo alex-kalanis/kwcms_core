@@ -8,9 +8,9 @@ use kalanis\kw_images\ImagesException;
 
 
 /**
- * Class Watermark
+ * Class ImageProcessor
  * @package KWCMS\modules\Watermark\Libs
- * Watermark over images
+ * Watermark over images - processor with render
  */
 class ImageProcessor extends Processor
 {

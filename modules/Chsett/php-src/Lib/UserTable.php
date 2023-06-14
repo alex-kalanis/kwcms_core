@@ -8,12 +8,12 @@ use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces;
-use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -69,11 +69,11 @@ class UserTable
 
     /**
      * @return Table
-     * @throws ConnectException
-     * @throws FormsException
-     * @throws TableException
      * @throws AuthException
+     * @throws FormsException
+     * @throws LangException
      * @throws LockException
+     * @throws TableException
      */
     public function getTable()
     {
@@ -147,7 +147,12 @@ class UserTable
         return $group->getGroupName();
     }
 
-    public function idLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function idLink($id): string
     {
         $user = $this->table->getDataSetConnector()->getByKey($id);
         $this->forward->setLink($this->link->linkVariant('chsett/user/edit/?name=' . $user->getValue('login')));
@@ -158,7 +163,12 @@ class UserTable
         );
     }
 
-    public function editLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function editLink($id): string
     {
         $user = $this->table->getDataSetConnector()->getByKey($id);
         $this->forward->setLink($this->link->linkVariant('chsett/user/edit/?name=' . $user->getValue('login')));
@@ -169,7 +179,12 @@ class UserTable
         );
     }
 
-    public function deleteLink($id)
+    /**
+     * @param string|int $id
+     * @throws TableException
+     * @return string
+     */
+    public function deleteLink($id): string
     {
         $user = $this->table->getDataSetConnector()->getByKey($id);
         $this->forward->setLink($this->link->linkVariant('chsett/user/delete/?name=' . $user->getValue('login')));

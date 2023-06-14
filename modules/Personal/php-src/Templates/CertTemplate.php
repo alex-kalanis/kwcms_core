@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Personal\Templates;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_modules\Templates\ATemplate;
 use KWCMS\modules\Personal\Lib\FormProps;
 
@@ -26,8 +27,8 @@ class CertTemplate extends ATemplate
 
     /**
      * @param FormProps $form
+     * @throws RenderException
      * @return $this
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
      */
     public function setData(FormProps $form): self
     {

@@ -5,6 +5,7 @@ namespace KWCMS\modules\Files\AdminControllers;
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -21,6 +22,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
 {
     use Lib\TModuleTemplate;
 
+    /**3
+     * @throws LangException
+     */
     public function __construct()
     {
         $this->initTModuleTemplate();

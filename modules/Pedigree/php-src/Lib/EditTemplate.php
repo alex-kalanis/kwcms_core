@@ -3,6 +3,7 @@
 namespace KWCMS\modules\Pedigree\Lib;
 
 
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Templates\ATemplate;
 use kalanis\kw_pedigree\GetEntries;
@@ -59,8 +60,8 @@ class EditTemplate extends ATemplate
      * @param MessageForm $form form to fill
      * @param GetEntries $entries keys of each entry
      * @param string $action
-     * @return EditTemplate
-     * @throws \kalanis\kw_forms\Exceptions\RenderException
+     * @throws RenderException
+     * @return $this
      */
     public function setData(MessageForm $form, GetEntries $entries, string $action): self
     {
