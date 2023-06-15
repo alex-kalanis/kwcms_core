@@ -8,6 +8,7 @@ use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -28,12 +29,15 @@ class Create extends ADir
         $this->userDir->setUserPath($this->getUserDir());
 
         try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $workPath = Stuff::linkToArray($this->getWhereDir());
+
             $this->dirForm->composeCreateDir();
             $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->dirForm->process()) {
                 $item = $this->dirForm->getControl('targetPath')->getValue();
-                $this->processed[$item] = $this->getLibAction()->createDir($item);
+                $this->processed[$item] = $this->processor->setUserPath($userPath)->setWorkPath($workPath)->createDir($item);
                 $this->dirForm->composeCreateDir(); // again, changes in tree
             }
         } catch (FilesException | FormsException | PathsException $ex) {

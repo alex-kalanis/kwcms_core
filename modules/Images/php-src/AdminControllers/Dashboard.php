@@ -60,7 +60,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
     }
 
     public function allowedAccessClasses(): array

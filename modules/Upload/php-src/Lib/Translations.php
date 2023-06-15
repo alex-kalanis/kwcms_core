@@ -4,6 +4,7 @@ namespace KWCMS\modules\Upload\Lib;
 
 
 use kalanis\kw_langs\Lang;
+use kalanis\kw_user_paths\Interfaces\IUPTranslations;
 use kalanis\UploadPerPartes\Interfaces\IUPPTranslations;
 
 
@@ -11,8 +12,38 @@ use kalanis\UploadPerPartes\Interfaces\IUPPTranslations;
  * Class Translations
  * @package KWCMS\modules\Upload\Lib
  */
-class Translations implements IUPPTranslations
+class Translations implements IUPPTranslations, IUPTranslations
 {
+    public function upUserNameIsShort(): string
+    {
+        return Lang::get('chdir.user_dir.username_is_short');
+    }
+
+    public function upUserNameContainsChars(): string
+    {
+        return Lang::get('chdir.user_dir.user_name_contains_chars');
+    }
+
+    public function upUserNameNotDefined(): string
+    {
+        return Lang::get('chdir.user_dir.user_name_not_defined');
+    }
+
+    public function upCannotDetermineUserDir(): string
+    {
+        return Lang::get('chdir.user_dir.cannot_determine_user_dir');
+    }
+
+    public function upCannotCreateUserDir(): string
+    {
+        return Lang::get('chdir.user_dir.cannot_create_user_dir');
+    }
+
+    public function upCannotGetFullPaths(): string
+    {
+        return Lang::get('chdir.user_dir.cannot_get_full_paths');
+    }
+
     public function uppSentNameIsEmpty(): string
     {
         return Lang::get('upload.vendor.sent_file_name_is_empty');

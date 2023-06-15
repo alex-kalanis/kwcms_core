@@ -30,9 +30,9 @@ class Rename extends AFile
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+            $workPath = Stuff::linkToArray($this->getWhereDir());
 
-            $this->tree->setStartPath($fullPath);
+            $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);
             $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
@@ -42,7 +42,8 @@ class Rename extends AFile
 
             if ($this->fileForm->process()) {
                 $item = $this->fileForm->getControl('sourceName')->getValue();
-                $this->processed[$item] = $this->getLibAction()->renameFile(
+                $this->processor->setUserPath($userPath)->setWorkPath($workPath);
+                $this->processed[$item] = $this->processor->renameFile(
                     $item,
                     $this->fileForm->getControl('targetPath')->getValue()
                 );

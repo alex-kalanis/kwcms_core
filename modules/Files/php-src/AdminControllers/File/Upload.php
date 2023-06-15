@@ -4,6 +4,7 @@ namespace KWCMS\modules\Files\AdminControllers\File;
 
 
 use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -18,7 +19,10 @@ use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Files\Lib;
 
 
@@ -29,7 +33,6 @@ use KWCMS\modules\Files\Lib;
  */
 class Upload extends AAuthModule implements IModuleTitle
 {
-    use Lib\TLibAction;
     use Lib\TModuleTemplate;
     use TWhereDir;
 
@@ -37,14 +40,23 @@ class Upload extends AAuthModule implements IModuleTitle
     protected $fileForm = null;
     /** @var bool */
     protected $processed = false;
+    /** @var UserDir */
+    protected $userDir = null;
+    /** @var Lib\Processor */
+    protected $processor = null;
 
     /**
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
         $this->initTModuleTemplate();
         $this->fileForm = new Lib\FileForm('uploadFileForm');
+        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->processor = new Lib\Processor($files);
+        $this->userDir = new UserDir(new Lib\Translations());
     }
 
     public function allowedAccessClasses(): array
@@ -55,7 +67,12 @@ class Upload extends AAuthModule implements IModuleTitle
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->getUserDir());
+
         try {
+            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $workPath = Stuff::linkToArray($this->getWhereDir());
+
             $this->fileForm->composeUploadFile();
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs), new InputFilesAdapter($this->inputs));
             if ($this->fileForm->process()) {
@@ -67,9 +84,9 @@ class Upload extends AAuthModule implements IModuleTitle
                 if (!$file instanceof IFileEntry) {
                     throw new FilesException(Lang::get('files.error.must_contain_file'));
                 }
-                $libAction = $this->getLibAction();
-                $usedName = $libAction->findFreeName($file->getValue());
-                $this->processed = $libAction->uploadFile($file, $usedName);
+                $this->processor->setUserPath($userPath)->setWorkPath($workPath);
+                $usedName = $this->processor->findFreeName($file->getValue());
+                $this->processed = $this->processor->uploadFile($file, $usedName);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

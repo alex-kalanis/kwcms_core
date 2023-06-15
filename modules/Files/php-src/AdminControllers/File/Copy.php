@@ -32,7 +32,7 @@ class Copy extends AFile
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+            $workPath = Stuff::linkToArray($this->getWhereDir());
 
             $this->tree->setStartPath($userPath);
             $this->tree->wantDeep(true);
@@ -40,7 +40,7 @@ class Copy extends AFile
             $this->tree->process();
             $targetTree = $this->tree->getRoot();
 
-            $this->tree->setStartPath($fullPath);
+            $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);
             $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
@@ -53,9 +53,9 @@ class Copy extends AFile
                 if (!$entries instanceof IMultiValue) {
                     throw new FilesException(Lang::get('files.error.must_contain_files'));
                 }
-                $actionLib = $this->getLibAction();
+                $this->processor->setUserPath($userPath)->setWorkPath($workPath);
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->copyFile(
+                    $this->processed[$item] = $this->processor->copyFile(
                         $item,
                         $this->fileForm->getControl('targetPath')->getValue()
                     );

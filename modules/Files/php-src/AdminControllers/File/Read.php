@@ -37,7 +37,6 @@ use KWCMS\modules\Files\Lib;
  */
 class Read extends AAuthModule implements IModuleTitle
 {
-    use Lib\TLibAction;
     use Lib\TModuleTemplate;
     use TWhereDir;
     use TFilesFile;
@@ -46,6 +45,8 @@ class Read extends AAuthModule implements IModuleTitle
     protected $userDir = null;
     /** @var ITree */
     protected $tree = null;
+    /** @var Lib\Processor */
+    protected $processor = null;
     /** @var Lib\FileForm */
     protected $fileForm = null;
     /** @var MimeType */
@@ -65,8 +66,10 @@ class Read extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
-        $this->userDir = new UserDir();
+        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->tree = new DataSources\Files($files);
+        $this->processor = new Lib\Processor($files);
+        $this->userDir = new UserDir(new Lib\Translations());
         $this->fileForm = new Lib\FileForm('readFileForm');
         $this->libFileMime = new MimeType(true);
     }
@@ -83,9 +86,9 @@ class Read extends AAuthModule implements IModuleTitle
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+            $workPath = Stuff::linkToArray($this->getWhereDir());
 
-            $this->tree->setStartPath($fullPath);
+            $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);
             $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
@@ -95,7 +98,8 @@ class Read extends AAuthModule implements IModuleTitle
 
             if ($this->fileForm->process()) {
                 $item = $this->fileForm->getControl('sourceName')->getValue();
-                $this->fileContent = $this->getLibAction()->readFile($item);
+                $this->processor->setUserPath($userPath)->setWorkPath($workPath);
+                $this->fileContent = $this->processor->readFile($item);
                 $this->fileMime = $this->libFileMime->mimeByPath($item);
                 $this->processed = true;
             }

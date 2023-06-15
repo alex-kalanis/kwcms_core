@@ -9,6 +9,7 @@ use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_user_paths\Traits\TLang;
 
 
 /**
@@ -17,21 +18,21 @@ use kalanis\kw_paths\PathsException;
  */
 class Actions
 {
+    use TLang;
+
     /** @var UserDir */
     protected $data = null;
     /** @var IProcessNodes */
     protected $nodes = null;
     /** @var IProcessDirs */
     protected $dirs = null;
-    /** @var Interfaces\IUPTranslations */
-    protected $lang = null;
 
     public function __construct(UserDir $data, IProcessNodes $nodes, IProcessDirs $dirs, ?Interfaces\IUPTranslations $lang = null)
     {
         $this->data = $data;
         $this->nodes = $nodes;
         $this->dirs = $dirs;
-        $this->lang = $lang ?: new Translations();
+        $this->setUpLang($lang);
     }
 
     /**
@@ -44,12 +45,12 @@ class Actions
     {
         $path = $this->data->getFullPath();
         if ($this->isNoPathSet($path)) {
-            throw new PathsException($this->lang->upCannotDetermineUserDir());
+            throw new PathsException($this->getUpLang()->upCannotDetermineUserDir());
         }
         $userPath = $this->data->hasDataDir() ? $path->getArrayDirectory() : $path->getArray();
         if (!$this->dirs->createDir($userPath)) {
             if (!$this->nodes->isDir($userPath)) {
-                throw new PathsException($this->lang->upCannotCreateUserDir());
+                throw new PathsException($this->getUpLang()->upCannotCreateUserDir());
             }
         }
         if ($this->data->hasDataDir()) {
@@ -70,7 +71,7 @@ class Actions
     {
         $path = $this->data->getFullPath();
         if ($this->isNoPathSet($path)) {
-            throw new PathsException($this->lang->upCannotDetermineUserDir());
+            throw new PathsException($this->getUpLang()->upCannotDetermineUserDir());
         }
         if ($this->isPathTooShort($path)) { # There surely will be an idiot who want to remove root data
             return false;
@@ -91,7 +92,7 @@ class Actions
     {
         $path = $this->data->getFullPath();
         if ($this->isNoPathSet($path)) {
-            throw new PathsException($this->lang->upCannotDetermineUserDir());
+            throw new PathsException($this->getUpLang()->upCannotDetermineUserDir());
         }
         if ($this->isPathTooShort($path)) { # There surely will be an idiot who want to remove root data
             return false;
@@ -115,7 +116,7 @@ class Actions
     {
         $path = $this->data->getFullPath();
         if ($this->isNoPathSet($path)) {
-            throw new PathsException($this->lang->upCannotDetermineUserDir());
+            throw new PathsException($this->getUpLang()->upCannotDetermineUserDir());
         }
         if ($this->isPathTooShort($path)) {
             return false; # urcite se najde i blbec, co bude chtit wipe roota (jeste blbejsi napad, nez jsme doufali) - tudy se odinstalace fakt nedela!

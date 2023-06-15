@@ -52,7 +52,7 @@ abstract class AEdit extends AAuthModule
         Config::load('Images');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
     }
 
     public function allowedAccessClasses(): array

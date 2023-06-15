@@ -28,6 +28,6 @@ class SimplifiedPager extends \kalanis\kw_paging\Render\SimplifiedPager
         Lang::load('Admin');
         parent::__construct($positions, $link, $displayPages);
         $this->pager = new PagerTemplate();
-        $this->pager->setLang(new PagerLang());
+        $this->pager->setLang(new PagerTranslations());
     }
 }

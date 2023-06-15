@@ -12,17 +12,17 @@ use kalanis\kw_semaphore\Interfaces\ISMTranslations;
  */
 class Translations implements ISMTranslations
 {
-    public function mnCannotOpenSemaphore(): string
+    public function smCannotOpenSemaphore(): string
     {
         return 'Cannot open semaphore data';
     }
 
-    public function mnCannotSaveSemaphore(): string
+    public function smCannotSaveSemaphore(): string
     {
         return 'Cannot save semaphore data';
     }
 
-    public function mnCannotGetSemaphoreClass(): string
+    public function smCannotGetSemaphoreClass(): string
     {
         return 'Cannot determine semaphore class';
     }

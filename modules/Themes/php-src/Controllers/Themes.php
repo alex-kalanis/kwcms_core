@@ -84,7 +84,7 @@ class Themes extends AModule
      */
     public function process(): void
     {
-        $extPath = Stuff::linkToArray(strval($this->getFromParam('path')));
+        $extPath = Stuff::linkToArray(strval($this->getFromParam('target')));
         $this->extPath = $extPath;
         $this->dirPath = $this->innerLink->toUserPath($extPath);
     }
@@ -151,7 +151,7 @@ class Themes extends AModule
      */
     public function outContent(): Output\AOutput
     {
-        $gotPath = Stuff::linkToArray($this->params['path']);
+        $gotPath = array_values($this->extPath);
         $content = $this->getUserContent($gotPath);
         if (is_null($content)) {
             $moduleName = array_shift($gotPath);

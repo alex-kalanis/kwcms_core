@@ -62,7 +62,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
         $this->initTModuleTemplate();
         $this->createForm = new Forms\DirNewForm('dirNewForm');
         $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
     }
 
     public function allowedAccessClasses(): array

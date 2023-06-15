@@ -32,9 +32,9 @@ class Delete extends AFile
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+            $workPath = Stuff::linkToArray($this->getWhereDir());
 
-            $this->tree->setStartPath($fullPath);
+            $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);
             $this->tree->setFilterCallback([$this, 'justFilesCallback']);
             $this->tree->process();
@@ -50,9 +50,9 @@ class Delete extends AFile
                 if ('yes' != $this->fileForm->getControl('targetPath')->getValue()) {
                     return;
                 }
-                $actionLib = $this->getLibAction();
+                $this->processor->setUserPath($userPath)->setWorkPath($workPath);
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->deleteFile($item);
+                    $this->processed[$item] = $this->processor->deleteFile($item);
                 }
                 $this->tree->process();
                 $this->fileForm->composeDeleteFile($this->tree->getRoot()); // again, changes in tree

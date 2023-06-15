@@ -6,6 +6,7 @@ namespace KWCMS\modules\Files\Lib;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
@@ -19,6 +20,8 @@ use kalanis\kw_paths\Stuff;
  */
 class Processor
 {
+    use TToString;
+
     /** @var string[] */
     protected $userPath = [];
     /** @var string[] */
@@ -26,16 +29,29 @@ class Processor
     /** @var CompositeAdapter */
     protected $files = null;
 
+    public function __construct(CompositeAdapter $files)
+    {
+        $this->files = $files;
+    }
+
     /**
-     * @param CompositeAdapter $files
      * @param string[] $userPath where is user set with his account
-     * @param string[] $workPath where is user walking now
+     * @return Processor
      */
-    public function __construct(CompositeAdapter $files, array $userPath, array $workPath)
+    public function setUserPath(array $userPath): self
     {
         $this->userPath = $userPath;
+        return $this;
+    }
+
+    /**
+     * @param string[] $workPath where is user walking now
+     * @return Processor
+     */
+    public function setWorkPath(array $workPath): self
+    {
         $this->workPath = $workPath;
-        $this->files = $files;
+        return $this;
     }
 
     /**
@@ -169,11 +185,11 @@ class Processor
      */
     public function readFile(string $entry, ?int $offset = null, ?int $length = null): string
     {
-        return $this->files->readFile(array_merge(
+        return $this->toString($entry, $this->files->readFile(array_merge(
             $this->userPath,
             $this->workPath,
             [Stuff::filename($entry)]
-        ), $offset, $length);
+        ), $offset, $length));
     }
 
     /**

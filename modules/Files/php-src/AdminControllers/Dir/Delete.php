@@ -11,6 +11,7 @@ use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use KWCMS\modules\Files\Lib;
 
 
 /**
@@ -32,9 +33,9 @@ class Delete extends ADir
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+            $workPath = Stuff::linkToArray($this->getWhereDir());
 
-            $this->tree->setStartPath($fullPath);
+            $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);
             $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
@@ -50,9 +51,9 @@ class Delete extends ADir
                 if ('yes' != $this->dirForm->getControl('targetPath')->getValue()) {
                     return;
                 }
-                $actionLib = $this->getLibAction();
+                $this->processor->setUserPath($userPath)->setWorkPath($workPath);
                 foreach ($entries->getValues() as $item) {
-                    $this->processed[$item] = $actionLib->deleteDir($item);
+                    $this->processed[$item] = $this->processor->deleteDir($item);
                 }
                 $this->tree->process();
                 $this->dirForm->composeDeleteDir($this->tree->getRoot()); // again, changes in tree

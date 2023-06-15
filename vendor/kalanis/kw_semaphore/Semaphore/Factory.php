@@ -66,6 +66,6 @@ class Factory
         if (is_string($params)) {
             return new Volume($params, $this->getSmLang());
         }
-        throw new SemaphoreException($this->getSmLang()->mnCannotGetSemaphoreClass());
+        throw new SemaphoreException($this->getSmLang()->smCannotGetSemaphoreClass());
     }
 }

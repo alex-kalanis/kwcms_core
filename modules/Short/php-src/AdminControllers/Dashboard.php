@@ -59,7 +59,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     {
         Config::load('Short');
         $this->initTModuleTemplate();
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
         $this->files = (new Factory())->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );

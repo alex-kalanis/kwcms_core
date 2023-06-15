@@ -8,6 +8,7 @@ use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_user_paths\Traits\TLang;
 use UnexpectedValueException;
 
 
@@ -17,6 +18,8 @@ use UnexpectedValueException;
  */
 class UserDir
 {
+    use TLang;
+
     /** @var string|null */
     protected $userName = null; # obtained user's name (when need)
     /** @var string|null */
@@ -31,12 +34,10 @@ class UserDir
     protected $hasHomeDir = true; # if use sub dirs or is it directly in user's home dir
     /** @var bool */
     protected $hasDataDir = true; # if use user dir or is it anywhere else directly from web root
-    /** @var Interfaces\IUPTranslations */
-    protected $lang = null;
 
     public function __construct(?Interfaces\IUPTranslations $lang = null)
     {
-        $this->lang = $lang ?: new Translations();
+        $this->setUpLang($lang);
     }
 
     /**
@@ -65,7 +66,7 @@ class UserDir
     public function getFullPath(): ArrayPath
     {
         if (empty($this->fullPath)) {
-            throw new PathsException($this->lang->upCannotGetFullPaths());
+            throw new PathsException($this->getUpLang()->upCannotGetFullPaths());
         }
         return $this->fullPath;
     }
@@ -95,10 +96,10 @@ class UserDir
     public function setUserName(string $name): self
     {
         if (empty($name)) {
-            throw new InvalidArgumentException($this->lang->upUserNameIsShort());
+            throw new InvalidArgumentException($this->getUpLang()->upUserNameIsShort());
         }
         if (false !== strpbrk($name, '.: /~')) {
-            throw new InvalidArgumentException($this->lang->upUserNameContainsChars());
+            throw new InvalidArgumentException($this->getUpLang()->upUserNameContainsChars());
         }
         $this->userName = $name;
         return $this;
@@ -196,7 +197,7 @@ class UserDir
     protected function makeFromUserName(): string
     {
         if (empty($this->userName)) {
-            throw new UnexpectedValueException($this->lang->upUserNameNotDefined());
+            throw new UnexpectedValueException($this->getUpLang()->upUserNameNotDefined());
         }
         $userPath = $this->userName;
         if (!$this->hasHomeDir) {

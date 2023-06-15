@@ -34,7 +34,7 @@ trait TTexts
      */
     protected function initTTexts(Path $path)
     {
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Translations());
         $this->files = (new Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
     }
 

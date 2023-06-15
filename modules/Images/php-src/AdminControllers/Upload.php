@@ -53,7 +53,7 @@ class Upload extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         $this->fileForm = new Forms\FileUploadForm('uploadImageForm');
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
     }
 
     public function allowedAccessClasses(): array

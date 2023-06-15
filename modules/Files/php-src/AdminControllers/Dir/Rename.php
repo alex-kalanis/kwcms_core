@@ -9,6 +9,7 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
+use KWCMS\modules\Files\Lib;
 
 
 /**
@@ -30,9 +31,9 @@ class Rename extends ADir
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()));
+            $workPath = Stuff::linkToArray($this->getWhereDir());
 
-            $this->tree->setStartPath($fullPath);
+            $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);
             $this->tree->setFilterCallback([$this, 'justDirsCallback']);
             $this->tree->process();
@@ -42,7 +43,7 @@ class Rename extends ADir
 
             if ($this->dirForm->process()) {
                 $item = $this->dirForm->getControl('sourceName')->getValue();
-                $this->processed[$item] = $this->getLibAction()->renameDir(
+                $this->processed[$item] = $this->processor->setUserPath($userPath)->setWorkPath($workPath)->renameDir(
                     $item,
                     $this->dirForm->getControl('targetPath')->getValue()
                 );

@@ -68,7 +68,7 @@ class Edit extends AAuthModule implements IModuleTitle
         $this->form = new Lib\MessageForm('editMessage');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
         $this->files = (new Factory())->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );

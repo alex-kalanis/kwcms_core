@@ -6,6 +6,7 @@ namespace KWCMS\modules\Upload\AdminControllers;
 use kalanis\kw_auth\Interfaces\IAccessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -36,24 +37,33 @@ use KWCMS\modules\Upload\UploadTemplate;
  */
 class Upload extends AAuthModule implements IModuleTitle
 {
-    use FileLib\TLibAction;
     use Lib\TModuleTemplate;
     use TWhereDir;
 
     protected $inSteps = '';
     /** @var Lib\Uploader */
     protected $lib = null;
+    /** @var UserDir */
+    protected $userDir = null;
+    /** @var FileLib\Processor */
+    protected $processor = null;
 
     /**
      * @throws ConfException
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      * @throws UploadException
      */
     public function __construct()
     {
         $this->initTModuleTemplate();
         Config::load('Upload');
-        $this->lib = new Lib\Uploader();
+        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $lang = new Lib\Translations();
+        $this->processor = new FileLib\Processor($files);
+        $this->userDir = new UserDir($lang);
+        $this->lib = new Lib\Uploader($files, $lang);
     }
 
     final public function allowedAccessClasses(): array
@@ -117,17 +127,14 @@ class Upload extends AAuthModule implements IModuleTitle
     protected function stepInit(): Response\AResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
-        $stored = Stored::getPath();
-        $userDir = new UserDir();
-        $userDir->setUserPath($this->user->getDir());
+        $this->userDir->setUserPath($this->user->getDir());
         return $this->lib->init(
             Stuff::arrayToPath(array_merge(
-                Stuff::pathToArray($stored->getDocumentRoot() . $stored->getPathToSystemRoot()),
-                $userDir->process()->getFullPath()->getArray(),
+                $this->userDir->process()->getFullPath()->getArray(),
                 Stuff::linkToArray($this->getWhereDir())
             )),
             strval($inputs['fileName']),
-            strval($inputs['fileSize'])
+            intval(strval($inputs['fileSize']))
         );
     }
 
@@ -179,8 +186,13 @@ class Upload extends AAuthModule implements IModuleTitle
         );
         /** @var Response\DoneResponse $result */
 
-        $act = $this->getLibAction();
-        $act->renameFile(
+        $this->userDir->setUserPath($this->getUserDir());
+
+        $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+        $workPath = Stuff::linkToArray($this->getWhereDir());
+
+        $this->processor->setUserPath($userPath)->setWorkPath($workPath);
+        $this->processor->renameFile(
             Stuff::filename($result->getTemporaryLocation()),
             Stuff::filename($result->getFileName())
         );

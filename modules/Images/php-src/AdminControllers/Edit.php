@@ -86,7 +86,7 @@ class Edit extends AAuthModule implements IModuleTitle
         $this->primaryForm = new Forms\FileThumbForm('filePrimaryForm');
         $this->deleteForm = new Forms\FileDeleteForm('fileDeleteForm');
         $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
         $this->forward = new Forward();
     }
 

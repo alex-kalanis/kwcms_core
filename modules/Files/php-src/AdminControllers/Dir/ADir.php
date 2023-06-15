@@ -31,7 +31,6 @@ use KWCMS\modules\Files\Lib;
  */
 abstract class ADir extends AAuthModule implements IModuleTitle
 {
-    use Lib\TLibAction;
     use Lib\TModuleTemplate;
     use TWhereDir;
     use TFilesDirs;
@@ -40,6 +39,8 @@ abstract class ADir extends AAuthModule implements IModuleTitle
     protected $userDir = null;
     /** @var ITree */
     protected $tree = null;
+    /** @var Lib\Processor */
+    protected $processor = null;
     /** @var Lib\DirForm|null */
     protected $dirForm = null;
     /** @var bool[] */
@@ -53,8 +54,10 @@ abstract class ADir extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
-        $this->userDir = new UserDir();
+        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->tree = new DataSources\Files($files);
+        $this->processor = new Lib\Processor($files);
+        $this->userDir = new UserDir(new Lib\Translations());
         $this->dirForm = new Lib\DirForm($this->getFormAlias());
     }
 

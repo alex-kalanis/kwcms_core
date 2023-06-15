@@ -70,6 +70,13 @@ $lang = [
         'logout.title' => 'Log out done.',
         'logout.link' => 'To login page',
         'logout.page' => 'Log out',
+
+        'chdir.user_dir.username_is_short' => 'Username is short!',
+        'chdir.user_dir.user_name_contains_chars' => 'Username contains unsupported characters!',
+        'chdir.user_dir.user_name_not_defined' => 'Necessary user name is not defined!',
+        'chdir.user_dir.cannot_determine_user_dir' => 'Cannot determine user dir!',
+        'chdir.user_dir.cannot_create_user_dir' => 'Cannot create user dir!',
+        'chdir.user_dir.cannot_get_full_paths' => 'Cannot get full path class!',
     ],
     'fra' => [
         'system.administration'=>'L\'administration',
@@ -129,6 +136,13 @@ $lang = [
         'logout.title' => 'D&#x00E9;sabonner finit.',
         'logout.link' => 'Au abonner.',
         'logout.page' => 'D&#x00E9;sabonner',
+
+        'chdir.user_dir.username_is_short' => 'Username is short!',
+        'chdir.user_dir.user_name_contains_chars' => 'Username contains unsupported characters!',
+        'chdir.user_dir.user_name_not_defined' => 'Necessary user name is not defined!',
+        'chdir.user_dir.cannot_determine_user_dir' => 'Cannot determine user dir!',
+        'chdir.user_dir.cannot_create_user_dir' => 'Cannot create user dir!',
+        'chdir.user_dir.cannot_get_full_paths' => 'Cannot get full path class!',
     ],
     'cze' => [
         'system.administration'=>'Spr&#x00E1;va',
@@ -207,5 +221,12 @@ $lang = [
         'logout.title' => 'Odhl&#x00E1;&#x0161;en&#x00ED; prob&#x011B;hlo.',
         'logout.link' => 'Na p&#x0159;ihl&#x00E1;&#x0161;en&#x00ED;',
         'logout.page' => 'Odhl&#x00E1;&#x0161;en&#x00ED;',
+
+        'chdir.user_dir.username_is_short' => 'Uživatelské jméno je krátké!',
+        'chdir.user_dir.user_name_contains_chars' => 'Uživatelské jméno obsahuje nepovolené znaky!',
+        'chdir.user_dir.user_name_not_defined' => 'Uživatelské jméno nebylo nastaveno!',
+        'chdir.user_dir.cannot_determine_user_dir' => 'Nemohu seskládat uživatelskou složku!',
+        'chdir.user_dir.cannot_create_user_dir' => 'Nemohu vytvořit uživatelskou složku!',
+        'chdir.user_dir.cannot_get_full_paths' => 'Nemám připravenu třídu s cestou!',
     ],
 ];

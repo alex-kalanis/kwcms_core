@@ -55,7 +55,7 @@ class Properties extends AAuthModule implements IModuleTitle
         $this->initTModuleTemplate();
         $this->descForm = new Forms\DescForm('dirPropsForm');
         $this->extraForm = new Forms\DirExtraForm('dirPropsForm');
-        $this->userDir = new UserDir();
+        $this->userDir = new UserDir(new Lib\Translations());
     }
 
     public function allowedAccessClasses(): array

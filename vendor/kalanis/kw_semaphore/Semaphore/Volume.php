@@ -31,7 +31,7 @@ class Volume implements ISemaphore
     public function want(): bool
     {
         if (false === @file_put_contents($this->rootPath, static::TEXT_SEMAPHORE)) {
-            throw new SemaphoreException($this->getSmLang()->mnCannotSaveSemaphore());
+            throw new SemaphoreException($this->getSmLang()->smCannotSaveSemaphore());
         }
         return true;
     }
@@ -44,7 +44,7 @@ class Volume implements ISemaphore
     public function remove(): bool
     {
         if (file_exists($this->rootPath) && (false === @unlink($this->rootPath))) {
-            throw new SemaphoreException($this->getSmLang()->mnCannotOpenSemaphore());
+            throw new SemaphoreException($this->getSmLang()->smCannotOpenSemaphore());
         }
         return true;
     }

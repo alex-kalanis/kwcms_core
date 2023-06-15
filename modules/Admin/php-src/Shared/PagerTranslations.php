@@ -12,7 +12,7 @@ use kalanis\kw_paging\Interfaces\IPGTranslations;
  * @package KWCMS\modules\Admin\Shared
  * Translation of pager results
  */
-class PagerLang implements IPGTranslations
+class PagerTranslations implements IPGTranslations
 {
     public function kpgShowResults(int $from, int $to, int $max): string
     {

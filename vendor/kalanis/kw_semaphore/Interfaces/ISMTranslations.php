@@ -10,9 +10,9 @@ namespace kalanis\kw_semaphore\Interfaces;
  */
 interface ISMTranslations
 {
-    public function mnCannotOpenSemaphore(): string;
+    public function smCannotOpenSemaphore(): string;
 
-    public function mnCannotSaveSemaphore(): string;
+    public function smCannotSaveSemaphore(): string;
 
-    public function mnCannotGetSemaphoreClass(): string;
+    public function smCannotGetSemaphoreClass(): string;
 }
