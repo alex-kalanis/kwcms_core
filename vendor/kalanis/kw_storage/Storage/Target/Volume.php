@@ -5,8 +5,10 @@ namespace kalanis\kw_storage\Storage\Target;
 
 use kalanis\kw_storage\Extras\TRemoveCycle;
 use kalanis\kw_storage\Extras\TVolumeCopy;
+use kalanis\kw_storage\Interfaces\IStTranslations;
 use kalanis\kw_storage\Interfaces\ITargetVolume;
 use kalanis\kw_storage\StorageException;
+use kalanis\kw_storage\Traits\TLang;
 use Traversable;
 
 
@@ -20,6 +22,12 @@ class Volume implements ITargetVolume
     use TOperations;
     use TRemoveCycle;
     use TVolumeCopy;
+    use TLang;
+
+    public function __construct(?IStTranslations $lang = null)
+    {
+        $this->setStLang($lang);
+    }
 
     public function check(string $key): bool
     {
@@ -73,7 +81,7 @@ class Volume implements ITargetVolume
     {
         $content = @file_get_contents($key);
         if (false === $content) {
-            throw new StorageException('Cannot read file');
+            throw new StorageException($this->getStLang()->stCannotReadFile());
         }
         return $content;
     }

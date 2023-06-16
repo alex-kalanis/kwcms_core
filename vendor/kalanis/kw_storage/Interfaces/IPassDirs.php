@@ -82,7 +82,7 @@ interface IPassDirs extends IStorage
      * null if not exists or cannot determine (dir)
      * @param string $key
      * @throws StorageException
-     * @return int
+     * @return int<0, max>|null
      */
     public function size(string $key): ?int;
 
@@ -91,7 +91,7 @@ interface IPassDirs extends IStorage
      * null if not exists or cannot get that info
      * @param string $key
      * @throws StorageException
-     * @return int
+     * @return int|null
      */
     public function created(string $key): ?int;
 }

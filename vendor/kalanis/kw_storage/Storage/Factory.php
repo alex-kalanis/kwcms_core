@@ -4,6 +4,7 @@ namespace kalanis\kw_storage\Storage;
 
 
 use kalanis\kw_storage\Interfaces;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -25,7 +26,8 @@ class Factory
     }
 
     /**
-     * @param mixed|Interfaces\ITarget|array|string|null $storageParams
+     * @param object|array<string, string|object>|string|null $storageParams
+     * @throws StorageException
      * @return Interfaces\IStorage|null
      */
     public function getStorage($storageParams): ?Interfaces\IStorage

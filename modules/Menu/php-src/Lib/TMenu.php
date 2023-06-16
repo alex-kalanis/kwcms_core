@@ -50,9 +50,10 @@ trait TMenu
     protected function initTMenu(Path $path)
     {
         Config::load('Menu');
-        $this->userDir = new UserDir(new Translations());
+        $lang = new Translations();
+        $this->userDir = new UserDir($lang);
         $this->files = (new Access\Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot());
-        $this->libMenu = (new MenuFactory())->getMenu($this->files);
+        $this->libMenu = (new MenuFactory($lang))->getMenu($this->files);
     }
 
     /**

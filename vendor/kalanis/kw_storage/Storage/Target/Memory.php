@@ -3,8 +3,10 @@
 namespace kalanis\kw_storage\Storage\Target;
 
 
+use kalanis\kw_storage\Interfaces\IStTranslations;
 use kalanis\kw_storage\Interfaces\ITargetFlat;
 use kalanis\kw_storage\StorageException;
+use kalanis\kw_storage\Traits\TLang;
 use Traversable;
 
 
@@ -16,9 +18,15 @@ use Traversable;
 class Memory implements ITargetFlat
 {
     use TOperations;
+    use TLang;
 
     /** @var array<string, mixed> */
     protected $data = [];
+
+    public function __construct(?IStTranslations $lang = null)
+    {
+        $this->setStLang($lang);
+    }
 
     public function check(string $key): bool
     {
@@ -33,7 +41,7 @@ class Memory implements ITargetFlat
     public function load(string $key)
     {
         if (!$this->exists($key)) {
-            throw new StorageException('Cannot read key');
+            throw new StorageException($this->getStLang()->stCannotReadKey());
         }
         return $this->data[$key];
     }

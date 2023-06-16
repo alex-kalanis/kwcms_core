@@ -4,6 +4,8 @@ namespace kalanis\kw_storage;
 
 
 use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Interfaces\IStTranslations;
+use kalanis\kw_storage\Traits\TLang;
 use Traversable;
 
 
@@ -14,21 +16,28 @@ use Traversable;
  */
 class Storage
 {
+    use TLang;
+
     /** @var IStorage|null */
     protected $storage = null;
     /** @var Storage\Factory */
     protected $storageFactory = null;
 
-    public function __construct(Storage\Factory $storageFactory)
+    public function __construct(Storage\Factory $storageFactory, ?IStTranslations $lang = null)
     {
         $this->storageFactory = $storageFactory;
+        $this->setStLang($lang);
     }
 
     /**
-     * @param mixed|Interfaces\ITarget|array|string|null $storageParams
+     * @param object|array<string, string|object>|string|null $storageParams
+     * @throws StorageException
      */
     public function init($storageParams): void
     {
+        if (is_array($storageParams) && empty($storageParams['lang']) && $this->stLang) {
+            $storageParams['lang'] = $this->stLang;
+        }
         $this->storage = $this->storageFactory->getStorage($storageParams);
     }
 
@@ -185,7 +194,7 @@ class Storage
     protected function getStorage(): IStorage
     {
         if (empty($this->storage)) {
-            throw new StorageException('Storage not initialized');
+            throw new StorageException($this->getStLang()->stStorageNotInitialized());
         }
         return $this->storage;
     }

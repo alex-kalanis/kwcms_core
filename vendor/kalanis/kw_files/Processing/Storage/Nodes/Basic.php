@@ -91,7 +91,7 @@ class Basic extends ANodes
                     throw new FilesException($this->getLang()->flCannotGetSize($path));
                 }
                 // @codeCoverageIgnoreEnd
-                return intval($size);
+                return abs(intval($size));
             } else {
                 return strlen(strval($content));
             }

@@ -63,7 +63,7 @@ class Upload extends AAuthModule implements IModuleTitle
         $lang = new Lib\Translations();
         $this->processor = new FileLib\Processor($files);
         $this->userDir = new UserDir($lang);
-        $this->lib = new Lib\Uploader($files, $lang);
+        $this->lib = new Lib\Uploader($files);
     }
 
     final public function allowedAccessClasses(): array
@@ -128,10 +128,11 @@ class Upload extends AAuthModule implements IModuleTitle
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
         $this->userDir->setUserPath($this->user->getDir());
-        return $this->lib->init(
+        return $this->lib->init( // change from array-based paths to string-based ones
             Stuff::arrayToPath(array_merge(
                 $this->userDir->process()->getFullPath()->getArray(),
-                Stuff::linkToArray($this->getWhereDir())
+                Stuff::linkToArray($this->getWhereDir()),
+                [] // empty for adding ending separator
             )),
             strval($inputs['fileName']),
             intval(strval($inputs['fileSize']))
@@ -176,6 +177,7 @@ class Upload extends AAuthModule implements IModuleTitle
     /**
      * @throws FilesException
      * @throws PathsException
+     * @throws UploadException
      * @return Response\AResponse
      */
     protected function stepDone(): Response\AResponse

@@ -15,6 +15,6 @@ class Translations implements IPATranslations
 {
     public function paNoDirectoryDelimiterSet(): string
     {
-        return 'Cannot create user dir!';
+        return 'No directory delimiter set!';
     }
 }

@@ -3,6 +3,9 @@
 namespace kalanis\kw_storage;
 
 
+use kalanis\kw_storage\Interfaces\IStTranslations;
+
+
 /**
  * Class Helper
  * @package kalanis\kw_storage
@@ -10,9 +13,9 @@ namespace kalanis\kw_storage;
  */
 class Helper
 {
-    public static function initStorage(): Storage
+    public static function initStorage(?IStTranslations $lang = null): Storage
     {
-        return new Storage(static::initFactory());
+        return new Storage(static::initFactory(), $lang);
     }
 
     public static function initFactory(): Storage\Factory

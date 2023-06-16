@@ -94,6 +94,11 @@ class Translations implements IUPPTranslations, IUPTranslations
         return Lang::get('upload.vendor.drive_file_variant_not_known');
     }
 
+    public function uppDriveDataNotSet(): string
+    {
+        return Lang::get('upload.vendor.drive_data_not_set');
+    }
+
     public function uppDriveFileCannotRead(string $key): string
     {
         return Lang::get('upload.vendor.drive_file_cannot_read');

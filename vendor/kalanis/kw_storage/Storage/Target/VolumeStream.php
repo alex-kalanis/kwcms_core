@@ -24,16 +24,16 @@ class VolumeStream extends Volume
         $data = @fopen('php://temp', 'r+b');
         if ((false === $content) || (false === $data)) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot read file');
+            throw new StorageException($this->getStLang()->stCannotReadFile());
         }
         // @codeCoverageIgnoreEnd
         if (false === @stream_copy_to_stream($content, $data)) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot read file');
+            throw new StorageException($this->getStLang()->stCannotReadFile());
         }
         if (false === @fclose($content)) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot close opened file');
+            throw new StorageException($this->getStLang()->stCannotCloseFile());
         }
         // @codeCoverageIgnoreEnd
         return $data;
@@ -51,22 +51,22 @@ class VolumeStream extends Volume
         $content = @fopen($key, 'wb');
         if (false === $content) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot open file');
+            throw new StorageException($this->getStLang()->stCannotOpenFile());
         }
         // @codeCoverageIgnoreEnd
         if (false === @stream_copy_to_stream($data, $content, -1, 0)) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot save file');
+            throw new StorageException($this->getStLang()->stCannotSaveFile());
         }
         // @codeCoverageIgnoreEnd
         if (-1 === @fseek($content, 0)) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot seek in file');
+            throw new StorageException($this->getStLang()->stCannotSeekFile());
         }
         // @codeCoverageIgnoreEnd
         if (false === @fclose($content)) {
             // @codeCoverageIgnoreStart
-            throw new StorageException('Cannot close opened file');
+            throw new StorageException($this->getStLang()->stCannotCloseFile());
         }
         // @codeCoverageIgnoreEnd
         return true;

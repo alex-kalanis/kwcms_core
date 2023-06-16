@@ -60,7 +60,7 @@ interface IProcessNodes
      * @param string[] $entry
      * @throws FilesException
      * @throws PathsException
-     * @return int|null
+     * @return int<0, max>|null
      */
     public function size(array $entry): ?int;
 

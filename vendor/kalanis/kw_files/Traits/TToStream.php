@@ -40,7 +40,7 @@ trait TToStream
                 throw new FilesException($this->getLang()->flCannotLoadFile($target));
             }
             // @codeCoverageIgnoreEnd
-            if (false === fwrite($handle, $content)) {
+            if (false === fwrite($handle, strval($content))) {
                 // @codeCoverageIgnoreStart
                 // must die something with stream reading
                 throw new FilesException($this->getLang()->flCannotLoadFile($target));

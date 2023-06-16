@@ -77,7 +77,7 @@ interface ITargetVolume extends ITarget
      * Get node size
      * null if not exists or cannot determine (dir)
      * @param string $key
-     * @return int
+     * @return int<0, max>|null
      */
     public function size(string $key): ?int;
 
@@ -85,7 +85,7 @@ interface ITargetVolume extends ITarget
      * Get when node has been created
      * null if not exists or cannot get that info
      * @param string $key
-     * @return int
+     * @return int|null
      */
     public function created(string $key): ?int;
 }

@@ -4,6 +4,8 @@ namespace kalanis\kw_storage\Storage\Target;
 
 
 use kalanis\kw_storage\Interfaces;
+use kalanis\kw_storage\StorageException;
+use ReflectionException;
 
 
 /**
@@ -13,7 +15,7 @@ use kalanis\kw_storage\Interfaces;
  */
 class Factory
 {
-    /** @var array<string, string|null> */
+    /** @var array<string, class-string<Interfaces\ITarget>|null> */
     protected static $pairs = [
         'mem' => Memory::class,
         'memory' => Memory::class,
@@ -31,7 +33,8 @@ class Factory
     ];
 
     /**
-     * @param mixed|object|array|string|null $params
+     * @param object|array<string, string|object>|string|null $params
+     * @throws StorageException
      * @return Interfaces\ITarget|null storage adapter or empty for no storage set
      */
     public function getStorage($params): ?Interfaces\ITarget
@@ -40,26 +43,51 @@ class Factory
             return $params;
         }
 
-        if (is_array($params)) {
-            if (isset($params['storage'])) {
-                return $this->fromPairs(strval($params['storage']));
+        try {
+            if (is_array($params)) {
+                if (isset($params['storage'])) {
+                    if (is_object($params['storage'])) {
+                        if ($params['storage'] instanceof Interfaces\ITarget) {
+                            return $params['storage'];
+                        } else {
+                            return null;
+                        }
+                    }
+                    $lang = (isset($params['lang']) && is_object($params['lang']) && ($params['lang'] instanceof Interfaces\IStTranslations))
+                        ? $params['lang']
+                        : null;
+                    return $this->fromPairs(strval($params['storage']), $lang);
+                }
             }
-        }
 
-        if (is_string($params)) {
-            return $this->fromPairs(strval($params));
+            if (is_string($params)) {
+                return $this->fromPairs(strval($params));
+            }
+
+            return null;
+
+        } catch (ReflectionException $ex) {
+            throw new StorageException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        return null;
     }
 
-    protected function fromPairs(string $name): ?Interfaces\ITarget
+    /**
+     * @param string $name
+     * @param Interfaces\IStTranslations|null $lang
+     * @throws ReflectionException
+     * @return Interfaces\ITarget|null
+     */
+    protected function fromPairs(string $name, ?Interfaces\IStTranslations $lang = null): ?Interfaces\ITarget
     {
         if (isset(static::$pairs[$name])) {
             $class = static::$pairs[$name];
             if (is_string($class)) {
-                $obj = new $class();
-                if ($obj instanceof Interfaces\ITarget) {
-                    return $obj;
+                $reflection = new \ReflectionClass($class);
+                if ($reflection->isInstantiable()) {
+                    $obj = $reflection->newInstance($lang);
+                    if ($obj instanceof Interfaces\ITarget) {
+                        return $obj;
+                    }
                 }
             }
         }

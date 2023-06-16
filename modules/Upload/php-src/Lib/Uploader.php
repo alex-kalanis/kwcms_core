@@ -15,28 +15,25 @@ class Uploader extends UploadPerPartes\Uploader
 {
     /** @var CompositeAdapter */
     protected $files = null;
-    /** @var UploadPerPartes\Interfaces\IUPPTranslations */
-    protected $lang = null;
 
-    public function __construct(CompositeAdapter $files, UploadPerPartes\Interfaces\IUPPTranslations $lang)
+    public function __construct(CompositeAdapter $files)
     {
         $this->files = $files;
-        $this->lang = $lang;
         parent::__construct();
     }
 
     protected function getTranslations(): UploadPerPartes\Interfaces\IUPPTranslations
     {
-        return $this->lang;
+        return new Translations();
     }
 
-    protected function getInfoStorage(?UploadPerPartes\Interfaces\IUPPTranslations $lang = null): UploadPerPartes\Interfaces\IInfoStorage
+    protected function getInfoStorage(): UploadPerPartes\Interfaces\IInfoStorage
     {
-        return new UploadPerPartes\InfoStorage\Files($this->files, $lang);
+        return new UploadPerPartes\InfoStorage\Files($this->files, $this->lang);
     }
 
-    protected function getDataStorage(?UploadPerPartes\Interfaces\IUPPTranslations $lang = null): UploadPerPartes\Interfaces\IDataStorage
+    protected function getDataStorage(): UploadPerPartes\Interfaces\IDataStorage
     {
-        return new UploadPerPartes\DataStorage\Files($this->files, $lang);
+        return new UploadPerPartes\DataStorage\Files($this->files, $this->lang);
     }
 }
