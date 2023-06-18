@@ -12,8 +12,9 @@ use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ILoader;
@@ -40,7 +41,7 @@ class Image extends AModule
 {
     use TToString;
 
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var ArrayPath */
     protected $arrPath = null;
@@ -70,7 +71,6 @@ class Image extends AModule
         Lang::load(static::getClassName(static::class));
         $this->loader = $loader;
         $this->processor = $processor;
-        $this->mime = new MimeType(true);
         $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
@@ -82,6 +82,7 @@ class Image extends AModule
             boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     public function process(): void
@@ -128,7 +129,7 @@ class Image extends AModule
             $content = @file_get_contents($path);
         }
         if ($content) {
-            header('Content-Type: ' . $this->mime->mimeByPath($name));
+            header('Content-Type: ' . $this->mime->getMime($imagePath));
         } else {
             $content = 'Problem with selected image and its backup!';
         }

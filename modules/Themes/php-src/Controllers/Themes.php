@@ -9,8 +9,9 @@ use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
 use kalanis\kw_files\Traits\TToString;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -39,7 +40,7 @@ class Themes extends AModule
 {
     use TToString;
 
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var StylesTemplate */
     protected $template = null;
@@ -64,7 +65,6 @@ class Themes extends AModule
      */
     public function __construct()
     {
-        $this->mime = new MimeType(true);
         $this->template = new StylesTemplate();
         $this->libExtLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath(), false, false);
         $this->arrPath = new ArrayPath();
@@ -77,6 +77,7 @@ class Themes extends AModule
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
         $this->treeList = new Files($this->files);
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     /**
@@ -159,7 +160,7 @@ class Themes extends AModule
             $content = ExStyles::getFile($moduleName, Stuff::arrayToPath($gotPath));
         }
         if ($content) {
-            header('Content-Type: ' . $this->mime->mimeByPath('any.css'));
+            header('Content-Type: ' . $this->mime->getMime(['any.css']));
         }
 
         $out = new Output\Raw();

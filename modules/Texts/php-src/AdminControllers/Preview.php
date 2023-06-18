@@ -8,7 +8,9 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_mime\MimeType;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
+use kalanis\kw_mime\MimeException;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
@@ -29,10 +31,10 @@ class Preview extends AAuthModule
     use Lib\TTexts;
     use Lib\TModuleTemplate;
 
-    /** @var MimeType|null */
+    /** @var IMime */
     protected $mime = null;
-    /** @var string */
-    protected $ext = '';
+    /** @var string[] */
+    protected $fullPath = [];
     /** @var string */
     protected $displayContent = '';
 
@@ -45,7 +47,7 @@ class Preview extends AAuthModule
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
         $this->initTTexts(Stored::getPath());
-        $this->mime = new MimeType(true);
+        $this->mime = (new Check\Factory())->getLibrary($this->files);
     }
 
     public function allowedAccessClasses(): array
@@ -63,21 +65,21 @@ class Preview extends AAuthModule
             return;
         }
         $fileName = reset($fileName);
-        $this->ext = Stuff::fileExt(Stuff::filename($fileName));
-        if (!in_array($this->ext, $this->getParams()->whichExtsIWant())) {
+        $ext = Stuff::fileExt(Stuff::filename($fileName));
+        if (!in_array($ext, $this->getParams()->whichExtsIWant())) {
             $this->error = new TextsException(Lang::get('texts.file_wrong_type'));
             return;
         }
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
+            $this->fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
 
             $externalContent = $this->inputs->getInArray('content', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
             $this->displayContent = (!empty($externalContent))
                 ? strval(reset($externalContent))
-                : ( $this->files->isFile($fullPath)
-                    ? $this->files->readFile($fullPath)
+                : ( $this->files->isFile($this->fullPath)
+                    ? $this->files->readFile($this->fullPath)
                     : ''
                 );
         } catch (FilesException | PathsException $ex) {
@@ -90,6 +92,10 @@ class Preview extends AAuthModule
         return new Lib\Params();
     }
 
+    /**
+     * @throws MimeException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         return $this->isRaw()
@@ -102,9 +108,13 @@ class Preview extends AAuthModule
         ;
     }
 
+    /**
+     * @throws MimeException
+     * @return Output\AOutput
+     */
     public function outRaw(): Output\AOutput
     {
-        header('Content-Type: ' . $this->mime->mimeByExt($this->ext));
+        header('Content-Type: ' . $this->mime->getMime($this->fullPath));
         $out = new Output\Raw();
         return $out->setContent($this->displayContent);
     }
@@ -117,6 +127,10 @@ class Preview extends AAuthModule
         return $out->setContent($page->render());
     }
 
+    /**
+     * @throws MimeException
+     * @return Output\AOutput
+     */
     public function outJson(): Output\AOutput
     {
         if ($this->error) {
@@ -127,7 +141,7 @@ class Preview extends AAuthModule
             $out->setContent([
                 'form_result' => 0,
                 'form_errors' => [],
-                'content_type' => $this->mime->mimeByExt($this->ext),
+                'content_type' => $this->mime->getMime($this->fullPath),
                 'content_base64' => base64_encode($this->displayContent),
             ]);
             return $out;

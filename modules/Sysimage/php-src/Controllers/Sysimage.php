@@ -3,8 +3,9 @@
 namespace KWCMS\modules\Sysimage\Controllers;
 
 
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
@@ -23,12 +24,14 @@ use kalanis\kw_routed_paths\StoreRouted;
  */
 class Sysimage extends AModule
 {
+    /** @var IMime */
     protected $mime = null;
+    /** @var string */
     protected $imagePath = '';
 
     public function __construct()
     {
-        $this->mime = new MimeType(true);
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     /**
@@ -78,7 +81,7 @@ class Sysimage extends AModule
         $out = new Raw();
         $content = @file_get_contents($this->imagePath);
         if ($content) {
-            header('Content-Type: ' . $this->mime->mimeByPath($this->imagePath));
+            header('Content-Type: ' . $this->mime->getMime(Stuff::pathToArray($this->imagePath)));
         } else {
             $content = 'Problem with selected image and its backup!';
         }

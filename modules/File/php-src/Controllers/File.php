@@ -10,8 +10,9 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
@@ -33,7 +34,7 @@ use KWCMS\modules\File\Lib;
  */
 class File extends AModule
 {
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var Lib\SizeAdapters\AAdapter|null */
     protected $sizeAdapter = null;
@@ -52,7 +53,6 @@ class File extends AModule
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->mime = new MimeType(true);
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -62,6 +62,7 @@ class File extends AModule
         $this->files = (new Factory())->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     public function process(): void
@@ -104,7 +105,7 @@ class File extends AModule
 
         $name = $this->arrPath->setArray($filePath)->getFileName();
         // headers
-        header('Content-Type: ' . $this->mime->mimeByPath($name));
+        header('Content-Type: ' . $this->mime->getMime($filePath));
         header('Cache-Control: public, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         header('Accept-Ranges: bytes, seek');

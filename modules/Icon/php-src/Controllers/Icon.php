@@ -9,8 +9,9 @@ use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
+use kalanis\kw_mime\Check;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -32,7 +33,7 @@ class Icon extends AModule
 {
     use TToString;
 
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var ArrayPath */
     protected $arrPath = null;
@@ -50,7 +51,6 @@ class Icon extends AModule
      */
     public function __construct()
     {
-        $this->mime = new MimeType(true);
         $this->arrPath = new ArrayPath();
         $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->innerLink = new InnerLinks(
@@ -59,6 +59,7 @@ class Icon extends AModule
             boolval(Config::get('Core', 'page.more_lang', false))
         );
         $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     public function process(): void
@@ -108,12 +109,11 @@ class Icon extends AModule
                 __DIR__, '..', 'images', 'no_image_available.png'
             ]));
             $content = @file_get_contents($imagePath);
-            $file = $imagePath;
         }
 
         $out = new Output\Raw();
         if ($content) {
-            header('Content-Type: ' . $this->mime->mimeByPath($file));
+            header('Content-Type: ' . $this->mime->getMime(is_array($imagePath) ? $imagePath : [$imagePath]));
         } else {
             $content = 'Problem with selected image and its backup!';
         }

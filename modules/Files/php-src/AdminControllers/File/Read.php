@@ -12,8 +12,9 @@ use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -49,7 +50,7 @@ class Read extends AAuthModule implements IModuleTitle
     protected $processor = null;
     /** @var Lib\FileForm */
     protected $fileForm = null;
-    /** @var MimeType */
+    /** @var IMime */
     protected $libFileMime = null;
     /** @var string */
     protected $fileMime = '';
@@ -71,7 +72,7 @@ class Read extends AAuthModule implements IModuleTitle
         $this->processor = new Lib\Processor($files);
         $this->userDir = new UserDir(new Lib\Translations());
         $this->fileForm = new Lib\FileForm('readFileForm');
-        $this->libFileMime = new MimeType(true);
+        $this->libFileMime = (new Check\Factory())->getLibrary($files);
     }
 
     public function allowedAccessClasses(): array
@@ -100,7 +101,7 @@ class Read extends AAuthModule implements IModuleTitle
                 $item = $this->fileForm->getControl('sourceName')->getValue();
                 $this->processor->setUserPath($userPath)->setWorkPath($workPath);
                 $this->fileContent = $this->processor->readFile($item);
-                $this->fileMime = $this->libFileMime->mimeByPath($item);
+                $this->fileMime = $this->libFileMime->getMime(array_merge($userPath, $workPath, [$item]));
                 $this->processed = true;
             }
         } catch (FilesException | FormsException | PathsException | MimeException $ex) {

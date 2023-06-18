@@ -5,13 +5,15 @@ namespace KWCMS\modules\Logo\Controllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -32,7 +34,7 @@ use KWCMS\modules\Logo\Libs;
  */
 class Logo extends AModule
 {
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var ArrayPath */
     protected $arrPath = null;
@@ -52,7 +54,6 @@ class Logo extends AModule
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->mime = new MimeType(true);
         $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
@@ -60,27 +61,29 @@ class Logo extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $this->processor = $this->getFillLib(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $files = (new Factory())->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
+        $this->processor = $this->getFillLib($files);
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     /**
-     * @param string|array<string|int, string|int|float|bool|object>|object $factoryData
+     * @param CompositeAdapter $files
      * @param array<string, string|int> $params
      * @throws FilesException
      * @throws ImagesException
      * @throws PathsException
      * @return Libs\ImageFill
      */
-    protected function getFillLib($factoryData, array $params = []): Libs\ImageFill
+    protected function getFillLib(CompositeAdapter $files, array $params = []): Libs\ImageFill
     {
         return new Libs\ImageFill(
             new Libs\ImageProcessor(
                 new Graphics\Format\Factory()
             ),
             (new Graphics\ImageConfig())->setData($params),
-            new Sources\Image((new Factory())->getClass(
-                $factoryData
-            ), (new \kalanis\kw_files\Extended\Config())->setData($params))
+            new Sources\Image($files, (new \kalanis\kw_files\Extended\Config())->setData($params))
         );
     }
 
@@ -119,7 +122,7 @@ class Logo extends AModule
             $this->processor->process($logoPath);
 
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $this->processor->created($logoPath)) );
-            header('Content-Type: ' . $this->mime->mimeByPath($this->arrPath->getFileName()));
+            header('Content-Type: ' . $this->mime->getMime(is_array($logoPath) ? $logoPath : [$logoPath]));
 
             $this->processor->render($logoPath);
             return '';

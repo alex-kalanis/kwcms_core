@@ -5,15 +5,16 @@ namespace KWCMS\modules\Watermark\Controllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory as access_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_mime\Check\LocalVolume1;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\ModuleException;
@@ -33,7 +34,7 @@ use KWCMS\modules\Watermark\Libs;
  */
 class Watermark extends AModule
 {
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var string[] */
     protected $imagePath = [];
@@ -55,38 +56,39 @@ class Watermark extends AModule
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
-        $this->mime = new MimeType(true);
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $this->processor = $this->getFillLib(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $libProcess = (new access_factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $this->mime = $this->getMimeLib($libProcess);
+        $this->processor = $this->getFillLib($libProcess, $this->mime);
     }
 
     /**
-     * @param string $webRootDir
+     * @param CompositeAdapter $files
+     * @param IMime $mime
      * @param array<string, string|int> $params
-     * @throws FilesException
      * @throws ImagesException
-     * @throws PathsException
      * @return Libs\ImageFill
      */
-    protected function getFillLib(string $webRootDir, array $params = []): Libs\ImageFill
+    protected function getFillLib(CompositeAdapter $files, IMime $mime, array $params = []): Libs\ImageFill
     {
-        $compositeFactory = new access_factory();
-        $libProcess = $compositeFactory->getClass($webRootDir);
-        $mime = new LocalVolume1();
-        $mime->canUse($webRootDir);
         return new Libs\ImageFill(
             new Libs\ImageProcessor(
                 new Graphics\Format\Factory()
             ),
             (new Graphics\ImageConfig())->setData($params),
-            new Sources\Image($libProcess, (new \kalanis\kw_files\Extended\Config())->setData($params)),
+            new Sources\Image($files, (new \kalanis\kw_files\Extended\Config())->setData($params)),
             $mime
         );
+    }
+
+    protected function getMimeLib(CompositeAdapter $files): IMime
+    {
+        return (new Check\Factory())->getLibrary($files);
     }
 
     public function process(): void
@@ -139,7 +141,7 @@ class Watermark extends AModule
             $this->processor->process($imagePath, $watermarkPath, $this->repeat);
 
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $this->processor->created($imagePath)) );
-            header('Content-Type: ' . $this->mime->mimeByPath($this->arrPath->getFileName()));
+            header('Content-Type: ' . $this->mime->getMime($imagePath));
             header('Content-Disposition: filename="' . $this->arrPath->getFileName(). '"');
 
             $this->processor->render($imagePath);

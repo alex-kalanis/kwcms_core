@@ -8,8 +8,9 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_mime\MimeType;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Interfaces\ISitePart;
@@ -33,7 +34,7 @@ use kalanis\kw_user_paths\InnerLinks;
  */
 abstract class AScripts extends AModule
 {
-    /** @var MimeType */
+    /** @var IMime */
     protected $mime = null;
     /** @var ScriptsTemplate */
     protected $template = null;
@@ -54,7 +55,6 @@ abstract class AScripts extends AModule
      */
     public function __construct()
     {
-        $this->mime = new MimeType(true);
         $this->template = new ScriptsTemplate();
         $this->libExtLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath(), false, false);
         $this->arrPath = new ArrayPath();
@@ -67,6 +67,7 @@ abstract class AScripts extends AModule
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
         $this->treeList = new Files($this->files);
+        $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
     public function process(): void

@@ -43,7 +43,7 @@ class Scripts extends AScripts
             $content = ExScripts::getFile($moduleName, Stuff::arrayToPath($gotPath));
         }
         if ($content) {
-            header('Content-Type: ' . $this->mime->mimeByPath('any.js'));
+            header('Content-Type: ' . $this->mime->getMime(['any.js']));
         }
         $out = new Output\Raw();
         $out->setContent($content);

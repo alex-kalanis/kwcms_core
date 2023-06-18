@@ -33,7 +33,7 @@ class Styles extends AStyles
         $moduleName = Support::normalizeModuleName($moduleName);
         $content = ExStyles::getFile($moduleName, Stuff::arrayToPath($modulePath));
         if ($content) {
-            header('Content-Type: ' . $this->mime->mimeByPath('any.css'));
+            header('Content-Type: ' . $this->mime->getMime(['any.css']));
         }
         $out = new Output\Raw();
         $out->setContent($content);

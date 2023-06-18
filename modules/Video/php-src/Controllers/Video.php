@@ -8,7 +8,9 @@ use kalanis\kw_address_handler\Sources;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
-use kalanis\kw_mime\MimeType;
+use kalanis\kw_mime\Check;
+use kalanis\kw_mime\Interfaces\IMime;
+use kalanis\kw_mime\MimeException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
@@ -29,7 +31,7 @@ class Video extends Dirlist
     protected $currentPageHandler = null;
     /** @var Templates\Player */
     protected $templatePlayer = null;
-    /** @var MimeType */
+    /** @var IMime */
     protected $fileMime = null;
     /** @var string */
     protected $fileToPlay = '';
@@ -39,7 +41,7 @@ class Video extends Dirlist
         parent::__construct();
         $this->templateDisplay = new Templates\Display();
         $this->templatePlayer = new Templates\Player();
-        $this->fileMime = new MimeType(true);
+        $this->fileMime = (new Check\Factory())->getLibrary(null);
     }
 
     protected function defineModule(): void
@@ -134,6 +136,7 @@ class Video extends Dirlist
 
     /**
      * @throws FilesException
+     * @throws MimeException
      * @throws PathsException
      * @throws TemplateException
      * @return Output\AOutput
@@ -146,7 +149,7 @@ class Video extends Dirlist
             $path = array_merge($this->path, [$this->fileToPlay]);
             $thumb = $this->getThumb($path, Stuff::fileExt($this->fileToPlay));
             $link = $this->linkExternal->linkVariant(Stuff::arrayToLink($path), 'file', true);
-            $mime = $this->fileMime->mimeByExt(Stuff::fileExt($this->fileToPlay));
+            $mime = $this->fileMime->getMime($path);
         } else {
             $this->templatePlayer->setTemplateName('nothing');
             $thumb = $this->linkExternal->linkVariant('video/free.png', 'sysimage', true);
