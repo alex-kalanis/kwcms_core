@@ -17,6 +17,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Images\Forms;
 
 
@@ -44,7 +45,9 @@ class Copy extends AEdit
     {
         parent::__construct();
         $this->copyForm = new Forms\FileActionForm('fileCopyForm');
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        ));
     }
 
     public function run(): void

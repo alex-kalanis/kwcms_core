@@ -22,6 +22,7 @@ use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Admin\Shared\ArrayAdapter;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Texts\Lib;
 
 
@@ -52,7 +53,9 @@ class Dashboard extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        ));
         $this->userDir = new UserDir(new Lib\Translations());
         $this->newFileForm = new Lib\NewFileForm('newFileForm');
         $this->openFileForm = new Lib\OpenFileForm('openFileForm');

@@ -8,6 +8,8 @@ use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
+use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Interfaces;
 
 
@@ -29,11 +31,12 @@ trait TLibAction
     protected function getLibFileAction(array $userPath, array $currentPath): Interfaces\IProcessFiles
     {
         $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
-        $lang = new Translations();
+        $imLang = new ImagesTranslations();
+        $flLang = new FilesTranslations();
         return new ProcessFile(
-            FilesHelper::getOperations($webRootDir, [], $lang),
-            FilesHelper::getUpload($webRootDir, [], $lang),
-            FilesHelper::getImages($webRootDir, [], $lang),
+            FilesHelper::getOperations($webRootDir, [], $imLang, $flLang),
+            FilesHelper::getUpload($webRootDir, [], $imLang, $flLang),
+            FilesHelper::getImages($webRootDir, [], $imLang, $flLang),
             $userPath,
             $currentPath
         );
@@ -50,9 +53,10 @@ trait TLibAction
     protected function getLibDirAction(array $userPath, array $currentPath): Interfaces\IProcessDirs
     {
         $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
-        $lang = new Translations();
+        $imLang = new ImagesTranslations();
+        $flLang = new FilesTranslations();
         return new ProcessDir(
-            FilesHelper::getDirs($webRootDir, [], $lang),
+            FilesHelper::getDirs($webRootDir, [], $imLang, $flLang),
             $userPath,
             $currentPath
         );

@@ -12,6 +12,7 @@ use kalanis\kw_paths\Path;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 
 
 /**
@@ -35,7 +36,9 @@ trait TTexts
     protected function initTTexts(Path $path)
     {
         $this->userDir = new UserDir(new Translations());
-        $this->files = (new Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR);
+        $this->files = (new Factory(new FilesTranslations()))->getClass(
+            $path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR
+        );
     }
 
     protected function runTTexts(IFiltered $inputs, string $userDir): void

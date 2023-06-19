@@ -24,6 +24,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Admin\Forms;
 use KWCMS\modules\Admin\Shared\ArrayAdapter;
 use KWCMS\modules\Admin\Shared\ChDirTranslations;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 
 
 /**
@@ -54,7 +55,9 @@ abstract class ChDir extends AAuthModule
     public function __construct()
     {
         Lang::load('Admin');
-        $this->tree = new DataSources\Files((new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        ));
         $this->chDirForm = new Forms\ChDirForm('chdirForm');
         $this->userDir = new UserDir(new ChDirTranslations());
     }

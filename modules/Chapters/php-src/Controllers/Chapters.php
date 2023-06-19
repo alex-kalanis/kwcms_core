@@ -19,6 +19,7 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Chapters\Lib;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 
 
 /**
@@ -63,7 +64,7 @@ class Chapters extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $this->treeList = new Files((new Factory())->getClass(
+        $this->treeList = new Files((new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         ));
     }

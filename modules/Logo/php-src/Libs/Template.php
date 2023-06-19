@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Logo;
+namespace KWCMS\modules\Logo\Libs;
 
 
 use kalanis\kw_confs\Config;
@@ -9,7 +9,7 @@ use kalanis\kw_modules\Templates\ATemplate;
 
 /**
  * Class Template
- * @package KWCMS\modules\Logo
+ * @package KWCMS\modules\Logo\Libs
  */
 class Template extends ATemplate
 {

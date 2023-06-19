@@ -33,6 +33,8 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Dirlist\Libs;
 use KWCMS\modules\Dirlist\Templates;
 
@@ -89,15 +91,19 @@ class Dirlist extends AModule
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
         $this->linkExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
-        $lang = new Libs\Translations();
-        $this->libImages = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
+        $this->libImages = FilesHelper::getImages(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            [],
+            new ImagesTranslations(),
+            new FilesTranslations()
+        );
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
             false
         );
-        $this->files = (new Factory())->getClass(
+        $this->files = (new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
         $this->treeList = new Files($this->files);

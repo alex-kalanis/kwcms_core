@@ -28,6 +28,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Short\Lib;
 use KWCMS\modules\Short\ShortException;
 
@@ -69,7 +70,7 @@ class Add extends AAuthModule implements IModuleTitle
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
         $this->userDir = new UserDir(new Lib\Translations());
-        $this->files = (new Factory())->getClass(
+        $this->files = (new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
     }

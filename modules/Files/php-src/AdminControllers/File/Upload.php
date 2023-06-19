@@ -23,6 +23,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Files\Lib;
 
 
@@ -54,7 +55,9 @@ class Upload extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         $this->fileForm = new Lib\FileForm('uploadFileForm');
-        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $files = (new Access\Factory(new FilesTranslations()))->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
         $this->processor = new Lib\Processor($files);
         $this->userDir = new UserDir(new Lib\Translations());
     }

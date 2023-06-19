@@ -26,6 +26,8 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib\TLibAction;
 use KWCMS\modules\MediaRss\Lib;
 
@@ -68,8 +70,12 @@ class MediaRss extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $lang = new Lib\Translations();
-        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
+        $this->sources = FilesHelper::getImages(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            [],
+            new ImagesTranslations(),
+            new FilesTranslations()
+        );
         $this->acceptTypes = (array) Config::get(static::getClassName(static::class), 'accept_types', []);
     }
 
@@ -95,7 +101,9 @@ class MediaRss extends AModule
         try {
             Config::load('Core', 'page');
 
-            $libTree = new Files((new Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()));
+            $libTree = new Files((new Factory(new FilesTranslations()))->getClass(
+                Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+            ));
             $userPath = $this->innerLink->toFullPath([]);
             $currentPath = array_filter(StoreRouted::getPath()->getPath());
 

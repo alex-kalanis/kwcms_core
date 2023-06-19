@@ -28,6 +28,8 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Image\Libs;
 use KWCMS\modules\Layout\Controllers\Layout;
 
@@ -81,8 +83,12 @@ class Image extends AModule
             boolval(Config::get('Core', 'page.system_prefix', false)),
             boolval(Config::get('Core', 'page.data_separator', false))
         );
-        $lang = new Libs\Translations();
-        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
+        $this->sources = FilesHelper::getImages(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            [],
+            new ImagesTranslations(),
+            new FilesTranslations()
+        );
         $this->mime = (new Check\Factory())->getLibrary(null);
     }
 

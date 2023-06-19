@@ -21,6 +21,7 @@ use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Files\Lib;
 
 
@@ -54,7 +55,9 @@ abstract class ADir extends AAuthModule implements IModuleTitle
     public function __construct()
     {
         $this->initTModuleTemplate();
-        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $files = (new Access\Factory(new FilesTranslations()))->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
         $this->tree = new DataSources\Files($files);
         $this->processor = new Lib\Processor($files);
         $this->userDir = new UserDir(new Lib\Translations());

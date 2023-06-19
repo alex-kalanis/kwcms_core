@@ -21,6 +21,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Rss\Lib;
 use KWCMS\modules\Rss\RssException;
 
@@ -117,7 +118,7 @@ class Rss extends AModule
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $files = (new Factory())->getClass(
+        $files = (new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
         $adapter = new Lib\MessageAdapter($files, Stored::getPath(), $this->innerLink->toFullPath($this->pathLookup()));

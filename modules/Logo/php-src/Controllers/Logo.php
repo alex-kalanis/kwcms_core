@@ -25,7 +25,8 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
-use KWCMS\modules\Logo\Template;
+use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Logo\Libs;
 
 
@@ -65,7 +66,7 @@ class Logo extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $files = (new Factory())->getClass(
+        $files = (new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
         $this->processor = $this->getFillLib($files);
@@ -80,7 +81,7 @@ class Logo extends AModule
      */
     protected function getFillLib(CompositeAdapter $files, array $params = []): Libs\ImageFill
     {
-        $lang = new Libs\Translations();
+        $lang = new ImagesTranslations();
         return new Libs\ImageFill(
             new Libs\ImageProcessor(
                 new Graphics\Format\Factory(), $lang
@@ -142,7 +143,7 @@ class Logo extends AModule
     protected function outTemplate(): Output\AOutput
     {
         $out = new Output\Html();
-        $tmpl = new Template();
+        $tmpl = new Libs\Template();
         return $out->setContent($tmpl->setData(
             $this->extLink->linkVariant(null, 'Logo', true)
         )->render());

@@ -20,6 +20,7 @@ use kalanis\kw_paths\Path;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 
 
 /**
@@ -52,7 +53,9 @@ trait TMenu
         Config::load('Menu');
         $lang = new Translations();
         $this->userDir = new UserDir($lang);
-        $this->files = (new Access\Factory())->getClass($path->getDocumentRoot() . $path->getPathToSystemRoot());
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass(
+            $path->getDocumentRoot() . $path->getPathToSystemRoot()
+        );
         $this->libMenu = (new MenuFactory($lang))->getMenu($this->files);
     }
 

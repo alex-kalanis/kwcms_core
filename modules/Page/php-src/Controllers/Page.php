@@ -26,6 +26,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Page\DummyTemplate;
 
 
@@ -71,7 +72,7 @@ class Page extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             false
         );
-        $this->files = (new Factory())->getClass(
+        $this->files = (new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
     }

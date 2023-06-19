@@ -28,6 +28,7 @@ use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Menu\Lib;
 use KWCMS\modules\Menu\Lib\Translations;
 use KWCMS\modules\Menu\Templates;
@@ -85,7 +86,7 @@ class Menu extends AModule
      */
     protected function getFiles(): CompositeAdapter
     {
-        return (new Factory())->getClass(
+        return (new Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
     }

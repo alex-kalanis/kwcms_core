@@ -25,6 +25,7 @@ use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use kalanis\UploadPerPartes\Exceptions\UploadException;
 use kalanis\UploadPerPartes\Response;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Files\Lib as FileLib;
 use KWCMS\modules\Upload\Lib;
 use KWCMS\modules\Upload\UploadTemplate;
@@ -59,7 +60,9 @@ class Upload extends AAuthModule implements IModuleTitle
     {
         $this->initTModuleTemplate();
         Config::load('Upload');
-        $files = (new Access\Factory())->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $files = (new Access\Factory(new FilesTranslations()))->getClass(
+            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+        );
         $lang = new Lib\Translations();
         $this->processor = new FileLib\Processor($files);
         $this->userDir = new UserDir($lang);
