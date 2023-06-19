@@ -12,6 +12,8 @@ use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
@@ -51,11 +53,13 @@ class Watermark extends AModule
      * @throws ConfException
      * @throws FilesException
      * @throws ImagesException
+     * @throws LangException
      * @throws PathsException
      */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
+        Lang::load(static::getClassName(static::class));
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -76,13 +80,15 @@ class Watermark extends AModule
      */
     protected function getFillLib(CompositeAdapter $files, IMime $mime, array $params = []): Libs\ImageFill
     {
+        $lang = new Libs\Translations();
         return new Libs\ImageFill(
             new Libs\ImageProcessor(
-                new Graphics\Format\Factory()
+                new Graphics\Format\Factory(), $lang
             ),
             (new Graphics\ImageConfig())->setData($params),
             new Sources\Image($files, (new \kalanis\kw_files\Extended\Config())->setData($params)),
-            $mime
+            $mime,
+            $lang
         );
     }
 
@@ -104,7 +110,7 @@ class Watermark extends AModule
     {
         if ($this->params[ISitePart::KEY_LEVEL] != ISitePart::SITE_RESPONSE) {
             $out = new Output\Raw();
-            return $out->setContent('Wrong module run level for watermark image!');
+            return $out->setContent(Lang::get('watermark.module.wrong_level'));
         }
         $out = new Output\DumpingCallback();
         return $out->setCallback([$this, 'createImage']);
@@ -126,7 +132,7 @@ class Watermark extends AModule
             // get image itself first
             $imagePath = $this->innerLink->toFullPath($this->imagePath);
             if (!$this->processor->exists($imagePath)) {
-                throw new ModuleException('No image with this path!');
+                throw new ModuleException(Lang::get('watermark.module.no_image'));
             }
 
             // then get watermark

@@ -42,7 +42,7 @@ class FilesHelper
         return new BasicOperations(  // operations with images
             new Sources\Image($libProcess, $fileConf, $langIm),
             new Sources\Thumb($libProcess, $fileConf, $langIm),
-            new Sources\Desc($libProcess, $fileConf, $langIm),
+            new Sources\Desc($libProcess, $fileConf, $langIm)
         );
     }
 
@@ -72,6 +72,7 @@ class FilesHelper
             new Sources\DirDesc($libProcess, $fileConf, $langIm),
             new Sources\DirThumb($libProcess, $fileConf, $langIm),
             new Processor($libProcess, $fileConf),
+            $langIm
         );
     }
 
@@ -100,7 +101,7 @@ class FilesHelper
             ),
             $image,
             new Sources\Thumb($libProcess, $fileConf, $langIm),
-            new Sources\Desc($libProcess, $fileConf, $langIm),
+            new Sources\Desc($libProcess, $fileConf, $langIm)
         );
     }
 
@@ -134,7 +135,7 @@ class FilesHelper
                 ),
                 new Sources\Image($libProcess, $fileConf, $langIm),
                 new Sources\Thumb($libProcess, $fileConf, $langIm),
-                new Sources\Desc($libProcess, $fileConf, $langIm),
+                new Sources\Desc($libProcess, $fileConf, $langIm)
             )
         );
     }

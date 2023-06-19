@@ -1,6 +1,6 @@
 <?php
 
-namespace KWCMS\modules\Image;
+namespace KWCMS\modules\Image\Libs;
 
 
 use kalanis\kw_langs\Lang;
@@ -9,7 +9,7 @@ use kalanis\kw_modules\Templates\ATemplate;
 
 /**
  * Class Template
- * @package KWCMS\modules\Image
+ * @package KWCMS\modules\Image\Libs
  */
 class Template extends ATemplate
 {

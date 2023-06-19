@@ -50,8 +50,8 @@ abstract class AAuthModule extends AModule implements IModuleUser
                     } else {
                         throw new AuthException('Restricted access', 405);
                     }
-                } else {
-                    throw new AuthException('Restricted access', 405);
+//                } else {
+                    // authorize first;
                 }
             } else {
                 throw new AuthException('No auth methods available!', 400);

@@ -33,7 +33,7 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
-use KWCMS\modules\Dirlist\Linking;
+use KWCMS\modules\Dirlist\Libs;
 use KWCMS\modules\Dirlist\Templates;
 
 
@@ -89,7 +89,8 @@ class Dirlist extends AModule
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
         $this->linkExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
-        $this->libImages = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $lang = new Libs\Translations();
+        $this->libImages = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -115,7 +116,7 @@ class Dirlist extends AModule
     {
         $this->path = $this->pathLookup();
         $this->dir = $this->innerLink->toFullPath($this->path);
-        $this->pager = new SimplifiedPager(new Positions(new BasicPager()), new Linking(new Inputs($this->inputs)));
+        $this->pager = new SimplifiedPager(new Positions(new BasicPager()), new Libs\Linking(new Inputs($this->inputs)));
 
         if ($this->files->isDir($this->dir)) {
             $this->preselectExt = $this->getFromParam('ext', '');
@@ -153,7 +154,7 @@ class Dirlist extends AModule
 
     protected function actualPageLookup(): int
     {
-        $actualPages = $this->inputs->getInArray(Linking::PAGE_KEY, [
+        $actualPages = $this->inputs->getInArray(Libs\Linking::PAGE_KEY, [
             IEntry::SOURCE_CLI, IEntry::SOURCE_POST, IEntry::SOURCE_GET
         ]);
         return !empty($actualPages) ? intval(strval(reset($actualPages))) : Positions::FIRST_PAGE ;

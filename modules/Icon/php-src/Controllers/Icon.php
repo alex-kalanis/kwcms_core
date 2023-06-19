@@ -9,6 +9,8 @@ use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\Check;
@@ -21,7 +23,7 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
-use KWCMS\modules\Icon\HeadTemplate;
+use KWCMS\modules\Icon\Libs;
 
 
 /**
@@ -46,11 +48,13 @@ class Icon extends AModule
 
     /**
      * @throws FilesException
-     * @throws PathsException
      * @throws ImagesException
+     * @throws LangException
+     * @throws PathsException
      */
     public function __construct()
     {
+        Lang::load(static::getClassName(static::class));
         $this->arrPath = new ArrayPath();
         $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->innerLink = new InnerLinks(
@@ -58,7 +62,8 @@ class Icon extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $lang = new Libs\Translations();
+        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
         $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
@@ -79,7 +84,7 @@ class Icon extends AModule
 
     protected function outLink(): Output\AOutput
     {
-        $template = new HeadTemplate();
+        $template = new Libs\HeadTemplate();
         $out = new Output\Html();
         return $out->setContent(
             $template->setData(

@@ -11,6 +11,8 @@ use kalanis\kw_files\Node;
 use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_langs\Lang;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Interfaces\ISitePart;
 use kalanis\kw_modules\Linking\ExternalLink;
@@ -52,11 +54,13 @@ class MediaRss extends AModule
      * @throws ConfException
      * @throws FilesException
      * @throws ImagesException
+     * @throws LangException
      * @throws PathsException
      */
     public function __construct()
     {
         Config::load(static::getClassName(static::class));
+        Lang::load(static::getClassName(static::class));
         $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
@@ -64,7 +68,8 @@ class MediaRss extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $lang = new Lib\Translations();
+        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
         $this->acceptTypes = (array) Config::get(static::getClassName(static::class), 'accept_types', []);
     }
 

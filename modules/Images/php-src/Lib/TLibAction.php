@@ -29,10 +29,11 @@ trait TLibAction
     protected function getLibFileAction(array $userPath, array $currentPath): Interfaces\IProcessFiles
     {
         $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
+        $lang = new Translations();
         return new ProcessFile(
-            FilesHelper::getOperations($webRootDir),
-            FilesHelper::getUpload($webRootDir),
-            FilesHelper::getImages($webRootDir),
+            FilesHelper::getOperations($webRootDir, [], $lang),
+            FilesHelper::getUpload($webRootDir, [], $lang),
+            FilesHelper::getImages($webRootDir, [], $lang),
             $userPath,
             $currentPath
         );
@@ -49,8 +50,9 @@ trait TLibAction
     protected function getLibDirAction(array $userPath, array $currentPath): Interfaces\IProcessDirs
     {
         $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
+        $lang = new Translations();
         return new ProcessDir(
-            FilesHelper::getDirs($webRootDir),
+            FilesHelper::getDirs($webRootDir, [], $lang),
             $userPath,
             $currentPath
         );

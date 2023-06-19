@@ -28,7 +28,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
-use KWCMS\modules\Image\Template;
+use KWCMS\modules\Image\Libs;
 use KWCMS\modules\Layout\Controllers\Layout;
 
 
@@ -81,7 +81,8 @@ class Image extends AModule
             boolval(Config::get('Core', 'page.system_prefix', false)),
             boolval(Config::get('Core', 'page.data_separator', false))
         );
-        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $lang = new Libs\Translations();
+        $this->sources = FilesHelper::getImages(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(), [], $lang);
         $this->mime = (new Check\Factory())->getLibrary(null);
     }
 
@@ -145,7 +146,7 @@ class Image extends AModule
     protected function outTemplate(array $path): Output\AOutput
     {
         $out = new Output\Html();
-        $tmpl = new Template();
+        $tmpl = new Libs\Template();
         return $out->setContent($tmpl->setData(
             $this->imagePath($path),
             $this->descriptionFile($path),
