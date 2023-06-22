@@ -9,14 +9,14 @@ use kalanis\kw_bans\Sources\ASources;
 
 class Basic extends ABan
 {
-    /** @var array<int, string> */
-    protected $knownRecords = [];
+    /** @var ASources */
+    protected $source = null;
     /** @var string */
     protected $searchKey = '';
 
     public function __construct(ASources $source, ?IKBTranslations $lang = null)
     {
-        $this->knownRecords = $source->getRecords();
+        $this->source = $source;
     }
 
     public function setLookedFor(string $lookedFor): void
@@ -24,16 +24,17 @@ class Basic extends ABan
         $this->searchKey = $lookedFor;
     }
 
-    protected function compare(): void
+    protected function matched(): array
     {
         // compare string with array of all banned strings
         $s = mb_strtolower($this->searchKey);
-        $this->foundRecords = [];
-        foreach ($this->knownRecords as $index => $word) {
+        $foundRecords = [];
+        foreach ($this->source->getRecords() as $index => $word) {
             $found = mb_strpos($s, mb_strtolower($word));
             if (false !== $found) {
-                $this->foundRecords[$index] = intval($found);
+                $foundRecords[$index] = intval($found);
             }
         }
+        return $foundRecords;
     }
 }

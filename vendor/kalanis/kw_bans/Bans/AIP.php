@@ -6,13 +6,12 @@ namespace kalanis\kw_bans\Bans;
 use kalanis\kw_bans\Interfaces\IKBTranslations;
 use kalanis\kw_bans\Ip;
 use kalanis\kw_bans\Sources\ASources;
-use kalanis\kw_bans\Translations;
+use kalanis\kw_bans\Traits;
 
 
 abstract class AIP extends ABan
 {
-    use TExpandIp;
-    use TLangIp;
+    use Traits\TExpandIp;
 
     /** @var Ip[] */
     protected $knownIps = [];
@@ -23,7 +22,7 @@ abstract class AIP extends ABan
 
     public function __construct(ASources $source, ?IKBTranslations $lang = null)
     {
-        $this->setLang($lang ?: new Translations());
+        $this->setIKbLang($lang);
         $this->setBasicIp(new Ip());
         $this->knownIps = array_map(function ($row) {
             return $this->expandIP($row);
@@ -35,10 +34,9 @@ abstract class AIP extends ABan
         $this->searchIp = $this->expandIP($lookedFor);
     }
 
-    protected function compare(): void
+    protected function matched(): array
     {
-        $this->foundRecords = array_filter($this->knownIps, [$this, 'comparedByAddress']);
-//print_r(['recs', $this->foundRecords]);
+        return array_filter($this->knownIps, [$this, 'comparedByAddress']);
     }
 
     public function comparedByAddress(Ip $ipAddress): bool
@@ -74,9 +72,9 @@ abstract class AIP extends ABan
     /**
      * @param array<int, string> $address
      * @param int $affectedBits
-     * @return Cutted
+     * @return Cut
      */
-    protected function cutPositions(array $address, int $affectedBits): Cutted
+    protected function cutPositions(array $address, int $affectedBits): Cut
     {
         $bitsInAffectedPart = $affectedBits % $this->bitsInBlock;
         $affectedBlocks = intval(ceil($affectedBits / $this->bitsInBlock));
@@ -85,7 +83,7 @@ abstract class AIP extends ABan
         $bitwiseBlock = $bitsInAffectedPart ? $address[count($useAddress)] : '';
 
 //print_r(['cut', $address, $useAddress, $affectedBits, $bitwiseBlock, $bitsInAffectedPart]);
-        return (new Cutted())->setData($useAddress, $bitwiseBlock, $bitsInAffectedPart);
+        return (new Cut())->setData($useAddress, $bitwiseBlock, $bitsInAffectedPart);
     }
 
     protected function compareAsString(string $known, string $tested): bool
@@ -107,7 +105,7 @@ abstract class AIP extends ABan
         return true;
     }
 
-    protected function compareAsBinary(Cutted $knownToCompare, Cutted $searchToCompare): bool
+    protected function compareAsBinary(Cut $knownToCompare, Cut $searchToCompare): bool
     {
         $testingBinary = str_pad(decbin($this->toNumber($searchToCompare->getBitwiseBlock())), $this->bitsInBlock, '0', STR_PAD_LEFT);
         $knownBinary = str_pad(decbin($this->toNumber($knownToCompare->getBitwiseBlock())), $this->bitsInBlock, '0', STR_PAD_LEFT);

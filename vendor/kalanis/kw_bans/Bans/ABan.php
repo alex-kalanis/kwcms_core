@@ -13,8 +13,6 @@ abstract class ABan
 {
     /** @var IKBTranslations|null */
     protected $lang = null;
-    /** @var array<int, string|int|Ip> */
-    protected $foundRecords = [];
 
     abstract public function __construct(ASources $source, ?IKBTranslations $lang = null);
 
@@ -26,9 +24,11 @@ abstract class ABan
 
     public function isBanned(): bool
     {
-        $this->compare();
-        return !empty($this->foundRecords);
+        return !empty($this->matched());
     }
 
-    abstract protected function compare(): void;
+    /**
+     * @return array<int, string|int|Ip>
+     */
+    abstract protected function matched(): array;
 }

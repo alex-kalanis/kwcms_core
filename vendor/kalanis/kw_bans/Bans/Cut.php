@@ -3,7 +3,7 @@
 namespace kalanis\kw_bans\Bans;
 
 
-class Cutted
+class Cut
 {
     /** @var array<int, string> */
     protected $useAddress = [];
