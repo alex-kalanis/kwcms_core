@@ -4,7 +4,7 @@ namespace kalanis\kw_storage\Extras;
 
 
 /**
- * Trait TRemoveCycle
+ * Class SeparatorSigns
  * @package kalanis\kw_storage\Extras
  * low-level work with extended dirs - remove dirs and files in cycle - everything with subdirectories
  */

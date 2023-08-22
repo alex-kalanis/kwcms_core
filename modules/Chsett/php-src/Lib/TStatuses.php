@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Chsett\Lib;
 
 
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth_sources\Interfaces\IUser;
 use kalanis\kw_langs\Lang;
 
 

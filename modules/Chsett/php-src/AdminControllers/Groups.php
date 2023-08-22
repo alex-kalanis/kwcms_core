@@ -4,9 +4,9 @@ namespace KWCMS\modules\Chsett\AdminControllers;
 
 
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAccessGroups;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkGroups;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -28,7 +28,7 @@ class Groups extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var IAccessGroups|null */
+    /** @var IWorkGroups|null */
     protected $libGroups = null;
 
     public function __construct()
@@ -39,7 +39,7 @@ class Groups extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, ];
     }
 
     public function run(): void
@@ -47,7 +47,7 @@ class Groups extends AAuthModule implements IModuleTitle
     }
 
     /**
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws LockException
      * @return Output\AOutput
      */
@@ -67,13 +67,13 @@ class Groups extends AAuthModule implements IModuleTitle
         try {
             $table = new Lib\GroupTable($this->inputs, $this->links, $this->libGroups, $this->user);
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
-        } catch ( AuthException | ConnectException | FormsException | LockException | TableException $ex) {
+        } catch ( ConnectException | FormsException | LockException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
 
     /**
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws LockException
      * @return Output\AOutput
      */

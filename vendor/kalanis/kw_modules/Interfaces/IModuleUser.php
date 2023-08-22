@@ -3,7 +3,7 @@
 namespace kalanis\kw_modules\Interfaces;
 
 
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth_sources\Interfaces\IUser;
 
 
 /**

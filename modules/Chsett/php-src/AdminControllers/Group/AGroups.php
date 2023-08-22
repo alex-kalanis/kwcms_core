@@ -6,9 +6,9 @@ namespace KWCMS\modules\Chsett\AdminControllers\Group;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAccessGroups;
-use kalanis\kw_auth\Interfaces\IGroup;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkGroups;
+use kalanis\kw_auth_sources\Interfaces\IGroup;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
@@ -30,7 +30,7 @@ abstract class AGroups extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var IAccessGroups|null */
+    /** @var IWorkGroups|null */
     protected $libAuthEditGroups = null;
     /** @var IGroup|null */
     protected $group = null;
@@ -57,7 +57,7 @@ abstract class AGroups extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER ];
+        return [IWorkClasses::CLASS_MAINTAINER ];
     }
 
     /**

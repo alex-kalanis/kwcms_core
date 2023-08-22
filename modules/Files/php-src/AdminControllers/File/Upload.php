@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Files\AdminControllers\File;
 
 
-use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
@@ -64,7 +64,7 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
     }
 
     public function run(): void

@@ -4,6 +4,7 @@ namespace KWCMS\modules\Chsett\AdminControllers\Group;
 
 
 use kalanis\kw_auth\AuthException;
+use kalanis\kw_auth_sources\AuthSourcesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -42,7 +43,7 @@ class Edit extends AGroups
                 $this->redirect = true;
             }
 
-        } catch (AuthException | FormsException | LockException $ex) {
+        } catch (AuthException | AuthSourcesException | FormsException | LockException $ex) {
             $this->error = $ex;
         }
     }

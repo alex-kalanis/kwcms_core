@@ -4,12 +4,12 @@ namespace KWCMS\modules\Personal\AdminControllers;
 
 
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessAccounts;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAuthCert;
-use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_auth\Interfaces\IUserCert;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IWorkAccounts;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_auth_sources\Interfaces\IAuthCert;
+use kalanis\kw_auth_sources\Interfaces\IUser;
+use kalanis\kw_auth_sources\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -35,7 +35,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     /** @var IAuthCert|null */
     protected $libUsers = null;
-    /** @var IAccessAccounts|null */
+    /** @var IWorkAccounts|null */
     protected $libAccounts = null;
     /** @var IUserCert|IUser|null */
     protected $editUser = null;
@@ -57,7 +57,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
     }
 
     public function run(): void
@@ -94,7 +94,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->isProcessed = true;
             }
 
-        } catch (AuthException | FormsException | LockException $ex) {
+        } catch (AuthSourcesException | FormsException | LockException $ex) {
             $this->error = $ex;
         }
     }

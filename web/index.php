@@ -6,6 +6,9 @@
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+// @link http://web.kwcms_core.lemp.test/          for vagrant
+// @link http://web.kwcms_core.lemp.local:20000/   for docker
+
 require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalanis', 'kw_autoload', 'Autoload.php']));
 
 \kalanis\kw_autoload\Autoload::setBasePath(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..'));
@@ -83,17 +86,30 @@ $server = new \kalanis\kw_input\Simplified\ServerAdapter();
 \kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($systemPaths, $routedPaths));
 
 // authorization tree
-$authenticator = new \kalanis\kw_auth\Sources\Files\Volume\Files(
-    new \kalanis\kw_auth\Mode\KwOrig(strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))),
-    new \kalanis\kw_auth\Statuses\Always(),
-    new \kalanis\kw_locks\Methods\FileLock(
-        $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE
-    ),
-    explode(DIRECTORY_SEPARATOR, $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web')
+$authStorage = new \kalanis\kw_auth_sources\Sources\Files\Storages\Volume(
+    $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR
+);
+$authParser = new \kalanis\kw_auth_sources\ExtraParsers\Json();
+$authLock = new \kalanis\kw_locks\Methods\FileLock(
+    $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE
+);
+$authenticator = new \kalanis\kw_auth_sources\Sources\Files\AccountsMultiFile(
+    $authStorage,
+    new \kalanis\kw_auth_sources\Hashes\KwOrig(strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))),
+    new \kalanis\kw_auth_sources\Statuses\Always(),
+    $authParser,
+    $authLock,
+    ['web']
 );
 \kalanis\kw_auth\Auth::setAuth($authenticator);
-\kalanis\kw_auth\Auth::setGroups($authenticator);
-\kalanis\kw_auth\Auth::setClasses($authenticator);
+\kalanis\kw_auth\Auth::setGroups(new \kalanis\kw_auth_sources\Sources\Files\Groups(
+    $authStorage,
+    $authenticator,
+    $authParser,
+    $authLock,
+    ['web']
+));
+\kalanis\kw_auth\Auth::setClasses(new \kalanis\kw_auth_sources\Sources\Classes());
 \kalanis\kw_auth\Auth::setAccounts($authenticator);
 
 

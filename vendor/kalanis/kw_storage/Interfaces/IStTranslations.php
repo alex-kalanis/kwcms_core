@@ -23,4 +23,8 @@ interface IStTranslations
     public function stCannotCloseFile(): string;
 
     public function stStorageNotInitialized(): string;
+
+    public function stPathNotFound(): string;
+
+    public function stConfigurationUnavailable(): string;
 }

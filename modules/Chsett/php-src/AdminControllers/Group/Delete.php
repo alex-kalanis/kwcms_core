@@ -7,9 +7,10 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAccessGroups;
-use kalanis\kw_auth\Interfaces\IGroup;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkGroups;
+use kalanis\kw_auth_sources\Interfaces\IGroup;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_locks\LockException;
@@ -28,7 +29,7 @@ use kalanis\kw_routed_paths\StoreRouted;
  */
 class Delete extends AAuthModule
 {
-    /** @var IAccessGroups|null */
+    /** @var IWorkGroups|null */
     protected $libGroups = null;
     /** @var IGroup|null */
     protected $group = null;
@@ -56,7 +57,7 @@ class Delete extends AAuthModule
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, ];
     }
 
     public function run(): void
@@ -69,7 +70,7 @@ class Delete extends AAuthModule
             }
             $this->libGroups->deleteGroup($this->group->getGroupId());
             $this->isProcessed = true;
-        } catch (AuthException | LockException $ex) {
+        } catch (AuthException | AuthSourcesException | LockException $ex) {
             $this->error = $ex;
         }
     }

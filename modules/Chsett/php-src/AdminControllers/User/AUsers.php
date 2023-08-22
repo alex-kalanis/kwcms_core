@@ -6,7 +6,7 @@ namespace KWCMS\modules\Chsett\AdminControllers\User;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\Interfaces;
+use kalanis\kw_auth_sources\Interfaces;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
@@ -28,11 +28,11 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IAccessGroups|null */
+    /** @var Interfaces\IWorkGroups|null */
     protected $libGroups = null;
-    /** @var Interfaces\IAccessClasses|null */
+    /** @var Interfaces\IWorkClasses|null */
     protected $libClasses = null;
-    /** @var Interfaces\IAccessAccounts|Interfaces\IAuthCert|null */
+    /** @var Interfaces\IWorkAccounts|Interfaces\IAuthCert|null */
     protected $libAccounts = null;
     /** @var Interfaces\IUser|null */
     protected $editUser = null;
@@ -61,7 +61,7 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [Interfaces\IAccessClasses::CLASS_MAINTAINER ];
+        return [Interfaces\IWorkClasses::CLASS_MAINTAINER ];
     }
 
     /**

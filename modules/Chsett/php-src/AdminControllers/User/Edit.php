@@ -4,8 +4,9 @@ namespace KWCMS\modules\Chsett\AdminControllers\User;
 
 
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAuthCert;
-use kalanis\kw_auth\Interfaces\IUserCert;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IAuthCert;
+use kalanis\kw_auth_sources\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -58,7 +59,7 @@ class Edit extends AUsers
                 $this->redirect = true;
             }
 
-        } catch (AuthException | LockException | FormsException $ex) {
+        } catch (AuthException | AuthSourcesException | LockException | FormsException $ex) {
             $this->error = $ex;
         }
     }

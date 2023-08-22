@@ -8,7 +8,7 @@ use kalanis\kw_address_handler\Redirect;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuthTree;
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth_sources\Interfaces\IUser;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_locks\LockException;
 use kalanis\kw_modules\Interfaces\IModuleUser;

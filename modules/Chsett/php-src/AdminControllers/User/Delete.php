@@ -7,10 +7,11 @@ use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessAccounts;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
-use kalanis\kw_auth\Interfaces\IAuth;
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IWorkAccounts;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_auth_sources\Interfaces\IAuth;
+use kalanis\kw_auth_sources\Interfaces\IUser;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_locks\LockException;
@@ -31,7 +32,7 @@ class Delete extends AAuthModule
 {
     /** @var IAuth|null */
     protected $libAuth = null;
-    /** @var IAccessAccounts|null */
+    /** @var IWorkAccounts|null */
     protected $libAccounts = null;
     /** @var IUser|null */
     protected $editUser = null;
@@ -60,7 +61,7 @@ class Delete extends AAuthModule
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, ];
     }
 
     public function run(): void
@@ -73,7 +74,7 @@ class Delete extends AAuthModule
             }
             $this->libAccounts->deleteAccount($this->editUser->getAuthName());
             $this->isProcessed = true;
-        } catch (AuthException | LockException $ex) {
+        } catch (AuthException | AuthSourcesException | LockException $ex) {
             $this->error = $ex;
         }
     }

@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Chsett\Lib;
 
 
-use kalanis\kw_auth\Interfaces\IGroup;
+use kalanis\kw_auth_sources\Interfaces\IGroup;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 

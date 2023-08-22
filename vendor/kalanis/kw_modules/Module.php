@@ -47,8 +47,8 @@ class Module
 
     /**
      * @param string $defaultModule
-     * @return $this
      * @throws ModuleException
+     * @return $this
      */
     public function process(string $defaultModule): self
     {

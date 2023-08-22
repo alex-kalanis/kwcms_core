@@ -14,20 +14,15 @@ use kalanis\kw_storage\Interfaces\IKey;
 class DirKey implements IKey
 {
     /** @var string */
-    protected static $dir= '/var/cache/wwwcache/';
+    protected $path = '';
 
-    public static function setDir(string $dir): void
+    public function __construct(string $dir)
     {
-        static::$dir = $dir;
+        $this->path = $dir;
     }
 
-    /**
-     * @param string $key channel Id
-     * @return string
-     * /var/cache/wwwcache - coming from cache check
-     */
     public function fromSharedKey(string $key): string
     {
-        return static::$dir . $key;
+        return $this->path . $key;
     }
 }

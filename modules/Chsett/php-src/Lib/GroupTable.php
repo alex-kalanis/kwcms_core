@@ -6,9 +6,9 @@ namespace KWCMS\modules\Chsett\Lib;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessGroups;
-use kalanis\kw_auth\Interfaces\IUser;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IWorkGroups;
+use kalanis\kw_auth_sources\Interfaces\IUser;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
@@ -42,14 +42,14 @@ class GroupTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var IAccessGroups|null */
+    /** @var IWorkGroups|null */
     protected $libGroups = null;
     /** @var IUser|null */
     protected $currentUser = null;
     /** @var Forward|null */
     protected $forward = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link, IAccessGroups $groups, IUser $currentUser)
+    public function __construct(IFiltered $inputs, ExternalLink $link, IWorkGroups $groups, IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;
@@ -60,7 +60,7 @@ class GroupTable
 
     /**
      * @return Table
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws FormsException
      * @throws LangException
      * @throws LockException

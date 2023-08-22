@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Sysinfo\AdminControllers;
 
 
-use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
@@ -18,7 +18,7 @@ class Sysinfo extends AAuthModule implements IModuleTitle
 {
     final public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, ];
     }
 
     final public function run(): void

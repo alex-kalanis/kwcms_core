@@ -6,8 +6,8 @@ namespace KWCMS\modules\Chsett\Lib;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
@@ -43,11 +43,11 @@ class UserTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var Interfaces\IAccessAccounts|null */
+    /** @var Interfaces\IWorkAccounts|null */
     protected $libAccounts = null;
-    /** @var Interfaces\IAccessGroups|null */
+    /** @var Interfaces\IWorkGroups|null */
     protected $libGroups = null;
-    /** @var Interfaces\IAccessClasses|null */
+    /** @var Interfaces\IWorkClasses|null */
     protected $libClasses = null;
     /** @var Interfaces\IUser|null */
     protected $currentUser = null;
@@ -56,7 +56,7 @@ class UserTable
     /** @var Table|null */
     protected $table = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link, Interfaces\IAccessAccounts $libAccounts, Interfaces\IAccessGroups $libGroups, Interfaces\IAccessClasses $libClasses, Interfaces\IUser $currentUser)
+    public function __construct(IFiltered $inputs, ExternalLink $link, Interfaces\IWorkAccounts $libAccounts, Interfaces\IWorkGroups $libGroups, Interfaces\IWorkClasses $libClasses, Interfaces\IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;
@@ -68,12 +68,12 @@ class UserTable
     }
 
     /**
-     * @return Table
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws FormsException
      * @throws LangException
      * @throws LockException
      * @throws TableException
+     * @return Table
      */
     public function getTable()
     {
@@ -127,9 +127,9 @@ class UserTable
     }
 
     /**
-     * @return array
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws LockException
+     * @return array<string, string>
      */
     protected function getGroups(): array
     {

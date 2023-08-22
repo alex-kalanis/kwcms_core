@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Texts\AdminControllers;
 
 
-use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
@@ -52,7 +52,7 @@ class Preview extends AAuthModule
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
     }
 
     public function run(): void

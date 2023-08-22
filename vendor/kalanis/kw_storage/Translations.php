@@ -62,4 +62,14 @@ class Translations implements IStTranslations
     {
         return 'Storage not initialized';
     }
+
+    public function stPathNotFound(): string
+    {
+        return 'Path in storage not found.';
+    }
+
+    public function stConfigurationUnavailable(): string
+    {
+        return 'This configuration is not available.';
+    }
 }

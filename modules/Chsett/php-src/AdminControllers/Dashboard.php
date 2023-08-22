@@ -4,8 +4,8 @@ namespace KWCMS\modules\Chsett\AdminControllers;
 
 
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -38,7 +38,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, ];
     }
 
     public function run(): void
@@ -46,7 +46,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
     }
 
     /**
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws LockException
      * @return Output\AOutput
      */
@@ -73,13 +73,13 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->user
             );
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
-        } catch ( AuthException | ConnectException | FormsException | LangException | LockException | TableException $ex) {
+        } catch ( AuthSourcesException | ConnectException | FormsException | LangException | LockException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
 
     /**
-     * @throws AuthException
+     * @throws AuthSourcesException
      * @throws LockException
      * @return Output\AOutput
      */

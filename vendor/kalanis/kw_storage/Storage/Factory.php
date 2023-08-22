@@ -32,6 +32,10 @@ class Factory
      */
     public function getStorage($storageParams): ?Interfaces\IStorage
     {
+        if (is_object($storageParams) && ($storageParams instanceof Interfaces\IStorage)) {
+            return $storageParams;
+        }
+
         $storage = $this->targetFactory->getStorage($storageParams);
         if (empty($storage)) {
             return null;

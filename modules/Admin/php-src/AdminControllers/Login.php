@@ -4,7 +4,7 @@ namespace KWCMS\modules\Admin\AdminControllers;
 
 
 use kalanis\kw_address_handler\Redirect;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -67,7 +67,7 @@ class Login extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
     }
 
     /**

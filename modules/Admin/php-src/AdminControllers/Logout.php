@@ -4,7 +4,7 @@ namespace KWCMS\modules\Admin\AdminControllers;
 
 
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces\IAccessClasses;
+use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\AAuthModule;
@@ -45,7 +45,7 @@ class Logout extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IAccessClasses::CLASS_MAINTAINER, IAccessClasses::CLASS_ADMIN, IAccessClasses::CLASS_USER, ];
+        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
     }
 
     public function output(): Output\AOutput

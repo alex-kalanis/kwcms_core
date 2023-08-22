@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Personal\Lib;
 
 
-use kalanis\kw_auth\Interfaces\IUser;
-use kalanis\kw_auth\Interfaces\IUserCert;
+use kalanis\kw_auth_sources\Interfaces\IUser;
+use kalanis\kw_auth_sources\Interfaces\IUserCert;
 use kalanis\kw_forms\Controls;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;

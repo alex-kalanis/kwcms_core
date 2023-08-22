@@ -4,8 +4,8 @@ namespace KWCMS\modules\Personal\AdminControllers;
 
 
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth\Interfaces;
+use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_auth_sources\Interfaces;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -16,7 +16,6 @@ use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_rules\Exceptions\RuleException;
 use KWCMS\modules\Personal\Lib;
 use KWCMS\modules\Personal\Templates;
 
@@ -32,7 +31,7 @@ class Pass extends AAuthModule implements IModuleTitle
 
     /** @var Interfaces\IAuth|null */
     protected $libAuth = null;
-    /** @var Interfaces\IAccessAccounts|null */
+    /** @var Interfaces\IWorkAccounts|null */
     protected $libAccount = null;
     /** @var Lib\FormPass|null */
     protected $form = null;
@@ -52,7 +51,7 @@ class Pass extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [Interfaces\IAccessClasses::CLASS_MAINTAINER, Interfaces\IAccessClasses::CLASS_ADMIN, Interfaces\IAccessClasses::CLASS_USER, ];
+        return [Interfaces\IWorkClasses::CLASS_MAINTAINER, Interfaces\IWorkClasses::CLASS_ADMIN, Interfaces\IWorkClasses::CLASS_USER, ];
     }
 
     public function run(): void
@@ -67,7 +66,7 @@ class Pass extends AAuthModule implements IModuleTitle
                     $this->isProcessed = true;
                 }
             }
-        } catch (AuthException | FormsException | LockException | RuleException $ex) {
+        } catch (AuthSourcesException | FormsException | LockException $ex) {
             $this->error = $ex;
         }
     }
