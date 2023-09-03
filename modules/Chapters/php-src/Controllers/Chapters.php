@@ -8,17 +8,18 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Chapters\Lib;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 
 
@@ -49,15 +50,16 @@ class Chapters extends AModule
     protected $position = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws PathsException
      * @throws ConfException
      * @throws FilesException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load('Chapters');
         $this->arrPath = new ArrayPath();
-        $this->linkExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->linkExternal = new ExternalLink(StoreRouted::getPath());
         $this->tmplPage = new Lib\PageTemplate();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -116,6 +118,7 @@ class Chapters extends AModule
 
     /**
      * @throws PathsException
+     * @throws TemplateException
      * @return Output\AOutput
      */
     public function output(): Output\AOutput

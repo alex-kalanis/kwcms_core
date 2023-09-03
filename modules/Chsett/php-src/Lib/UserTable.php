@@ -3,20 +3,18 @@
 namespace KWCMS\modules\Chsett\Lib;
 
 
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Interfaces;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\core\Connector\PageLink;
@@ -29,6 +27,7 @@ use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -43,11 +42,11 @@ class UserTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var Interfaces\IWorkAccounts|null */
+    /** @var Interfaces\IProcessAccounts|null */
     protected $libAccounts = null;
-    /** @var Interfaces\IWorkGroups|null */
+    /** @var Interfaces\IProcessGroups|null */
     protected $libGroups = null;
-    /** @var Interfaces\IWorkClasses|null */
+    /** @var Interfaces\IProcessClasses|null */
     protected $libClasses = null;
     /** @var Interfaces\IUser|null */
     protected $currentUser = null;
@@ -56,7 +55,7 @@ class UserTable
     /** @var Table|null */
     protected $table = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link, Interfaces\IWorkAccounts $libAccounts, Interfaces\IWorkGroups $libGroups, Interfaces\IWorkClasses $libClasses, Interfaces\IUser $currentUser)
+    public function __construct(IFiltered $inputs, ExternalLink $link, Interfaces\IProcessAccounts $libAccounts, Interfaces\IProcessGroups $libGroups, Interfaces\IProcessClasses $libClasses, Interfaces\IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;
@@ -68,10 +67,9 @@ class UserTable
     }
 
     /**
-     * @throws AuthSourcesException
+     * @throws AccountsException
      * @throws FormsException
      * @throws LangException
-     * @throws LockException
      * @throws TableException
      * @return Table
      */
@@ -127,8 +125,7 @@ class UserTable
     }
 
     /**
-     * @throws AuthSourcesException
-     * @throws LockException
+     * @throws AccountsException
      * @return array<string, string>
      */
     protected function getGroups(): array

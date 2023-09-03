@@ -24,9 +24,9 @@ class Delete extends AEdit
     /** @var Forms\FileDeleteForm */
     protected $deleteForm = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->deleteForm = new Forms\FileDeleteForm('fileDeleteForm');
     }
 

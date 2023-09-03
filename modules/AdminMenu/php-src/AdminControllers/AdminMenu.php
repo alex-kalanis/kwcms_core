@@ -6,21 +6,18 @@ namespace KWCMS\modules\AdminMenu\AdminControllers;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\IModuleRecord;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Access\Factory;
+use kalanis\kw_modules\Interfaces\Lists\IModulesList;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\ModuleException;
+use kalanis\kw_modules\ModulesLists\Record;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
-use kalanis\kw_modules\Processing\FileProcessor;
-use kalanis\kw_modules\Processing\ModuleRecord;
-use kalanis\kw_modules\Processing\Modules;
-use kalanis\kw_modules\Processing\Support;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_routed_paths\Support;
 use KWCMS\modules\AdminMenu\Lib;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -45,8 +42,8 @@ class AdminMenu extends AModule
 {
     /** @var ExternalLink */
     protected $externalLink = null;
-    /** @var Modules */
-    protected $moduleProcessor = null;
+    /** @var IModulesList */
+    protected $modulesList = null;
 
     /** @var Lib\LineTemplate */
     protected $tmplLine = null;
@@ -59,45 +56,32 @@ class AdminMenu extends AModule
     protected $menuKey = '';
     /** @var int */
     protected $maxPos = 0;
-    /** @var IModuleRecord[] */
+    /** @var Record[] */
     protected $entries = [];
 
     /**
-     * @param ILoader|null $loader
-     * @param Modules|null $processor
+     * @param mixed ...$constructParams
      * @throws ConfException
+     * @throws ModuleException
      */
-    public function __construct(?ILoader $loader = null, ?Modules $processor = null)
+    public function __construct(...$constructParams)
     {
         Config::load('Core', 'page');
         Config::load('Menu');
-        $this->externalLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
-        $this->moduleProcessor = $processor ?: new Modules($this->getCorrectProcessor());
+        $this->externalLink = new ExternalLink(StoreRouted::getPath());
+        $this->modulesList = (new Factory())->getModulesList($constructParams);
         $this->tmplLine = new Lib\LineTemplate();
         $this->tmplSep = new Lib\SeparatorTemplate();
         $this->tmplListing = new Lib\ListingTemplate();
     }
 
-    protected function getCorrectProcessor(): FileProcessor
-    {
-        return new \ExProcessor(new ModuleRecord(),  $this->getCorrectConfPath() );
-    }
-
-    protected function getCorrectConfPath(): string
-    {
-        return Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot();
-    }
-
     public function process(): void
     {
         // list only enabled for currently set menu
-        $this->moduleProcessor->setLevel(ISitePart::SITE_ROUTED);
+        $this->modulesList->setModuleLevel(ISitePart::SITE_ROUTED);
         $this->menuKey = strval($this->getFromParam('menuKey', ''));
-        $listModules = $this->moduleProcessor->listing();
-        $allModules = array_combine($listModules, array_map([$this, 'readModule'], $listModules));
-        $allModules = array_filter($allModules); // now we have only possible ones
+        $allModules = $this->modulesList->listing();
         if (!empty($allModules)) {
-            array_walk($allModules, [$this, 'addDecodedParams']); // add key with decoded params
             $allModules = array_filter($allModules, [$this, 'filterMenu']); // filter in correct menu
             $allModules = array_filter($allModules, [$this, 'filterDisabled']); // filter out disabled
             $this->maxPos = max(array_map([$this, 'getPos'], $allModules)); // available max position
@@ -108,48 +92,40 @@ class AdminMenu extends AModule
         }
     }
 
-    /**
-     * @param string $moduleName
-     * @return IModuleRecord|null
-     * @throws ModuleException
-     */
-    public function readModule(string $moduleName): ?IModuleRecord
+    public function filterMenu(Record $module): bool
     {
-        return $this->moduleProcessor->readDirect($moduleName);
+        $params = $module->getParams();
+        if (!isset($params['menu']) && empty($this->menuKey)) {
+            return true;
+        }
+        return (isset($params['menu']) && $this->menuKey == $params['menu']);
     }
 
-    public function addDecodedParams(IModuleRecord $module): void
+    public function filterDisabled(Record $module): bool
     {
-        $module->parsedParams = $this->parseParams($module->getParams());
+        $params = $module->getParams();
+        return ((!isset($params['display'])) || ('no' != $params['display'])) && $module->isEnabled();
     }
 
-    public function filterMenu(IModuleRecord $module): bool
+    public function getPos(Record $module): int
     {
-        return (empty($module->parsedParams['menu']) && empty($this->menuKey))
-            || (!empty($module->parsedParams['menu']) && $this->menuKey == $module->parsedParams['menu']);
+        $params = $module->getParams();
+        return isset($params['pos']) ? intval($params['pos']) : 0 ;
     }
 
-    public function filterDisabled(IModuleRecord $module): bool
+    public function addPos(Record $module): void
     {
-        return (!isset($module->parsedParams['display'])) || ('no' != $module->parsedParams['display']);
-    }
-
-    public function getPos(IModuleRecord $module): int
-    {
-        return isset($module->parsedParams['pos']) ? intval($module->parsedParams['pos']) : 0 ;
-    }
-
-    public function addPos(IModuleRecord $module): void
-    {
-        $module->parsedParams['pos'] = empty($module->parsedParams['pos'])
+        $params = $module->getParams();
+        $params['pos'] = empty($params['pos'])
             ? $this->maxPos++
-            : intval($module->parsedParams['pos'])
+            : intval($params['pos'])
         ;
+        $module->setParams($params);
     }
 
-    public function sortByPos(IModuleRecord $moduleA, IModuleRecord $moduleB): int
+    public function sortByPos(Record $moduleA, Record $moduleB): int
     {
-        return $moduleA->parsedParams['pos'] <=> $moduleB->parsedParams['pos'];
+        return $moduleA->getParams()['pos'] <=> $moduleB->getParams()['pos'];
     }
 
     public function output(): AOutput
@@ -185,35 +161,26 @@ class AdminMenu extends AModule
         return $this->getFromParam('topName', '{MENU_USER_NAME}');
     }
 
-    protected function getLinkPath(IModuleRecord $module): string
+    protected function getLinkPath(Record $module): string
     {
-        return empty($module->parsedParams['link']) ? Support::linkModuleName($module->getModuleName()) : $module->parsedParams['link'] ;
+        $params = $module->getParams();
+        return empty($params['link']) ? Support::linkModuleName($module->getModuleName()) : $params['link'] ;
     }
 
-    protected function getName(IModuleRecord $module): string
+    protected function getName(Record $module): string
     {
-        return empty($module->parsedParams['name']) ? $module->getModuleName() : $module->parsedParams['name'] ;
+        $params = $module->getParams();
+        return empty($params['name']) ? $module->getModuleName() : $params['name'] ;
     }
 
-    protected function getStyle(IModuleRecord $module): string
+    protected function getStyle(Record $module): string
     {
-        $styles = empty($module->parsedParams['style']) ? '' : $module->parsedParams['style'];
+        $params = $module->getParams();
+        $styles = empty($params['style']) ? '' : $params['style'];
         $styleArray = Handler::http_parse_query(strtr($styles, [':' => '=']), ';'); // CSS to http links hack
-        if (!empty($module->parsedParams['image'])) {
-            $styleArray['background-image'] = sprintf("url('%s')", $this->externalLink->linkVariant($module->parsedParams['image'], 'sysimage', true));
+        if (!empty($params['image'])) {
+            $styleArray['background-image'] = sprintf("url('%s')", $this->externalLink->linkVariant($params['image'], 'sysimage', true));
         }
         return strtr(urldecode(http_build_query($styleArray, '', ';')), ['=' => ':']); // restore to CSS
-    }
-
-    protected function parseParams(string $params): array
-    {
-        return Handler::http_parse_query($params);
-    }
-
-    protected function addToParam(string $params, array $toAdd): string
-    {
-        $arrayOfParams = $this->parseParams($params);
-        $arrayOfParams += $toAdd;
-        return http_build_query($arrayOfParams);
     }
 }

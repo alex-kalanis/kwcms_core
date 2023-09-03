@@ -6,6 +6,8 @@ namespace kalanis\kw_rules\Rules;
 use kalanis\kw_rules\Interfaces\IRuleFactory;
 use kalanis\kw_rules\Interfaces\IRules;
 use kalanis\kw_rules\Exceptions\RuleException;
+use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -68,9 +70,15 @@ class Factory implements IRuleFactory
     {
         if (isset(static::$map[$ruleName])) {
             $rule = static::$map[$ruleName];
-            $class = new $rule();
-            if ($class instanceof ARule) {
-                return $class;
+            try {
+                /** @var class-string $rule */
+                $ref = new ReflectionClass($rule);
+                $class = $ref->newInstance();
+                if ($class instanceof ARule) {
+                    return $class;
+                }
+            } catch (ReflectionException $ex) {
+                throw new RuleException($ex->getMessage(), $ex->getCode(), $ex);
             }
         }
         throw new RuleException(sprintf('Unknown rule %s', $ruleName));

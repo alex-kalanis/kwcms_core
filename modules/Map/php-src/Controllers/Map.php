@@ -3,10 +3,10 @@
 namespace KWCMS\modules\Map\Controllers;
 
 
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_templates\TemplateException;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Map\MapTemplate;
 
 
@@ -17,6 +17,10 @@ use KWCMS\modules\Map\MapTemplate;
  */
 class Map extends AModule
 {
+    public function __construct(...$constructParams)
+    {
+    }
+
     public function process(): void
     {
     }

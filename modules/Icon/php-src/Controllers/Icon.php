@@ -14,15 +14,15 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_mime\Check;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Icon\Libs;
@@ -49,16 +49,17 @@ class Icon extends AModule
     protected $sources = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws ImagesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load(static::getClassName(static::class));
         $this->arrPath = new ArrayPath();
-        $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->libExternal = new ExternalLink(StoreRouted::getPath());
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),

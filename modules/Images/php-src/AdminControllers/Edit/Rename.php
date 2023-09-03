@@ -26,9 +26,9 @@ class Rename extends AEdit
     /** @var Forms\FileRenameForm */
     protected $renameForm = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->renameForm = new Forms\FileRenameForm('fileNameForm');
     }
 

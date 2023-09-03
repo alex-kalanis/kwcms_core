@@ -4,8 +4,8 @@ namespace KWCMS\modules\Contact\Controllers;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Core\Libs\AModule;
 
 
 /**
@@ -15,6 +15,10 @@ use kalanis\kw_modules\Output;
  */
 class Contact extends AModule
 {
+    public function __construct(...$constructParams)
+    {
+    }
+
     public function process(): void
     {
     }

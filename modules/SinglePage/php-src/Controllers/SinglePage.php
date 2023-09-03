@@ -9,23 +9,22 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Traits\TToString;
-use kalanis\kw_modules\AModule;
+use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Loaders\KwLoader;
+use kalanis\kw_modules\Interfaces\IModule;
+use kalanis\kw_modules\Interfaces\Lists\IModulesList;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
+use kalanis\kw_modules\Mixer\Processor;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
-use kalanis\kw_modules\Processing\FileProcessor;
-use kalanis\kw_modules\Processing\ModuleRecord;
-use kalanis\kw_modules\Processing\Modules;
-use kalanis\kw_modules\SubModules;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\SinglePage\PageTemplate;
 
@@ -41,7 +40,13 @@ class SinglePage extends AModule
 {
     use TToString;
 
-    /** @var SubModules */
+    /** @var ILoader */
+    protected $loader = null;
+    /** @var IModule|null */
+    protected $module = null;
+    /** @var IModulesList */
+    protected $modulesList = null;
+    /** @var Processor */
     protected $subModules = null;
     /** @var string */
     protected $content = '';
@@ -51,21 +56,27 @@ class SinglePage extends AModule
     protected $files = null;
     /** @var InnerLinks */
     protected $innerLink = null;
+    /** @param array<string, string|int|float|bool|object> $constructParams  */
+    protected $constructParams = [];
 
     /**
-     * @param ILoader|null $loader
-     * @param Modules|null $processor
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
+     * @throws ModuleException
      * @throws PathsException
      */
-    public function __construct(?ILoader $loader = null, ?Modules $processor = null)
+    public function __construct(...$constructParams)
     {
         Config::load('Core', 'page');
-        $loader = $loader ?: new KwLoader();
-        $path = Stored::getPath();
-        $moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), $path->getDocumentRoot() . $path->getPathToSystemRoot() ));
-        $this->subModules = new SubModules($loader, $moduleProcessor);
+
+        $this->constructParams = $constructParams;
+        // this part is about module loader, it depends one each server
+        $modulesFactory = new modules_factory();
+        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
+        $this->modulesList = $modulesFactory->getModulesList($constructParams);
+        $this->subModules = new Processor($this->loader, $this->modulesList);
+
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -96,13 +107,16 @@ class SinglePage extends AModule
 
     public function output(): AOutput
     {
-        $template = new PageTemplate();
-        $template->setData($this->content);
-        // add modules which fill the layout
-        $this->subModules->fill($template, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
-        // add modules which fill the content
-        $this->subModules->fill($template, $this->inputs, ISitePart::SITE_CONTENT, $this->params);
         $out = new Html();
-        return $out->setContent($template->render());
+
+        $body = new PageTemplate();
+        $bodyToReplace = $body->reset()->get();
+        // add modules which fill the layout
+        $bodyUpdated = $this->subModules->fill($bodyToReplace, $this->inputs, ISitePart::SITE_LAYOUT, $this->params, $this->constructParams);
+        // add modules which fill the content
+        $bodyUpdated = $this->subModules->fill($bodyUpdated, $this->inputs, ISitePart::SITE_CONTENT, $this->params, $this->constructParams);
+        $body->change($bodyToReplace, $bodyUpdated);
+
+        return $out->setContent($body->setData($this->content)->render());
     }
 }

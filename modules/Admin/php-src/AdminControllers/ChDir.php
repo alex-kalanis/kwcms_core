@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Admin\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -12,7 +12,6 @@ use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
@@ -24,6 +23,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Admin\Forms;
 use KWCMS\modules\Admin\Shared\ArrayAdapter;
 use KWCMS\modules\Admin\Shared\ChDirTranslations;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 
 
@@ -52,7 +52,7 @@ abstract class ChDir extends AAuthModule
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load('Admin');
         $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
@@ -64,7 +64,7 @@ abstract class ChDir extends AAuthModule
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     /**

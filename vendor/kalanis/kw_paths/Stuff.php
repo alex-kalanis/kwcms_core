@@ -156,4 +156,23 @@ class Stuff
         $cut = substr($base, 0, ($maxLen - $extLen));
         return ($extLen) ? $cut . $delimiter . $ext : $cut ;
     }
+
+    /**
+     * @param string $param
+     * @return array<string|int, string|int|float|bool|array<string|int>>
+     */
+    public static function httpStringIntoArray(string $param): array
+    {
+        parse_str($param, $result);
+        return $result;
+    }
+
+    /**
+     * @param array<string|int, string|int|float|bool|array<string|int>> $param
+     * @return string
+     */
+    public static function arrayIntoHttpString(array $param): string
+    {
+        return http_build_query($param);
+    }
 }

@@ -3,14 +3,12 @@
 namespace KWCMS\modules\Chsett\AdminControllers\User;
 
 
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Interfaces\IAuthCert;
-use kalanis\kw_auth_sources\Interfaces\IUserCert;
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Interfaces\IAuthCert;
+use kalanis\kw_accounts\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_locks\LockException;
 
 
 /**
@@ -29,7 +27,7 @@ class Edit extends AUsers
                 : $this->libAccounts->getDataOnly($userName)
             ;
             if (empty($this->editUser)) {
-                throw new AuthException(Lang::get('chsett.user_not_found', $userName));
+                throw new AccountsException(Lang::get('chsett.user_not_found', $userName));
             }
             $this->form->composeForm($this->editUser, $this->libGroups->readGroup(), $this->libClasses->readClasses());
             if ($this->editUser instanceof IUserCert) {
@@ -59,7 +57,7 @@ class Edit extends AUsers
                 $this->redirect = true;
             }
 
-        } catch (AuthException | AuthSourcesException | LockException | FormsException $ex) {
+        } catch (AccountsException | FormsException $ex) {
             $this->error = $ex;
         }
     }

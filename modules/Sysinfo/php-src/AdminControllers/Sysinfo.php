@@ -3,10 +3,10 @@
 namespace KWCMS\modules\Sysinfo\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 
 
 /**
@@ -14,11 +14,15 @@ use kalanis\kw_modules\Output;
  * @package KWCMS\modules\Sysinfo\AdminControllers
  * System info - DO NOT ALLOW ACCESS OUTSIDE THE ADMIN!
  */
-class Sysinfo extends AAuthModule implements IModuleTitle
+class Sysinfo extends AAuthModule implements IHasTitle
 {
+    public function __construct(...$constructParams)
+    {
+    }
+
     final public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, ];
     }
 
     final public function run(): void

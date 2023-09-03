@@ -4,6 +4,7 @@ namespace kalanis\kw_routed_paths\Sources;
 
 
 use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_routed_paths\Support;
 
 
 /**
@@ -150,17 +151,17 @@ class Request extends ASource
         $result = [];
         foreach ($params as $key => $param) {
             switch (strtolower(strval($key))) {
-                case 'ms':
+                case Support::PREFIX_MOD_SINGLE:
                     $result['module'] = $param;
                     $result['single'] = true;
                     break;
-                case 'm':
+                case Support::PREFIX_MOD_NORMAL:
                     $result['module'] = $param;
                     break;
-                case 'u':
+                case Support::PREFIX_USER:
                     $result['user'] = $param;
                     break;
-                case 'l':
+                case Support::PREFIX_LANG:
                     $result['lang'] = $param;
                     break;
                 default:

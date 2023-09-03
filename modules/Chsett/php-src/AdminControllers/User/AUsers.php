@@ -3,20 +3,20 @@
 namespace KWCMS\modules\Chsett\AdminControllers\User;
 
 
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth_sources\Interfaces;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 
 
 /**
@@ -24,15 +24,15 @@ use KWCMS\modules\Chsett\Templates;
  * @package KWCMS\modules\Chsett\AdminControllers\User
  * Site's groups - edit one
  */
-abstract class AUsers extends AAuthModule implements IModuleTitle
+abstract class AUsers extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IWorkGroups|null */
+    /** @var Interfaces\IProcessGroups|null */
     protected $libGroups = null;
-    /** @var Interfaces\IWorkClasses|null */
+    /** @var Interfaces\IProcessClasses|null */
     protected $libClasses = null;
-    /** @var Interfaces\IWorkAccounts|Interfaces\IAuthCert|null */
+    /** @var Interfaces\IProcessAccounts|Interfaces\IAuthCert|null */
     protected $libAccounts = null;
     /** @var Interfaces\IUser|null */
     protected $editUser = null;
@@ -46,9 +46,10 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
     protected $redirect = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $this->libGroups = Auth::getGroups();
@@ -61,7 +62,7 @@ abstract class AUsers extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [Interfaces\IWorkClasses::CLASS_MAINTAINER ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER ];
     }
 
     /**

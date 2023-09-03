@@ -22,7 +22,7 @@ interface IModule
     /**
      * Initialize module, set values from external sources
      * @param IFiltered $inputs from external sources
-     * @param array $passedParams from modules settings
+     * @param array<int|string, bool|float|int|string|array<int|string>> $passedParams from modules settings
      * @return void
      */
     public function init(IFiltered $inputs, array $passedParams): void;
@@ -35,8 +35,8 @@ interface IModule
 
     /**
      * Return what will be presented
-     * @return AOutput
      * @throws ModuleException
+     * @return AOutput
      */
     public function output(): AOutput;
 }

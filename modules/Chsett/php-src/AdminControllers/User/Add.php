@@ -3,14 +3,13 @@
 namespace KWCMS\modules\Chsett\AdminControllers\User;
 
 
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Data\FileCertUser;
-use kalanis\kw_auth_sources\Data\FileUser;
-use kalanis\kw_auth_sources\Interfaces\IUserCert;
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Data\FileCertUser;
+use kalanis\kw_accounts\Data\FileUser;
+use kalanis\kw_accounts\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_locks\LockException;
 
 
 /**
@@ -52,7 +51,7 @@ class Add extends AUsers
                 $this->redirect = true;
             }
 
-        } catch (AuthSourcesException | FormsException | LockException $ex) {
+        } catch (AccountsException | FormsException $ex) {
             $this->error = $ex;
         }
     }

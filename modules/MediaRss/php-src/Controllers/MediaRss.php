@@ -13,9 +13,7 @@ use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
@@ -26,6 +24,8 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib\TLibAction;
@@ -53,17 +53,18 @@ class MediaRss extends AModule
     protected $acceptTypes = [];
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws ImagesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
-        $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->libExternal = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),

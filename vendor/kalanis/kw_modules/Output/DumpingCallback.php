@@ -13,7 +13,11 @@ class DumpingCallback extends AOutput
     /** @var callable */
     protected $callback = null;
 
-    public function setCallback($callback)
+    /**
+     * @param callable $callback
+     * @return $this
+     */
+    public function setCallback($callback): self
     {
         $this->callback = $callback;
         return $this;

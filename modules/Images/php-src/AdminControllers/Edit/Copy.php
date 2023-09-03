@@ -36,14 +36,15 @@ class Copy extends AEdit
     protected $tree = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->copyForm = new Forms\FileActionForm('fileCopyForm');
         $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()

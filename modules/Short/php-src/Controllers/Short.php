@@ -11,7 +11,6 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
@@ -20,6 +19,7 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Short\Lib;
 use KWCMS\modules\Short\ShortException;
@@ -44,11 +44,12 @@ class Short extends AModule
     protected $innerLink = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         $this->arrPath = new ArrayPath();

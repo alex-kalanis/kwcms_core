@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Menu\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -12,8 +12,6 @@ use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_menu\MenuException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
@@ -22,6 +20,8 @@ use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Menu\Forms;
 use KWCMS\modules\Menu\Lib;
 use KWCMS\modules\Menu\Templates;
@@ -32,7 +32,7 @@ use KWCMS\modules\Menu\Templates;
  * @package KWCMS\modules\Menu\AdminControllers
  * Site's Menu - list available actions
  */
-class Dashboard extends AAuthModule implements IModuleTitle
+class Dashboard extends AAuthModule implements IHasTitle
 {
     use Lib\TMenu;
     use Templates\TModuleTemplate;
@@ -43,22 +43,23 @@ class Dashboard extends AAuthModule implements IModuleTitle
     protected $isProcessed = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws LangException
      * @throws MenuException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
+        $this->initTModuleTemplate(StoreRouted::getPath());
         $this->initTMenu(Stored::getPath());
         $this->editPropsForm = new Forms\EditPropsForm('editPropsForm');
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

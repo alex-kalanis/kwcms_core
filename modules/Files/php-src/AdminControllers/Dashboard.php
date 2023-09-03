@@ -3,13 +3,13 @@
 namespace KWCMS\modules\Files\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Files\Lib;
 
 
@@ -18,21 +18,22 @@ use KWCMS\modules\Files\Lib;
  * @package KWCMS\modules\Files\AdminControllers
  * Site's file content - list available actions
  */
-class Dashboard extends AAuthModule implements IModuleTitle
+class Dashboard extends AAuthModule implements IHasTitle
 {
     use Lib\TModuleTemplate;
 
-    /**3
+    /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

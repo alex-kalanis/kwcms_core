@@ -21,8 +21,11 @@ namespace kalanis\kw_modules\Loaders;
  */
 class KwApiLoader extends AKwLoader
 {
-    protected function getClassName(string $module, string $constructPath): string
+    use TSeparate;
+
+    protected function getClassName(array $path): string
     {
-        return sprintf('\KWCMS\modules\%s\ApiControllers\%s', $module, $constructPath);
+        list($target, $constructPath) = $this->separateModule($path);
+        return sprintf('\KWCMS\modules\%s\ApiControllers\%s', $target, $constructPath);
     }
 }

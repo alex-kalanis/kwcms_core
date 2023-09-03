@@ -3,12 +3,12 @@
 namespace KWCMS\modules\Admin\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 
 
 /**
@@ -16,12 +16,13 @@ use kalanis\kw_modules\Output;
  * @package KWCMS\modules\Admin\AdminControllers
  * Admin dashboard
  */
-class Dashboard extends AAuthModule implements IModuleTitle
+class Dashboard extends AAuthModule implements IHasTitle
 {
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load('Admin');
     }
@@ -32,7 +33,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function result(): Output\AOutput

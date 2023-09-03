@@ -6,8 +6,8 @@ namespace KWCMS\modules\Admin\AdminControllers;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Support;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Core\Libs\AModule;
 
 
 /**
@@ -19,7 +19,7 @@ class LangChange extends AModule
 {
     protected $session = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->session = new SessionAdapter();
     }

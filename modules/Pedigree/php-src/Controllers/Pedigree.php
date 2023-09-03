@@ -9,14 +9,12 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\IModulesList;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_modules\Processing\Modules;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
@@ -24,6 +22,8 @@ use kalanis\kw_pedigree\Storage;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_templates\HtmlElement;
 use kalanis\kw_templates\TemplateException;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Layout\Controllers\Layout;
 use KWCMS\modules\Pedigree\Lib;
 
@@ -47,21 +47,22 @@ class Pedigree extends AModule
     protected $depth = 0;
     /** @var ILoader|null */
     protected $loader = null;
-    /** @var Modules|null */
-    protected $processor = null;
+    /** @var IModulesList|null */
+    protected $modulesList = null;
 
     /**
-     * @param ILoader|null $loader
-     * @param Modules|null $processor
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
+     * @throws ModuleException
      */
-    public function __construct(?ILoader $loader = null, ?Modules $processor = null)
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
-        $this->externalLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
-        $this->loader = $loader;
-        $this->processor = $processor;
+        $this->externalLink = new ExternalLink(StoreRouted::getPath());
+        $modulesFactory = new modules_factory();
+        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
+        $this->modulesList = $modulesFactory->getModulesList($constructParams);
         Lang::load(static::getClassName(static::class));
     }
 
@@ -147,7 +148,7 @@ class Pedigree extends AModule
      */
     protected function outLayout(Output\AOutput $output): Output\AOutput
     {
-        $out = new Layout($this->loader, $this->processor);
+        $out = new Layout($this->loader, $this->modulesList);
         $out->init($this->inputs, $this->params);
         return $out->wrapped($output, false);
     }

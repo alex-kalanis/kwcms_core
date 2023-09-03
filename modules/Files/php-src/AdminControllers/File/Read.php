@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Files\AdminControllers\File;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -15,8 +15,6 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
@@ -28,6 +26,8 @@ use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\Traits\TFilesFile;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Files\Lib;
 
@@ -37,7 +37,7 @@ use KWCMS\modules\Files\Lib;
  * @package KWCMS\modules\Files\AdminControllers\File
  * Read content
  */
-class Read extends AAuthModule implements IModuleTitle
+class Read extends AAuthModule implements IHasTitle
 {
     use Lib\TModuleTemplate;
     use TWhereDir;
@@ -61,11 +61,12 @@ class Read extends AAuthModule implements IModuleTitle
     protected $processed = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $files = (new Access\Factory(new FilesTranslations()))->getClass(
@@ -80,7 +81,7 @@ class Read extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

@@ -6,15 +6,15 @@ namespace KWCMS\modules\Sysimage\Controllers;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
-use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_modules\Support;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Libs\AModule;
 
 
 /**
@@ -29,7 +29,7 @@ class Sysimage extends AModule
     /** @var string */
     protected $imagePath = '';
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->mime = (new Check\Factory())->getLibrary(null);
     }

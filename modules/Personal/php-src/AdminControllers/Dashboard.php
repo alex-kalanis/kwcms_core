@@ -3,23 +3,18 @@
 namespace KWCMS\modules\Personal\AdminControllers;
 
 
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Interfaces\IWorkAccounts;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
-use kalanis\kw_auth_sources\Interfaces\IAuthCert;
-use kalanis\kw_auth_sources\Interfaces\IUser;
-use kalanis\kw_auth_sources\Interfaces\IUserCert;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_locks\LockException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Personal\Lib;
 use KWCMS\modules\Personal\Templates;
 
@@ -29,15 +24,15 @@ use KWCMS\modules\Personal\Templates;
  * @package KWCMS\modules\Personal\AdminControllers
  * Site's users - personal properties
  */
-class Dashboard extends AAuthModule implements IModuleTitle
+class Dashboard extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var IAuthCert|null */
+    /** @var Interfaces\IAuthCert|null */
     protected $libUsers = null;
-    /** @var IWorkAccounts|null */
+    /** @var Interfaces\IProcessAccounts|null */
     protected $libAccounts = null;
-    /** @var IUserCert|IUser|null */
+    /** @var Interfaces\IUserCert|Interfaces\IUser|null */
     protected $editUser = null;
     /** @var Lib\FormProps|null */
     protected $form = null;
@@ -45,30 +40,37 @@ class Dashboard extends AAuthModule implements IModuleTitle
     protected $isProcessed = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
-        $this->libUsers = Auth::getAuth() instanceof IAuthCert ? Auth::getAuth() : (Auth::getAccounts() instanceof IAuthCert ? Auth::getAccounts() : null);
+        $this->libUsers = Auth::getAuth() instanceof Interfaces\IAuthCert
+            ? Auth::getAuth()
+            : (
+                Auth::getAccounts() instanceof Interfaces\IAuthCert
+                    ? Auth::getAccounts()
+                    : null
+            );
         $this->libAccounts = Auth::getAccounts();
         $this->form = new Lib\FormProps();
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER, Interfaces\IProcessClasses::CLASS_ADMIN, Interfaces\IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void
     {
         try {
-            $this->editUser = (($this->user instanceof IUserCert) && $this->libUsers)
+            $this->editUser = (($this->user instanceof Interfaces\IUserCert) && $this->libUsers)
                 ? $this->libUsers->getCertData($this->user->getAuthName())
                 : $this->user
             ;
             $this->form->composeForm($this->editUser);
-            if ($this->editUser instanceof IUserCert) {
+            if ($this->editUser instanceof Interfaces\IUserCert) {
                 $this->form->addCerts($this->editUser);
             }
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
@@ -84,7 +86,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                     $this->editUser->getDir()
                 );
                 $this->libAccounts->updateAccount($this->editUser);
-                if (($this->editUser instanceof IUserCert) && $this->libUsers) {
+                if (($this->editUser instanceof Interfaces\IUserCert) && $this->libUsers) {
                     $this->libUsers->updateCertKeys(
                         $this->editUser->getAuthName(),
                         $values['pubKey'],
@@ -94,7 +96,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 $this->isProcessed = true;
             }
 
-        } catch (AuthSourcesException | FormsException | LockException $ex) {
+        } catch (AccountsException | FormsException $ex) {
             $this->error = $ex;
         }
     }
@@ -121,7 +123,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
                 Notification::addSuccess(Lang::get('personal.properties_updated'));
             }
             $editTmpl = new Templates\EditTemplate();
-            if ($this->editUser instanceof IUserCert) {
+            if ($this->editUser instanceof Interfaces\IUserCert) {
                 $certTmpl = new Templates\CertTemplate();
                 $editTmpl->addCerts($certTmpl->setData($this->form)->render());
             }

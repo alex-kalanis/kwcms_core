@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Admin\AdminControllers;
 
 
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Redirect;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -13,9 +13,6 @@ use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_langs\Support;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
@@ -23,6 +20,9 @@ use kalanis\kw_rules\Interfaces\IRules;
 use kalanis\kw_scripts\Scripts;
 use KWCMS\modules\Admin\Forms;
 use KWCMS\modules\Admin\Templates;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -30,13 +30,13 @@ use KWCMS\modules\Admin\Templates;
  * @package KWCMS\modules\Admin\AdminControllers
  * Admin login
  */
-class Login extends AAuthModule implements IModuleTitle
+class Login extends AAuthModule implements IHasTitle
 {
     protected $form = null;
     protected $cookieAdapter = null;
     protected $sessionAdapter = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->cookieAdapter = new CookieAdapter();
         $this->sessionAdapter = new SessionAdapter();
@@ -67,7 +67,7 @@ class Login extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     /**
@@ -83,7 +83,7 @@ class Login extends AAuthModule implements IModuleTitle
             $this->form->process('login');
         }
 
-        $link = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $link = new ExternalLink(StoreRouted::getPath());
         if ($this->user) { // logged in
             if ($this->isJson()) {
                 // create json with status info

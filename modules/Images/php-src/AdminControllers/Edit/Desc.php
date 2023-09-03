@@ -26,9 +26,9 @@ class Desc extends AEdit
     /** @var Forms\DescForm */
     protected $descForm = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->descForm = new Forms\DescForm('fileDescForm');
     }
 

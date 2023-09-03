@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Images\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Access;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -13,8 +13,6 @@ use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Interfaces\IPaths;
@@ -26,6 +24,8 @@ use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
@@ -37,7 +37,7 @@ use KWCMS\modules\Images\Templates;
  * @package KWCMS\modules\Images\AdminControllers
  * Directory creation in another path
  */
-class MakeDir extends AAuthModule implements IModuleTitle
+class MakeDir extends AAuthModule implements IHasTitle
 {
     use Lib\TLibAction;
     use Templates\TModuleTemplate;
@@ -54,11 +54,12 @@ class MakeDir extends AAuthModule implements IModuleTitle
     protected $processed = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $this->createForm = new Forms\DirNewForm('dirNewForm');
@@ -70,7 +71,7 @@ class MakeDir extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

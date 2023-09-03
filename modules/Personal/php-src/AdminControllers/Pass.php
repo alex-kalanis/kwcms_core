@@ -3,19 +3,18 @@
 namespace KWCMS\modules\Personal\AdminControllers;
 
 
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Interfaces;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_locks\LockException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Personal\Lib;
 use KWCMS\modules\Personal\Templates;
 
@@ -25,13 +24,13 @@ use KWCMS\modules\Personal\Templates;
  * @package KWCMS\modules\Personal\AdminControllers
  * Site's users - personal password
  */
-class Pass extends AAuthModule implements IModuleTitle
+class Pass extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
     /** @var Interfaces\IAuth|null */
     protected $libAuth = null;
-    /** @var Interfaces\IWorkAccounts|null */
+    /** @var Interfaces\IProcessAccounts|null */
     protected $libAccount = null;
     /** @var Lib\FormPass|null */
     protected $form = null;
@@ -39,9 +38,10 @@ class Pass extends AAuthModule implements IModuleTitle
     protected $isProcessed = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $this->libAuth = Auth::getAuth();
@@ -51,7 +51,7 @@ class Pass extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [Interfaces\IWorkClasses::CLASS_MAINTAINER, Interfaces\IWorkClasses::CLASS_ADMIN, Interfaces\IWorkClasses::CLASS_USER, ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER, Interfaces\IProcessClasses::CLASS_ADMIN, Interfaces\IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void
@@ -66,7 +66,7 @@ class Pass extends AAuthModule implements IModuleTitle
                     $this->isProcessed = true;
                 }
             }
-        } catch (AuthSourcesException | FormsException | LockException $ex) {
+        } catch (AccountsException | FormsException $ex) {
             $this->error = $ex;
         }
     }

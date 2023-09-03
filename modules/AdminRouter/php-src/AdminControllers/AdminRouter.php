@@ -8,26 +8,23 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AModule;
+use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\IModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
-use kalanis\kw_modules\Interfaces\IModuleUser;
+use kalanis\kw_modules\Interfaces\Lists\IModulesList;
+use kalanis\kw_modules\Mixer\Processor;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Loaders\KwLoader;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
-use kalanis\kw_modules\Processing\FileProcessor;
-use kalanis\kw_modules\Processing\ModuleRecord;
-use kalanis\kw_modules\Processing\Modules;
-use kalanis\kw_modules\SubModules;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use KWCMS\modules\AdminRouter\Lib;
 use KWCMS\modules\AdminRouter\Templates;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Interfaces\Modules\IHasUser;
+use KWCMS\modules\Core\Libs\AModule;
 
 
 /**
@@ -45,27 +42,31 @@ class AdminRouter extends AModule
     protected $loader = null;
     /** @var IModule|null */
     protected $module = null;
-    /** @var Modules */
-    protected $moduleProcessor = null;
-    /** @var SubModules */
+    /** @var IModulesList */
+    protected $modulesList = null;
+    /** @var Processor */
     protected $subModules = null;
     /** @var Lib\Chain\Processor */
     protected $chainProcessor = null;
+    /** @param array<string, string|int|float|bool|object> $constructParams  */
+    protected $constructParams = [];
 
     /**
-     * @param ILoader|null $loader
-     * @param Modules|null $processor
+     * @param mixed ...$constructParams
      * @throws ConfException
+     * @throws ModuleException
      */
-    public function __construct(?ILoader $loader, ?Modules $processor)
+    public function __construct(...$constructParams)
     {
         Config::load('Core', 'page');
-        $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(
-            new ModuleRecord(),
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
-        $this->subModules = new SubModules($this->loader, $this->moduleProcessor);
+
+        $this->constructParams = $constructParams;
+        // this part is about module loader, it depends one each server
+        $modulesFactory = new modules_factory();
+        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
+        $this->modulesList = $modulesFactory->getModulesList($constructParams);
+        $this->subModules = new Processor($this->loader, $this->modulesList);
+
         $this->chainProcessor = new Lib\Chain\Processor();
         $this->orderLookup();
     }
@@ -73,16 +74,16 @@ class AdminRouter extends AModule
     protected function orderLookup(): void
     {
         $path = StoreRouted::getPath();
-        $this->chainProcessor->addToChain(new Lib\Chain\ModulePath($this->loader, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\ModuleDashboard($this->loader, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\ModuleClass($this->loader, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\AdminModule($this->loader, $path, ISitePart::SITE_ROUTED));
-        $this->chainProcessor->addToChain(new Lib\Chain\AdminDashboard($this->loader, $path, ISitePart::SITE_ROUTED));
+        $this->chainProcessor->addToChain(new Lib\Chain\ModulePath($this->loader, $path, ISitePart::SITE_ROUTED, $this->constructParams));
+        $this->chainProcessor->addToChain(new Lib\Chain\ModuleDashboard($this->loader, $path, ISitePart::SITE_ROUTED, $this->constructParams));
+        $this->chainProcessor->addToChain(new Lib\Chain\ModuleClass($this->loader, $path, ISitePart::SITE_ROUTED, $this->constructParams));
+        $this->chainProcessor->addToChain(new Lib\Chain\AdminModule($this->loader, $path, ISitePart::SITE_ROUTED, $this->constructParams));
+        $this->chainProcessor->addToChain(new Lib\Chain\AdminDashboard($this->loader, $path, ISitePart::SITE_ROUTED, $this->constructParams));
     }
 
     public function process(): void
     {
-        $this->moduleProcessor->setLevel(ISitePart::SITE_ROUTED);
+        $this->modulesList->setModuleLevel(ISitePart::SITE_ROUTED);
         $this->chainProcessor->init($this->inputs, $this->params);
         $this->module = $this->chainProcessor->process();
         $this->module->process();
@@ -134,16 +135,27 @@ class AdminRouter extends AModule
         $template = new Templates\RouterTemplate();
         $template->setData(
             $content->output(),
-            ($this->module instanceof IModuleTitle) ? $this->module->getTitle() : ''
+            ($this->module instanceof IHasTitle) ? $this->module->getTitle() : ''
         );
-        if ($this->module instanceof IModuleUser && $this->module->getUser()) {
+        if ($this->module instanceof IHasUser && $this->module->getUser()) {
             $tmplTop = new Templates\TopTemplate();
             $tmplFoot = new Templates\FootTemplate();
-            $this->subModules->fill($tmplTop, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
+            $top = $this->subModules->fill($tmplTop->reset()->get(), $this->inputs, ISitePart::SITE_LAYOUT, $this->params, $this->constructParams);
+            $tmplTop->change($tmplTop->reset()->get(), $top);
             $tmplTop = strtr($tmplTop->render(), ['{MENU_USER_NAME}' => $this->module->getUser()->getDisplayName()]);
             $template->setTopRow($tmplTop)->setFootRow($tmplFoot->render());
         }
-        $this->subModules->fill($template, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
+        $tmpl = $this->subModules->fill($template->get(), $this->inputs, ISitePart::SITE_LAYOUT, $this->params, $this->constructParams);
+        $template->change($template->get(), $tmpl);
         return $out->setContent($template->render());
+    }
+
+    /**
+     * Real modules with basic templates - admin, page, ...
+     * @return string[]
+     */
+    protected function modulesWithPassingParams(): array
+    {
+        return ['Layout', 'AdminRouter', 'SinglePage', 'Image', 'Pedigree'];
     }
 }

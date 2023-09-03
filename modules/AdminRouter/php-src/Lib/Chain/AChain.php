@@ -8,8 +8,11 @@ use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\ModuleException;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\RoutedPath;
+use kalanis\kw_routed_paths\Support;
 
 
 /**
@@ -33,12 +36,22 @@ abstract class AChain
     protected $params = [];
     /** @var int */
     protected $keyLevel = 0;
+    /** @param array<string, string|int|float|bool|object> $constructParams  */
+    protected $constructParams = [];
 
-    public function __construct(ILoader $loader, RoutedPath $path, int $keyLevel = ISitePart::SITE_ROUTED)
+    /**
+     * AChain constructor.
+     * @param ILoader $loader
+     * @param RoutedPath $path
+     * @param int $keyLevel
+     * @param array $constructParams
+     */
+    public function __construct(ILoader $loader, RoutedPath $path, int $keyLevel = ISitePart::SITE_ROUTED, array $constructParams = [])
     {
         $this->loader = $loader;
         $this->path = $path;
         $this->keyLevel = $keyLevel;
+        $this->constructParams = $constructParams;
     }
 
     public function init(IFiltered $inputs, array $passedParams): self
@@ -59,6 +72,20 @@ abstract class AChain
         return $this->next;
     }
 
+    protected function getModulePath(): array
+    {
+        return array_map(
+            'ucfirst',
+            array_map(
+                [Support::class, 'normalizeModuleName'],
+                array_map(
+                    'strtolower',
+                    $this->path->getPath()
+                )
+            )
+        );
+    }
+
     /**
      * @return IModule
      * @throws ModuleException
@@ -66,16 +93,16 @@ abstract class AChain
     abstract public function getModule(): IModule;
 
     /**
-     * @param string $name
-     * @param string|null $pathToController
-     * @return IModule
+     * @param string[] $path
+     * @throws PathsException
      * @throws ModuleException
+     * @return IModule
      */
-    protected function moduleInit(string $name, ?string $pathToController): IModule
+    protected function moduleInit(array $path): IModule
     {
-        $module = $this->loader->load($name, $pathToController);
+        $module = $this->loader->load($path, $this->constructParams);
         if (!$module) {
-            throw new ModuleException(sprintf('Controller for wanted module *%s* not found!', $name));
+            throw new ModuleException(sprintf('Controller for wanted module *%s* not found!', Stuff::arrayToPath($path)));
         }
         $module->init($this->inputs, array_merge(
             $this->params, [ISitePart::KEY_LEVEL => $this->keyLevel]

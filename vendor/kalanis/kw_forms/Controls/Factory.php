@@ -4,6 +4,8 @@ namespace kalanis\kw_forms\Controls;
 
 
 use kalanis\kw_forms\Exceptions\FormsException;
+use ReflectionClass;
+use ReflectionException;
 
 
 class Factory
@@ -58,11 +60,18 @@ class Factory
     {
         $type = strtolower($type);
         if (isset(static::$map[$type])) {
-            $class = static::$map[$type];
-            $lib = new $class();
-            if ($lib instanceof AControl) {
-                return $lib;
+            $control = static::$map[$type];
+            try {
+                /** @var class-string $control */
+                $ref = new ReflectionClass($control);
+                $class = $ref->newInstance();
+                if ($class instanceof AControl) {
+                    return $class;
+                }
+            } catch (ReflectionException $ex) {
+                throw new FormsException($ex->getMessage(), $ex->getCode(), $ex);
             }
+
         }
         throw new FormsException(sprintf('Unknown type %s ', $type));
     }

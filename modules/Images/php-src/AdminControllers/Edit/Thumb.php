@@ -27,9 +27,9 @@ class Thumb extends AEdit
     /** @var Forms\FileThumbForm */
     protected $thumbForm = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->thumbForm = new Forms\FileThumbForm('fileThumbForm');
     }
 

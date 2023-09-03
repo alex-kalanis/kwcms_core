@@ -4,8 +4,8 @@ namespace KWCMS\modules\Files\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Files\Lib;
 
 
@@ -14,13 +14,13 @@ use KWCMS\modules\Files\Lib;
  * @package KWCMS\modules\Files\AdminControllers
  * Change directory - by files
  */
-class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IHasTitle
 {
     use Lib\TModuleTemplate;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->initTModuleTemplate();
     }
 

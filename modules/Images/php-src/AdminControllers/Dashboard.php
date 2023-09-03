@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Images\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Access;
@@ -13,8 +13,6 @@ use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
@@ -25,6 +23,8 @@ use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Templates;
@@ -35,7 +35,7 @@ use KWCMS\modules\Images\Templates;
  * @package KWCMS\modules\Images\AdminControllers
  * Site's image content - list available files in current dir
  */
-class Dashboard extends AAuthModule implements IModuleTitle
+class Dashboard extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
     use TWhereDir;
@@ -53,11 +53,12 @@ class Dashboard extends AAuthModule implements IModuleTitle
     protected $currentPath = [];
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
@@ -68,7 +69,7 @@ class Dashboard extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     /**

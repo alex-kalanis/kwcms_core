@@ -9,7 +9,6 @@ use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_menu\MetaProcessor;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
 use kalanis\kw_table\core\Table\Rules;
@@ -17,6 +16,7 @@ use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_json\JsonRenderer;
 use kalanis\kw_table\output_kw\KwRenderer;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**

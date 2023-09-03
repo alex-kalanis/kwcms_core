@@ -34,14 +34,15 @@ class Move extends AEdit
     protected $tree = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws PathsException
      * @throws ConfException
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->moveForm = new Forms\FileActionForm('fileMoveForm');
         $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()

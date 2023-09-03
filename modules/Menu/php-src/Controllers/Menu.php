@@ -14,8 +14,6 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MenuFactory;
 use kalanis\kw_menu\MoreEntries;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Interfaces\IPaths;
@@ -28,6 +26,8 @@ use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Menu\Lib;
 use KWCMS\modules\Menu\Lib\Translations;
@@ -55,6 +55,7 @@ class Menu extends AModule
     protected $tmplDisplay = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws CacheException
      * @throws ConfException
      * @throws FilesException
@@ -62,11 +63,11 @@ class Menu extends AModule
      * @throws PathsException
      * @throws SemaphoreException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load('Menu');
         $this->canCache = boolval(Config::get('Menu', 'use_cache', false));
-        $this->externalLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->externalLink = new ExternalLink(StoreRouted::getPath());
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
         $innerLink = new InnerLinks(

@@ -6,14 +6,15 @@
  */
 namespace kalanis\kw_autoload;
 
-use Exception;
+
+use ReflectionException;
 
 
 /**
  * Class AutoloadException
  * @package kalanis\kw_load
  */
-final class AutoloadException extends Exception
+final class AutoloadException extends ReflectionException
 {
 }
 
@@ -28,12 +29,19 @@ final class WantedClassInfo
     const PHP_CLASS_DELIMITER = '\\';
     const PHP_EXTENSION = '.php';
 
+    /** @var string */
     protected $vendor = '';
+    /** @var string */
     protected $project = '';
+    /** @var string */
     protected $module = '';
+    /** @var string */
     protected $classPath = '';
+    /** @var string */
     protected $className = '';
+    /** @var string */
     protected $finalPath = '';
+    /** @var bool */
     protected $escapeUnderscore = false;
 
     public function __construct(string $className, bool $escapeUnderscore = false)
@@ -52,16 +60,16 @@ final class WantedClassInfo
     {
         $classPath = explode(static::PHP_CLASS_DELIMITER, $className);
         $len = count($classPath);
-        if ($len > 3) {
+        if (3 < $len) {
             $this->vendor = reset($classPath);
             $this->project = next($classPath);
             $this->module = next($classPath);
             $this->classPath = $this->findPath(array_slice($classPath, 3));
-        } elseif ($len > 2) {
+        } elseif (2 < $len) {
             $this->project = reset($classPath);
             $this->module = next($classPath);
             $this->classPath = $this->findPath(array_slice($classPath, 2));
-        } elseif ($len > 1) {
+        } elseif (1 < $len) {
             $this->module = reset($classPath);
             $this->classPath = $this->findPath(array_slice($classPath, 1));
         } else {
@@ -69,6 +77,10 @@ final class WantedClassInfo
         }
     }
 
+    /**
+     * @param string[] $slashedClass
+     * @return string
+     */
     protected function findPath(array $slashedClass): string
     {
         return implode(DIRECTORY_SEPARATOR, $slashedClass);
@@ -145,7 +157,7 @@ final class Autoload
     /** @var bool */
     protected static $escapingUnderscore = false;
     /** @var bool */
-    protected static $testingMode = true;
+    protected static $testingMode = false;
 
     /**
      * Where the heck my project is?
@@ -238,12 +250,12 @@ final class Autoload
             return;
         }
 
-        $foundFiles = [];
+        $dealFiles = [];
         $info = new WantedClassInfo($className, static::$escapingUnderscore);
 
 //print_r(['pt info', $info]);
         foreach (static::$paths as $path) {
-            $lookedPath = sprintf(
+            $currentPath = sprintf(
                 $path,
                 DIRECTORY_SEPARATOR, // %1$s
                 static::$basePath, // %2$s
@@ -252,24 +264,23 @@ final class Autoload
                 $info->getModule(), // %5$s
                 $info->getPath() . WantedClassInfo::PHP_EXTENSION // %6$s
             );
-            $currentPath = realpath($lookedPath);
-//print_r(['pt lookup', $path, $lookedPath, $currentPath]);
-            if ($currentPath && is_file($currentPath)) {
-                $foundFiles[] = $currentPath;
+            $realPath = realpath($currentPath);
+//print_r(['pt lookup', $path, $currentPath, $realPath]);
+            $dealFiles[] = $currentPath;
+            if ($realPath && is_file($currentPath)) {
 
-                require_once $currentPath;
+                require_once $realPath;
 
                 // time for check file if it contains desired class
                 if (static::checkLoad($className)) {
-                    $info->setFinalPath($currentPath);
+                    $info->setFinalPath($realPath);
                     static::$classesInfo[$className] = $info;
                     return;
                 }
             }
         }
         if (static::$testingMode) {
-//var_dump($info);
-            throw new AutoloadException(sprintf('Class not found. Class name: %s, available files: %s', $className, implode(',', $foundFiles)));
+            throw new AutoloadException(sprintf('Class not found. Class name: %s, looked up files: *%s*', $className, implode('* , *', $dealFiles)));
         }
     }
 
@@ -285,6 +296,7 @@ final class Autoload
                     return true;
                 }
             }
+            // someone stored info which is no longer valid
             unset(static::$classesInfo[$className]);
         }
         return false;
@@ -292,6 +304,7 @@ final class Autoload
 
     protected static function checkLoad(string $className): bool
     {
+//var_dump(['check' => $className]);
         if (class_exists($className)) {
             return true;
         }
@@ -301,6 +314,21 @@ final class Autoload
         if (trait_exists($className)) {
             return true;
         }
+        if (function_exists($className)) {
+            return true;
+        }
+        if (enum_exists($className)) {
+            return true;
+        }
+        return false;
+    }
+}
+
+
+// PHP < 8.1
+if (!function_exists('enum_exists')) {
+    function enum_exists(string $enumName, bool $autoload = true): bool
+    {
         return false;
     }
 }
@@ -308,7 +336,7 @@ final class Autoload
 
 class Helper
 {
-    public static function load(string $rootPath, string $vendorPath, string $projectPath = '')
+    public static function load(string $rootPath, string $vendorPath, string $projectPath = ''): void
     {
         Autoload::setBasePath($rootPath);
         // maybe looks like magic, but it is not

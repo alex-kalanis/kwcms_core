@@ -8,9 +8,9 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Short\Lib;
 
 
@@ -19,7 +19,7 @@ use KWCMS\modules\Short\Lib;
  * @package KWCMS\modules\Short\AdminControllers
  * Change directory - by short messages
  */
-class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IHasTitle
 {
     use Lib\TModuleTemplate;
 
@@ -29,9 +29,9 @@ class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModu
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->initTModuleTemplate();
         Config::load('Short');
     }

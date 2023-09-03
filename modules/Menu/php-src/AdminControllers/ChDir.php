@@ -4,10 +4,9 @@ namespace KWCMS\modules\Menu\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Menu\Templates;
 
 
@@ -16,14 +15,14 @@ use KWCMS\modules\Menu\Templates;
  * @package KWCMS\modules\Menu\AdminControllers
  * Change directory - by texts
  */
-class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
-        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
+        parent::__construct(...$constructParams);
+        $this->initTModuleTemplate(StoreRouted::getPath());
     }
 
     protected function htmlContent(string $content): Output\AOutput

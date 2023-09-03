@@ -3,9 +3,9 @@
 namespace KWCMS\modules\Jquery\Controllers;
 
 
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_scripts\Scripts;
+use KWCMS\modules\Core\Libs\AModule;
 
 
 /**
@@ -15,6 +15,10 @@ use kalanis\kw_scripts\Scripts;
  */
 class Jquery extends AModule
 {
+    public function __construct(...$constructParams)
+    {
+    }
+
     public function process(): void
     {
     }

@@ -8,9 +8,9 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Images\Templates;
 
 
@@ -19,7 +19,7 @@ use KWCMS\modules\Images\Templates;
  * @package KWCMS\modules\Images\AdminControllers
  * Change directory - by Images
  */
-class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModuleTitle
+class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
@@ -30,9 +30,9 @@ class ChDir extends \KWCMS\modules\Admin\AdminControllers\ChDir implements IModu
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->initTModuleTemplate();
         Config::load('Images');
     }

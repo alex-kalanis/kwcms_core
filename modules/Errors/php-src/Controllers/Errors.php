@@ -6,12 +6,12 @@ namespace KWCMS\modules\Errors\Controllers;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\JsonError;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Errors\Lib;
 
 
@@ -31,9 +31,10 @@ class Errors extends AModule
     protected static $acceptable_errors = [400,401,403,404,405,406,407,408,409,410,411,413,414,415,500,501,502,503,504,505];
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load(static::getClassName(static::class));
     }

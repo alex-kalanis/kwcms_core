@@ -3,11 +3,11 @@
 namespace KWCMS\modules\HtmlTexts\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Texts\TextsException;
 
 
@@ -22,9 +22,13 @@ class HtmlTexts extends AAuthModule
     /** @var string */
     protected $targetPath = '';
 
+    public function __construct(...$constructParams)
+    {
+    }
+
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

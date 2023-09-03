@@ -3,16 +3,16 @@
 namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
-use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
+use KWCMS\modules\Core\Libs\AAuthModule;
 
 
 /**
@@ -30,16 +30,17 @@ class Lookup extends AAuthModule
     protected $entry = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load('Pedigree');
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER,];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER,];
     }
 
     public function run(): void

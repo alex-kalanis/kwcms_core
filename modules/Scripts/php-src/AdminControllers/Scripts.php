@@ -5,7 +5,7 @@ namespace KWCMS\modules\Scripts\AdminControllers;
 
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_modules\Support;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_scripts\Scripts as ExScripts;
@@ -28,7 +28,7 @@ class Scripts extends AScripts
      */
     public function outContent(): Output\AOutput
     {
-        $modulePath = Stuff::linkToArray($this->params['path']);
+        $modulePath = $this->params['path']->getValue();
         $moduleName = array_shift($modulePath);
         $moduleName = Support::normalizeModuleName($moduleName);
         $content = ExScripts::getFile($moduleName, Stuff::arrayToPath($modulePath));

@@ -3,10 +3,10 @@
 namespace KWCMS\modules\Lightbox\Controllers;
 
 
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Core\Libs\AModule;
 
 
 /**
@@ -16,6 +16,10 @@ use kalanis\kw_styles\Styles;
  */
 class Lightbox extends AModule
 {
+    public function __construct(...$constructParams)
+    {
+    }
+
     public function process(): void
     {
     }

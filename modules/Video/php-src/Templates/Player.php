@@ -4,8 +4,8 @@ namespace KWCMS\modules\Video\Templates;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\Templates\ATemplate;
 use kalanis\kw_templates\TemplateException;
+use KWCMS\modules\Core\Libs\ATemplate;
 
 
 /**

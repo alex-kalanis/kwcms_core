@@ -5,9 +5,9 @@ namespace KWCMS\modules\Iframe\Controllers;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Iframe\Lib;
 
 
@@ -24,9 +24,10 @@ class Iframe extends AModule
     protected $link = '';
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load(static::getClassName(static::class));
         $this->template = new Lib\Template();

@@ -24,6 +24,12 @@ require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalani
 \kalanis\kw_autoload\Autoload::addPath('%2$s%1$smodules%1$s%5$s%1$s%6$s');
 \kalanis\kw_autoload\Autoload::addPath('%2$s%1$smodules%1$s%6$s');
 \kalanis\kw_autoload\Autoload::addPath('%2$s%1$s%5$s%1$s%6$s');
+
+// to modules
+\kalanis\kw_autoload\Autoload::addPath('%2$s%1$smodules%1$s%5$s%1$sphp-src%1$s%6$s');
+\kalanis\kw_autoload\Autoload::addPath('%2$s%1$smodules%1$s%5$s%1$ssrc%1$s%6$s');
+\kalanis\kw_autoload\Autoload::addPath('%2$s%1$smodules%1$s%5$s%1$s%6$s');
+
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
 // where is the system?
@@ -153,36 +159,25 @@ $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handl
 //);
 
 
-class ExProcessor extends \kalanis\kw_modules\Processing\FileProcessor
-{
-    public function setModuleLevel(int $level): void
-    {
-        $this->records = [];
-        $this->fileName = implode(DIRECTORY_SEPARATOR, [
-            $this->moduleConfPath,
-            \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE,
-            sprintf('%s.%d.%s', \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE, $level, \kalanis\kw_paths\Interfaces\IPaths::DIR_CONF )
-        ]);
-    }
-}
-
-
 // And now we have all necessary variables to build the page
 try {
-    $processor = new ExProcessor(
-        new \kalanis\kw_modules\Processing\ModuleRecord(),
-        $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
-    );
-    $module = new \kalanis\kw_modules\Module(
-        new \kalanis\kw_input\Filtered\Variables($inputs),'',
-        new \kalanis\kw_modules\Processing\Modules($processor),
-        new \kalanis\kw_modules\Loaders\ClassLoader([
-            new \kalanis\kw_modules\Loaders\KwAdminLoader(),
-//            new \kalanis\kw_modules\Loaders\KwApiLoader(),
-            new \kalanis\kw_modules\Loaders\KwLoader(),
-        ])
-    );
-    echo $module->process('Core')->get(); // dump output
+    $module = new \KWCMS\modules\Core\Libs\Module(new \kalanis\kw_input\Filtered\Variables($inputs), [
+        'modules_loaders' => [
+            'admin',
+//            'api',
+            'web',
+        ],
+        'modules_source' => [
+            'modules_param_format' => 'http',
+//            'volume_path' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'modules'
+            'volume_path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE
+        ],
+        'user_storage' => [
+            $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
+//            $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_USER
+        ]
+    ]);
+    echo $module->process(['Core'])->get(); // dump output
 } catch (\Exception $ex) {
     echo get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine() . PHP_EOL;
     echo "Stack trace:" . PHP_EOL;

@@ -3,21 +3,19 @@
 namespace KWCMS\modules\Chsett\Lib;
 
 
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Interfaces\IProcessGroups;
+use kalanis\kw_accounts\Interfaces\IUser;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
 use kalanis\kw_address_handler\Sources;
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Interfaces\IWorkGroups;
-use kalanis\kw_auth_sources\Interfaces\IUser;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_locks\LockException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\core\Connector\PageLink;
@@ -30,6 +28,7 @@ use kalanis\kw_table\form_kw\Fields;
 use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -42,14 +41,14 @@ class GroupTable
     protected $variables = null;
     /** @var ExternalLink|null */
     protected $link = null;
-    /** @var IWorkGroups|null */
+    /** @var IProcessGroups|null */
     protected $libGroups = null;
     /** @var IUser|null */
     protected $currentUser = null;
     /** @var Forward|null */
     protected $forward = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link, IWorkGroups $groups, IUser $currentUser)
+    public function __construct(IFiltered $inputs, ExternalLink $link, IProcessGroups $groups, IUser $currentUser)
     {
         $this->variables = $inputs;
         $this->link = $link;
@@ -60,10 +59,9 @@ class GroupTable
 
     /**
      * @return Table
-     * @throws AuthSourcesException
+     * @throws AccountsException
      * @throws FormsException
      * @throws LangException
-     * @throws LockException
      * @throws TableException
      */
     public function getTable()

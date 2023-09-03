@@ -3,7 +3,6 @@
 namespace kalanis\kw_routed_paths;
 
 
-use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 
@@ -40,8 +39,8 @@ class RoutedPath
     protected $lang = ''; // in which language will be content provided, also affects path
     /** @var string[] */
     protected $path = []; // the rest of path
-    /** @var string */
-    protected $module = ''; // basic module which will be used as default one to present the content
+    /** @var string[] */
+    protected $module = []; // basic module which will be used as default one to present the content
     /** @var bool */
     protected $isSingle = false; // is module the master of page and should be there another as wrapper?
 
@@ -54,8 +53,8 @@ class RoutedPath
         $params = $source->getData();
         $this->user = strval($params['user'] ?? $this->user );
         $this->lang = strval($params['lang'] ?? $this->lang );
-        $this->path = isset($params['path']) ? Stuff::linkToArray(strval($params['path'])) : $this->path;
-        $this->module = strval($params['module'] ?? $this->module );
+        $this->path = array_filter(isset($params['path']) ? Stuff::linkToArray(strval($params['path'])) : $this->path);
+        $this->module = array_filter(isset($params['module']) ? Support::moduleNameFromRequest(strval($params['module'])) : $this->module);
         $this->isSingle = isset($params['single']);
         $this->staticPath = strval($params['staticPath'] ?? $this->staticPath );
         $this->virtualPrefix = strval($params['virtualPrefix'] ?? $this->virtualPrefix );
@@ -89,7 +88,10 @@ class RoutedPath
         return $this->path;
     }
 
-    public function getModule(): string
+    /**
+     * @return string[]
+     */
+    public function getModule(): array
     {
         return $this->module;
     }
@@ -107,7 +109,7 @@ class RoutedPath
         return [
             'user' => $this->user,
             'lang' => $this->lang,
-            'path' => implode(IPaths::SPLITTER_SLASH, $this->path),
+            'path' => $this->path,
             'module' => $this->module,
             'isSingle' => $this->isSingle,
             'staticPath' => $this->staticPath,

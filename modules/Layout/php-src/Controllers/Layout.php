@@ -6,22 +6,20 @@ namespace KWCMS\modules\Layout\Controllers;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
-use kalanis\kw_modules\AModule;
+use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\IModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
+use kalanis\kw_modules\Interfaces\Lists\IModulesList;
+use kalanis\kw_modules\Mixer\Processor;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Loaders\KwLoader;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Raw;
-use kalanis\kw_modules\Processing\FileProcessor;
-use kalanis\kw_modules\Processing\ModuleRecord;
-use kalanis\kw_modules\Processing\Modules;
-use kalanis\kw_modules\Processing\Support;
-use kalanis\kw_modules\SubModules;
-use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Layout\BodyTemplate;
 use KWCMS\modules\Layout\LayoutTemplate;
 
@@ -39,45 +37,56 @@ class Layout extends AModule
     protected $loader = null;
     /** @var IModule|null */
     protected $module = null;
-    /** @var Modules */
-    protected $moduleProcessor = null;
-    /** @var SubModules */
+    /** @var IModulesList */
+    protected $modulesList = null;
+    /** @var Processor */
     protected $subModules = null;
+    /** @param array<string, string|int|float|bool|object> $constructParams  */
+    protected $constructParams = [];
 
     /**
-     * @param ILoader|null $loader
-     * @param Modules|null $processor
+     * @param mixed ...$constructParams
      * @throws ConfException
+     * @throws ModuleException
      */
-    public function __construct(?ILoader $loader, ?Modules $processor)
+    public function __construct(...$constructParams)
     {
         Config::load('Core', 'page');
-        $this->loader = $loader ?: new KwLoader();
-        $this->moduleProcessor = $processor ?: new Modules(new FileProcessor(new ModuleRecord(), Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() ));
-        $this->subModules = new SubModules($this->loader, $this->moduleProcessor);
+
+        $this->constructParams = $constructParams;
+        // this part is about module loader, it depends one each server
+        $modulesFactory = new modules_factory();
+        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
+        $this->modulesList = $modulesFactory->getModulesList($constructParams);
+        $this->subModules = new Processor($this->loader, $this->modulesList);
     }
 
+    /**
+     * @throws ModuleException
+     * @throws PathsException
+     */
     public function process(): void
     {
-        $this->moduleProcessor->setLevel(ISitePart::SITE_LAYOUT);
-        $defaultModuleName = Config::get('Core', 'page.default_display_module', 'Page');
-        $wantModuleName = StoreRouted::getPath()->getModule() ?: $defaultModuleName ;
-        $moduleRecord = $this->moduleProcessor->readNormalized($wantModuleName);
-        $moduleRecord = $moduleRecord ?? $this->moduleProcessor->readNormalized($defaultModuleName);
+        $this->modulesList->setModuleLevel(ISitePart::SITE_LAYOUT);
+        $defaultModule = Stuff::linkToArray(strval(Config::get('Core', 'page.default_display_module', 'Page')));
+        $defaultModuleName = strval(reset($defaultModule));
+        $wantModule = StoreRouted::getPath()->getModule();
+        $wantModuleName = strval(reset($wantModule));
+        $moduleRecord = $this->modulesList->get($wantModuleName);
+        $moduleRecord = $moduleRecord ?? $this->modulesList->get($defaultModuleName);
 
         if (empty($moduleRecord)) {
             throw new ModuleException(sprintf('Module *%s* not found!', $wantModuleName));
         }
 
-        $extraParams = ('Page' == $moduleRecord->getModuleName() ? [$this->loader, $this->moduleProcessor] : []);
-        $this->module = $this->loader->load($moduleRecord->getModuleName(), null, $extraParams);
+        $this->module = $this->loader->load([$moduleRecord->getModuleName()], $this->constructParams);
 
         if (!$this->module) {
             throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
         }
 
         $this->module->init($this->inputs, array_merge(
-            Support::paramsIntoArray($moduleRecord->getParams()), $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT]
+            $moduleRecord->getParams(), $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT]
         ));
         $this->module->process();
     }
@@ -115,13 +124,22 @@ class Layout extends AModule
     public function wrapped(AOutput $content, bool $useBody = true): AOutput
     {
         $out = new Raw();
-        $template = new LayoutTemplate();
+
         $body = new BodyTemplate();
-        $this->subModules->fill($body, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
-        $this->subModules->fill($template, $this->inputs, ISitePart::SITE_LAYOUT, $this->params);
-        return $out->setContent($template->setData(
-            $useBody ? $body->setData($content->output())->render() : $content->output(),
-            ($this->module instanceof IModuleTitle) ? $this->module->getTitle() : ''
+        $bodyToReplace = $body->reset()->get();
+        $bodyUpdated = $this->subModules->fill($bodyToReplace, $this->inputs, ISitePart::SITE_LAYOUT, $this->params, $this->constructParams);
+        $body->change($bodyToReplace, $bodyUpdated);
+
+        $layout = new LayoutTemplate();
+        $layoutToReplace = $layout->reset()->get();
+        $layoutUpdated = $this->subModules->fill($layoutToReplace, $this->inputs, ISitePart::SITE_LAYOUT, $this->params, $this->constructParams);
+        $layout->change($layoutToReplace, $layoutUpdated);
+
+        return $out->setContent($layout->setData(
+            $useBody
+                ? $body->setData($content->output())->render()
+                : $content->output(),
+            ($this->module instanceof IHasTitle) ? $this->module->getTitle() : ''
         )->render());
     }
 }

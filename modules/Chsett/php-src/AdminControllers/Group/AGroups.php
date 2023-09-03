@@ -3,22 +3,20 @@
 namespace KWCMS\modules\Chsett\AdminControllers\Group;
 
 
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
-use kalanis\kw_auth_sources\Interfaces\IWorkGroups;
-use kalanis\kw_auth_sources\Interfaces\IGroup;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 
 
 /**
@@ -26,13 +24,13 @@ use KWCMS\modules\Chsett\Templates;
  * @package KWCMS\modules\Chsett\AdminControllers\Group
  * Site's groups - edit one
  */
-abstract class AGroups extends AAuthModule implements IModuleTitle
+abstract class AGroups extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var IWorkGroups|null */
+    /** @var Interfaces\IProcessGroups|null */
     protected $libAuthEditGroups = null;
-    /** @var IGroup|null */
+    /** @var Interfaces\IGroup|null */
     protected $group = null;
     /** @var Lib\FormGroups|null */
     protected $form = null;
@@ -44,9 +42,10 @@ abstract class AGroups extends AAuthModule implements IModuleTitle
     protected $redirect = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $this->libAuthEditGroups = Auth::getGroups();
@@ -57,7 +56,7 @@ abstract class AGroups extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER ];
     }
 
     /**

@@ -3,12 +3,11 @@
 namespace KWCMS\modules\Chsett\AdminControllers\Group;
 
 
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Data\FileGroup;
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Data\FileGroup;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_locks\LockException;
 
 
 /**
@@ -39,7 +38,7 @@ class Add extends AGroups
                 $this->redirect = true;
             }
 
-        } catch (AuthSourcesException | FormsException | LockException $ex) {
+        } catch (AccountsException | FormsException $ex) {
             $this->error = $ex;
         }
     }

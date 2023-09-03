@@ -59,8 +59,7 @@ class File extends AControl implements Interfaces\IValidateFile
      */
     public function getValue()
     {
-        $this->checkFile();
-        return $this->entry->/** @scrutinizer ignore-call */getValue();
+        return $this->getFile()->getValue();
     }
 
     /**
@@ -69,8 +68,7 @@ class File extends AControl implements Interfaces\IValidateFile
      */
     public function getMimeType(): string
     {
-        $this->checkFile();
-        return $this->entry->/** @scrutinizer ignore-call */getMimeType();
+        return $this->getFile()->getMimeType();
     }
 
     /**
@@ -79,8 +77,7 @@ class File extends AControl implements Interfaces\IValidateFile
      */
     public function getTempName(): string
     {
-        $this->checkFile();
-        return $this->entry->/** @scrutinizer ignore-call */getTempName();
+        return $this->getFile()->getTempName();
     }
 
     /**
@@ -89,8 +86,7 @@ class File extends AControl implements Interfaces\IValidateFile
      */
     public function getError(): int
     {
-        $this->checkFile();
-        return $this->entry->/** @scrutinizer ignore-call */getError();
+        return $this->getFile()->getError();
     }
 
     /**
@@ -99,8 +95,7 @@ class File extends AControl implements Interfaces\IValidateFile
      */
     public function getSize(): int
     {
-        $this->checkFile();
-        return $this->entry->/** @scrutinizer ignore-call */getSize();
+        return $this->getFile()->getSize();
     }
 
     /**
@@ -109,17 +104,9 @@ class File extends AControl implements Interfaces\IValidateFile
      */
     public function getFile(): IFileEntry
     {
-        $this->checkFile();
-        return $this->entry;
-    }
-
-    /**
-     * @throws EntryException
-     */
-    protected function checkFile(): void
-    {
         if (empty($this->entry)) {
             throw new EntryException(sprintf($this->errorEntryNotFile, $this->getKey()));
         }
+        return $this->entry;
     }
 }

@@ -15,19 +15,20 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\IModulesList;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_modules\Processing\Modules;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Image\Libs;
@@ -55,25 +56,26 @@ class Image extends AModule
     protected $sources = null;
     /** @var ILoader|null */
     protected $loader = null;
-    /** @var Modules|null */
-    protected $processor = null;
+    /** @var IModulesList|null */
+    protected $modulesList = null;
 
     /***
-     * @param ILoader|null $loader
-     * @param Modules|null $processor
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws ImagesException
      * @throws LangException
+     * @throws ModuleException
      * @throws PathsException
      */
-    public function __construct(?ILoader $loader = null, ?Modules $processor = null)
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
-        $this->loader = $loader;
-        $this->processor = $processor;
-        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $modulesFactory = new modules_factory();
+        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
+        $this->modulesList = $modulesFactory->getModulesList($constructParams);
+        $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -168,7 +170,7 @@ class Image extends AModule
      */
     protected function outLayout(Output\AOutput $output): Output\AOutput
     {
-        $out = new Layout($this->loader, $this->processor);
+        $out = new Layout($this->loader, $this->modulesList);
         $out->init($this->inputs, $this->params);
         return $out->wrapped($output, false);
     }

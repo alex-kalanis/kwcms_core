@@ -16,8 +16,6 @@ use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_pager\BasicPager;
@@ -33,6 +31,8 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Dirlist\Libs;
@@ -76,13 +76,14 @@ class Dirlist extends AModule
     protected $preselectExt = '';
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws PathsException
      * @throws ConfException
      * @throws ImagesException
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->defineModule();
         Lang::load($this->module);
@@ -90,7 +91,7 @@ class Dirlist extends AModule
         $this->templateMain = new Templates\Main();
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
-        $this->linkExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->linkExternal = new ExternalLink(StoreRouted::getPath());
         $this->libImages = FilesHelper::getImages(
             Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
             [],
@@ -298,9 +299,15 @@ class Dirlist extends AModule
         ;
     }
 
+    /**
+     * @param string $ext
+     * @throws FilesException
+     * @throws PathsException
+     * @return string
+     */
     protected function getIcon(string $ext): string
     {
-        return $this->linkExternal->linkModule('Sysimage','images/files/'.$ext.'.png')
+        return $this->files->isFile($this->innerLink->toModulePath('Sysimage', ['images', 'files', $ext.'.png']))
             ? $this->linkExternal->linkVariant('files/'.$ext.'.png', 'sysimage', true)
             : $this->linkExternal->linkVariant('files/dummy.png', 'sysimage', true);
     }

@@ -5,9 +5,9 @@ namespace KWCMS\modules\Menu\Templates;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_paths\Path;
 use kalanis\kw_routed_paths\RoutedPath;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -20,15 +20,14 @@ trait TModuleTemplate
     protected $links = null;
 
     /**
-     * @param Path $path
      * @param RoutedPath $routedPath
      * @throws LangException
      */
-    public function initTModuleTemplate(Path $path, RoutedPath $routedPath)
+    public function initTModuleTemplate(RoutedPath $routedPath)
     {
         Lang::load('Menu');
         Lang::load('Admin');
-        $this->links = new ExternalLink($path, $routedPath);
+        $this->links = new ExternalLink($routedPath);
     }
 
     protected function outModuleTemplate(string $content): string

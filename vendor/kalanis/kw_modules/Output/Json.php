@@ -10,9 +10,14 @@ namespace kalanis\kw_modules\Output;
  */
 class Json extends AOutput
 {
+    /** @var array<string|int, string|int|float|array<string|int|float|array<string|int|float>>> */
     protected $content = null;
 
-    public function setContent($contentToEncode)
+    /**
+     * @param array<string|int, string|int|float|array<string|int|float|array<string|int|float>>> $contentToEncode
+     * @return $this
+     */
+    public function setContent($contentToEncode): self
     {
         $this->content = $contentToEncode;
         return $this;
@@ -20,7 +25,11 @@ class Json extends AOutput
 
     public function output(): string
     {
-        header('Content-Type: application/json');
-        return json_encode($this->content);
+        if (!headers_sent()) {
+            // @codeCoverageIgnoreStart
+            header('Content-Type: application/json');
+        }
+        // @codeCoverageIgnoreEnd
+        return strval(json_encode($this->content));
     }
 }

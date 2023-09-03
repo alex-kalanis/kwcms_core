@@ -13,9 +13,14 @@ class RawCallback extends AOutput
     /** @var callable */
     protected $callback = null;
 
-    public function setCallback(callable $callback)
+    /**
+     * @param callable $callback
+     * @return $this
+     */
+    public function setCallback($callback): self
     {
         $this->callback = $callback;
+        return $this;
     }
 
     public function output(): string

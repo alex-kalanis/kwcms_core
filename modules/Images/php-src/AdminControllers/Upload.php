@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Images\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -15,14 +15,14 @@ use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -33,7 +33,7 @@ use KWCMS\modules\Images\Templates;
  * @package KWCMS\modules\Images\AdminControllers
  * Upload image
  */
-class Upload extends AAuthModule implements IModuleTitle
+class Upload extends AAuthModule implements IHasTitle
 {
     use Lib\TLibAction;
     use Templates\TModuleTemplate;
@@ -47,9 +47,10 @@ class Upload extends AAuthModule implements IModuleTitle
     protected $processed = false;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         $this->fileForm = new Forms\FileUploadForm('uploadImageForm');
@@ -58,7 +59,7 @@ class Upload extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     /**

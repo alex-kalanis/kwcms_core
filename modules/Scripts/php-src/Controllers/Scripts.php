@@ -8,7 +8,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_modules\Support;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
@@ -35,7 +35,7 @@ class Scripts extends AScripts
      */
     protected function outContent(): Output\AOutput
     {
-        $gotPath = Stuff::linkToArray($this->params['path']);
+        $gotPath = $this->params['path']->getValue();
         $content = $this->getUserContent($gotPath);
         if (is_null($content)) {
             $moduleName = array_shift($gotPath);

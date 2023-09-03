@@ -3,18 +3,18 @@
 namespace KWCMS\modules\Pedigree\AdminControllers;
 
 
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_pedigree\Storage;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Pedigree\Lib;
 
 
@@ -23,7 +23,7 @@ use KWCMS\modules\Pedigree\Lib;
  * @package KWCMS\modules\Pedigree\AdminControllers
  * Site's Pedigree - basics
  */
-abstract class APedigree extends AAuthModule implements IModuleTitle
+abstract class APedigree extends AAuthModule implements IHasTitle
 {
     use Lib\TModuleTemplate;
 
@@ -35,10 +35,11 @@ abstract class APedigree extends AAuthModule implements IModuleTitle
     protected $forward = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load('Pedigree');
         $this->initTModuleTemplate();
@@ -48,7 +49,7 @@ abstract class APedigree extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     protected function getRecord(): ARecord

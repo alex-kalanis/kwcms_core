@@ -4,10 +4,10 @@ namespace KWCMS\modules\Errors\Lib;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -24,7 +24,7 @@ class OutHtml extends Html
     public function __construct()
     {
         $this->template = new Template();
-        $this->linkExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->linkExternal = new ExternalLink(StoreRouted::getPath());
     }
 
     public function setContent(string $content = '')

@@ -16,15 +16,15 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Logo\Libs;
@@ -49,17 +49,18 @@ class Logo extends AModule
     protected $processor = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws ImagesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
-        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),

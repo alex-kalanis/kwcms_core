@@ -4,7 +4,7 @@ namespace KWCMS\modules\Files\Lib;
 
 
 use kalanis\kw_forms\Exceptions\RenderException;
-use kalanis\kw_modules\Templates\ATemplate;
+use KWCMS\modules\Core\Libs\ATemplate;
 
 
 /**

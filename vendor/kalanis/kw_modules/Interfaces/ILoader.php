@@ -14,11 +14,10 @@ use kalanis\kw_modules\ModuleException;
 interface ILoader
 {
     /**
-     * @param string $module which module it will be looked for
-     * @param string|null $constructPath next parts in target
-     * @param array $constructParams params passed into __construct, mainly DI
-     * @return IModule|null The module or null
+     * @param string[] $module which module it will be looked for and which part in it
+     * @param array<string, string|int|float|bool|object> $constructParams params passed into __construct, mainly DI
      * @throws ModuleException when module is not found
+     * @return IModule|null The module or null
      */
-    public function load(string $module, ?string $constructPath = null, array $constructParams = []): ?IModule;
+    public function load(array $module, array $constructParams = []): ?IModule;
 }

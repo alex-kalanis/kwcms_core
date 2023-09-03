@@ -9,14 +9,13 @@ use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Pedigree\Lib;
 
 
@@ -34,11 +33,11 @@ class Edit extends APedigree
     /** @var ExternalLink */
     protected $extLink = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->form = new Lib\MessageForm('editPedigree');
-        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->extLink = new ExternalLink(StoreRouted::getPath());
     }
 
     public function run(): void

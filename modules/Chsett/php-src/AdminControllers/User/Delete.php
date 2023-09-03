@@ -3,24 +3,19 @@
 namespace KWCMS\modules\Chsett\AdminControllers\User;
 
 
+use kalanis\kw_accounts\AccountsException;
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth_sources\AuthSourcesException;
-use kalanis\kw_auth_sources\Interfaces\IWorkAccounts;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
-use kalanis\kw_auth_sources\Interfaces\IAuth;
-use kalanis\kw_auth_sources\Interfaces\IUser;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_locks\LockException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -30,11 +25,11 @@ use kalanis\kw_routed_paths\StoreRouted;
  */
 class Delete extends AAuthModule
 {
-    /** @var IAuth|null */
+    /** @var Interfaces\IAuth|null */
     protected $libAuth = null;
-    /** @var IWorkAccounts|null */
+    /** @var Interfaces\IProcessAccounts|null */
     protected $libAccounts = null;
-    /** @var IUser|null */
+    /** @var Interfaces\IUser|null */
     protected $editUser = null;
     /** @var AuthException|null */
     protected $error = null;
@@ -46,22 +41,23 @@ class Delete extends AAuthModule
     protected $links = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load('Chsett');
         Lang::load('Admin');
         $this->libAuth = Auth::getAuth();
         $this->libAccounts = Auth::getAccounts();
-        $this->links = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->links = new ExternalLink(StoreRouted::getPath());
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER, ];
     }
 
     public function run(): void
@@ -70,11 +66,11 @@ class Delete extends AAuthModule
             $userName = strval($this->getFromParam('name'));
             $this->editUser = $this->libAuth->getDataOnly($userName);
             if (empty($this->editUser)) {
-                throw new AuthException(Lang::get('chsett.user_not_found', $userName));
+                throw new AccountsException(Lang::get('chsett.user_not_found', $userName));
             }
             $this->libAccounts->deleteAccount($this->editUser->getAuthName());
             $this->isProcessed = true;
-        } catch (AuthException | AuthSourcesException | LockException $ex) {
+        } catch (AccountsException $ex) {
             $this->error = $ex;
         }
     }
@@ -95,7 +91,7 @@ class Delete extends AAuthModule
             Notification::addSuccess(Lang::get('chsett.user_removed', $this->editUser->getDisplayName()));
         }
         $this->forward->forward();
-        $this->forward->setForward($this->links->linkVariant('chsett/groups'));
+        $this->forward->setForward($this->links->linkVariant(['chsett', 'groups']));
         $this->forward->forward();
         return new Output\Raw();
     }

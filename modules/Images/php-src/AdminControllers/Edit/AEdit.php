@@ -3,19 +3,19 @@
 namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Templates;
 
@@ -43,10 +43,11 @@ abstract class AEdit extends AAuthModule
     protected $forward = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         Config::load('Images');
@@ -57,7 +58,7 @@ abstract class AEdit extends AAuthModule
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function result(): Output\AOutput

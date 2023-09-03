@@ -5,7 +5,7 @@ namespace KWCMS\modules\Texts\Lib;
 
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\Templates\ATemplate;
+use KWCMS\modules\Core\Libs\ATemplate;
 
 
 /**

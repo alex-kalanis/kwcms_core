@@ -12,7 +12,6 @@ use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
-use kalanis\kw_modules\Linking\ExternalLink;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_table\core\Connector\PageLink;
@@ -26,6 +25,7 @@ use kalanis\kw_table\form_kw\KwFilter;
 use kalanis\kw_table\output_kw\KwRenderer;
 use kalanis\kw_tree\Interfaces\ITree;
 use KWCMS\modules\Admin\Shared\SimplifiedPager;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Images\Interfaces\IProcessFiles;
 
 

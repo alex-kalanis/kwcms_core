@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Chsett\Lib;
 
 
-use kalanis\kw_auth_sources\Interfaces\IUser;
-use kalanis\kw_auth_sources\Interfaces\IUserCert;
+use kalanis\kw_accounts\Interfaces\IUser;
+use kalanis\kw_accounts\Interfaces\IUserCert;
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 

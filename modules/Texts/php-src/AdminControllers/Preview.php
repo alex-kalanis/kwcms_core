@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Texts\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
@@ -11,12 +11,12 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AAuthModule;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Texts\Lib;
 use KWCMS\modules\Texts\TextsException;
 
@@ -43,16 +43,16 @@ class Preview extends AAuthModule
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        $this->initTModuleTemplate(Stored::getPath(), StoreRouted::getPath());
+        $this->initTModuleTemplate(StoreRouted::getPath());
         $this->initTTexts(Stored::getPath());
         $this->mime = (new Check\Factory())->getLibrary($this->files);
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

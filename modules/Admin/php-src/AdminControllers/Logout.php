@@ -3,14 +3,14 @@
 namespace KWCMS\modules\Admin\AdminControllers;
 
 
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use KWCMS\modules\Admin\Templates;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 
 
 /**
@@ -18,14 +18,15 @@ use KWCMS\modules\Admin\Templates;
  * @package KWCMS\modules\Admin\AdminControllers
  * Admin Logout
  */
-class Logout extends AAuthModule implements IModuleTitle
+class Logout extends AAuthModule implements IHasTitle
 {
     protected $logoutTemplate = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws LangException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Lang::load('Admin');
         $this->logoutTemplate = new Templates\LogoutTemplate();
@@ -45,7 +46,7 @@ class Logout extends AAuthModule implements IModuleTitle
 
     public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function output(): Output\AOutput

@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Upload\AdminControllers;
 
 
-use kalanis\kw_auth_sources\Interfaces\IWorkClasses;
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access;
@@ -12,8 +12,6 @@ use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AAuthModule;
-use kalanis\kw_modules\Interfaces\IModuleTitle;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
@@ -25,6 +23,8 @@ use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use kalanis\UploadPerPartes\Exceptions\UploadException;
 use kalanis\UploadPerPartes\Response;
+use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Files\Lib as FileLib;
 use KWCMS\modules\Upload\Lib;
@@ -36,7 +36,7 @@ use KWCMS\modules\Upload\UploadTemplate;
  * @package KWCMS\modules\Upload\AdminControllers
  * Upload files
  */
-class Upload extends AAuthModule implements IModuleTitle
+class Upload extends AAuthModule implements IHasTitle
 {
     use Lib\TModuleTemplate;
     use TWhereDir;
@@ -50,13 +50,14 @@ class Upload extends AAuthModule implements IModuleTitle
     protected $processor = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
      * @throws UploadException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         Config::load('Upload');
@@ -71,7 +72,7 @@ class Upload extends AAuthModule implements IModuleTitle
 
     final public function allowedAccessClasses(): array
     {
-        return [IWorkClasses::CLASS_MAINTAINER, IWorkClasses::CLASS_ADMIN, IWorkClasses::CLASS_USER, ];
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
     public function run(): void

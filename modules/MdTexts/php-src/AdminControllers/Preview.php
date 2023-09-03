@@ -21,9 +21,9 @@ class Preview extends Texts\AdminControllers\Preview
     /** @var MarkdownExtra|null */
     protected $libMarkdown = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->libMarkdown = new MarkdownExtra();
     }
 

@@ -4,7 +4,6 @@ namespace KWCMS\modules\Notify\AdminControllers;
 
 
 use kalanis\kw_langs\Lang;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_notify\Interfaces\INotify;
@@ -12,6 +11,7 @@ use kalanis\kw_notify\Notification;
 use kalanis\kw_notify\NotifyException;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Notify\Template;
 
 
@@ -28,6 +28,10 @@ class Notify extends AModule
         INotify::TARGET_SUCCESS => 'alert-box-success',
         INotify::TARGET_INFO => 'alert-box-info',
     ];
+
+    public function __construct(...$constructParams)
+    {
+    }
 
     public function process(): void
     {

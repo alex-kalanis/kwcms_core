@@ -14,9 +14,7 @@ use kalanis\kw_modules\Interfaces\IModule;
  */
 class ClassLoader implements ILoader
 {
-    /**
-     * @var ILoader[]
-     */
+    /** @var ILoader[] */
     protected $loaders = [];
 
     /**
@@ -27,10 +25,10 @@ class ClassLoader implements ILoader
         $this->loaders = $loaders;
     }
 
-    public function load(string $module, ?string $constructPath = null, array $constructParams = []): ?IModule
+    public function load(array $module, array $constructParams = []): ?IModule
     {
         foreach ($this->loaders as $loader) {
-            $got = $loader->load($module, $constructPath, $constructParams);
+            $got = $loader->load($module, $constructParams);
             if ($got) {
                 return $got;
             }

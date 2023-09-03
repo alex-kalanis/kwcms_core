@@ -6,8 +6,8 @@ namespace KWCMS\modules\Transcode\Controllers;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
-use kalanis\kw_modules\AModule;
 use kalanis\kw_modules\Output;
+use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Transcode\Lib;
 use KWCMS\modules\Transcode\Templates;
 
@@ -23,7 +23,7 @@ class Transcode extends AModule
     /** @var string[] */
     protected $conf = [];
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->form = new Lib\MessageForm();
         $this->conf = [

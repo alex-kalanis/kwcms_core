@@ -27,9 +27,9 @@ class Primary extends AEdit
     /** @var Forms\FileThumbForm */
     protected $primaryForm = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->primaryForm = new Forms\FileThumbForm('filePrimaryForm');
     }
 

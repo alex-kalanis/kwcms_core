@@ -4,7 +4,7 @@ namespace KWCMS\modules\Short\Lib;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_modules\Templates\ATemplate;
+use KWCMS\modules\Core\Libs\ATemplate;
 
 
 /**

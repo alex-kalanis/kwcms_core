@@ -12,11 +12,9 @@ use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
-use kalanis\kw_modules\Processing\Support;
+use kalanis\kw_modules\Support;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
@@ -28,6 +26,8 @@ use kalanis\kw_styles\StylesException;
 use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Themes\StylesTemplate;
 
@@ -61,13 +61,14 @@ class Themes extends AModule
     protected $treeList = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         $this->template = new StylesTemplate();
-        $this->libExtLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath(), false, false);
+        $this->libExtLink = new ExternalLink(StoreRouted::getPath(), false, false);
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),

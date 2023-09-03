@@ -3,7 +3,7 @@
 namespace KWCMS\modules\Chapters\Lib;
 
 
-use kalanis\kw_modules\Templates\ATemplate;
+use KWCMS\modules\Core\Libs\ATemplate;
 use kalanis\kw_templates\TemplateException;
 
 

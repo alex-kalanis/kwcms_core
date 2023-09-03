@@ -36,9 +36,9 @@ class Video extends Dirlist
     /** @var string */
     protected $fileToPlay = '';
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->templateDisplay = new Templates\Display();
         $this->templatePlayer = new Templates\Player();
         $this->fileMime = (new Check\Factory())->getLibrary(null);

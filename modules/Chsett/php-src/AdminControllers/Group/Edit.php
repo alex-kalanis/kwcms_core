@@ -3,12 +3,10 @@
 namespace KWCMS\modules\Chsett\AdminControllers\Group;
 
 
-use kalanis\kw_auth\AuthException;
-use kalanis\kw_auth_sources\AuthSourcesException;
+use kalanis\kw_accounts\AccountsException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
-use kalanis\kw_locks\LockException;
 
 
 /**
@@ -24,7 +22,7 @@ class Edit extends AGroups
             $groupId = intval(strval($this->getFromParam('id')));
             $this->group = $this->libAuthEditGroups->getGroupDataOnly($groupId);
             if (empty($this->group)) {
-                throw new AuthException(Lang::get('chsett.group_not_found', $groupId));
+                throw new AccountsException(Lang::get('chsett.group_not_found', $groupId));
             }
             $this->form->composeForm($this->group);
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
@@ -43,7 +41,7 @@ class Edit extends AGroups
                 $this->redirect = true;
             }
 
-        } catch (AuthException | AuthSourcesException | FormsException | LockException $ex) {
+        } catch (AccountsException | FormsException $ex) {
             $this->error = $ex;
         }
     }

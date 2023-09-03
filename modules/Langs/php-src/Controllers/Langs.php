@@ -11,9 +11,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Interfaces\ISitePart;
-use kalanis\kw_modules\Linking\ExternalLink;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\ArrayPath;
@@ -23,6 +21,8 @@ use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Traits\TFilesDirs;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Langs\Templates;
 
@@ -52,16 +52,17 @@ class Langs extends AModule
     protected $innerLink = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
-        $this->extLink = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -132,7 +133,7 @@ class Langs extends AModule
             $inputs[] = $tmplItem->reset()->setData(
                 $this->extLink->linkVariant(StoreRouted::getPath()->getPath(), '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
-                $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true, false),
+                $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true),
                 strval($this->getFromParam('vsize', '')),
                 strval($this->getFromParam('hsize', ''))
             )->render();
@@ -155,7 +156,7 @@ class Langs extends AModule
             $inputs[] = $tmplLang->reset()->setData(
                 $this->extLink->linkVariant('', '', false, $lang),
                 $this->possibleLangs[$lang]['name'],
-                $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true, false),
+                $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true),
                 strval($this->getFromParam('vsize', '')),
                 strval($this->getFromParam('hsize', ''))
             )->render();

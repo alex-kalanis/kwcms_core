@@ -5,6 +5,8 @@ namespace kalanis\kw_connect\core;
 
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterType;
+use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -40,11 +42,17 @@ abstract class AFilterFactory implements IFilterFactory
         if (!isset(static::$map[$action])) {
             throw new ConnectException(sprintf('Unknown filter action *%s*!', $action));
         }
-        $class = static::$map[$action];
-        $lib = new $class();
-        if (!$lib instanceof IFilterType) {
-            throw new ConnectException(sprintf('Bad filter class *%s*!', $class));
+        $className = static::$map[$action];
+        try {
+            /** @var class-string $className */
+            $ref = new ReflectionClass($className);
+            $lib = $ref->newInstance();
+            if (!$lib instanceof IFilterType) {
+                throw new ConnectException(sprintf('Bad filter class *%s*!', $className));
+            }
+            return $lib;
+        } catch (ReflectionException $ex) {
+            throw new ConnectException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        return $lib;
     }
 }

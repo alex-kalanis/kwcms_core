@@ -10,9 +10,14 @@ namespace kalanis\kw_modules\Output;
  */
 class Raw extends AOutput
 {
+    /** @var mixed */
     protected $content = null;
 
-    public function setContent($content)
+    /**
+     * @param mixed $content
+     * @return $this
+     */
+    public function setContent($content): self
     {
         $this->content = $content;
         return $this;
@@ -20,6 +25,6 @@ class Raw extends AOutput
 
     public function output(): string
     {
-        return (string)$this->content;
+        return strval($this->content);
     }
 }

@@ -11,9 +11,7 @@ use kalanis\kw_input\Simplified\ServerAdapter;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
-use kalanis\kw_modules\AModule;
-use kalanis\kw_modules\Linking\ExternalLink;
-use kalanis\kw_modules\Interfaces\ISitePart;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
@@ -21,6 +19,8 @@ use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
+use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Rss\Lib;
 use KWCMS\modules\Rss\RssException;
@@ -41,12 +41,13 @@ class Rss extends AModule
     protected $innerLink = null;
 
     /**
+     * @param mixed ...$constructParams
      * @throws ConfException
      */
-    public function __construct()
+    public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
-        $this->libExternal = new ExternalLink(Stored::getPath(), StoreRouted::getPath());
+        $this->libExternal = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
@@ -86,7 +87,7 @@ class Rss extends AModule
         try {
             $tmpl = new Lib\MainTemplate();
             return $out->setContent($tmpl->setData(
-                $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
+                $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true),
                 Config::get('Core', 'page.site_name'),
                 $this->libExternal->linkVariant(),
                 Config::get('Core', 'page.page_title'),
