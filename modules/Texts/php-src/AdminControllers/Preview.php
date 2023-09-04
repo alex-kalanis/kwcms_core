@@ -4,6 +4,7 @@ namespace KWCMS\modules\Texts\AdminControllers;
 
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
+use kalanis\kw_confs\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
@@ -11,11 +12,20 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
+use kalanis\kw_modules\Access\Factory as modules_factory;
+use kalanis\kw_modules\Interfaces\Lists\ISitePart;
+use kalanis\kw_modules\Mixer\Processor;
+use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_routed_paths\RoutedPath;
+use kalanis\kw_routed_paths\Sources\Arrays;
 use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Texts\Lib;
 use KWCMS\modules\Texts\TextsException;
@@ -34,19 +44,45 @@ class Preview extends AAuthModule
     /** @var IMime */
     protected $mime = null;
     /** @var string[] */
+    protected $userPath = [];
+    /** @var string[] */
     protected $fullPath = [];
     /** @var string */
     protected $displayContent = '';
+    /** @var Processor */
+    protected $subModules = null;
+    /** @var InnerLinks */
+    protected $innerLink = null;
+    /** @param array<string, string|int|float|bool|object> $constructParams  */
+    protected $constructParams = [];
 
     /**
+     * @param mixed ...$constructParams
      * @throws FilesException
      * @throws LangException
+     * @throws ModuleException
      * @throws PathsException
      */
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate(StoreRouted::getPath());
         $this->initTTexts(Stored::getPath());
+
+        $this->constructParams = $constructParams;
+        // this part is about module loader, it depends one each server
+        $modulesFactory = new modules_factory();
+        $loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
+        $moduleProcessor = $modulesFactory->getModulesList($constructParams);
+        $moduleProcessor->setModuleLevel(ISitePart::SITE_CONTENT);
+        $this->subModules = new Processor($loader, $moduleProcessor);
+
+        // paths from render
+        $this->innerLink = new InnerLinks(
+            new RoutedPath(new Arrays([])),
+            boolval(Config::get('Core', 'site.more_users', false)),
+            false
+        );
+
         $this->mime = (new Check\Factory())->getLibrary($this->files);
     }
 
@@ -72,8 +108,8 @@ class Preview extends AAuthModule
         }
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $this->fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
+            $this->userPath = array_values($this->userDir->process()->getFullPath()->getArray());
+            $this->fullPath = array_merge($this->userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
 
             $externalContent = $this->inputs->getInArray('content', [IEntry::SOURCE_POST, IEntry::SOURCE_GET, IEntry::SOURCE_CLI]);
             $this->displayContent = (!empty($externalContent))
@@ -94,6 +130,8 @@ class Preview extends AAuthModule
 
     /**
      * @throws MimeException
+     * @throws PathsException
+     * @throws ModuleException
      * @return Output\AOutput
      */
     public function result(): Output\AOutput
@@ -119,11 +157,27 @@ class Preview extends AAuthModule
         return $out->setContent($this->displayContent);
     }
 
+    /**
+     * @throws ModuleException
+     * @throws PathsException
+     * @return Output\AOutput
+     */
     public function outHtml(): Output\AOutput
     {
+        $this->params['target'] = $this->localizedUserPath();
         $out = new Output\Raw();
         $page = new Lib\PreviewTemplate();
-        $page->setData($this->error ? $this->error->getMessage() : $this->displayContent);
+        $page->setData(
+            $this->error
+                ? $this->error->getMessage()
+                : $this->subModules->fill(
+                    $this->displayContent,
+                    $this->inputs,
+                    ISitePart::SITE_CONTENT,
+                    $this->params,
+                    $this->constructParams
+            )
+        );
         return $out->setContent($page->render());
     }
 
@@ -146,5 +200,30 @@ class Preview extends AAuthModule
             ]);
             return $out;
         }
+    }
+
+    /**
+     * @throws PathsException
+     * @return string
+     */
+    protected function localizedUserPath(): string
+    {
+        $this->userDir->setUserPath($this->userDir->getUserPath());
+        $this->userDir->wantDataDir(true)->process();
+
+//print_r(['up' => $this->userPath, 'fp' => $this->fullPath, 'gd' => $this->user->getDir(), 'uf' => $this->userDir->getFullPath()]);
+
+        $ap = new ArrayPath();
+        // remote first dirs
+        $currentPath = array_values($this->userDir->getFullPath()->getArray());
+        $fullPath = array_values($this->fullPath);
+        foreach ($currentPath as $dir) {
+            $first = array_shift($fullPath);
+            if ($first != $dir) {
+                array_unshift($fullPath, $first);
+                break;
+            }
+        }
+        return IPaths::SPLITTER_SLASH . $ap->setArray($fullPath)->getString();
     }
 }

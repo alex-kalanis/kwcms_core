@@ -26,9 +26,9 @@ class Edit extends Texts\AdminControllers\Edit
 
     protected $libMarkDown = null;
 
-    public function __construct()
+    public function __construct(...$constructParams)
     {
-        parent::__construct();
+        parent::__construct(...$constructParams);
         $this->libMarkDown = new MarkdownExtra();
     }
 

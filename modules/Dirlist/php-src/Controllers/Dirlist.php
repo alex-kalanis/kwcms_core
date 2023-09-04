@@ -123,6 +123,7 @@ class Dirlist extends AModule
     {
         $this->path = $this->pathLookup();
         $this->dir = $this->innerLink->toFullPath($this->path);
+//print_r(['dirlist pt' => $this->path, 'dr' => $this->dir]);
         $this->pager = new SimplifiedPager(new Positions(new BasicPager()), new Libs\Linking(new Inputs($this->inputs)));
 
         if ($this->files->isDir($this->dir)) {
