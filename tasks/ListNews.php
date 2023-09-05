@@ -4,16 +4,23 @@ namespace kwcms;
 
 
 use kalanis\kw_clipr\Tasks\ATask;
+use kalanis\kw_confs\ConfException;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_connect\search\Connector;
+use kalanis\kw_files\Access;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_paging\Render;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stored;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_table\output_cli\CliRenderer;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Short\Lib\MessageAdapter;
 use KWCMS\modules\Short\ShortException;
 
@@ -82,11 +89,19 @@ class ListNews extends ATask
 
         // data sources
         try {
-            $adapter = new MessageAdapter($this->path);
+            $files = (new Access\Factory(new FilesTranslations()))->getClass(
+                Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+            );
+            $adapter = new MessageAdapter($files, Stuff::pathToArray($this->path));
             $table->addDataSetConnector(new Connector(new Search($adapter->getRecord())));
+
         } catch (ShortException $ex) {
             $this->sendErrorMessage(sprintf('No short messages in path *%s*', $this->path));
             return static::STATUS_NO_INPUT_FILE;
+
+        } catch (ConfException | FilesException | PathsException $ex) {
+            $this->sendErrorMessage($ex->getMessage());
+            return static::STATUS_BAD_CONFIG;
         }
 
         // render

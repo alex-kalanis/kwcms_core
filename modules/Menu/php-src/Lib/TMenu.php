@@ -16,7 +16,6 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
-use kalanis\kw_paths\Path;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
@@ -42,20 +41,18 @@ trait TMenu
     protected $userDir = null;
 
     /**
-     * @param Path $path
+     * @param mixed $params
      * @throws ConfException
      * @throws FilesException
      * @throws MenuException
      * @throws PathsException
      */
-    protected function initTMenu(Path $path)
+    protected function initTMenu($params): void
     {
         Config::load('Menu');
         $lang = new Translations();
         $this->userDir = new UserDir($lang);
-        $this->files = (new Access\Factory(new FilesTranslations()))->getClass(
-            $path->getDocumentRoot() . $path->getPathToSystemRoot()
-        );
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($params);
         $this->libMenu = (new MenuFactory($lang))->getMenu($this->files);
     }
 

@@ -5,6 +5,7 @@ namespace KWCMS\modules\MediaRss\Controllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
@@ -43,6 +44,8 @@ class MediaRss extends AModule
 
     /** @var ExternalLink */
     protected $libExternal = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
     /** @var ArrayPath */
     protected $arrPath = null;
     /** @var InnerLinks */
@@ -71,8 +74,9 @@ class MediaRss extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->sources = FilesHelper::getImages(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            $this->files,
             [],
             new ImagesTranslations(),
             new FilesTranslations()
@@ -102,9 +106,6 @@ class MediaRss extends AModule
         try {
             Config::load('Core', 'page');
 
-            $libTree = new Files((new Factory(new FilesTranslations()))->getClass(
-                Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-            ));
             $userPath = $this->innerLink->toFullPath([]);
             $currentPath = array_filter(StoreRouted::getPath()->getPath());
 
@@ -114,9 +115,9 @@ class MediaRss extends AModule
                     $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
                     Config::get('Core', 'page.site_name'),
                     $this->libExternal->linkVariant(),
-                    $this->getLibDirAction($userPath, $currentPath)->getDesc()
+                    $this->getLibDirAction($this->files, $userPath, $currentPath)->getDesc()
                 )->addItems(
-                    implode('', $this->getItems($libTree, $userPath, $currentPath))
+                    implode('', $this->getItems(new Files($this->files), $userPath, $currentPath))
                 )->render()
             );
         } catch (ConfException | ImagesException | FilesException | PathsException $ex) {

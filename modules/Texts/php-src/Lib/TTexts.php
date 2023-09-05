@@ -8,7 +8,6 @@ use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Interfaces\IFiltered;
 use kalanis\kw_input\Simplified\SessionAdapter;
-use kalanis\kw_paths\Path;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
@@ -29,16 +28,14 @@ trait TTexts
     protected $files = null;
 
     /**
-     * @param Path $path
+     * @param mixed $params
      * @throws FilesException
      * @throws PathsException
      */
-    protected function initTTexts(Path $path)
+    protected function initTTexts($params): void
     {
         $this->userDir = new UserDir(new Translations());
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            $path->getDocumentRoot() . $path->getPathToSystemRoot() . DIRECTORY_SEPARATOR
-        );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($params);
     }
 
     protected function runTTexts(IFiltered $inputs, string $userDir): void

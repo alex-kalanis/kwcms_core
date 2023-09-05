@@ -18,7 +18,6 @@ use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Core\Libs\AModule;
@@ -66,7 +65,7 @@ class Icon extends AModule
             boolval(Config::get('Core', 'page.more_lang', false))
         );
         $this->sources = FilesHelper::getImages(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            $constructParams,
             [],
             new ImagesTranslations(),
             new FilesTranslations()

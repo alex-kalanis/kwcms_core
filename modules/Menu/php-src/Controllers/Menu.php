@@ -18,7 +18,6 @@ use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
@@ -75,21 +74,9 @@ class Menu extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'site.more_lang', false))
         );
-        $files = $this->getFiles();
+        $files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->menuTree = new Lib\Tree($this->getEntriesProcessor($files), $innerLink);
         $this->libCache = $this->getCache($files, $innerLink);
-    }
-
-    /**
-     * @throws FilesException
-     * @throws PathsException
-     * @return CompositeAdapter
-     */
-    protected function getFiles(): CompositeAdapter
-    {
-        return (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
     }
 
     /**

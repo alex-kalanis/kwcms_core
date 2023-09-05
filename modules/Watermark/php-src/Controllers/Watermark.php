@@ -22,7 +22,6 @@ use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Core\Libs\AModule;
@@ -69,7 +68,7 @@ class Watermark extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $libProcess = (new access_factory(new FilesTranslations()))->getClass(Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot());
+        $libProcess = (new access_factory(new FilesTranslations()))->getClass($constructParams);
         $this->mime = $this->getMimeLib($libProcess);
         $this->processor = $this->getFillLib($libProcess, $this->mime);
     }

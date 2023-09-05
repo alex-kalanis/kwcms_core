@@ -83,8 +83,8 @@ try {
 //            'volume_path' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'modules'
             'volume_path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE
         ],
-        'user_storage' => [
-            $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
+        'files' => [
+            'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
         ]
     ]);
     echo $module->process(['Core'])->get(); // dump output

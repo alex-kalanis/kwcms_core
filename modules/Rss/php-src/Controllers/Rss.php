@@ -5,6 +5,7 @@ namespace KWCMS\modules\Rss\Controllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_input\Simplified\ServerAdapter;
@@ -15,7 +16,6 @@ use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
@@ -35,6 +35,8 @@ class Rss extends AModule
 {
     /** @var ExternalLink */
     protected $libExternal = null;
+    /** @var CompositeAdapter */
+    protected $files = null;
     /** @var ArrayPath */
     protected $arrPath = null;
     /** @var InnerLinks */
@@ -43,12 +45,15 @@ class Rss extends AModule
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
+     * @throws FilesException
+     * @throws PathsException
      */
     public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         $this->libExternal = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
@@ -119,10 +124,7 @@ class Rss extends AModule
     {
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
-        $adapter = new Lib\MessageAdapter($files, Stored::getPath(), $this->innerLink->toFullPath($this->pathLookup()));
+        $adapter = new Lib\MessageAdapter($this->files, $this->innerLink->toFullPath($this->pathLookup()));
         $search = new Search($adapter->getRecord());
         $search->offset(intval(strval($this->getFromParam('offset', 0))));
         $search->limit(intval(strval($this->getFromParam('limit', Config::get('Rss', 'count', 10)))));

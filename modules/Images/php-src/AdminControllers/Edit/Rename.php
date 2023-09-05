@@ -46,7 +46,7 @@ class Rename extends AEdit
             $this->renameForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->renameForm->process()) {
                 $newName = strval($this->renameForm->getControl('newName')->getValue());
-                $libAction = $this->getLibFileAction($userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->renameFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,

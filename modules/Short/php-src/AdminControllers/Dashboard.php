@@ -19,7 +19,6 @@ use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_table\core\TableException;
 use kalanis\kw_tree_controls\TWhereDir;
@@ -62,9 +61,7 @@ class Dashboard extends AAuthModule implements IHasTitle
         Config::load('Short');
         $this->initTModuleTemplate();
         $this->userDir = new UserDir(new Lib\Translations());
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
     }
 
     public function allowedAccessClasses(): array
@@ -81,7 +78,7 @@ class Dashboard extends AAuthModule implements IHasTitle
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
             $currentPath = Stuff::linkToArray($this->getWhereDir());
 
-            $adapter = new Lib\MessageAdapter($this->files, Stored::getPath(), array_merge($userPath, $currentPath));
+            $adapter = new Lib\MessageAdapter($this->files, array_merge($userPath, $currentPath));
             $this->search = new Search($adapter->getRecord());
         } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;

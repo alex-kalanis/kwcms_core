@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images\AdminControllers;
 
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -20,6 +21,7 @@ use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -36,6 +38,8 @@ class Properties extends AAuthModule implements IHasTitle
     use Templates\TModuleTemplate;
     use TWhereDir;
 
+    /** @var Access\CompositeAdapter */
+    protected $files = null;
     /** @var Forms\DescForm */
     protected $descForm = null;
     /** @var Forms\DirExtraForm */
@@ -49,11 +53,14 @@ class Properties extends AAuthModule implements IHasTitle
 
     /**
      * @param mixed ...$constructParams
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->descForm = new Forms\DescForm('dirPropsForm');
         $this->extraForm = new Forms\DirExtraForm('dirPropsForm');
         $this->userDir = new UserDir(new Lib\Translations());
@@ -73,7 +80,7 @@ class Properties extends AAuthModule implements IHasTitle
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
             $currentPath = Stuff::linkToArray($this->getWhereDir());
 
-            $libAction = $this->getLibDirAction($userPath, $currentPath);
+            $libAction = $this->getLibDirAction($this->files, $userPath, $currentPath);
             $this->hasExtra = $libAction->canUse();
             if ($this->hasExtra) {
                 $this->descForm->composeForm($libAction->getDesc(),'#');

@@ -15,7 +15,6 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
@@ -58,15 +57,13 @@ class Short extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             false
         );
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
     }
 
     public function process(): void
     {
         try {
-            $adapter = new Lib\MessageAdapter($this->files, Stored::getPath(), $this->innerLink->toFullPath($this->pathLookup()));
+            $adapter = new Lib\MessageAdapter($this->files, $this->innerLink->toFullPath($this->pathLookup()));
             $this->search = new Search($adapter->getRecord());
         } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;

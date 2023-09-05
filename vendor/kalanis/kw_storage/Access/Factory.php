@@ -45,7 +45,7 @@ class Factory
     }
 
     /**
-     * @param array<string|int, string|int|float|object|bool|array<string|int|float|object>>|string|object|int|bool|null $params
+     * @param mixed $params
      * @throws StorageException
      * @return IStorage
      */
@@ -75,6 +75,9 @@ class Factory
             $target = new Target\Volume($this->getStLang());
 
         } elseif (is_array($params)) {
+            if (isset($params['storage'])) {
+                return $this->getStorage($params['storage']);
+            }
             // array -> params decide which storage library will be initialized
             $key = $this->whichKey($params);
             $target = $this->targetByKey($key, $params);

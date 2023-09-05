@@ -12,7 +12,6 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\DataSources;
@@ -54,9 +53,7 @@ class Dashboard extends AAuthModule implements IHasTitle
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate(StoreRouted::getPath());
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass($constructParams));
         $this->userDir = new UserDir(new Lib\Translations());
         $this->newFileForm = new Lib\NewFileForm('newFileForm');
         $this->openFileForm = new Lib\OpenFileForm('openFileForm');

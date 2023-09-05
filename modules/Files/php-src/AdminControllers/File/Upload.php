@@ -56,9 +56,7 @@ class Upload extends AAuthModule implements IHasTitle
     {
         $this->initTModuleTemplate();
         $this->fileForm = new Lib\FileForm('uploadFileForm');
-        $files = (new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->processor = new Lib\Processor($files);
         $this->userDir = new UserDir(new Lib\Translations());
     }

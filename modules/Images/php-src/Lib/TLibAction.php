@@ -7,7 +7,6 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Interfaces;
@@ -21,6 +20,7 @@ use KWCMS\modules\Images\Interfaces;
 trait TLibAction
 {
     /**
+     * @param mixed $filesParams
      * @param string[] $userPath
      * @param string[] $currentPath
      * @throws FilesException
@@ -28,21 +28,21 @@ trait TLibAction
      * @throws PathsException
      * @return Interfaces\IProcessFiles
      */
-    protected function getLibFileAction(array $userPath, array $currentPath): Interfaces\IProcessFiles
+    protected function getLibFileAction($filesParams, array $userPath, array $currentPath): Interfaces\IProcessFiles
     {
-        $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
         $imLang = new ImagesTranslations();
         $flLang = new FilesTranslations();
         return new ProcessFile(
-            FilesHelper::getOperations($webRootDir, [], $imLang, $flLang),
-            FilesHelper::getUpload($webRootDir, [], $imLang, $flLang),
-            FilesHelper::getImages($webRootDir, [], $imLang, $flLang),
+            FilesHelper::getOperations($filesParams, [], $imLang, $flLang),
+            FilesHelper::getUpload($filesParams, [], $imLang, $flLang),
+            FilesHelper::getImages($filesParams, [], $imLang, $flLang),
             $userPath,
             $currentPath
         );
     }
 
     /**
+     * @param mixed $filesParams
      * @param string[] $userPath
      * @param string[] $currentPath
      * @throws FilesException
@@ -50,13 +50,12 @@ trait TLibAction
      * @throws PathsException
      * @return Interfaces\IProcessDirs
      */
-    protected function getLibDirAction(array $userPath, array $currentPath): Interfaces\IProcessDirs
+    protected function getLibDirAction($filesParams, array $userPath, array $currentPath): Interfaces\IProcessDirs
     {
-        $webRootDir = Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot() . DIRECTORY_SEPARATOR;
         $imLang = new ImagesTranslations();
         $flLang = new FilesTranslations();
         return new ProcessDir(
-            FilesHelper::getDirs($webRootDir, [], $imLang, $flLang),
+            FilesHelper::getDirs($filesParams, [], $imLang, $flLang),
             $userPath,
             $currentPath
         );

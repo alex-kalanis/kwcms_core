@@ -9,9 +9,6 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
-use kalanis\kw_modules\Access\Factory as modules_factory;
-use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\Lists\IModulesList;
 use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
@@ -45,24 +42,19 @@ class Pedigree extends AModule
     protected $entries = null;
     /** @var int */
     protected $depth = 0;
-    /** @var ILoader|null */
-    protected $loader = null;
-    /** @var IModulesList|null */
-    protected $modulesList = null;
+    /** @var mixed */
+    protected $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
-     * @throws ModuleException
      */
     public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         $this->externalLink = new ExternalLink(StoreRouted::getPath());
-        $modulesFactory = new modules_factory();
-        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
-        $this->modulesList = $modulesFactory->getModulesList($constructParams);
+        $this->constructParams = $constructParams;
         Lang::load(static::getClassName(static::class));
     }
 
@@ -148,7 +140,7 @@ class Pedigree extends AModule
      */
     protected function outLayout(Output\AOutput $output): Output\AOutput
     {
-        $out = new Layout($this->loader, $this->modulesList);
+        $out = new Layout(...$this->constructParams);
         $out->init($this->inputs, $this->params);
         return $out->wrapped($output, false);
     }

@@ -14,7 +14,6 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\Traits\TFilesDirs;
@@ -48,6 +47,7 @@ abstract class ChDir extends AAuthModule
     protected $processedForm = false;
 
     /**
+     * @param mixed $constructParams
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
@@ -55,9 +55,7 @@ abstract class ChDir extends AAuthModule
     public function __construct(...$constructParams)
     {
         Lang::load('Admin');
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass($constructParams));
         $this->chDirForm = new Forms\ChDirForm('chdirForm');
         $this->userDir = new UserDir(new ChDirTranslations());
     }

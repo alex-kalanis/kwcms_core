@@ -13,7 +13,6 @@ use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
@@ -44,9 +43,7 @@ class Move extends AEdit
     {
         parent::__construct(...$constructParams);
         $this->moveForm = new Forms\FileActionForm('fileMoveForm');
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->tree = new DataSources\Files($this->files);
     }
 
     public function run(): void
@@ -68,7 +65,7 @@ class Move extends AEdit
             $this->moveForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->moveForm->process()) {
-                $libAction = $this->getLibFileAction($userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->moveFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,

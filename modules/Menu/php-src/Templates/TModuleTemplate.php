@@ -23,7 +23,7 @@ trait TModuleTemplate
      * @param RoutedPath $routedPath
      * @throws LangException
      */
-    public function initTModuleTemplate(RoutedPath $routedPath)
+    public function initTModuleTemplate(RoutedPath $routedPath): void
     {
         Lang::load('Menu');
         Lang::load('Admin');

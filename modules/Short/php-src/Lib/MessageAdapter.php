@@ -9,7 +9,6 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_paths\Path;
 use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Short\ShortException;
 
@@ -23,8 +22,6 @@ class MessageAdapter
 {
     /** @var CompositeAdapter */
     protected $files = null;
-    /** @var Path */
-    protected $systemPath = null;
     /** @var ShortMessage */
     protected $record = null;
     /** @var string[] */
@@ -32,18 +29,16 @@ class MessageAdapter
 
     /**
      * @param CompositeAdapter $files
-     * @param Path $systemPath
      * @param string[] $targetDir
      * @throws MapperException
      * @throws ConfException
      */
-    public function __construct(CompositeAdapter $files, Path $systemPath, array $targetDir)
+    public function __construct(CompositeAdapter $files, array $targetDir)
     {
         Config::load('Short');
         $this->record = new ShortMessage();
         $this->files = $files;
         $this->targetPath = $this->describePath($targetDir);
-        $this->systemPath = $systemPath;
     }
 
     /**

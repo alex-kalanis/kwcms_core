@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images\AdminControllers;
 
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
+use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
@@ -23,6 +24,7 @@ use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -39,6 +41,8 @@ class Upload extends AAuthModule implements IHasTitle
     use Templates\TModuleTemplate;
     use TWhereDir;
 
+    /** @var Access\CompositeAdapter */
+    protected $files = null;
     /** @var Forms\FileUploadForm */
     protected $fileForm = null;
     /** @var UserDir */
@@ -48,11 +52,14 @@ class Upload extends AAuthModule implements IHasTitle
 
     /**
      * @param mixed ...$constructParams
+     * @throws FilesException
      * @throws LangException
+     * @throws PathsException
      */
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->fileForm = new Forms\FileUploadForm('uploadImageForm');
         $this->userDir = new UserDir(new Lib\Translations());
     }
@@ -86,7 +93,7 @@ class Upload extends AAuthModule implements IHasTitle
                 if (!$file instanceof IFileEntry) {
                     throw new ImagesException(Lang::get('images.error.must_contain_file'));
                 }
-                $libAction = $this->getLibFileAction($userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
                 $usedName = $libAction->findFreeName($file->getValue());
                 $this->processed = $libAction->uploadFile(
                     $file,

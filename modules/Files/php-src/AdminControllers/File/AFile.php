@@ -13,7 +13,6 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\Traits\TFilesDirs;
@@ -58,9 +57,7 @@ abstract class AFile extends AAuthModule implements IHasTitle
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
-        $files = (new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->tree = new DataSources\Files($files);
         $this->processor = new Lib\Processor($files);
         $this->userDir = new UserDir(new Lib\Translations());

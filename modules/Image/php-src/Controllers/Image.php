@@ -15,15 +15,11 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
-use kalanis\kw_modules\Access\Factory as modules_factory;
-use kalanis\kw_modules\Interfaces\ILoader;
-use kalanis\kw_modules\Interfaces\Lists\IModulesList;
 use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
@@ -54,10 +50,8 @@ class Image extends AModule
     protected $innerLink = null;
     /** @var Images */
     protected $sources = null;
-    /** @var ILoader|null */
-    protected $loader = null;
-    /** @var IModulesList|null */
-    protected $modulesList = null;
+    /** @var mixed */
+    protected $constructParams = [];
 
     /***
      * @param mixed ...$constructParams
@@ -65,16 +59,13 @@ class Image extends AModule
      * @throws FilesException
      * @throws ImagesException
      * @throws LangException
-     * @throws ModuleException
      * @throws PathsException
      */
     public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
-        $modulesFactory = new modules_factory();
-        $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
-        $this->modulesList = $modulesFactory->getModulesList($constructParams);
+        $this->constructParams = $constructParams;
         $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
@@ -86,7 +77,7 @@ class Image extends AModule
             boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->sources = FilesHelper::getImages(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            $constructParams,
             [],
             new ImagesTranslations(),
             new FilesTranslations()
@@ -170,7 +161,7 @@ class Image extends AModule
      */
     protected function outLayout(Output\AOutput $output): Output\AOutput
     {
-        $out = new Layout($this->loader, $this->modulesList);
+        $out = new Layout(...$this->constructParams);
         $out->init($this->inputs, $this->params);
         return $out->wrapped($output, false);
     }

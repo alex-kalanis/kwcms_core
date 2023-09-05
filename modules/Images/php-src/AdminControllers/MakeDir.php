@@ -17,7 +17,6 @@ use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
@@ -46,6 +45,8 @@ class MakeDir extends AAuthModule implements IHasTitle
 
     /** @var Forms\DirNewForm */
     protected $createForm = null;
+    /** @var Access\CompositeAdapter */
+    protected $files = null;
     /** @var UserDir */
     protected $userDir = null;
     /** @var ITree */
@@ -63,9 +64,8 @@ class MakeDir extends AAuthModule implements IHasTitle
     {
         $this->initTModuleTemplate();
         $this->createForm = new Forms\DirNewForm('dirNewForm');
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
+        $this->tree = new DataSources\Files($this->files);
         $this->userDir = new UserDir(new Lib\Translations());
     }
 
@@ -91,7 +91,7 @@ class MakeDir extends AAuthModule implements IHasTitle
             $this->createForm->composeForm($this->tree->getRoot(),'#');
             $this->createForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->createForm->process()) {
-                $libAction = $this->getLibDirAction($userPath, $currentPath);
+                $libAction = $this->getLibDirAction($this->files, $userPath, $currentPath);
                 $this->processed = $libAction->createDir(
                     strval($this->createForm->getControl('where')->getValue()),
                     strval($this->createForm->getControl('name')->getValue())

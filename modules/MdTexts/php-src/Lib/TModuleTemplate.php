@@ -5,7 +5,6 @@ namespace KWCMS\modules\MdTexts\Lib;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_paths\Path;
 use kalanis\kw_routed_paths\RoutedPath;
 use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Texts\Lib\ModuleTemplate;
@@ -24,7 +23,7 @@ trait TModuleTemplate
      * @param RoutedPath $routedPath
      * @throws LangException
      */
-    public function initTModuleTemplate(RoutedPath $routedPath)
+    public function initTModuleTemplate(RoutedPath $routedPath): void
     {
         Lang::load('Texts');
         Lang::load('Admin');

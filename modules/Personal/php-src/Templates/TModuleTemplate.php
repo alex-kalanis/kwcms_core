@@ -21,7 +21,7 @@ trait TModuleTemplate
     /**
      * @throws LangException
      */
-    public function initTModuleTemplate()
+    public function initTModuleTemplate(): void
     {
         Lang::load('Personal');
         Lang::load('Admin');

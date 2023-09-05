@@ -15,7 +15,6 @@ use kalanis\kw_modules\Interfaces\Lists\ISitePart;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_styles\Styles as ExStyles;
@@ -65,9 +64,7 @@ abstract class AStyles extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'site.more_lang', false))
         );
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->treeList = new Files($this->files);
         $this->mime = (new Check\Factory())->getLibrary(null);
     }

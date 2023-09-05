@@ -13,11 +13,9 @@ use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
-use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Images\Forms;
 
 
@@ -46,9 +44,7 @@ class Copy extends AEdit
     {
         parent::__construct(...$constructParams);
         $this->copyForm = new Forms\FileActionForm('fileCopyForm');
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->tree = new DataSources\Files($this->files);
     }
 
     public function run(): void
@@ -70,7 +66,7 @@ class Copy extends AEdit
             $this->copyForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->copyForm->process()) {
-                $libAction = $this->getLibFileAction($userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
                 $this->isProcessed = $libAction->copyFile(
                     $this->fileName,

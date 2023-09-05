@@ -16,7 +16,6 @@ use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Traits\TFilesDirs;
@@ -69,9 +68,7 @@ class Langs extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             false // HERE MUST BE FALSE!!!
         );
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->treeList = new Files($this->files);
     }
 

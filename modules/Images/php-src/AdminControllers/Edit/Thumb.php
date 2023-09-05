@@ -43,7 +43,7 @@ class Thumb extends AEdit
             $currentPath = Stuff::linkToArray($this->getWhereDir());
 
             $this->fileName = strval($this->getFromParam('name'));
-            $libAction = $this->getLibFileAction($userPath, $currentPath);
+            $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
             $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->thumbForm->composeForm('#');

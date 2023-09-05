@@ -5,6 +5,8 @@ namespace kalanis\kw_images\Graphics\Format;
 
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
+use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -37,11 +39,18 @@ class Factory
         if (!isset($this->types[$type])) {
             throw new ImagesException($lang->imUnknownType($type));
         }
-        $class = $this->types[$type];
-        $instance = new $class($lang);
-        if (!$instance instanceof AFormat) {
-            throw new ImagesException($lang->imWrongInstance($class));
+        $className = $this->types[$type];
+
+        try {
+            /** @var class-string $className */
+            $ref = new ReflectionClass($className);
+            $instance = $ref->newInstance($lang);
+            if (!$instance instanceof AFormat) {
+                throw new ImagesException($lang->imWrongInstance($className));
+            }
+            return $instance;
+        } catch (ReflectionException $ex) {
+            throw new ImagesException($ex->getMessage(), $ex->getCode(), $ex);
         }
-        return $instance;
     }
 }

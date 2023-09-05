@@ -66,7 +66,7 @@ class Preview extends AAuthModule
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate(StoreRouted::getPath());
-        $this->initTTexts(Stored::getPath());
+        $this->initTTexts($constructParams);
 
         $this->constructParams = $constructParams;
         // this part is about module loader, it depends one each server

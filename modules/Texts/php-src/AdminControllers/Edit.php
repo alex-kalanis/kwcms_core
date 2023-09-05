@@ -49,7 +49,7 @@ class Edit extends AAuthModule implements IHasTitle
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate(StoreRouted::getPath());
-        $this->initTTexts(Stored::getPath());
+        $this->initTTexts($constructParams);
         $this->editFileForm = new Lib\EditFileForm('editFileForm');
     }
 

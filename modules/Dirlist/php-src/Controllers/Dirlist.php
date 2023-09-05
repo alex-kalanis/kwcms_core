@@ -24,7 +24,6 @@ use kalanis\kw_paging\Render\SimplifiedPager;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\DataSources\Files;
@@ -92,8 +91,9 @@ class Dirlist extends AModule
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
         $this->linkExternal = new ExternalLink(StoreRouted::getPath());
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->libImages = FilesHelper::getImages(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot(),
+            $this->files,
             [],
             new ImagesTranslations(),
             new FilesTranslations()
@@ -103,9 +103,6 @@ class Dirlist extends AModule
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
             false
-        );
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
         );
         $this->treeList = new Files($this->files);
     }

@@ -13,7 +13,6 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_styles\Styles;
@@ -50,7 +49,7 @@ class Names extends AAuthModule implements IHasTitle
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate(StoreRouted::getPath());
-        $this->initTMenu(Stored::getPath());
+        $this->initTMenu($constructParams);
     }
 
     public function allowedAccessClasses(): array

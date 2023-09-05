@@ -11,7 +11,6 @@ use kalanis\kw_files\Node;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\DataSources\Files;
@@ -66,9 +65,7 @@ class Chapters extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'page.more_lang', false))
         );
-        $this->treeList = new Files((new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->treeList = new Files((new Factory(new FilesTranslations()))->getClass($constructParams));
     }
 
     /**

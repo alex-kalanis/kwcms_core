@@ -83,9 +83,7 @@ class SinglePage extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             boolval(Config::get('Core', 'site.more_lang', false))
         );
-        $this->files = (new Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
     }
 
     /**

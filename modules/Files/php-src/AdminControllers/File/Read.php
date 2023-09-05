@@ -18,7 +18,6 @@ use kalanis\kw_mime\MimeException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree\DataSources;
@@ -69,9 +68,7 @@ class Read extends AAuthModule implements IHasTitle
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
-        $files = (new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->tree = new DataSources\Files($files);
         $this->processor = new Lib\Processor($files);
         $this->userDir = new UserDir(new Lib\Translations());

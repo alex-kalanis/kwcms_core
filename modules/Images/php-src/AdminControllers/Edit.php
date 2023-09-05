@@ -16,7 +16,6 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
@@ -46,6 +45,8 @@ class Edit extends AAuthModule implements IHasTitle
 
     /** @var string */
     protected $fileName = '';
+    /** @var Access\CompositeAdapter */
+    protected $files = null;
     /** @var Forms\FileRenameForm */
     protected $renameForm = null;
     /** @var Forms\DescForm */
@@ -87,9 +88,8 @@ class Edit extends AAuthModule implements IHasTitle
         $this->copyForm = new Forms\FileActionForm('fileCopyForm');
         $this->primaryForm = new Forms\FileThumbForm('filePrimaryForm');
         $this->deleteForm = new Forms\FileDeleteForm('fileDeleteForm');
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
+        $this->tree = new DataSources\Files($this->files);
         $this->userDir = new UserDir(new Lib\Translations());
         $this->forward = new Forward();
     }
@@ -110,7 +110,7 @@ class Edit extends AAuthModule implements IHasTitle
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
             $currentPath = Stuff::linkToArray($this->getWhereDir());
 
-            $this->libAction = $this->getLibFileAction($userPath, $currentPath);
+            $this->libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
             $this->checkExistence($this->libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->tree->wantDeep(true);

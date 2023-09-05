@@ -15,7 +15,6 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_table\core\TableException;
@@ -43,6 +42,8 @@ class Dashboard extends AAuthModule implements IHasTitle
 
     /** @var UserDir */
     protected $userDir = null;
+    /** @var Access\CompositeAdapter */
+    protected $files = null;
     /** @var ITree */
     protected $tree = null;
     /** @var string[] */
@@ -61,9 +62,8 @@ class Dashboard extends AAuthModule implements IHasTitle
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
-        $this->tree = new DataSources\Files((new Access\Factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        ));
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
+        $this->tree = new DataSources\Files($this->files);
         $this->userDir = new UserDir(new Lib\Translations());
     }
 
@@ -127,7 +127,7 @@ class Dashboard extends AAuthModule implements IHasTitle
             $table = new Lib\ListTable(
                 $this->inputs,
                 $this->links,
-                $this->getLibFileAction($this->userPath, $this->currentPath),
+                $this->getLibFileAction($this->files, $this->userPath, $this->currentPath),
                 array_merge($this->userPath, $this->currentPath)
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));

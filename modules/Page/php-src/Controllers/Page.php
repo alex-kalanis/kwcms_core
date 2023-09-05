@@ -16,7 +16,6 @@ use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
@@ -71,9 +70,7 @@ class Page extends AModule
             boolval(Config::get('Core', 'site.more_users', false)),
             false
         );
-        $this->files = (new files_factory(new FilesTranslations()))->getClass(
-            Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
-        );
+        $this->files = (new files_factory(new FilesTranslations()))->getClass($constructParams);
     }
 
     /**
