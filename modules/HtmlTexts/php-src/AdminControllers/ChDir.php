@@ -5,7 +5,6 @@ namespace KWCMS\modules\HtmlTexts\AdminControllers;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\HtmlTexts\Lib;

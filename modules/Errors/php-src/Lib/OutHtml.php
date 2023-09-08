@@ -5,7 +5,6 @@ namespace KWCMS\modules\Errors\Lib;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_modules\Output\Html;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Libs\ExternalLink;
 
@@ -27,7 +26,7 @@ class OutHtml extends Html
         $this->linkExternal = new ExternalLink(StoreRouted::getPath());
     }
 
-    public function setContent(string $content = '')
+    public function setContent(string $content = ''): parent
     {
         $imgLink = $this->linkExternal->linkVariant('files/alert.png', 'sysimage', true);
         $this->template->reset()->setData($content, Lang::get('error.desc.' . $content), $imgLink);
