@@ -4,7 +4,9 @@ namespace KWCMS\modules\Admin\AdminControllers;
 
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
+use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Redirect;
+use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
@@ -14,7 +16,6 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_langs\Support;
 use kalanis\kw_modules\Output;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_rules\Interfaces\IRules;
 use kalanis\kw_scripts\Scripts;
@@ -85,6 +86,8 @@ class Login extends AAuthModule implements IHasTitle
 
         $link = new ExternalLink(StoreRouted::getPath());
         if ($this->user) { // logged in
+            $forward = new Forward();
+            $forward->setSource(new ServerRequest());
             if ($this->isJson()) {
                 // create json with status info
                 $out = new Output\Json();
@@ -94,10 +97,11 @@ class Login extends AAuthModule implements IHasTitle
                     'dir' => $this->user->getDir(),
                     'class' => $this->user->getClass(),
                     'group' => $this->user->getGroup(),
-                    'link' => $link->linkVariant(''),
+                    'link' => $forward->has() ? $forward->get() : $link->linkVariant(''),
                     'errors' => [],
                 ]);
             } else {
+                $forward->forward();
                 new Redirect($link->linkVariant(''), Redirect::TARGET_TEMPORARY, 5);
                 $out = new Output\Html();
                 return $out->setContent(Lang::get('login.success'));

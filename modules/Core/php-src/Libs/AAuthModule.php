@@ -4,8 +4,10 @@ namespace KWCMS\modules\Core\Libs;
 
 
 use kalanis\kw_accounts\Interfaces\IUser;
+use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Headers;
 use kalanis\kw_address_handler\Redirect;
+use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_auth\Interfaces\IAuthTree;
@@ -112,8 +114,11 @@ abstract class AAuthModule extends AModule implements IHasUser
                 $output = new Output\Raw();
                 return $output->setContent('Authorize first');
             } else {
-                $link = new ExternalLink(StoreRouted::getPath());
-                new Redirect($link->linkVariant(['login']), Redirect::TARGET_TEMPORARY, 5);
+                $forward = new Forward();
+                $forward->setLink((new ExternalLink(StoreRouted::getPath()))->linkVariant(['login']));
+                $forward->setForward((new ServerRequest())->getAddress());
+                new Redirect($forward->getLink(), Redirect::TARGET_TEMPORARY, 5);
+
                 $output = new Output\Html();
                 return $output->setContent(sprintf('<h1>%s</h1>', 'Authorize first'));
             }
