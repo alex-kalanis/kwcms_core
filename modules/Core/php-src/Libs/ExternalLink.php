@@ -11,7 +11,7 @@ use kalanis\kw_routed_paths\RoutedPath;
 
 /**
  * Class ExternalLink
- * @package kalanis\kw_modules\Linking
+ * @package KWCMS\modules\Core\Libs
  * Make links to destinations
  * # [http://www.example.com]/[vardir/][modestate[/[?path=]]][user/][lang/][path/file.htm]
  * # mode - which variant of representing path you call - depends on server settings and KWCMS settings

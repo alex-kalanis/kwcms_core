@@ -13,7 +13,7 @@ use kalanis\kw_modules\Output;
 
 /**
  * Class Module
- * @package kalanis\kw_modules
+ * @package KWCMS\modules\Core\Libs
  * Process modules - load them and return them
  * Practically that one class you want to load when you initialize KWCMS modules
  */

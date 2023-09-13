@@ -48,9 +48,10 @@ class Lookup extends AAuthModule
         try {
             $this->entry = new GetEntries($this->getRecord());
             $this->entry->getStorage()->setRecord($this->entry->getRecord());
+            $sex = $this->getFromParam('sex');
             $this->lookedUp = $this->entry->getStorage()->getLike(
                 strval($this->getFromParam('key')),
-                $this->getFromParam('sex')
+                is_null($sex) ? null : strval($sex)
             );
         } catch (PedigreeException | MapperException $ex) {
             $this->error = $ex;
