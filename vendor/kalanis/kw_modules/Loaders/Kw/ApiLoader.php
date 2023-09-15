@@ -1,31 +1,34 @@
 <?php
 
-namespace kalanis\kw_modules\Loaders;
+namespace kalanis\kw_modules\Loaders\Kw;
+
+
+use kalanis\kw_modules\Loaders\TSeparate;
 
 
 /**
- * Class KwLoader
- * @package kalanis\kw_modules\Loaders
+ * Class ApiLoader
+ * @package kalanis\kw_modules\Loaders\Kw
  * Load modules data from defined targets
  * @codeCoverageIgnore contains external autoloader
  *
  * Paths:
- * /modules/{module_name}/php-src/Controllers/{module_name}.php as init
+ * /modules/{module_name}/php-src/ApiControllers/{module_name}.php as init
  * /modules/{module_name}/php-src/Lib/* as next libraries
  * Namespaces:
- * \KWCMS\modules\{module_name}\Controllers\{module_name} as init
+ * \KWCMS\modules\{module_name}\ApiControllers\{module_name} as init
  * \KWCMS\modules\{module_name}\Lib\ as next libraries
  *
  * Name is passed as first big and the rest little ( ucfirst(strtolower($x)) )
  * - lookup by curly braces
  */
-class KwLoader extends AKwLoader
+class ApiLoader extends ALoader
 {
     use TSeparate;
 
     protected function getClassName(array $path): string
     {
         list($target, $constructPath) = $this->separateModule($path);
-        return sprintf('\KWCMS\modules\%s\Controllers\%s', $target, $constructPath);
+        return sprintf('\KWCMS\modules\%s\ApiControllers\%s', $target, $constructPath);
     }
 }

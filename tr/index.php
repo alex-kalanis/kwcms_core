@@ -2,10 +2,11 @@
 
 //// Example bootstrap code for KWCMS
 
-// bootstrap for kwcms 3 - autoloading example
+// bootstrap for kwcms 4 - autoloading example
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+// trans
 require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalanis', 'kw_autoload', 'Autoload.php']));
 
 /// Use following:
@@ -23,6 +24,8 @@ require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalani
 \kalanis\kw_autoload\Autoload::addPath('%2$s%1$smodules%1$s%6$s');
 \kalanis\kw_autoload\Autoload::addPath('%2$s%1$s%5$s%1$s%6$s');
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
+
+$di = \kalanis\kw_autoload\DependencyInjection::getInstance();
 
 // where is the system?
 $systemPaths = new \kalanis\kw_paths\Path();

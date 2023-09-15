@@ -2,11 +2,6 @@
 
 namespace kalanis\kw_autoload;
 
-if (!class_exists('\kalanis\kw_autoload\Autoload')) {
-    require_once __DIR__ . '/Autoload.php';
-    Autoload::setBasePath(realpath(implode(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..', '..', '..'])));
-}
-
 
 use ReflectionClass;
 use ReflectionException;
@@ -66,6 +61,36 @@ class DependencyInjection
     }
 
     /**
+     * Add class directly - also add extends and interfaces
+     * @param object $willBeRepresented
+     * @throws ReflectionException
+     */
+    public function addClassWithDeepInstances(object $willBeRepresented): void
+    {
+        $this->addClassDeepInstances(get_class($willBeRepresented), $willBeRepresented);
+    }
+
+    /**
+     * @param string $forWhat
+     * @param object $willBeRepresented
+     * @throws ReflectionException
+     */
+    protected function addClassDeepInstances(string $forWhat, object $willBeRepresented): void
+    {
+        $ref = new ReflectionClass($forWhat);
+        // object itself
+        $this->addRep($forWhat, $willBeRepresented);
+        // interfaces
+        foreach ($ref->getInterfaces() as $interface) {
+            $this->addRep($interface->getName(), $willBeRepresented);
+        }
+        // parent
+        if ($ext = $ref->getParentClass()) {
+            $this->addClassDeepInstances($ext->getName(), $willBeRepresented);
+        }
+    }
+
+    /**
      * Get class by its known representation
      * @param string $what
      * @return object|null
@@ -103,53 +128,87 @@ class DependencyInjection
      * Use either param type/instance or name to lookup in known representations
      * @param string $which
      * @param array<string, mixed> $additionalParams
-     * @throws AutoloadException
+     * @throws ReflectionException
      * @return object|null
      */
-    public function initClass(string $which, array $additionalParams): ?object
+    public function initClass(string $which, array $additionalParams = []): ?object
     {
         try {
             $reflectionClass = new ReflectionClass($which);
+            if (!$reflectionClass->isInstantiable()) {
+                return null;
+            }
         } catch (ReflectionException $ex) {
             return null;
         }
+
+        // init - at first without constructor
         try {
             $construct = $reflectionClass->getMethod('__construct');
         } catch (ReflectionException $ex) {
             // no construct - return immediately
             return $reflectionClass->newInstance();
         }
+
+        // fill found params
         $initParams = [];
         foreach ($construct->getParameters() as $parameter) {
+
+            // by type (class/instance name) from internal storage
             $classType = strval($parameter->getType());
             if ($known = $this->getRep($classType)) {
                 $initParams[] = $known;
                 continue;
             };
+
+            // by type (class name) new instance
+            try {
+                if ($reflectionInstance = $this->initClass($classType, $additionalParams)) {
+                    $initParams[] = $reflectionInstance;
+                    continue;
+                }
+            } catch (ReflectionException $ex) {
+                // nothing here
+            }
+
+            // by external data - class type
             if (isset($additionalParams[$classType])) {
                 $initParams[] = $additionalParams[$classType];
                 continue;
             }
+
+            // by external data - param name
             $paramName = strval($parameter->getName());
             if (isset($additionalParams[$paramName])) {
                 $initParams[] = $additionalParams[$paramName];
                 continue;
             }
 
-            throw new AutoloadException(sprintf('Missing definition for param *%s* in class *%s*', $paramName, $which));
+            // default value set
+            try {
+                $defaultParam = $parameter->getDefaultValue();
+                $initParams[] = $defaultParam;
+                continue;
+            } catch (ReflectionException $ex) {
+                // set nothing, will fail
+                // next...
+            }
+
+            // param not found
+            throw new ReflectionException(sprintf('Missing definition for param *%s* in class *%s*', $paramName, $which));
         }
 
         return $reflectionClass->newInstanceArgs($initParams);
     }
 
     /**
-     * Initialize class and store it for future usage
+     * Initialize class and store it for future usage - shallow lookup
      * @param string $which
      * @param array<string, mixed> $additionalParams
-     * @throws AutoloadException
+     * @throws ReflectionException
      * @return object|null
      */
-    public function initStoredClass(string $which, array $additionalParams): ?object
+    public function initStoredClass(string $which, array $additionalParams = []): ?object
     {
         if ($try = $this->getRep($which)) {
             return $try;
@@ -161,5 +220,22 @@ class DependencyInjection
         }
 
         return $try;
+    }
+
+    /**
+     * Initialize class and store it for future usage - deep lookup in new class
+     * @param string $which
+     * @param array<string, mixed> $additionalParams
+     * @throws ReflectionException
+     * @return object|null
+     */
+    public function initDeepStoredClass(string $which, array $additionalParams = []): ?object
+    {
+        if ($try = $this->initStoredClass($which, $additionalParams)) {
+            $this->addClassDeepInstances($which, $try);
+            return $try;
+        }
+
+        return null;
     }
 }

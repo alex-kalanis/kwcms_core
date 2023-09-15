@@ -28,15 +28,15 @@ abstract class AUsers extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IProcessGroups|null */
+    /** @var Interfaces\IProcessGroups */
     protected $libGroups = null;
-    /** @var Interfaces\IProcessClasses|null */
+    /** @var Interfaces\IProcessClasses */
     protected $libClasses = null;
-    /** @var Interfaces\IProcessAccounts|Interfaces\IAuthCert|null */
+    /** @var Interfaces\IProcessAccounts|Interfaces\IAuthCert */
     protected $libAccounts = null;
     /** @var Interfaces\IUser|null */
     protected $editUser = null;
-    /** @var Lib\FormUsers|null */
+    /** @var Lib\FormUsers */
     protected $form = null;
     /** @var Forward */
     protected $forward = null;
@@ -45,19 +45,45 @@ abstract class AUsers extends AAuthModule implements IHasTitle
     /** @var bool */
     protected $redirect = false;
 
+//    /**
+//     * @param mixed ...$constructParams
+//     * @throws LangException
+//     */
+//    public function __construct(...$constructParams)
+//    {
+//        $this->initTModuleTemplate();
+//        $this->libGroups = Auth::getGroups();
+//        $this->libClasses = Auth::getClasses();
+//        $this->libAccounts = Auth::getAccounts();
+//        $this->form = new Lib\FormUsers();
+//        $this->forward = new Forward();
+//        $this->forward->setSource(new ServerRequest());
+//    }
+
     /**
-     * @param mixed ...$constructParams
+     * @param Interfaces\IProcessGroups $groups
+     * @param Interfaces\IProcessClasses $classes
+     * @param Interfaces\IProcessAccounts $accounts
+     * @param Lib\FormUsers $form
+     * @param Forward $forward
+     * @param ServerRequest $request
      * @throws LangException
      */
-    public function __construct(...$constructParams)
-    {
+    public function __construct(
+        Interfaces\IProcessGroups $groups,
+        Interfaces\IProcessClasses $classes,
+        Interfaces\IProcessAccounts $accounts,
+        Lib\FormUsers $form,
+        Forward $forward,
+        ServerRequest $request
+    ) {
         $this->initTModuleTemplate();
-        $this->libGroups = Auth::getGroups();
-        $this->libClasses = Auth::getClasses();
-        $this->libAccounts = Auth::getAccounts();
-        $this->form = new Lib\FormUsers();
-        $this->forward = new Forward();
-        $this->forward->setSource(new ServerRequest());
+        $this->libGroups = $groups;
+        $this->libClasses = $classes;
+        $this->libAccounts = $accounts;
+        $this->form = $form;
+        $this->forward = $forward;
+        $this->forward->setSource($request);
     }
 
     public function allowedAccessClasses(): array

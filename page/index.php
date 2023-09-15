@@ -2,10 +2,12 @@
 
 //// Example bootstrap code for KWCMS
 
-// bootstrap for kwcms 3 - autoloading example
+// bootstrap for kwcms 4 - autoloading example
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+// presentation
+
 require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalanis', 'kw_autoload', 'Autoload.php']));
 
 /// Use following:
@@ -30,17 +32,21 @@ require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalani
 
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
+$di = \kalanis\kw_autoload\DependencyInjection::getInstance();
+
 // where is the system?
 $systemPaths = new \kalanis\kw_paths\Path();
 $systemPaths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
 $systemPaths->setPathToSystemRoot('/..');
 \kalanis\kw_paths\Stored::init($systemPaths);
+$di->addClassWithDeepInstances($systemPaths);
 
 // load virtual parts - if exists
 $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Server(
     strval(getenv('VIRTUAL_DIRECTORY') ?: 'web/')
 ));
 \kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
+$di->addClassWithDeepInstances($routedPaths);
 
 // init config
 \kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
@@ -59,6 +65,7 @@ $source = new \kalanis\kw_input\Sources\Basic();
 $source->setCli($argv)->setExternal($routedPaths->getArray()); // argv is for params from cli
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
+$di->addClassWithDeepInstances($inputs);
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
 \kalanis\kw_langs\Lang::init(

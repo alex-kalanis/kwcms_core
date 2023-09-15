@@ -24,7 +24,8 @@ abstract class AModule implements IModule
     /** @var array<int|string, bool|float|int|string|array<int|string>> */
     protected $params = [];
 
-    abstract public function __construct(...$constructParams);
+    // enable if you do not use DI and want just pass params into modules
+//    abstract public function __construct(...$constructParams);
 
     public function init(IFiltered $inputs, array $passedParams): void
     {

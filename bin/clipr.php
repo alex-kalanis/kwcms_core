@@ -22,11 +22,14 @@ require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'vendor', 'kalanis', '
 
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
+$di = \kalanis\kw_autoload\DependencyInjection::getInstance();
+
 // where is the system?
 $systemPaths = new \kalanis\kw_paths\Path();
 $systemPaths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
 $systemPaths->setPathToSystemRoot('/..');
 \kalanis\kw_paths\Stored::init($systemPaths);
+$di->addClassWithDeepInstances($systemPaths);
 
 // load virtual parts - if exists
 $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Request(
@@ -34,6 +37,7 @@ $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_pa
     strval(getenv('VIRTUAL_DIRECTORY') ?: 'dir_from_config/')
 ));
 \kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
+$di->addClassWithDeepInstances($routedPaths);
 
 // init config
 \kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
@@ -59,6 +63,7 @@ $cwd = false !== getcwd() ? getcwd() : __DIR__ ;
 try {
     $inputs = new \kalanis\kw_input\Inputs();
     $inputs->setSource($argv)->loadEntries();
+    $di->addClassWithDeepInstances($inputs);
     $clipr = new \kalanis\kw_clipr\Clipr(
         \kalanis\kw_clipr\Loaders\CacheLoader::init(
             new \kalanis\kw_clipr\Loaders\KwLoader([

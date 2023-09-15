@@ -1,26 +1,28 @@
 <?php
 
-namespace kalanis\kw_modules\Loaders;
+namespace kalanis\kw_modules\Loaders\KwDi;
+
+
+use kalanis\kw_modules\Loaders\TSeparate;
 
 
 /**
- * Class KwDiLoader
- * @package kalanis\kw_modules\Loaders
+ * Class Loader
+ * @package kalanis\kw_modules\Loaders\KwDi
  * Load modules data from defined targets
- * Also use Dependency Injection
  * @codeCoverageIgnore contains external autoloader
  *
  * Paths:
- * /modules/{module_name}/php-src/{module_name}.php as init
+ * /modules/{module_name}/php-src/Controllers/{module_name}.php as init
  * /modules/{module_name}/php-src/Lib/* as next libraries
  * Namespaces:
- * \KWCMS\modules\{module_name}\{module_name} as init
+ * \KWCMS\modules\{module_name}\Controllers\{module_name} as init
  * \KWCMS\modules\{module_name}\Lib\ as next libraries
  *
  * Name is passed as first big and the rest little ( ucfirst(strtolower($x)) )
  * - lookup by curly braces
  */
-class DiLoader extends ADiLoader
+class Loader extends ALoader
 {
     use TSeparate;
 

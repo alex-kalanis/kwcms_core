@@ -2,10 +2,11 @@
 
 //// Example bootstrap code for KWCMS
 
-// bootstrap for kwcms 3 - autoloading example
+// bootstrap for kwcms 4 - autoloading example
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+// admin
 // @link http://web.kwcms_core.lemp.test/          for vagrant
 // @link http://web.kwcms_core.lemp.local:20000/   for docker
 
@@ -32,17 +33,21 @@ require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalani
 
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
+$di = \kalanis\kw_autoload\DependencyInjection::getInstance();
+
 // where is the system?
 $systemPaths = new \kalanis\kw_paths\Path();
 $systemPaths->setDocumentRoot(realpath($_SERVER['DOCUMENT_ROOT']));
 $systemPaths->setPathToSystemRoot('/..');
 \kalanis\kw_paths\Stored::init($systemPaths);
+$di->addClassWithDeepInstances($systemPaths);
 
 // load virtual parts - if exists
 $routedPaths = new \kalanis\kw_routed_paths\RoutedPath(new \kalanis\kw_routed_paths\Sources\Server(
     strval(getenv('VIRTUAL_DIRECTORY') ?: 'web/')
 ));
 \kalanis\kw_routed_paths\StoreRouted::init($routedPaths);
+$di->addClassWithDeepInstances($routedPaths);
 
 // init config
 \kalanis\kw_confs\Config::init(new \kalanis\kw_confs\Loaders\PhpLoader($systemPaths, $routedPaths));
@@ -60,6 +65,9 @@ $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
 $session = new \kalanis\kw_input\Simplified\SessionAdapter();
 $server = new \kalanis\kw_input\Simplified\ServerAdapter();
+$di->addClassWithDeepInstances($inputs);
+$di->addClassRep($session);
+$di->addClassRep($server);
 
 // init cookies
 \kalanis\kw_input\Simplified\CookieAdapter::init('', '/', 3600);
@@ -92,31 +100,44 @@ $server = new \kalanis\kw_input\Simplified\ServerAdapter();
 \kalanis\kw_styles\Styles::init(new \kalanis\kw_styles\Loaders\PhpLoader($systemPaths, $routedPaths));
 
 // authorization tree
-$authStorage = new \kalanis\kw_auth_sources\Sources\Files\Storages\Volume(
-    $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR
-);
-$authParser = new \kalanis\kw_auth_sources\ExtraParsers\Json();
-$authLock = new \kalanis\kw_locks\Methods\FileLock(
-    $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE
-);
-$authenticator = new \kalanis\kw_auth_sources\Sources\Files\AccountsMultiFile(
-    $authStorage,
-    new \kalanis\kw_auth_sources\Hashes\KwOrig(strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))),
-    new \kalanis\kw_auth_sources\Statuses\Always(),
-    $authParser,
-    $authLock,
-    ['web']
-);
-\kalanis\kw_auth\Auth::setAuth($authenticator);
-\kalanis\kw_auth\Auth::setGroups(new \kalanis\kw_auth_sources\Sources\Files\Groups(
-    $authStorage,
-    $authenticator,
-    $authParser,
-    $authLock,
-    ['web']
-));
-\kalanis\kw_auth\Auth::setClasses(new \kalanis\kw_auth_sources\Sources\Classes());
-\kalanis\kw_auth\Auth::setAccounts($authenticator);
+//$authStorage = new \kalanis\kw_auth_sources\Sources\Files\Storages\Volume(
+//    $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR
+//);
+//$di->addClassWithDeepInstances($authStorage);
+$di->initDeepStoredClass(\kalanis\kw_auth_sources\Sources\Files\Storages\Volume::class, [
+    'where' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR,
+]);
+//$authParser = new \kalanis\kw_auth_sources\ExtraParsers\Json();
+$di->initDeepStoredClass(\kalanis\kw_auth_sources\ExtraParsers\Json::class);
+//$authLock = new \kalanis\kw_locks\Methods\FileLock(
+//    $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE
+//);
+//$di->addClassWithDeepInstances($authLock);
+$di->initDeepStoredClass(\kalanis\kw_locks\Methods\FileLock::class, [
+    'lockFilename' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . \kalanis\kw_locks\Interfaces\ILock::LOCK_FILE,
+]);
+$di->initDeepStoredClass(\kalanis\kw_auth_sources\Hashes\KwOrig::class, [
+    'salt' => strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt')),
+]);
+$di->initDeepStoredClass(\kalanis\kw_auth_sources\Statuses\Always::class);
+//$authenticator = new \kalanis\kw_auth_sources\Sources\Files\AccountsMultiFile(
+//    $authStorage,
+//    new \kalanis\kw_auth_sources\Hashes\KwOrig(strval(\kalanis\kw_confs\Config::get('Admin', 'admin.salt'))),
+//    new \kalanis\kw_auth_sources\Statuses\Always(),
+//    $authParser,
+//    $authLock,
+//    ['web']
+//);
+$authenticator = $di->initDeepStoredClass(\kalanis\kw_auth_sources\Sources\Files\AccountsMultiFile::class, [
+    'path' => ['web'],
+]);
+//\kalanis\kw_auth\Auth::setAuth($authenticator);
+//$di->addClassWithDeepInstances($authenticator);
+\kalanis\kw_auth\Auth::setAuth($di->getRep(\kalanis\kw_accounts\Interfaces\IAuth::class));
+\kalanis\kw_auth\Auth::setGroups($di->initDeepStoredClass(\kalanis\kw_auth_sources\Sources\Files\Groups::class, ['path' => ['web']]));
+\kalanis\kw_auth\Auth::setClasses($di->initDeepStoredClass(\kalanis\kw_auth_sources\Sources\Classes::class, []));
+//\kalanis\kw_auth\Auth::setAccounts($authenticator);
+\kalanis\kw_auth\Auth::setAccounts($di->getRep(\kalanis\kw_accounts\Interfaces\IProcessAccounts::class));
 
 
 class ExBanned extends \kalanis\kw_auth\Methods\Banned
@@ -163,6 +184,7 @@ $handler = new \kalanis\kw_address_handler\Handler(new \kalanis\kw_address_handl
 try {
     $module = new \KWCMS\modules\Core\Libs\Module(new \kalanis\kw_input\Filtered\Variables($inputs), [
         'modules_loaders' => [
+            'di-admin',
             'admin',
 //            'api',
             'web',

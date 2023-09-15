@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_modules\Loaders;
+namespace kalanis\kw_modules\Loaders\Kw;
 
 
 use kalanis\kw_autoload\AutoloadException;
@@ -12,8 +12,8 @@ use kalanis\kw_modules\Traits\TMdLang;
 
 
 /**
- * Class KwLoader
- * @package kalanis\kw_modules\Loaders
+ * Class AKwLoader
+ * @package kalanis\kw_modules\Loaders\Kw
  * Load modules data from defined targets
  * @codeCoverageIgnore contains external autoloader
  *
@@ -22,7 +22,7 @@ use kalanis\kw_modules\Traits\TMdLang;
  *
  * KWCMS is for kw_autoloader on "vendor" position and modules dir on "project" position
  */
-abstract class AKwLoader implements ILoader
+abstract class ALoader implements ILoader
 {
     use TMdLang;
 

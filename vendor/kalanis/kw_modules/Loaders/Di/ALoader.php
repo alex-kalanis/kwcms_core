@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_modules\Loaders;
+namespace kalanis\kw_modules\Loaders\Di;
 
 
 use kalanis\kw_modules\Interfaces\ILoader;
@@ -12,15 +12,15 @@ use Psr\Container\ContainerInterface;
 
 
 /**
- * Class ADiLoader
- * @package kalanis\kw_modules\Loaders
+ * Class ALoader
+ * @package kalanis\kw_modules\Loaders\Di
  * Use Dependency Injection
  * @codeCoverageIgnore contains external autoloader
  *
  * Name is passed as first big and the rest little ( ucfirst(strtolower($x)) )
  * - lookup by curly braces
  */
-abstract class ADiLoader implements ILoader
+abstract class ALoader implements ILoader
 {
     use TMdLang;
 

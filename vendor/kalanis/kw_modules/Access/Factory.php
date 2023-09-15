@@ -87,11 +87,17 @@ class Factory
             }
             switch ($params) {
                 case 'admin':
-                    return new Loaders\KwAdminLoader($this->getMdLang());
+                    return new Loaders\Kw\AdminLoader($this->getMdLang());
                 case 'api':
-                    return new Loaders\KwApiLoader($this->getMdLang());
+                    return new Loaders\Kw\ApiLoader($this->getMdLang());
                 case 'web':
-                    return new Loaders\KwLoader($this->getMdLang());
+                    return new Loaders\Kw\Loader($this->getMdLang());
+                case 'di-admin':
+                    return new Loaders\KwDi\AdminLoader($this->getMdLang());
+                case 'di-api':
+                    return new Loaders\KwDi\ApiLoader($this->getMdLang());
+                case 'di-web':
+                    return new Loaders\KwDi\Loader($this->getMdLang());
             }
         }
         throw new ModuleException($this->getMdLang()->mdNoLoaderSet());
