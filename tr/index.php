@@ -56,6 +56,7 @@ $source = new \kalanis\kw_input\Sources\Basic();
 $source->setCli($argv)->setExternal($routedPaths->getArray()); // argv is for params from cli
 $inputs = new \kalanis\kw_input\Inputs();
 $inputs->setSource($source)->loadEntries();
+$di->initDeepStoredClass(\kalanis\kw_input\Filtered\Variables::class);
 
 // init langs - the similar way like configs, but it's necessary to already have loaded params
 \kalanis\kw_langs\Lang::init(
@@ -71,20 +72,22 @@ $inputs->setSource($source)->loadEntries();
 
 // And now we have all necessary variables to build the page
 try {
-    $module = new \KWCMS\modules\Core\Libs\Module(new \kalanis\kw_input\Filtered\Variables($inputs), [
-        'modules_loaders' => [
-            'admin',
-//            'api',
-            'web',
-        ],
-        'modules_source' => [
-            'modules_param_format' => 'http',
-//            'volume_path' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'modules'
-            'volume_path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE
-        ],
-        'files' => [
-            'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
-//            'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_USER
+    $module = $di->initClass(\KWCMS\modules\Core\Libs\Module::class, [
+        'params' => [
+            'modules_loaders' => [
+                'admin',
+//                'api',
+                'web',
+            ],
+            'modules_source' => [
+                'modules_param_format' => 'http',
+//                'volume_path' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'modules'
+                'volume_path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_MODULE
+            ],
+            'files' => [
+                'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
+//                'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_USER
+            ]
         ]
     ]);
     echo $module->process(['Core'])->get(); // dump output

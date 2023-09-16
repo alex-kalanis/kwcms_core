@@ -64,16 +64,15 @@ try {
     $inputs = new \kalanis\kw_input\Inputs();
     $inputs->setSource($argv)->loadEntries();
     $di->addClassWithDeepInstances($inputs);
-    $clipr = new \kalanis\kw_clipr\Clipr(
-        \kalanis\kw_clipr\Loaders\CacheLoader::init(
-            new \kalanis\kw_clipr\Loaders\KwLoader([
-                'clipr' => [__DIR__, 'run'],
-                'kwcms' => [__DIR__, '..', 'tasks'],
-            ])
+    $di->initDeepStoredClass(\kalanis\kw_input\Filtered\Variables::class);
+    $clipr = $di->initClass(\kalanis\kw_clipr\Clipr::class, [
+        'loader' => \kalanis\kw_clipr\Loaders\CacheLoader::init(
+                new \kalanis\kw_clipr\Loaders\KwLoader([
+                    'clipr' => [__DIR__, 'run'],
+                    'kwcms' => [__DIR__, '..', 'tasks'],
+                ])
         ),
-        new kalanis\kw_clipr\Clipr\Sources(),
-        new kalanis\kw_input\Filtered\Variables($inputs)
-    );
+    ]);
     # and run!
     $clipr->run();
 } catch (\kalanis\kw_clipr\Tasks\SingleTaskException $ex) {
