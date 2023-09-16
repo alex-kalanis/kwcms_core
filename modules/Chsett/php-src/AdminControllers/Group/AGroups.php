@@ -13,10 +13,12 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -29,7 +31,7 @@ abstract class AGroups extends AAuthModule implements IHasTitle
     use Templates\TModuleTemplate;
 
     /** @var Interfaces\IProcessGroups|null */
-    protected $libAuthEditGroups = null;
+    protected $libGroups = null;
     /** @var Interfaces\IGroup|null */
     protected $group = null;
     /** @var Lib\FormGroups|null */
@@ -41,17 +43,39 @@ abstract class AGroups extends AAuthModule implements IHasTitle
     /** @var bool */
     protected $redirect = false;
 
+//    /**
+//     * @param mixed ...$constructParams
+//     * @throws LangException
+//     */
+//    public function __construct(...$constructParams)
+//    {
+//        $this->initTModuleTemplate(new ExternalLink(StoreRouted::getPath()));
+//        $this->libAuthEditGroups = Auth::getGroups();
+//        $this->form = new Lib\FormGroups();
+//        $this->forward = new Forward();
+//        $this->forward->setSource(new ServerRequest());
+//    }
+
     /**
-     * @param mixed ...$constructParams
+     * @param Interfaces\IProcessGroups $groups
+     * @param Lib\FormGroups $form
+     * @param Forward $forward
+     * @param ServerRequest $request
+     * @param ExternalLink $external
      * @throws LangException
      */
-    public function __construct(...$constructParams)
-    {
-        $this->initTModuleTemplate();
-        $this->libAuthEditGroups = Auth::getGroups();
-        $this->form = new Lib\FormGroups();
-        $this->forward = new Forward();
-        $this->forward->setSource(new ServerRequest());
+    public function __construct(
+        Interfaces\IProcessGroups $groups,
+        Lib\FormGroups $form,
+        Forward $forward,
+        ServerRequest $request,
+        ExternalLink $external
+    ) {
+        $this->initTModuleTemplate($external);
+        $this->libGroups = $groups;
+        $this->form = $form;
+        $this->forward = $forward;
+        $this->forward->setSource($request);
     }
 
     public function allowedAccessClasses(): array

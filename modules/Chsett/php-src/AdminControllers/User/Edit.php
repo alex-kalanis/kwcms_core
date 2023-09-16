@@ -45,15 +45,14 @@ class Edit extends AUsers
                     strval($values['desc']),
                     strval($values['dir'])
                 );
-                $this->libAccounts->updateAccount($this->editUser);
+                $this->isProcessed = $this->libAccounts->updateAccount($this->editUser);
                 if (($this->editUser instanceof IUserCert) && ($this->libAccounts instanceof IAuthCert)) {
-                    $this->libAccounts->updateCertKeys(
+                    $this->isProcessed &= $this->libAccounts->updateCertKeys(
                         $this->editUser->getAuthName(),
                         strval($values['pubKey']),
                         strval($values['pubSalt'])
                     );
                 }
-                $this->isProcessed = true;
                 $this->redirect = true;
             }
 

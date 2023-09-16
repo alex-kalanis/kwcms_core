@@ -7,13 +7,11 @@ use kalanis\kw_accounts\AccountsException;
 use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\ExternalLink;
 
@@ -41,18 +39,27 @@ class Delete extends AAuthModule
     protected $links = null;
 
     /**
-     * @param mixed ...$constructParams
+     * @param Interfaces\IAuth $auth
+     * @param Interfaces\IProcessAccounts $accounts
+     * @param Forward $forward
+     * @param ServerRequest $request
+     * @param ExternalLink $external
      * @throws LangException
      */
-    public function __construct(...$constructParams)
-    {
+    public function __construct(
+        Interfaces\IAuth $auth,
+        Interfaces\IProcessAccounts $accounts,
+        Forward $forward,
+        ServerRequest $request,
+        ExternalLink $external
+    ) {
         Lang::load('Chsett');
         Lang::load('Admin');
-        $this->libAuth = Auth::getAuth();
-        $this->libAccounts = Auth::getAccounts();
-        $this->links = new ExternalLink(StoreRouted::getPath());
-        $this->forward = new Forward();
-        $this->forward->setSource(new ServerRequest());
+        $this->libAuth = $auth;
+        $this->libAccounts = $accounts;
+        $this->links = $external;
+        $this->forward = $forward;
+        $this->forward->setSource($request);
     }
 
     public function allowedAccessClasses(): array
@@ -68,8 +75,7 @@ class Delete extends AAuthModule
             if (empty($this->editUser)) {
                 throw new AccountsException(Lang::get('chsett.user_not_found', $userName));
             }
-            $this->libAccounts->deleteAccount($this->editUser->getAuthName());
-            $this->isProcessed = true;
+            $this->isProcessed = $this->libAccounts->deleteAccount($this->editUser->getAuthName());
         } catch (AccountsException $ex) {
             $this->error = $ex;
         }

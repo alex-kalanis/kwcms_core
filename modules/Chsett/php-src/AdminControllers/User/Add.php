@@ -46,8 +46,7 @@ class Add extends AUsers
                         $values['pubSalt']
                     );
                 }
-                $this->libAccounts->createAccount($this->editUser, $values['pass']);
-                $this->isProcessed = true;
+                $this->isProcessed = $this->libAccounts->createAccount($this->editUser, $values['pass']);
                 $this->redirect = true;
             }
 

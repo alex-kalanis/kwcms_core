@@ -9,8 +9,6 @@ use kalanis\kw_modules\Output\Html;
 use kalanis\kw_notify\Interfaces\INotify;
 use kalanis\kw_notify\Notification;
 use kalanis\kw_notify\NotifyException;
-use kalanis\kw_scripts\Scripts;
-use kalanis\kw_styles\Styles;
 use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Notify\Template;
 
@@ -47,8 +45,6 @@ class Notify extends AModule
      */
     public function output(): AOutput
     {
-        Styles::want(static::getClassName(static::class), 'notify.css');
-        Scripts::want(static::getClassName(static::class), 'notify.js');
         $tmpl = new Template();
         $notifications = [];
         if (Notification::getNotify()) {

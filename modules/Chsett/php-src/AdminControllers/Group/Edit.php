@@ -20,7 +20,7 @@ class Edit extends AGroups
     {
         try {
             $groupId = intval(strval($this->getFromParam('id')));
-            $this->group = $this->libAuthEditGroups->getGroupDataOnly($groupId);
+            $this->group = $this->libGroups->getGroupDataOnly($groupId);
             if (empty($this->group)) {
                 throw new AccountsException(Lang::get('chsett.group_not_found', $groupId));
             }
@@ -36,8 +36,7 @@ class Edit extends AGroups
                     '' == $values['status'] ? null : intval($values['status']),
                     $this->group->getGroupParents()
                 );
-                $this->libAuthEditGroups->updateGroup($this->group);
-                $this->isProcessed = true;
+                $this->isProcessed = $this->libGroups->updateGroup($this->group);
                 $this->redirect = true;
             }
 

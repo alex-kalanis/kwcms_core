@@ -5,7 +5,6 @@ namespace KWCMS\modules\Chsett\Templates;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Libs\ExternalLink;
 
 
@@ -19,13 +18,14 @@ trait TModuleTemplate
     protected $links = null;
 
     /**
+     * @param ExternalLink $externalLink
      * @throws LangException
      */
-    public function initTModuleTemplate(): void
+    public function initTModuleTemplate(ExternalLink $externalLink): void
     {
         Lang::load('Chsett');
         Lang::load('Admin');
-        $this->links = new ExternalLink(StoreRouted::getPath());
+        $this->links = $externalLink;
     }
 
     protected function outModuleTemplate(string $content): string

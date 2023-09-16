@@ -4,9 +4,7 @@ namespace KWCMS\modules\Chsett\AdminControllers;
 
 
 use kalanis\kw_accounts\AccountsException;
-use kalanis\kw_auth\Auth;
-use kalanis\kw_accounts\Interfaces\IProcessClasses;
-use kalanis\kw_accounts\Interfaces\IProcessGroups;
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -17,6 +15,7 @@ use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -28,22 +27,25 @@ class Groups extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var IProcessGroups|null */
+    /** @var Interfaces\IProcessGroups|null */
     protected $libGroups = null;
 
     /**
-     * @param mixed ...$constructParams
+     * @param Interfaces\IProcessGroups $groups
+     * @param ExternalLink $external
      * @throws LangException
      */
-    public function __construct(...$constructParams)
-    {
-        $this->initTModuleTemplate();
-        $this->libGroups = Auth::getGroups();
+    public function __construct(
+        Interfaces\IProcessGroups $groups,
+        ExternalLink $external
+    ) {
+        $this->initTModuleTemplate($external);
+        $this->libGroups = $groups;
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IProcessClasses::CLASS_MAINTAINER, ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER, ];
     }
 
     public function run(): void

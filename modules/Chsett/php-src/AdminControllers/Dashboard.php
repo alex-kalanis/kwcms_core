@@ -4,8 +4,7 @@ namespace KWCMS\modules\Chsett\AdminControllers;
 
 
 use kalanis\kw_accounts\AccountsException;
-use kalanis\kw_accounts\Interfaces\IProcessClasses;
-use kalanis\kw_auth\Auth;
+use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
@@ -16,6 +15,7 @@ use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -27,18 +27,35 @@ class Dashboard extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
+    /** @var Interfaces\IProcessGroups */
+    protected $libGroups = null;
+    /** @var Interfaces\IProcessClasses */
+    protected $libClasses = null;
+    /** @var Interfaces\IProcessAccounts|Interfaces\IAuthCert */
+    protected $libAccounts = null;
+
     /**
-     * @param mixed ...$constructParams
+     * @param Interfaces\IProcessGroups $groups
+     * @param Interfaces\IProcessClasses $classes
+     * @param Interfaces\IProcessAccounts $accounts
+     * @param ExternalLink $external
      * @throws LangException
      */
-    public function __construct(...$constructParams)
-    {
-        $this->initTModuleTemplate();
+    public function __construct(
+        Interfaces\IProcessGroups $groups,
+        Interfaces\IProcessClasses $classes,
+        Interfaces\IProcessAccounts $accounts,
+        ExternalLink $external
+    ) {
+        $this->initTModuleTemplate($external);
+        $this->libGroups = $groups;
+        $this->libClasses = $classes;
+        $this->libAccounts = $accounts;
     }
 
     public function allowedAccessClasses(): array
     {
-        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, ];
+        return [Interfaces\IProcessClasses::CLASS_MAINTAINER, Interfaces\IProcessClasses::CLASS_ADMIN, ];
     }
 
     public function run(): void
@@ -63,14 +80,7 @@ class Dashboard extends AAuthModule implements IHasTitle
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
         try {
-            $table = new Lib\UserTable(
-                $this->inputs,
-                $this->links,
-                Auth::getAccounts(),
-                Auth::getGroups(),
-                Auth::getClasses(),
-                $this->user
-            );
+            $table = new Lib\UserTable($this->inputs, $this->links, $this->libAccounts, $this->libGroups, $this->libClasses, $this->user);
             return $out->setContent($this->outModuleTemplate($table->getTable()->render()));
         } catch ( AccountsException | ConnectException | FormsException | LangException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
@@ -89,7 +99,7 @@ class Dashboard extends AAuthModule implements IHasTitle
         } else {
             $out = new Output\Json();
             $out->setContent([
-                'users' => Auth::getAccounts()->readAccounts(),
+                'users' => $this->libAccounts->readAccounts(),
             ]);
             return $out;
         }

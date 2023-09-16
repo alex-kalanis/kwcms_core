@@ -33,8 +33,7 @@ class Add extends AGroups
                     '' == $values['status'] ? null : intval($values['status']),
                     []
                 );
-                $this->libAuthEditGroups->createGroup($this->group);
-                $this->isProcessed = true;
+                $this->isProcessed = $this->libGroups->createGroup($this->group);
                 $this->redirect = true;
             }
 

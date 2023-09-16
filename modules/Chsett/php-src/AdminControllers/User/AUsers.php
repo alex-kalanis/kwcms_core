@@ -13,10 +13,12 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\ExternalLink;
 
 
 /**
@@ -51,7 +53,7 @@ abstract class AUsers extends AAuthModule implements IHasTitle
 //     */
 //    public function __construct(...$constructParams)
 //    {
-//        $this->initTModuleTemplate();
+//        $this->initTModuleTemplate(new ExternalLink(StoreRouted::getPath()));
 //        $this->libGroups = Auth::getGroups();
 //        $this->libClasses = Auth::getClasses();
 //        $this->libAccounts = Auth::getAccounts();
@@ -67,6 +69,7 @@ abstract class AUsers extends AAuthModule implements IHasTitle
      * @param Lib\FormUsers $form
      * @param Forward $forward
      * @param ServerRequest $request
+     * @param ExternalLink $external
      * @throws LangException
      */
     public function __construct(
@@ -75,9 +78,10 @@ abstract class AUsers extends AAuthModule implements IHasTitle
         Interfaces\IProcessAccounts $accounts,
         Lib\FormUsers $form,
         Forward $forward,
-        ServerRequest $request
+        ServerRequest $request,
+        ExternalLink $external
     ) {
-        $this->initTModuleTemplate();
+        $this->initTModuleTemplate($external);
         $this->libGroups = $groups;
         $this->libClasses = $classes;
         $this->libAccounts = $accounts;

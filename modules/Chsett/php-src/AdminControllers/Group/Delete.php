@@ -7,13 +7,11 @@ use kalanis\kw_accounts\AccountsException;
 use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth\Auth;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\ExternalLink;
 
@@ -39,17 +37,24 @@ class Delete extends AAuthModule
     protected $links = null;
 
     /**
-     * @param mixed ...$constructParams
+     * @param Interfaces\IProcessGroups $groups
+     * @param Forward $forward
+     * @param ServerRequest $request
+     * @param ExternalLink $external
      * @throws LangException
      */
-    public function __construct(...$constructParams)
-    {
+    public function __construct(
+        Interfaces\IProcessGroups $groups,
+        Forward $forward,
+        ServerRequest $request,
+        ExternalLink $external
+    ) {
         Lang::load('Chsett');
         Lang::load('Admin');
-        $this->libGroups = Auth::getGroups();
-        $this->links = new ExternalLink(StoreRouted::getPath());
-        $this->forward = new Forward();
-        $this->forward->setSource(new ServerRequest());
+        $this->libGroups = $groups;
+        $this->links = $external;
+        $this->forward = $forward;
+        $this->forward->setSource($request);
     }
 
     public function allowedAccessClasses(): array
@@ -65,8 +70,7 @@ class Delete extends AAuthModule
             if (empty($this->group)) {
                 throw new AccountsException(Lang::get('chsett.group_not_found', $groupId));
             }
-            $this->libGroups->deleteGroup($this->group->getGroupId());
-            $this->isProcessed = true;
+            $this->isProcessed = $this->libGroups->deleteGroup($this->group->getGroupId());
         } catch (AccountsException $ex) {
             $this->error = $ex;
         }
