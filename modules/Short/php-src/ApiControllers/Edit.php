@@ -1,43 +1,45 @@
 <?php
 
-namespace KWCMS\modules\Short\AdminControllers;
+namespace KWCMS\modules\Short\ApiControllers;
 
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
-use kalanis\kw_address_handler\Forward;
-use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_input\Simplified\SessionAdapter;
+use kalanis\kw_forms\Adapters\ArrayAdapter;
+use kalanis\kw_forms\Adapters\InputVarsAdapter;
+use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
+use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\Output;
-use kalanis\kw_notify\Notification;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
-use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
-use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Core\Libs\AApiAuthModule;
+use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Short\Lib;
 use KWCMS\modules\Short\ShortException;
 
 
 /**
- * Class Delete
- * @package KWCMS\modules\Short\AdminControllers
- * Site's short messages - delete record
+ * Class Edit
+ * @package KWCMS\modules\Short\ApiControllers
+ * Site's short messages - edit form
  */
-class Delete extends AAuthModule implements IHasTitle
+class Edit extends AApiAuthModule
 {
-    use Lib\TModuleTemplate;
     use TWhereDir;
 
-    /** @var MapperException|null */
+    /** @var Lib\MessageForm */
+    protected $form = null;
+    /** @var MapperException */
     protected $error = null;
     /** @var UserDir */
     protected $userDir = null;
@@ -45,8 +47,6 @@ class Delete extends AAuthModule implements IHasTitle
     protected $files = null;
     /** @var bool */
     protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
 
     /**
      * @param mixed ...$constructParams
@@ -57,12 +57,13 @@ class Delete extends AAuthModule implements IHasTitle
      */
     public function __construct(...$constructParams)
     {
-        $this->initTModuleTemplate();
+        Lang::load('Short');
+        Lang::load('Admin');
         Config::load('Short');
-        $this->forward = new Forward();
-        $this->forward->setSource(new ServerRequest());
+        $this->whereConst = 'target';
+        $this->form = new Lib\MessageForm('editMessage');
         $this->userDir = new UserDir(new Lib\Translations());
-        $this->files = (new Factory())->getClass($constructParams);
+        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
     }
 
     public function allowedAccessClasses(): array
@@ -72,7 +73,7 @@ class Delete extends AAuthModule implements IHasTitle
 
     public function run(): void
     {
-        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->initWhereDir(new ArrayAdapter([]), $this->inputs);
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
@@ -82,28 +83,35 @@ class Delete extends AAuthModule implements IHasTitle
             $adapter = new Lib\MessageAdapter($this->files, array_merge($userPath, $currentPath));
             $record = $adapter->getRecord();
             $record->id = strval($this->getFromParam('id'));
-            $this->isProcessed = $record->delete();
-        } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
+            $record->load();
+            $this->form->composeForm($record);
+            $this->form->setInputs(new InputVarsAdapter($this->inputs));
+            if ($this->form->process()) {
+                $ex = new DataExchange($record);
+                if ((bool)$ex->import($this->form->getValues())) {
+                    $this->isProcessed = $record->save();
+                }
+            }
+        } catch (ConfException | FilesException | FormsException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;
         }
     }
 
+    /**
+     * @throws RenderException
+     * @return Output\AOutput
+     */
     public function result(): Output\AOutput
     {
         if ($this->error) {
-            Notification::addError($this->error->getMessage());
+            $out = new Output\JsonError();
+            return $out->setContent($this->error->getCode(), $this->error->getMessage());
+        } elseif (!$this->form->isValid()) {
+            $out = new Output\Json();
+            return $out->setContent($this->form->renderErrorsArray());
+        } else {
+            $out = new Output\Json();
+            return $out->setContent(['Success', intval($this->isProcessed)]);
         }
-        if ($this->isProcessed) {
-            Notification::addSuccess(Lang::get('short.removed'));
-        }
-        $this->forward->forward();
-        $this->forward->setForward($this->links->linkVariant('short/dashboard'));
-        $this->forward->forward();
-        return new Output\Raw();
-    }
-
-    public function getTitle(): string
-    {
-        return Lang::get('short.page') . ' - ' . Lang::get('short.remove_record');
     }
 }

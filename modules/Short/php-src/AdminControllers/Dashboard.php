@@ -16,7 +16,6 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
-use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
@@ -87,13 +86,6 @@ class Dashboard extends AAuthModule implements IHasTitle
 
     public function result(): Output\AOutput
     {
-        return $this->isJson()
-            ? $this->outJson()
-            : $this->outHtml();
-    }
-
-    public function outHtml(): Output\AOutput
-    {
         $out = new Output\Html();
         $table = new Lib\MessageTable($this->inputs, $this->links);
         if ($this->search) {
@@ -108,27 +100,6 @@ class Dashboard extends AAuthModule implements IHasTitle
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         } else {
             return $out->setContent($this->outModuleTemplate(Lang::get('short.cannot_read')));
-        }
-    }
-
-    public function outJson(): Output\AOutput
-    {
-        $out = new Output\Json();
-        $table = new Lib\MessageTable($this->inputs, $this->links);
-        try {
-            if ($this->search) {
-                return $out->setContent($table->prepareJson($this->search));
-            }
-            $this->error = new ModuleException('No table found in current directory');
-        } catch (ConnectException | TableException | FormsException $ex) {
-            $this->error = $ex;
-        }
-
-        if ($this->error) {
-            $out = new Output\JsonError();
-            return $out->setContent($this->error->getCode(), $this->error->getMessage());
-        } else {
-            return $out->setContent(Lang::get('short.cannot_read'));
         }
     }
 

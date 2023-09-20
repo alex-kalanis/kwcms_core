@@ -45,7 +45,7 @@ class MessageTable
     /** @var ExternalLink|null */
     protected $link = null;
 
-    public function __construct(IFiltered $inputs, ExternalLink $link)
+    public function __construct(IFiltered $inputs, ExternalLink $link = null)
     {
         $this->variables = $inputs;
         $this->forward = new Forward();
@@ -127,13 +127,14 @@ class MessageTable
         $helper = new Helper();
         $helper->fillKwJson($this->variables);
         $table = $helper->getTable();
-        $table->addColumn(Lang::get('short.id'), new Columns\Basic('id'));
-        $table->addColumn(Lang::get('short.date'), new Columns\Date('date', 'Y-m-d H:i:s'));
-        $table->addColumn(Lang::get('short.title'), new Columns\Basic('title'));
-        $table->addColumn(Lang::get('short.message'), new Columns\Basic('content'));
-
-        $table->getPager()->getPager()->setLimit(5);
         $table->addOrdering('id', IQueryBuilder::ORDER_DESC);
+
+        $table->addOrderedColumn(Lang::get('short.id'), new Columns\Basic('id'), new Fields\TextExact());
+        $table->addOrderedColumn(Lang::get('short.date'), new Columns\Date('date', 'Y-m-d H:i:s'));
+        $table->addOrderedColumn(Lang::get('short.title'), new Columns\Basic('title'), new Fields\TextContains());
+        $table->addOrderedColumn(Lang::get('short.message'), new Columns\Basic('content'), new Fields\TextContains());
+
+        $table->getPager()->getPager()->setLimit(10);
         $table->addDataSetConnector(new Connector($search));
         $table->translateData();
         return $table->getOutput()->renderData();

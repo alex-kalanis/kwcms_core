@@ -188,7 +188,7 @@ try {
             'modules_loaders' => [
                 'di-admin',
                 'admin',
-//                'api',
+                'api',
                 'web',
             ],
             'modules_source' => [
