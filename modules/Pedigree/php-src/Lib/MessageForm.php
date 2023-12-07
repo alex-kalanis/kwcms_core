@@ -8,9 +8,10 @@ use kalanis\kw_forms\Form;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\Interfaces;
+use kalanis\kw_pedigree\PedigreeException;
+use kalanis\kw_pedigree\Storage\AEntryAdapter;
 use kalanis\kw_rules\Interfaces\IRules;
 
 
@@ -30,8 +31,9 @@ class MessageForm extends Form
     /**
      * @param GetEntries $entry
      * @param string $targetHelper
-     * @return MessageForm
      * @throws MapperException
+     * @throws PedigreeException
+     * @return $this
      */
     public function composeForm(GetEntries $entry, string $targetHelper): self
     {
@@ -43,22 +45,22 @@ class MessageForm extends Form
         $this->addText($entry->getStorage()->getFamilyKey(), Lang::get('pedigree.text.family'), $entry->getStorage()->getFamily());
         $this->addText($entry->getStorage()->getBirthKey(), Lang::get('pedigree.text.birth_date'), $entry->getStorage()->getBirth())
             ->addRule(IRules::SATISFIES_CALLBACK, Lang::get('warn.must_fill'), [$this, 'matchBirthDate']);
-        $this->addText($entry->getStorage()->getTrialsKey(), Lang::get('pedigree.text.trials'), $entry->getStorage()->getTrials());
+        $this->addText($entry->getStorage()->getSuccessesKey(), Lang::get('pedigree.text.successes'), $entry->getStorage()->getSuccesses());
         $this->addRadios($entry->getStorage()->getSexKey(), Lang::get('pedigree.text.sex'), $entry->getStorage()->getSex(), [
-            Interfaces\IEntry::SEX_MALE => Lang::get('pedigree.text.male'),
-            Interfaces\IEntry::SEX_FEMALE => Lang::get('pedigree.text.female'),
+            Interfaces\ISex::MALE => Lang::get('pedigree.text.male'),
+            Interfaces\ISex::FEMALE => Lang::get('pedigree.text.female'),
         ])
             ->addRule(IRules::IS_NOT_EMPTY, Lang::get('warn.must_fill'));
         $this->addTextarea($entry->getStorage()->getTextKey(), Lang::get('pedigree.text.long_info'), $entry->getStorage()->getText(), [
             'cols' => 60, 'rows' => 4,
         ]);
-        $fathers = $entry->getBySex(Interfaces\IEntry::SEX_MALE, Lang::get('pedigree.no_one'));
+        $fathers = $entry->getBySex(Interfaces\ISex::MALE, null, null, Lang::get('pedigree.no_one'));
         $this->addSelect('fatherId', Lang::get('pedigree.text.father'), $entry->getStorage()->getFatherId(),
             array_combine(array_map([$this, 'getRecordKey'], $fathers), array_map([$this, 'getRecordName'], $fathers)), [
                 'id' => 'father_select',
             ]
         );
-        $mothers = $entry->getBySex(Interfaces\IEntry::SEX_FEMALE, Lang::get('pedigree.no_one'));
+        $mothers = $entry->getBySex(Interfaces\ISex::FEMALE, null, null, Lang::get('pedigree.no_one'));
         $this->addSelect('motherId', Lang::get('pedigree.text.mother'), $entry->getStorage()->getMotherId(),
             array_combine(array_map([$this, 'getRecordKey'], $mothers), array_map([$this, 'getRecordName'], $mothers)), [
                 'id' => 'mother_select',
@@ -70,23 +72,23 @@ class MessageForm extends Form
     }
 
     /**
-     * @param ARecord $record
+     * @param AEntryAdapter $entry
+     * @throws PedigreeException
      * @return string
-     * @throws MapperException
      */
-    public function getRecordKey(ARecord $record): string
+    public function getRecordKey(AEntryAdapter $entry): string
     {
-        return strval($record->offsetGet($this->entry->getStorage()->getKeyKey()));
+        return $entry->getId();
     }
 
     /**
-     * @param ARecord $record
+     * @param AEntryAdapter $entry
+     * @throws PedigreeException
      * @return string
-     * @throws MapperException
      */
-    public function getRecordName(ARecord $record): string
+    public function getRecordName(AEntryAdapter $entry): string
     {
-        return strval($record->offsetGet($this->entry->getStorage()->getNameKey())) . ' ' . strval($record->offsetGet($this->entry->getStorage()->getFamilyKey()));
+        return $entry->getName() . ' ' . $entry->getFamily();
     }
 
     public function matchBirthDate($value): bool
@@ -95,11 +97,12 @@ class MessageForm extends Form
     }
 
     /**
+     * @throws PedigreeException
      * @return MessageForm
      */
     public function addIdentifier(): self
     {
-        $ident = $this->addText($this->entry->getStorage()->getKeyKey(), Lang::get('pedigree.text.key'), $this->entry->getStorage()->getKey());
+        $ident = $this->addText($this->entry->getStorage()->getShortKey(), Lang::get('pedigree.text.short'), $this->entry->getStorage()->getShort());
         $ident->addRule(IRules::IS_NOT_EMPTY, Lang::get('warn.must_fill'));
         $ident->addRule(IRules::SATISFIES_CALLBACK, Lang::get('pedigree.warn.already_exists'), [$this, 'checkKey']);
         $ident->addRule(IRules::SATISFIES_CALLBACK, Lang::get('pedigree.warn.contains_bad_chars'), [$this, 'checkChars']);
@@ -107,22 +110,17 @@ class MessageForm extends Form
     }
 
     /**
-     * @param $value
-     * @return bool
+     * @param string $value
      * @throws MapperException
+     * @return bool
      */
-    public function checkKey($value): bool
+    public function checkKey(string $value): bool
     {
-        return empty($this->entry->getByKey($value)->offsetGet($this->entry->getStorage()->getNameKey()));
+        return empty($this->entry->getByKey($value)->getRecord()->offsetGet($this->entry->getStorage()->getNameKey()));
     }
 
     public function checkChars($value): bool
     {
         return empty(preg_replace('#[a-zA-Z0-9_-]#', '', $value));
-    }
-
-    public function getDefaultRecord(): ?GetEntries
-    {
-        return $this->entry;
     }
 }

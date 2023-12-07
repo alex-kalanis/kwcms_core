@@ -94,7 +94,8 @@ try {
             ],
             'files' => [
                 'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
-            ]
+            ],
+            'module_pedigree' => 'single',
         ]
     ]);
     echo $module->process(['Core'])->get(); // dump output

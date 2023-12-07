@@ -104,7 +104,7 @@ class PedigreeTable
         $columnAdded->style('width:150px', new Rules\Always());
         $this->table->addOrderedColumn(Lang::get('pedigree.text.birth_date'), $columnAdded);
 
-        $this->table->addColumn(Lang::get('pedigree.text.trials'), new Columns\Bold($storage->getTrialsKey()), new Fields\Multiple([
+        $this->table->addColumn(Lang::get('pedigree.text.successes'), new Columns\Bold($storage->getSuccessesKey()), new Fields\Multiple([
             new Fields\MultipleValue(new Fields\TextContains()),
             new Fields\MultipleValue(new Fields\TextContains()),
         ]));
@@ -118,7 +118,7 @@ class PedigreeTable
         $this->table->addColumn(Lang::get('pedigree.actions'), $columnActions);
 
         $pager->setLimit(10);
-        $this->table->addDataSetConnector(new Connector(new Search($this->entries->getRecord())));
+        $this->table->addDataSetConnector(new Connector(new Search(clone $this->entries->getRecord())));
         $this->table->setOutput(new KwRenderer($this->table));
         return $this->table->render();
     }
@@ -137,15 +137,15 @@ class PedigreeTable
         $table = $helper->getTable();
         $storage = $this->entries->getStorage();
         $table->addColumn(Lang::get('pedigree.text.id'), new Columns\Basic($storage->getIdKey()));
-        $table->addColumn(Lang::get('pedigree.text.key'), new Columns\Basic($storage->getKeyKey()));
+        $table->addColumn(Lang::get('pedigree.text.short'), new Columns\Basic($storage->getShortKey()));
         $table->addColumn(Lang::get('pedigree.text.name'), new Columns\Basic($storage->getNameKey()));
         $table->addColumn(Lang::get('pedigree.text.family'), new Columns\Basic($storage->getFamilyKey()));
         $table->addColumn(Lang::get('pedigree.text.birth_date'), new Columns\Basic($storage->getBirthKey()));
-        $table->addColumn(Lang::get('pedigree.text.trials'), new Columns\Basic($storage->getTrialsKey()));
+        $table->addColumn(Lang::get('pedigree.text.successes'), new Columns\Basic($storage->getSuccessesKey()));
 
         $table->getPager()->getPager()->setLimit(5);
         $table->addOrdering('id', IQueryBuilder::ORDER_DESC);
-        $table->addDataSetConnector(new Connector(new Search($this->entries->getRecord())));
+        $table->addDataSetConnector(new Connector(new Search(clone $this->entries->getRecord())));
         $table->translateData();
         return $table->getOutput()->renderData();
     }
@@ -173,7 +173,7 @@ class PedigreeTable
      */
     public function showLink($id): string
     {
-        $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getIdKey());
+        $key = $this->table->getDataSetConnector()->getByKey($id)->getValue($this->entries->getStorage()->getShortKey());
         return sprintf('<a href="%s" title="%s" class="button button-preview"> &#x1F50D; </a>',
             $this->link->linkVariant('pedigree/' . $key, 'pedigree'),
             Lang::get('pedigree.show')

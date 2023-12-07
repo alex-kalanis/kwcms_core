@@ -11,7 +11,6 @@ use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\Output;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
@@ -61,7 +60,7 @@ class Dashboard extends AAuthModule implements IHasTitle
         }
     }
 
-    protected function getRecord(): ARecord
+    protected function getRecord(): Storage\APedigreeRecord
     {
         return new Storage\SingleTable\PedigreeRecord();
 //        return new Storage\MultiTable\PedigreeItemRecord();

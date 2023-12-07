@@ -21,9 +21,9 @@ class Delete extends APedigree
     public function run(): void
     {
         try {
-            $entry = new GetEntries($this->getRecord());
+            $entry = new GetEntries($this->getConnectRecord());
             $record = $entry->getRecord();
-            $record->offsetSet($entry->getStorage()->getKeyKey(), strval($this->getFromParam('key')));
+            $record->offsetSet($entry->getStorage()->getIdKey(), strval($this->getFromParam('key')));
             $this->isProcessed = $record->delete();
         } catch (MapperException | PedigreeException $ex) {
             $this->error = $ex;

@@ -15,9 +15,9 @@ trait TBasicKeys
         return 'id';
     }
 
-    public function getKeyKey(): string
+    public function getShortKey(): string
     {
-        return 'key';
+        return 'short';
     }
 
     public function getNameKey(): string
@@ -27,7 +27,7 @@ trait TBasicKeys
 
     public function getFamilyKey(): string
     {
-        return 'kennel';
+        return 'family';
     }
 
     public function getBirthKey(): string
@@ -35,14 +35,14 @@ trait TBasicKeys
         return 'birth';
     }
 
-    public function getTrialsKey(): string
+    public function getDeathKey(): string
     {
-        return 'trials';
+        return 'death';
     }
 
-    public function getBreedKey(): string
+    public function getSuccessesKey(): string
     {
-        return 'breed';
+        return 'successes';
     }
 
     public function getSexKey(): string

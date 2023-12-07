@@ -10,8 +10,8 @@ use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\Output;
+use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_pedigree\Storage;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
@@ -25,6 +25,7 @@ use KWCMS\modules\Pedigree\Lib;
  */
 abstract class APedigree extends AAuthModule implements IHasTitle
 {
+    use Lib\TCorrectConnect;
     use Lib\TModuleTemplate;
 
     /** @var MapperException|null */
@@ -38,11 +39,14 @@ abstract class APedigree extends AAuthModule implements IHasTitle
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
+     * @throws PedigreeException
      */
     public function __construct(...$constructParams)
     {
         Config::load('Pedigree');
         $this->initTModuleTemplate();
+        \kalanis\kw_pedigree\Config::init();
+        $this->initTCorrectConnect($constructParams);
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
     }
@@ -50,13 +54,6 @@ abstract class APedigree extends AAuthModule implements IHasTitle
     public function allowedAccessClasses(): array
     {
         return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
-    }
-
-    protected function getRecord(): ARecord
-    {
-        \kalanis\kw_pedigree\Config::init();
-        return new Storage\SingleTable\PedigreeRecord();
-//        return new Storage\MultiTable\PedigreeItemRecord();
     }
 
     public function result(): Output\AOutput

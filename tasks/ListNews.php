@@ -3,22 +3,29 @@
 namespace kwcms;
 
 
+use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\Sources\Inputs;
 use kalanis\kw_clipr\Tasks\ATask;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_connect\search\Connector;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_forms\Adapters;
+use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_forms\Form;
+use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
 use kalanis\kw_paging\Render;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stored;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\TableException;
+use kalanis\kw_table\form_kw\KwFilter;
+use kalanis\kw_table\form_nette\Fields\TextContains;
 use kalanis\kw_table\output_cli\CliRenderer;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Short\Lib\MessageAdapter;
@@ -58,6 +65,7 @@ class ListNews extends ATask
 
     /**
      * @throws ConnectException
+     * @throws FormsException
      * @throws MapperException
      * @throws TableException
      * @return int
@@ -74,10 +82,18 @@ class ListNews extends ATask
         $render = new CliRenderer($table);
         $table->setOutput($render);
 
+        $inputVariables = new Adapters\InputVarsAdapter($this->inputs);
+        $form = new Form('newsForm');
+        $form->setMethod(IEntry::SOURCE_CLI);
+        $table->addHeaderFilter(new KwFilter($form));
+        $form->setInputs($inputVariables);
+
+        $table->addOrder(new Table\Order(new Handler(new Inputs($this->inputs))));
+
         // columns
-        $table->addColumn('Title', new Table\Columns\Basic('title'));
-        $table->addColumn('Date', new Table\Columns\Date('date'));
-        $table->addColumn('Description', new Table\Columns\Basic('content'));
+        $table->addOrderedColumn('Title', new Table\Columns\Basic('title'), new TextContains());
+        $table->addOrderedColumn('Date', new Table\Columns\Date('date'));
+        $table->addOrderedColumn('Description', new Table\Columns\Basic('content'), new TextContains());
 
         // pager
         $pager = new BasicPager();
@@ -90,7 +106,7 @@ class ListNews extends ATask
         // data sources
         try {
             $files = (new Access\Factory(new FilesTranslations()))->getClass(
-                Stored::getPath()->getDocumentRoot() . Stored::getPath()->getPathToSystemRoot()
+                realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR)
             );
             $adapter = new MessageAdapter($files, Stuff::pathToArray($this->path));
             $table->addDataSetConnector(new Connector(new Search($adapter->getRecord())));

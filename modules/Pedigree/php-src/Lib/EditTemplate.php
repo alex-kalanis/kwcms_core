@@ -76,9 +76,9 @@ class EditTemplate extends ATemplate
         $this->updateItem('{LABEL_BIRTHDAY}', $form->getControl($entries->getStorage()->getBirthKey())->renderLabel());
         $this->updateItem('{INPUT_BIRTHDAY}', $form->getControl($entries->getStorage()->getBirthKey())->renderInput());
         $this->updateItem('{ERROR_BIRTHDAY}', $form->renderControlErrors($entries->getStorage()->getBirthKey()));
-        $this->updateItem('{LABEL_BASIC_INFO}', $form->getControl($entries->getStorage()->getTrialsKey())->renderLabel());
-        $this->updateItem('{INPUT_BASIC_INFO}', $form->getControl($entries->getStorage()->getTrialsKey())->renderInput());
-        $this->updateItem('{ERROR_BASIC_INFO}', $form->renderControlErrors($entries->getStorage()->getTrialsKey()));
+        $this->updateItem('{LABEL_BASIC_INFO}', $form->getControl($entries->getStorage()->getSuccessesKey())->renderLabel());
+        $this->updateItem('{INPUT_BASIC_INFO}', $form->getControl($entries->getStorage()->getSuccessesKey())->renderInput());
+        $this->updateItem('{ERROR_BASIC_INFO}', $form->renderControlErrors($entries->getStorage()->getSuccessesKey()));
         $this->updateItem('{LABEL_FATHER}', $form->getControl('fatherId')->renderLabel());
         $this->updateItem('{INPUT_FATHER}', $form->getControl('fatherId')->renderInput());
         $this->updateItem('{ERROR_FATHER}', $form->renderControlErrors('fatherId'));
@@ -91,10 +91,10 @@ class EditTemplate extends ATemplate
         $this->updateItem('{LABEL_FULL}', $form->getControl($entries->getStorage()->getTextKey())->renderLabel());
         $this->updateItem('{INPUT_FULL}', $form->getControl($entries->getStorage()->getTextKey())->renderInput());
         $this->updateItem('{ERROR_FULL}', $form->renderControlErrors($entries->getStorage()->getTextKey()));
-        if ($form->getControl($entries->getStorage()->getKeyKey())) {
-            $this->updateItem('{LABEL_KEY}', $form->getControl($entries->getStorage()->getKeyKey())->renderLabel());
-            $this->updateItem('{INPUT_KEY}', $form->getControl($entries->getStorage()->getKeyKey())->renderInput());
-            $this->updateItem('{ERROR_KEY}', $form->renderControlErrors($entries->getStorage()->getKeyKey()));
+        if ($form->getControl($entries->getStorage()->getShortKey())) {
+            $this->updateItem('{LABEL_KEY}', $form->getControl($entries->getStorage()->getShortKey())->renderLabel());
+            $this->updateItem('{INPUT_KEY}', $form->getControl($entries->getStorage()->getShortKey())->renderInput());
+            $this->updateItem('{ERROR_KEY}', $form->renderControlErrors($entries->getStorage()->getShortKey()));
         }
         $this->updateItem('{INPUT_SUBMIT}', $form->getControl('postRecord')->renderInput());
         $this->updateItem('{INPUT_RESET}', $form->getControl('clearRecord')->renderInput());

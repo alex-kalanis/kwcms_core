@@ -13,6 +13,7 @@ use kalanis\kw_mapper\Storage\Database;
  * @package kalanis\kw_pedigree
  * Default configuration for testing DB in kw_pedigree
  * You can call your own implementation and settings in bootstrap
+ * @codeCoverageIgnore this is mainly example of configuration
  */
 class Config
 {
@@ -23,7 +24,13 @@ class Config
         } catch (MapperException $ex) { // if not use our own
             Database\ConfigStorage::getInstance()->addConfig(
                 Database\Config::init()->setTarget(
-                    IDriverSources::TYPE_PDO_MYSQL, 'pedigree', 'localhost', 3306, 'kwdeploy', 'testingpass', 'kw_deploy'
+                    IDriverSources::TYPE_PDO_MYSQL,
+                    'pedigree',
+                    'localhost',
+                    3306,
+                    'kwdeploy',
+                    'testingpass',
+                    'kw_deploy'
                 )
             );
         }

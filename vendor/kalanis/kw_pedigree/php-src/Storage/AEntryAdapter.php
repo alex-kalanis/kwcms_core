@@ -7,6 +7,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pedigree\Interfaces\IEntry;
+use kalanis\kw_pedigree\PedigreeException;
 
 
 /**
@@ -17,181 +18,180 @@ abstract class AEntryAdapter implements IEntry
 {
     use TBasicKeys;
 
-    /** @var File\PedigreeRecord|SingleTable\PedigreeRecord|MultiTable\PedigreeItemRecord|null */
+    /** @var APedigreeRecord|null */
     protected $record = null;
 
-    public function setRecord(ARecord $record): void
+    public function setRecord(?APedigreeRecord $record): void
     {
         $this->record = $record;
     }
 
-    public function getRecord(): ?ARecord
+    public function getRecord(): ?APedigreeRecord
     {
         return $this->record;
     }
 
-    public function setId(string $id): IEntry
+    /**
+     * @throws PedigreeException
+     * @return APedigreeRecord
+     */
+    public function getLoadedRecord(): APedigreeRecord
     {
-        $this->record->id = $id;
+        if (empty($this->record)) {
+            throw new PedigreeException('No basic record set!');
+        }
+        return $this->record;
+    }
+
+    public function setId(int $id): IEntry
+    {
+        $this->getLoadedRecord()->id = $id;
         return $this;
     }
 
-    public function getId(): string
+    public function getId(): int
     {
-        return strval($this->record->id);
+        return intval($this->getLoadedRecord()->id);
     }
 
-    public function setKey(string $key): IEntry
+    public function setShort(string $key): IEntry
     {
-        $this->record->key = $key;
+        $this->getLoadedRecord()->short = $key;
         return $this;
     }
 
-    public function getKey(): string
+    public function getShort(): string
     {
-        return strval($this->record->key);
+        return strval($this->getLoadedRecord()->short);
     }
 
     public function setName(string $name): IEntry
     {
-        $this->record->name = $name;
+        $this->getLoadedRecord()->name = $name;
         return $this;
     }
 
     public function getName(): string
     {
-        return strval($this->record->name);
+        return strval($this->getLoadedRecord()->name);
     }
 
     public function setFamily(string $family): IEntry
     {
-        $this->record->kennel = $family;
+        $this->getLoadedRecord()->family = $family;
         return $this;
     }
 
     public function getFamily(): string
     {
-        return strval($this->record->kennel);
+        return strval($this->getLoadedRecord()->family);
     }
 
-    public function setBirth(string $birth): IEntry
+    public function setBirth(?string $birth): IEntry
     {
-        $this->record->birth = $birth;
+        $this->getLoadedRecord()->birth = strval($birth);
         return $this;
     }
 
-    public function getBirth(): string
+    public function getBirth(): ?string
     {
-        return strval($this->record->birth);
+        $data = $this->getLoadedRecord()->birth;
+        return empty($data) ? null : strval($data);
     }
 
-    public function setFatherId(string $fatherId): ?bool
+    public function setDeath(?string $death): IEntry
     {
-        if ($this->record->fatherId != $fatherId) {
-            $this->record->fatherId = $fatherId;
-            return true;
-        }
-        return null;
+        $this->getLoadedRecord()->death = strval($death);
+        return $this;
     }
 
-    public function getFatherId(): string
+    public function getDeath(): ?string
     {
-        return strval($this->record->fatherId);
-    }
-
-    public function setMotherId(string $motherId): ?bool
-    {
-        if ($this->record->motherId != $motherId) {
-            $this->record->motherId = $motherId;
-            return true;
-        }
-        return null;
-    }
-
-    public function getMotherId(): string
-    {
-        return strval($this->record->motherId);
+        $data = $this->getLoadedRecord()->death;
+        return empty($data) ? null : strval($data);
     }
 
     /**
-     * @return array
      * @throws MapperException
+     * @throws PedigreeException
+     * @return ARecord[]
      */
     public function getChildren(): array
     {
-        $search = new Search($this->record);
-        $search->exact('motherId', $this->record->id);
-        $search->exact('fatherId', $this->record->id);
+        // unhook the original class, use only definition and create new clear copy
+        $record = get_class($this->getLoadedRecord());
+
+        $search = new Search(new $record());
+        $search->exact('motherId', strval($this->getLoadedRecord()->id));
+        $search->exact('fatherId', strval($this->getLoadedRecord()->id));
         $search->useOr();
         return $search->getResults();
     }
 
     /**
-     * @param string $fatherId
-     * @param string $motherId
-     * @return bool|null
+     * @param int|null $fatherId
+     * @param int|null $motherId
      * @throws MapperException
+     * @throws PedigreeException
+     * @return bool|null
      */
-    public function saveFamily(string $fatherId, string $motherId): ?bool
+    public function saveFamily(?int $fatherId, ?int $motherId): ?bool
     {
-        if ((bool)$this->setFatherId($fatherId) || (bool)$this->setMotherId($motherId)) {
-            return $this->record->save();
+        $willSave = false;
+        if (boolval($this->setFatherId($fatherId))) {
+            $willSave = true;
+        }
+        if (boolval($this->setMotherId($motherId))) {
+            $willSave = true;
+        }
+        if ($willSave) {
+            return $this->getLoadedRecord()->save();
         }
         return null;
     }
 
-    public function setTrials(string $trials): IEntry
+    public function setSuccesses(string $successes): IEntry
     {
-        $this->record->trials = $trials;
+        $this->getLoadedRecord()->successes = $successes;
         return $this;
     }
 
-    public function getTrials(): string
+    public function getSuccesses(): string
     {
-        return strval($this->record->trials);
-    }
-
-    public function setBreed(string $breed): IEntry
-    {
-        $this->record->breed = $breed;
-        return $this;
-    }
-
-    public function getBreed(): string
-    {
-        return strval($this->record->breed);
+        return strval($this->getLoadedRecord()->successes);
     }
 
     public function setSex(string $sex): IEntry
     {
-        $this->record->sex = $sex;
+        $this->getLoadedRecord()->sex = $sex;
         return $this;
     }
 
     public function getSex(): string
     {
-        return strval($this->record->sex);
+        return strval($this->getLoadedRecord()->sex);
     }
 
     public function setText(string $text): IEntry
     {
-        $this->record->text = $text;
+        $this->getLoadedRecord()->text = $text;
         return $this;
     }
 
     public function getText(): string
     {
-        return strval($this->record->text);
+        return strval($this->getLoadedRecord()->text);
     }
 
     /**
      * @param string $what
      * @param string|null $sex
      * @throws MapperException
+     * @throws PedigreeException
      * @return ARecord[]
      */
-    public function getLike(string $what, $sex): array
+    public function getLike(string $what, ?string $sex): array
     {
-        return $this->record->getMapper()->getLike($what, empty($sex) ? null : strval($sex));
+        return $this->getLoadedRecord()->getLike($what, $sex);
     }
 }

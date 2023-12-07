@@ -43,7 +43,7 @@ class Add extends APedigree
     public function run(): void
     {
         try {
-            $this->entry = new GetEntries($this->getRecord());
+            $this->entry = new GetEntries($this->getConnectRecord());
             $this->entry->getStorage()->setRecord($this->entry->getRecord());
             $this->form->composeForm($this->entry, $this->extLink->linkVariant('pedigree/lookup'));
             $this->form->addIdentifier();

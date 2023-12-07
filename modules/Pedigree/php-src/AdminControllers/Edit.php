@@ -43,10 +43,10 @@ class Edit extends APedigree
     public function run(): void
     {
         try {
-            $this->entry = new GetEntries($this->getRecord());
+            $this->entry = new GetEntries($this->getConnectRecord());
             $record = $this->entry->getRecord();
             $this->entry->getStorage()->setRecord($record);
-            $record->offsetSet($this->entry->getStorage()->getKeyKey(), strval($this->getFromParam('key')));
+            $record->offsetSet($this->entry->getStorage()->getIdKey(), strval($this->getFromParam('key')));
             $record->load();
             $this->form->composeForm($this->entry, $this->extLink->linkVariant('pedigree/lookup'));
             $this->form->setInputs(new InputVarsAdapter($this->inputs));

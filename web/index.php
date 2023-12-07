@@ -199,7 +199,8 @@ try {
             'files' => [
                 'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
 //                'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_USER
-            ]
+            ],
+            'module_pedigree' => 'single',
         ]
     ]);
     echo $module->process(['Core'])->get(); // dump output

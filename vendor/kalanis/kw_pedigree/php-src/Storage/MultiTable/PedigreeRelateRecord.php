@@ -9,11 +9,11 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 
 /**
  * Class PedigreeRelateRecord
- * @property int id
- * @property int childId
- * @property int parentId
- * @property PedigreeItemRecord[] parents
- * @property PedigreeItemRecord[] children
+ * @property int $id
+ * @property int $childId
+ * @property int $parentId
+ * @property PedigreeItemRecord[] $parents
+ * @property PedigreeItemRecord[] $children
  */
 class PedigreeRelateRecord extends ASimpleRecord
 {
@@ -24,6 +24,15 @@ class PedigreeRelateRecord extends ASimpleRecord
         $this->addEntry('parentId', IEntryType::TYPE_INTEGER, 2048);
         $this->addEntry('parents', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
         $this->addEntry('children', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper(PedigreeRelateMapper::class);
+        $this->setMapper($this->getMapperClass());
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore used another one for testing
+     */
+    protected function getMapperClass(): string
+    {
+        return PedigreeRelateMapper::class;
     }
 }

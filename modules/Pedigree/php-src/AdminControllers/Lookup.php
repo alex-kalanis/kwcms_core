@@ -11,8 +11,8 @@ use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_modules\Output;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
-use kalanis\kw_pedigree\Storage;
 use KWCMS\modules\Core\Libs\AAuthModule;
+use KWCMS\modules\Pedigree\Lib\TCorrectConnect;
 
 
 /**
@@ -22,6 +22,8 @@ use KWCMS\modules\Core\Libs\AAuthModule;
  */
 class Lookup extends AAuthModule
 {
+    use TCorrectConnect;
+
     /** @var MapperException|null */
     protected $error = null;
     /** @var ARecord[] */
@@ -32,10 +34,13 @@ class Lookup extends AAuthModule
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
+     * @throws PedigreeException
      */
     public function __construct(...$constructParams)
     {
         Config::load('Pedigree');
+        \kalanis\kw_pedigree\Config::init();
+        $this->initTCorrectConnect($constructParams);
     }
 
     public function allowedAccessClasses(): array
@@ -46,7 +51,7 @@ class Lookup extends AAuthModule
     public function run(): void
     {
         try {
-            $this->entry = new GetEntries($this->getRecord());
+            $this->entry = new GetEntries($this->getConnectRecord());
             $this->entry->getStorage()->setRecord($this->entry->getRecord());
             $sex = $this->getFromParam('sex');
             $this->lookedUp = $this->entry->getStorage()->getLike(
@@ -56,13 +61,6 @@ class Lookup extends AAuthModule
         } catch (PedigreeException | MapperException $ex) {
             $this->error = $ex;
         }
-    }
-
-    protected function getRecord(): ARecord
-    {
-        \kalanis\kw_pedigree\Config::init();
-        return new Storage\SingleTable\PedigreeRecord();
-//        return new Storage\MultiTable\PedigreeItemRecord();
     }
 
     public function result(): Output\AOutput
@@ -86,7 +84,7 @@ class Lookup extends AAuthModule
         $source = $this->entry->getStorage();
         return [
             'id' => strval($record->offsetGet($source->getIdKey())),
-            'key' => strval($record->offsetGet($source->getKeyKey())),
+            'short' => strval($record->offsetGet($source->getShortKey())),
             'name' => strval($record->offsetGet($source->getNameKey())),
             'family' => strval($record->offsetGet($source->getFamilyKey())),
         ];

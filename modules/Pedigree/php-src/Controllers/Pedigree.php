@@ -32,6 +32,8 @@ use KWCMS\modules\Pedigree\Lib;
  */
 class Pedigree extends AModule
 {
+    use Lib\TCorrectConnect;
+
     const BRANCHES = 2; # count of sub-branches of each entry
 
     /** @var ExternalLink|null */
@@ -49,12 +51,15 @@ class Pedigree extends AModule
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
+     * @throws PedigreeException
      */
     public function __construct(...$constructParams)
     {
         Config::load(static::getClassName(static::class));
         $this->externalLink = new ExternalLink(StoreRouted::getPath());
         $this->constructParams = $constructParams;
+        \kalanis\kw_pedigree\Config::init();
+        $this->initTCorrectConnect($constructParams);
         Lang::load(static::getClassName(static::class));
     }
 
@@ -66,6 +71,7 @@ class Pedigree extends AModule
      * @throws ConfException
      * @throws MapperException
      * @throws ModuleException
+     * @throws PedigreeException
      * @throws TemplateException
      * @return Output\AOutput
      */
@@ -82,7 +88,7 @@ class Pedigree extends AModule
         $out = new Output\Html();
         $tmplLink = new Lib\ExtLinkTemplate();
         $tmplLink->setData(
-            $this->createLink($this->getName()),
+            $this->createLink($this->getShort()),
             $this->externalLink->linkVariant('pedigree/ped.png','sysimage', true)
         );
         return $out->setContent($tmplLink->render());
@@ -90,6 +96,7 @@ class Pedigree extends AModule
 
     /**
      * @throws MapperException
+     * @throws PedigreeException
      * @throws TemplateException
      * @return Output\AOutput
      */
@@ -97,8 +104,8 @@ class Pedigree extends AModule
     {
         try {
             $this->depth = $this->limitedDepth();
-            $this->entries = new GetEntries($this->getRecord());
-            $tree = $this->getTree($this->getName());
+            $this->entries = new GetEntries($this->getConnectRecord());
+            $tree = $this->getTree($this->getShort());
         } catch (MapperException | PedigreeException $ex) {
             $this->error = $ex;
         }
@@ -122,7 +129,7 @@ class Pedigree extends AModule
         }
     }
 
-    protected function getName(): string
+    protected function getShort(): string
     {
         $path = StoreRouted::getPath()->getPath();
         $possibleKey = strval(end($path));
@@ -154,28 +161,26 @@ class Pedigree extends AModule
             ? $level : $default;
     }
 
-    protected function getRecord(): ARecord
-    {
-        \kalanis\kw_pedigree\Config::init();
-        return new Storage\SingleTable\PedigreeRecord();
-//        return new Storage\MultiTable\PedigreeItemRecord();
-    }
-
     /**
-     * @param string $key
-     * @throws MapperException
-     * @return ARecord[]
+     * @param string $shortKey
      * I DO NOT want to know how I wrote it...
+     * @throws PedigreeException
+     * @throws MapperException
+     * @return array<int, Storage\AEntryAdapter|null>
      */
-    protected function getTree(string $key): array
+    protected function getTree(string $shortKey): array
     {
         # read database and fill data
-        if (empty($key)) {
+        if (empty($shortKey)) {
             return [];
         }
 
-        $record = $this->entries->getByKey($key);
-        $id = strval($record->offsetGet($this->entries->getStorage()->getIdKey()));
+        $record = $this->entries->getByKey($shortKey);
+        if (empty($record)) {
+            return [];
+        }
+
+        $id = $record->getId();
         if (empty($id)) {
             return [];
         }
@@ -208,54 +213,57 @@ class Pedigree extends AModule
         return $tree;
     }
 
-    protected function upperOrLower(?ARecord $record, int $depth): string
+    /**
+     * @param Storage\AEntryAdapter|null $entry
+     * @param int $depth
+     * @throws PedigreeException
+     * @return int|null
+     */
+    protected function upperOrLower(?Storage\AEntryAdapter $entry, int $depth): ?int
     {
-        if (empty($record)) {
-            return '';
+        if (empty($entry)) {
+            return null;
         }
-        $storage = $this->entries->getStorage();
-        $storage->setRecord($record);
-        return (0 == $depth % 2) ? $storage->getFatherId() : $storage->getMotherId();
+        return (0 == $depth % 2) ? $entry->getFatherId() : $entry->getMotherId();
     }
 
     /**
-     * @param ARecord|null $record
+     * @param Storage\AEntryAdapter|null $entry
      * @throws MapperException
+     * @throws PedigreeException
      * @return ARecord[]
      */
-    protected function getDescendants(?ARecord $record): array
+    protected function getDescendants(?Storage\AEntryAdapter $entry): array
     {
-        if (empty($record)) {
+        if (empty($entry)) {
             return [];
         }
-        $storage = $this->entries->getStorage();
-        $storage->setRecord($record);
-        $storage->setRecord($this->entries->getById($storage->getId()));
-        return $storage->getChildren();
+        return $entry->getChildren();
     }
 
     /**
-     * @param string $id
+     * @param string|null $id
      * @throws MapperException
-     * @return ARecord|null
+     * @throws PedigreeException
+     * @return Storage\AEntryAdapter|null
      */
-    protected function readData(string $id): ?ARecord
+    protected function readData(?string $id): ?Storage\AEntryAdapter
     {
         # read database and fill data
         if (empty($id)) {
             return null;
         }
-        $storage = $this->entries->getStorage();
         $record = $this->entries->getById($id);
-        if (empty($record->offsetGet($storage->getNameKey()))) {
+        if (empty($record->getName())) {
             return null;
         }
         return $record;
     }
 
     /**
-     * @param ARecord[] $tree
-     * @param ARecord[] $descendants
+     * @param array<int, Storage\AEntryAdapter|null> $tree
+     * @param Storage\AEntryAdapter[] $descendants
+     * @throws PedigreeException
      * @throws TemplateException
      * @return string
      */
@@ -278,27 +286,28 @@ class Pedigree extends AModule
     }
 
     /**
-     * @param ARecord[] $descendants
+     * @param Storage\APedigreeRecord[] $descendants
+     * @throws PedigreeException
      * @return string
      */
     protected function printDescendants(array $descendants): string
     {
         $tmpl = new Lib\DescLinkTemplate();
         $r = [];
-        $storage = $this->entries->getStorage();
         foreach ($descendants as &$descendant) {
-            $storage->setRecord($descendant);
+            $lib = clone $this->entries->getStorage();
+            $lib->setRecord($descendant);
             $r[] = $tmpl->reset()->setData(
-                $this->createLink($storage->getId()),
-                $storage->getName(),
-                $storage->getFamily()
+                $this->createLink($lib->getShort()),
+                $lib->getName(),
+                $lib->getFamily()
             )->render();
         }
         return implode('', $r);
     }
 
     /**
-     * @param ARecord[] $tree
+     * @param array<int, Storage\AEntryAdapter|null> $tree
      * @param int $span
      * @param int $cnt
      * @param int $position
@@ -322,14 +331,13 @@ class Pedigree extends AModule
             $libCell->reset();
             $libCell->setData($span);
         } else {
-            $storage = $this->entries->getStorage();
-            $storage->setRecord($tree[$position]);
+            $storage = $tree[$position];
             $libCell->setData(
                 strval($span),
                 $storage->getName(),
                 $storage->getFamily(),
-                $this->createLink($storage->getId()),
-                $storage->getTrials()
+                $this->createLink($storage->getShort()),
+                $storage->getSuccesses()
             );
         }
         return $libCell->render();

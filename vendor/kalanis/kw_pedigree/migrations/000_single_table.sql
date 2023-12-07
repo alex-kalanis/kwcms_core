@@ -3,24 +3,26 @@
 SET NAMES utf8;
 SET foreign_key_checks = 0;
 
-DROP TABLE IF EXISTS `kal_pedigree`;
-CREATE TABLE `kal_pedigree` (
-    `id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-    `name` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
-    `kennel` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `birth` date NOT NULL,
-    `father` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
-    `mother` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
-    `father_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-    `mother_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-    `address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `trials` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `photo` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
-    `photo_x` smallint(5) NOT NULL,
-    `photo_y` smallint(5) NOT NULL,
-    `breed` set('no','yes','died') COLLATE utf8_unicode_ci NOT NULL,
-    `sex` set('female','male') COLLATE utf8_unicode_ci NOT NULL,
-    `blood` set('our','other') COLLATE utf8_unicode_ci NOT NULL,
-    `text` longtext COLLATE utf8_unicode_ci NOT NULL,
-    UNIQUE KEY `identifier` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Kennel table';
+DROP TABLE IF EXISTS `kw_pedigree`;
+
+CREATE TABLE `kw_pedigree` (
+    `pedigree_id` INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    `pedigree_short` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `pedigree_name` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
+    `pedigree_family` varchar(256) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `pedigree_birth` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `pedigree_death` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `pedigree_father_id` INTEGER NULL,
+    `pedigree_mother_id` INTEGER NULL,
+    `pedigree_successes` varchar(1024) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `pedigree_sex` set('female','male') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'male',
+    `pedigree_text` longtext COLLATE utf8_unicode_ci NOT NULL,
+    CONSTRAINT fk_father FOREIGN KEY (`pedigree_father_id`) REFERENCES `kw_pedigree`(`pedigree_id`),
+    CONSTRAINT fk_mother FOREIGN KEY (`pedigree_mother_id`) REFERENCES `kw_pedigree`(`pedigree_id`),
+    UNIQUE KEY `identifier` (`pedigree_short`),
+    INDEX `name` (`pedigree_name`),
+    INDEX `family` (`pedigree_family`),
+    INDEX `birth` (`pedigree_birth`),
+    INDEX `death` (`pedigree_death`),
+    INDEX `sex` (`pedigree_sex`)
+) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Pedigree table';
