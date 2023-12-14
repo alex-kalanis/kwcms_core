@@ -18,6 +18,7 @@ use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
@@ -142,6 +143,7 @@ class MessageTable
 
     /**
      * @param string|int $id
+     * @throws PathsException
      * @return string
      */
     public function idLink($id)
@@ -156,6 +158,7 @@ class MessageTable
 
     /**
      * @param string|int $id
+     * @throws PathsException
      * @return string
      */
     public function editLink($id)
@@ -170,6 +173,7 @@ class MessageTable
 
     /**
      * @param string|int $id
+     * @throws PathsException
      * @return string
      */
     public function deleteLink($id): string

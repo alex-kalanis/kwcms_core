@@ -90,10 +90,10 @@ class Edit extends AAuthModule implements IHasTitle
             $adapter = new Lib\MessageAdapter($this->files, array_merge($userPath, $currentPath));
             $record = $adapter->getRecord();
             $record->id = strval($this->getFromParam('id'));
-            $record->load();
+            $isLoadProcessed = $record->load();
             $this->form->composeForm($record);
             $this->form->setInputs(new InputVarsAdapter($this->inputs));
-            if ($this->form->process()) {
+            if ($isLoadProcessed && $this->form->process()) {
                 $ex = new DataExchange($record);
                 if ((bool)$ex->import($this->form->getValues())) {
                     $this->isProcessed = $record->save();

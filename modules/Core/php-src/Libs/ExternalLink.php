@@ -4,6 +4,7 @@ namespace KWCMS\modules\Core\Libs;
 
 
 use kalanis\kw_confs\Config;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\Linking;
 use kalanis\kw_routed_paths\RoutedPath;
@@ -55,6 +56,7 @@ class ExternalLink
      * @param string[]|string $module called module name
      * @param bool $single call that as only content
      * @param string|null $lang use that lang
+     * @throws PathsException
      * @return string
      */
     public function linkVariant($path = null, $module = [], bool $single = false, string $lang = null): string
