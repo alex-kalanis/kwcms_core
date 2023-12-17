@@ -26,6 +26,6 @@ class Contact extends AModule
     public function output(): Output\AOutput
     {
         $out = new Output\Html();
-        return $out->setContent(Config::get('Core', 'page.contact'));
+        return $out->setContent(strval(Config::get('Core', 'page.contact')));
     }
 }

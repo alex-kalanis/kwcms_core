@@ -11,7 +11,7 @@ use kalanis\kw_menu\MoreEntries;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Interfaces\ITree;
-use kalanis\kw_user_paths\InnerLinks;
+use kalanis\kw_user_paths\UserInnerLinks;
 
 
 /**
@@ -25,10 +25,10 @@ class Tree
     protected $processor = null;
     /** @var ITree */
     protected $tree = null;
-    /** @var InnerLinks */
+    /** @var UserInnerLinks */
     protected $innerLink = null;
 
-    public function __construct(MoreEntries $processor, InnerLinks $innerLink)
+    public function __construct(MoreEntries $processor, UserInnerLinks $innerLink)
     {
         // set path from link is a bit aggressive, so do not set real volume path in advance
         $this->processor = $processor;

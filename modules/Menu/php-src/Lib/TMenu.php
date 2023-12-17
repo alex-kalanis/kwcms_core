@@ -67,8 +67,8 @@ trait TMenu
     {
         $this->initWhereDir(new SessionAdapter(), $inputs);
         $this->userDir->setUserPath($userDir);
-        $fullPath = array_merge(array_values(
-            $this->userDir->process()->getFullPath()->getArray()),
+        $fullPath = array_merge(
+            array_values($this->userDir->process()->getFullPath()->getArray()),
             Stuff::linkToArray($this->getWhereDir())
         );
 
@@ -77,6 +77,10 @@ trait TMenu
             'semaphore' => $this->files,
             'semaphore_root' => array_merge(
                 array_values($this->userDir->process()->getFullPath()->getArray()),
+                $this->whereStartRender(
+                    Stuff::linkToArray($this->getWhereDir()),
+                    boolval(Config::get('Core', 'site.more_lang', false))
+                ),
                 [Config::get('Menu', 'meta_regen')]
             ),
         ]);
@@ -89,5 +93,22 @@ trait TMenu
     protected function getMenuMeta(): string
     {
         return strval(Config::get('Menu', 'meta'));
+    }
+
+    /**
+     * @param string[] $currentDir
+     * @param bool $moreLang
+     * @return string[]
+     */
+    protected function whereStartRender(array $currentDir, bool $moreLang): array
+    {
+        if (!$moreLang) {
+            return [];
+        }
+        if (empty($currentDir)) {
+            return [];
+        }
+
+        return [strval(reset($currentDir))];
     }
 }

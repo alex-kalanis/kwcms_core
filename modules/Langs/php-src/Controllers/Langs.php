@@ -19,7 +19,7 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Traits\TFilesDirs;
-use kalanis\kw_user_paths\InnerLinks;
+use kalanis\kw_user_paths\UserInnerLinks;
 use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
@@ -47,8 +47,10 @@ class Langs extends AModule
     protected $files = null;
     /** @var Files */
     protected $treeList = null;
-    /** @var InnerLinks */
+    /** @var UserInnerLinks */
     protected $innerLink = null;
+    /** @var bool */
+    protected $willShow = false;
 
     /**
      * @param mixed ...$constructParams
@@ -63,13 +65,12 @@ class Langs extends AModule
         Lang::load(static::getClassName(static::class));
         $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
-        $this->innerLink = new InnerLinks(
-            StoreRouted::getPath(),
-            boolval(Config::get('Core', 'site.more_users', false)),
-            false // HERE MUST BE FALSE!!!
+        $this->innerLink = new UserInnerLinks(
+            strval(Config::get('Core', 'site.default_user', '/user/'))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->treeList = new Files($this->files);
+        $this->willShow = boolval(Config::get('Core', 'site.more_lang', false));
     }
 
     /**
@@ -80,6 +81,9 @@ class Langs extends AModule
     public function process(): void
     {
         if (!boolval(Config::get('Core', 'page.more_lang', false))) {
+            return;
+        }
+        if (!$this->willShow) {
             return;
         }
         $this->possibleLangs = Lang::getLoader()->load(static::getClassName(static::class), 'dummy');
@@ -121,6 +125,10 @@ class Langs extends AModule
         return ($this->params[ISitePart::KEY_LEVEL] == ISitePart::SITE_LAYOUT) ? $this->outLayout() : $this->outContent() ;
     }
 
+    /**
+     * @throws PathsException
+     * @return AOutput
+     */
     protected function outLayout(): AOutput
     {
         $inputs = [];
@@ -141,6 +149,10 @@ class Langs extends AModule
         return $out->setContent($tmpl->setData(implode('', $inputs))->render());
     }
 
+    /**
+     * @throws PathsException
+     * @return AOutput
+     */
     protected function outContent(): AOutput
     {
         $hints = [];

@@ -16,15 +16,15 @@ use kalanis\kw_menu\MenuFactory;
 use kalanis\kw_menu\MoreEntries;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
-use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_routed_paths\RoutedPath;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
 use kalanis\kw_semaphore\Semaphore;
 use kalanis\kw_semaphore\SemaphoreException;
 use kalanis\kw_templates\TemplateException;
 use kalanis\kw_tree\Interfaces\ITree;
-use kalanis\kw_user_paths\InnerLinks;
+use kalanis\kw_user_paths\UserInnerLinks;
 use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
@@ -42,6 +42,8 @@ class Menu extends AModule
 {
     /** @var bool */
     protected $canCache = false;
+    /** @var string[]|null */
+    protected $startPath = null;
     /** @var ICache */
     protected $libCache = null;
     /** @var ExternalLink */
@@ -69,44 +71,48 @@ class Menu extends AModule
         $this->externalLink = new ExternalLink(StoreRouted::getPath());
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
-        $innerLink = new InnerLinks(
-            StoreRouted::getPath(),
-            boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'site.more_lang', false))
+        $innerLink = new UserInnerLinks(
+            strval(Config::get('Core', 'site.default_user', '/user/'))
         );
         $files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->menuTree = new Lib\Tree($this->getEntriesProcessor($files), $innerLink);
-        $this->libCache = $this->getCache($files, $innerLink);
+        $this->startPath = $this->whereStartRender(
+            StoreRouted::getPath(),
+            boolval(Config::get('Core', 'site.more_lang', false))
+        );
+        $this->libCache = $this->getCache($files, $innerLink, $this->startPath ?: []);
     }
 
     /**
      * @param CompositeAdapter $files
-     * @param InnerLinks $innerLink
+     * @param UserInnerLinks $innerLink
+     * @param string[] $startPath
      * @throws CacheException
      * @throws PathsException
      * @throws SemaphoreException
      * @return ICache
      */
-    protected function getCache(CompositeAdapter $files, InnerLinks $innerLink): ICache
+    protected function getCache(CompositeAdapter $files, UserInnerLinks $innerLink, array $startPath): ICache
     {
-        $cache = new CacheStorage\Semaphore($files, $this->getSemaphore($files, $innerLink));
-        $cache->init(array_merge($innerLink->toFullPath([]), ['Menu']));
+        $cache = new CacheStorage\Semaphore($files, $this->getSemaphore($files, $innerLink, $startPath));
+        $cache->init(array_merge($innerLink->toFullPath($startPath), ['Menu']));
         return $cache;
     }
 
     /**
      * @param CompositeAdapter $files
-     * @param InnerLinks $innerLink
+     * @param UserInnerLinks $innerLink
+     * @param string[] $startPath
      * @throws PathsException
      * @throws SemaphoreException
      * @return ISemaphore
      */
-    protected function getSemaphore(CompositeAdapter $files, InnerLinks $innerLink): ISemaphore
+    protected function getSemaphore(CompositeAdapter $files, UserInnerLinks $innerLink, array $startPath): ISemaphore
     {
         return (new Semaphore\Factory())->getSemaphore([
             'semaphore' => $files,
             'semaphore_root' => array_merge(
-                $innerLink->toFullPath([]),
+                $innerLink->toFullPath($startPath),
                 [strval(Config::get('Menu', 'meta_regen'))]
             ),
         ]);
@@ -124,43 +130,68 @@ class Menu extends AModule
         return (new MenuFactory(new Translations()))->getMenu($files);
     }
 
+    /**
+     * @param RoutedPath $path
+     * @param bool $moreLang
+     * @return string[]|null
+     */
+    protected function whereStartRender(RoutedPath $path, bool $moreLang): ?array
+    {
+        if (!$moreLang) {
+            return [];
+        }
+        if (empty($path->getPath()) && empty($path->getLang())) {
+            return null;
+        }
+        if (!empty($path->getLang())) {
+            return [$path->getLang()];
+        }
+        $pt = $path->getPath();
+        return [strval(reset($pt))];
+    }
+
     public function process(): void
     {
     }
 
     /**
+     * @throws PathsException
      * @throws TemplateException
      * @return AOutput
      */
     public function output(): AOutput
     {
         $out = new Html();
-        try {
-            if ($this->canCache) {
-                if (!$this->libCache->exists()) {
-                    $content = $this->getRendered();
-                    $this->libCache->set($content);
+        $content = '';
+        if (!is_null($this->startPath)) { // we know from where
+            try {
+                if ($this->canCache) { // caching enabled
+                    if (!$this->libCache->exists()) {
+                        $content = $this->getRendered();
+                        $this->libCache->set($content);
+                    } else {
+                        $content = $this->libCache->get();
+                    }
                 } else {
-                    $content = $this->libCache->get();
+                    $content = $this->getRendered();
                 }
-            } else {
+            } catch (CacheException $ex) {
+                // Add logging when done
                 $content = $this->getRendered();
             }
-        } catch (CacheException $ex) {
-            // Add logging when done
-            $content = $this->getRendered();
         }
         return $out->setContent($content);
     }
 
     /**
+     * @throws PathsException
      * @throws TemplateException
      * @return string
      */
     protected function getRendered(): string
     {
         $tmplMain = new Templates\Main();
-        $menu = $this->menuTree->output([]);
+        $menu = $this->menuTree->output($this->startPath);
         $headerContent = $this->addHeader($menu);
         $inputContent = $this->addInputs($menu);
         return $tmplMain->setData($this->tmplOpen->reset()->setData($headerContent . $inputContent)->render())->render();
@@ -168,11 +199,12 @@ class Menu extends AModule
 
     /**
      * @param \kalanis\kw_menu\Menu\Menu|null $menu
-     * @param string $deepLink
+     * @param string[] $deepLink
+     * @throws PathsException
      * @throws TemplateException
      * @return string
      */
-    protected function addInputs(?\kalanis\kw_menu\Menu\Menu $menu, string $deepLink = ''): string
+    protected function addInputs(?\kalanis\kw_menu\Menu\Menu $menu, array $deepLink = []): string
     {
         if (empty($menu) || empty($menu->getDisplayCount())) {
             return '';
@@ -183,7 +215,7 @@ class Menu extends AModule
         for ($i = 1; $i <= $menu->getDisplayCount(); $i++) {
             if (!empty($items[$i])) { # have anything on position?
                 $subMenu = '';
-                $linkPath = $deepLink . IPaths::SPLITTER_SLASH . $items[$i]->getName();
+                $linkPath = $deepLink + [$items[$i]->getName()];
 
                 if ($items[$i]->canGoSub()) {
                     $headerContent = $this->addHeader($items[$i]->getSubmenu());
