@@ -48,7 +48,7 @@ interface ISource
 
     /**
      * Return content of server variables
-     * @return array<string|int, string|int|bool>|null
+     * @return array<string|int, string|int|bool|null>|null
      */
     public function server(): ?array;
 

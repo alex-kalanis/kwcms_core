@@ -5,6 +5,7 @@ namespace kalanis\kw_input\Simplified;
 
 use ArrayAccess;
 use kalanis\kw_input\InputException;
+use kalanis\kw_input\Parsers\FixServer;
 
 
 /**
@@ -54,6 +55,14 @@ class ServerAdapter implements ArrayAccess
 {
     use TNullBytes;
 
+    /** @var array<string|int, string|int|bool|null> */
+    protected $server = [];
+
+    public final function __construct()
+    {
+        $this->server = FixServer::updateAuth(FixServer::updateVars($_SERVER));
+    }
+
     /**
      * @param string|int $offset
      * @return mixed
@@ -97,13 +106,13 @@ class ServerAdapter implements ArrayAccess
 
     public final function offsetExists($offset): bool
     {
-        return isset($_SERVER[$this->removeNullBytes(strval($offset))]);
+        return isset($this->server[$this->removeNullBytes(strval($offset))]);
     }
 
     #[\ReturnTypeWillChange]
     public final function offsetGet($offset)
     {
-        return $_SERVER[$this->removeNullBytes(strval($offset))];
+        return $this->server[$this->removeNullBytes(strval($offset))];
     }
 
     /**

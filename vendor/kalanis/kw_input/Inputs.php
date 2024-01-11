@@ -57,7 +57,7 @@ class Inputs implements Interfaces\IInputs
 
     /**
      * @param string $source
-     * @param array<string|int, string|int|bool|string[]|int[]>|array<string|int, array<string, string>|array<string, array<string, string>>>|null $inputArray
+     * @param array<string|int, string|int|bool|null|array<string, string|int|bool|null|array<string, string|int|bool|null>>>|null $inputArray
      * @return Interfaces\IEntry[]
      */
     protected function loadInput(string $source, ?array $inputArray = null): array
