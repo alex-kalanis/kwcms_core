@@ -8,24 +8,6 @@ namespace kalanis\kw_accounts\Interfaces;
  * @package kalanis\kw_accounts\Interfaces
  * User data from your auth system - with certificate
  */
-interface IUserCert extends IUser
+interface IUserCert extends IUser, ICert
 {
-    /**
-     * Fill certificates; null values will not change
-     * @param string $key
-     * @param string $salt
-     */
-    public function addCertInfo(?string $key, ?string $salt): void;
-
-    /**
-     * Public salt or password to certificate or other things which uses this interface
-     * @return string
-     */
-    public function getPubSalt(): string;
-
-    /**
-     * Certificate or other key itself
-     * @return string
-     */
-    public function getPubKey(): string;
 }

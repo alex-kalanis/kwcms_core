@@ -87,7 +87,7 @@ class Dashboard extends AAuthModule implements IHasTitle
                 );
                 $this->libAccounts->updateAccount($this->editUser);
                 if (($this->editUser instanceof Interfaces\IUserCert) && $this->libUsers) {
-                    $this->libUsers->updateCertKeys(
+                    $this->libUsers->updateCertData(
                         $this->editUser->getAuthName(),
                         $values['pubKey'],
                         $values['pubSalt']

@@ -14,20 +14,20 @@ use kalanis\kw_accounts\AccountsException;
 interface IAuthCert extends IAuth
 {
     /**
-     * Update cert data in storage
+     * Update certificate data in storage
      * @param string $userName
      * @param string|null $certKey
      * @param string|null $certSalt
      * @throws AccountsException
      * @return bool
      */
-    public function updateCertKeys(string $userName, ?string $certKey, ?string $certSalt): bool;
+    public function updateCertData(string $userName, ?string $certKey, ?string $certSalt): bool;
 
     /**
-     * Cet cert data from storage
+     * Get certificate data from storage
      * @param string $userName
      * @throws AccountsException
-     * @return IUserCert|null
+     * @return ICert|null
      */
-    public function getCertData(string $userName): ?IUserCert;
+    public function getCertData(string $userName): ?ICert;
 }

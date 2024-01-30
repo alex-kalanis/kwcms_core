@@ -11,22 +11,22 @@ namespace kalanis\kw_accounts\Data;
 trait TCerts
 {
     /** @var string */
-    protected $key = '';
+    protected $pubKey = '';
     /** @var string */
     protected $salt = '';
 
-    public function addCertInfo(?string $key, ?string $salt): void
+    public function updateCertInfo(?string $pubKey, ?string $salt): void
     {
-        $this->key = $key ?? $this->key;
+        $this->pubKey = $pubKey ?? $this->pubKey;
         $this->salt = $salt ?? $this->salt;
     }
 
     public function getPubKey(): string
     {
-        return $this->key;
+        return $this->pubKey;
     }
 
-    public function getPubSalt(): string
+    public function getSalt(): string
     {
         return $this->salt;
     }

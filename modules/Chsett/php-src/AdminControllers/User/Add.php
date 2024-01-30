@@ -41,7 +41,7 @@ class Add extends AUsers
                     strval($values['dir'])
                 );
                 if ($this->editUser instanceof IUserCert) {
-                    $this->editUser->addCertInfo(
+                    $this->editUser->updateCertInfo(
                         $values['pubKey'],
                         $values['pubSalt']
                     );

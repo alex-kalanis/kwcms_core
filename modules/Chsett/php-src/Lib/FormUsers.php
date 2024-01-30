@@ -82,7 +82,7 @@ class FormUsers extends Form
     public function addCerts(IUserCert $user): self
     {
         $this->addTextarea('pubKey', Lang::get('chsett.public_key'), $user->getPubKey(), ['rows' => 10, 'cols' => 70]);
-        $this->addText('pubSalt', Lang::get('chsett.public_salt'), $user->getPubSalt());
+        $this->addText('pubSalt', Lang::get('chsett.public_salt'), $user->getSalt());
         return $this;
     }
 }

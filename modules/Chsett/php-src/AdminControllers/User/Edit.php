@@ -47,7 +47,7 @@ class Edit extends AUsers
                 );
                 $this->isProcessed = $this->libAccounts->updateAccount($this->editUser);
                 if (($this->editUser instanceof IUserCert) && ($this->libAccounts instanceof IAuthCert)) {
-                    $this->isProcessed &= $this->libAccounts->updateCertKeys(
+                    $this->isProcessed &= $this->libAccounts->updateCertData(
                         $this->editUser->getAuthName(),
                         strval($values['pubKey']),
                         strval($values['pubSalt'])
