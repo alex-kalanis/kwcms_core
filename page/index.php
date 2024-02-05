@@ -102,6 +102,15 @@ try {
                 'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
             ],
             'module_pedigree' => 'single',
+            'socials' => [
+                'youtube' => [
+                    'width' => 550,
+                    'height' => 350,
+                ],
+                'reddit' => [
+                    'sub' => 'czech',
+                ],
+            ],
         ]
     ]);
     echo $module->process(['Core'])->get(); // dump output
