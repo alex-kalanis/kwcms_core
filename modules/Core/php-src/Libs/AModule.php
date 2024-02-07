@@ -66,4 +66,15 @@ abstract class AModule implements IModule
     {
         return isset($this->params[$key]) ? (is_object($this->params[$key]) ? $this->params[$key]->getValue() : $this->params[$key]) : $default ;
     }
+
+    protected function getFromInput(string $key, $default = null, array $sources = [IEntry::SOURCE_POST, IEntry::SOURCE_GET])
+    {
+        if ($this->inputs) {
+            $raw = $this->inputs->getInArray($key, $sources);
+            if (!empty($raw)) {
+                return reset($raw);
+            }
+        }
+        return $default;
+    }
 }
