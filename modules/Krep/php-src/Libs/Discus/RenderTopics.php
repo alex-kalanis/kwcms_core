@@ -44,8 +44,8 @@ class RenderTopics implements ITargets, Libs\Interfaces\IContent
     {
         $postContent = $post->getText();
         $postContent = str_replace('/ukazobrazek', 'https://www.k-report.net/ukazobrazek', $postContent);
-        $postContent = str_replace('http://www.k-report.net/dis', '/discus.php?addr=www.k-report.net/dis', $postContent);
-        $postContent = str_replace('https://www.k-report.net/dis', '/discus.php?addr=www.k-report.net/dis', $postContent);
+        $postContent = str_replace('http://www.k-report.net/discus/mes', '/discus.php?addr=www.k-report.net/discus/mes', $postContent);
+        $postContent = str_replace('https://www.k-report.net/discus/mes', '/discus.php?addr=www.k-report.net/discus/mes', $postContent);
         $postContent = str_replace('http://www.k-report.net/presmerovani/?pri', '/discus.php?addr=www.k-report.net/presmerovani/%3Fpri', $postContent);
         $postContent = str_replace('https://www.k-report.net/presmerovani/?pri', '/discus.php?addr=www.k-report.net/presmerovani/%3Fpri', $postContent);
         $postContent = preg_replace("#::ShowImage:\(([^,]+),([^,]+),([^,]+),([^\)]+)?\)::#is", '<a href="https://www.k-report.net/ukazobrazek.php?soubor=$3.jpg" target="_blank"><img src="https://www.k-report.net/discus/obrazky-male/$1/$2/$3.jpg" style="max-width: 200px; max-height: 130px" title="$4"></a>', $postContent);

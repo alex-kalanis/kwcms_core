@@ -23,8 +23,8 @@ class MainTemplate extends ATemplate
 <meta http-equiv="content-Type" content="text/html; charset={ENCODING}">
 <meta name="robots" content="noindex">
 <meta name="googlebot" content="nosnippet,noarchive">
-<link rel="stylesheet" type="text/css" href="/web/ms:styles/transcode/transcode.css">
-<script type="text/JavaScript" src="/web/ms:scripts/transcode/transcode.js"></script>
+<link rel="stylesheet" type="text/css" href="/transcode.css">
+<script type="text/JavaScript" src="/transcode.js"></script>
 </head><body>
 <h1>{NAME}</h1>
 {CONTENT}

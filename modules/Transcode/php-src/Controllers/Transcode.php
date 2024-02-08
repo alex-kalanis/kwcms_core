@@ -23,14 +23,17 @@ class Transcode extends AModule
     /** @var string[] */
     protected $conf = [];
 
-    public function __construct(...$constructParams)
+    public function __construct(
+        Lib\MessageForm $form,
+        Lib\VariantFactory $factory
+    )
     {
-        $this->form = new Lib\MessageForm();
+        $this->form = $form;
         $this->conf = [
             'site_name' => 'KWCMS3 Char Translator',
             'encoding' => 'utf-8',
         ];
-        $this->libFactory = new Lib\VariantFactory();
+        $this->libFactory = $factory;
     }
 
     /**

@@ -17,11 +17,11 @@ class MessageForm extends Form
     {
         $this->setMethod(IEntry::SOURCE_POST);
         $this->addTextarea('data', '', null, [
-            'cols' => 60, 'rows' => 5, 'id' => 'dataContent',
+            'cols' => 60, 'rows' => 5, 'id' => 'datacontent',
         ]);
         $this->addSelect('direction', '', null, [
-            'straight' => '&nbsp;&nbsp;To&nbsp;&nbsp;',
             'reverse' => '&nbsp;&nbsp;From&nbsp;&nbsp;',
+            'straight' => '&nbsp;&nbsp;To&nbsp;&nbsp;',
         ]);
         $this->addSubmit('postMessage', '     Transcode...     ');
         return $this;

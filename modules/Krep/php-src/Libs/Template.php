@@ -19,7 +19,7 @@ class Template extends \kalanis\kw_templates\ATemplate
         "head" => '<!DOCTYPE html>
 <html><head>
 <title>{TITLE}</title>
-<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="proxy.css">
 </head><body>

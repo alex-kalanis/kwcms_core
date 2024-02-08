@@ -8,7 +8,9 @@ use kalanis\kw_forms\Exceptions\FormsException;
 
 class VariantFactory
 {
+    /** @var string */
     protected $path = '';
+    /** @var string[] */
     protected $available = [];
 
     public function __construct(?string $path = null)
@@ -17,14 +19,17 @@ class VariantFactory
         $this->available = $this->loadNames();
     }
 
-    protected function setPath(?string $path)
+    protected function setPath(?string $path): string
     {
         $realPath = empty($path) ? implode(DIRECTORY_SEPARATOR, ['', 'Variants'])
             : (is_array($path) ? implode(DIRECTORY_SEPARATOR, $path) : $path);
         return __DIR__ . $realPath;
     }
 
-    protected function loadNames()
+    /**
+     * @return string[]
+     */
+    protected function loadNames(): array
     {
         $names = [];
         foreach (new \FilesystemIterator($this->path) as $splObject) {
@@ -35,7 +40,10 @@ class VariantFactory
         return $names;
     }
 
-    public function getList()
+    /**
+     * @return string[]
+     */
+    public function getList(): array
     {
         return $this->available;
     }
