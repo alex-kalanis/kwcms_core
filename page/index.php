@@ -111,6 +111,7 @@ try {
                     'sub' => 'czech',
                 ],
             ],
+            'default_user' => 'data/',
         ]
     ]);
     echo $module->process(['Core'])->get(); // dump output

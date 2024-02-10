@@ -71,14 +71,16 @@ class Menu extends AModule
         $this->externalLink = new ExternalLink(StoreRouted::getPath());
         $this->tmplOpen = new Templates\Open();
         $this->tmplDisplay = new Templates\Display();
-        $innerLink = new UserInnerLinks(
-            strval(Config::get('Core', 'site.default_user', '/user/'))
+        $innerLink = new UserInnerLinks(strval(Config::get('Core', 'page.default_user', isset($constructParams['default_user'])
+                ? $constructParams['default_user']
+                : '/user/')
+            )
         );
         $files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->menuTree = new Lib\Tree($this->getEntriesProcessor($files), $innerLink);
         $this->startPath = $this->whereStartRender(
             StoreRouted::getPath(),
-            boolval(Config::get('Core', 'site.more_lang', false))
+            boolval(Config::get('Core', 'page.more_lang', false))
         );
         $this->libCache = $this->getCache($files, $innerLink, $this->startPath ?: []);
     }

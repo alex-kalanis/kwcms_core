@@ -65,12 +65,14 @@ class Langs extends AModule
         Lang::load(static::getClassName(static::class));
         $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
-        $this->innerLink = new UserInnerLinks(
-            strval(Config::get('Core', 'site.default_user', '/user/'))
+        $this->innerLink = new UserInnerLinks(strval(Config::get('Core', 'page.default_user', isset($constructParams['default_user'])
+                ? $constructParams['default_user']
+                : '/user/')
+            )
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->treeList = new Files($this->files);
-        $this->willShow = boolval(Config::get('Core', 'site.more_lang', false));
+        $this->willShow = boolval(Config::get('Core', 'page.more_lang', false));
     }
 
     /**
