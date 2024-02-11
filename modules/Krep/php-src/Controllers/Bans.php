@@ -12,6 +12,13 @@ use KWCMS\modules\Krep\Libs\ModuleException;
  * Class Bans
  * @package KWCMS\modules\Krep\Controllers
  * Update local database of bans
+ *
+ * @OA\Get(
+ *     path="/bans.php",
+ *     tags={"Bans"},
+ *     @OA\RequestBody(),
+ *     @OA\Response(response="200", description="What happend with code", @OA\JsonContent()),
+ * )
  */
 class Bans extends ADisposition
 {
