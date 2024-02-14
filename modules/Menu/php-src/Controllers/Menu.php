@@ -13,10 +13,12 @@ use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_menu\MenuFactory;
+use kalanis\kw_menu\Menu\Entry;
 use kalanis\kw_menu\MoreEntries;
 use kalanis\kw_modules\Output\AOutput;
 use kalanis\kw_modules\Output\Html;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\RoutedPath;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\Interfaces\ISemaphore;
@@ -213,22 +215,26 @@ class Menu extends AModule
         }
 
         $items = $menu->getEntries();
+        $items = array_combine(array_map([$this, 'itemPosition'], $items), array_values($items));
         $result = [];
         for ($i = 1; $i <= $menu->getDisplayCount(); $i++) {
             if (!empty($items[$i])) { # have anything on position?
+                /** @var Entry $entry */
+                $entry = $items[$i];
                 $subMenu = '';
-                $linkPath = $deepLink + [$items[$i]->getName()];
+                $linkPath = array_merge($deepLink, [Stuff::fileBase($entry->getId())]);
+                $linkFile = array_merge($deepLink, [$entry->getId()]);
 
-                if ($items[$i]->canGoSub()) {
-                    $headerContent = $this->addHeader($items[$i]->getSubmenu());
-                    $inputContent = $this->addInputs($items[$i]->getSubmenu(), $linkPath);
+                if ($entry->canGoSub()) {
+                    $headerContent = $this->addHeader($entry->getSubmenu());
+                    $inputContent = $this->addInputs($entry->getSubmenu(), $linkPath);
                     $subMenu = $this->tmplOpen->reset()->setData($headerContent . $inputContent)->render();
                 }
 
                 $result[] = $this->tmplDisplay->setTemplateName('item')->setData(
-                    $items[$i]->getName(),
-                    $items[$i]->getTitle(),
-                    $this->externalLink->linkVariant($linkPath),
+                    $entry->getName(),
+                    $entry->getDesc(),
+                    $this->externalLink->linkVariant(array_merge($this->startPath, $linkFile)),
                     $subMenu
                 )->render();
             } else {
@@ -236,6 +242,11 @@ class Menu extends AModule
             }
         }
         return implode('', $result);
+    }
+
+    public function itemPosition(Entry $entry): int
+    {
+        return $entry->getPosition();
     }
 
     /***

@@ -46,6 +46,7 @@ trait TToStream
                 throw new FilesException($this->getLang()->flCannotLoadFile($target));
             }
             // @codeCoverageIgnoreEnd
+            rewind($handle);
             return $handle;
         }
     }

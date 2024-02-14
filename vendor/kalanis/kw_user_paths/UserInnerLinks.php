@@ -113,6 +113,7 @@ class UserInnerLinks
             return [];
         }
         $this->userDir->setUserPath($this->useUser);
+        $this->userDir->process();
 
         return array_merge(
             $this->userDir->hasHomeDir() ? $this->addPrefixSeparator() : [],

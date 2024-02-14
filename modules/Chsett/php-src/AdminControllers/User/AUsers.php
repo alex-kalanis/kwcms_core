@@ -109,27 +109,28 @@ abstract class AUsers extends AAuthModule implements IHasTitle
     public function outHtml(): Output\AOutput
     {
         $out = new Output\Html();
+        $editTmpl = new Templates\EditUserTemplate();
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());
-            }
-            if ($this->isProcessed) {
-                Notification::addSuccess($this->getSuccessTitle($this->editUser->getDisplayName()));
-                if ($this->redirect) {
-                    $this->forward->forward();
-                    $this->forward->setForward($this->links->linkVariant('chsett/dashboard'));
-                    $this->forward->forward();
+            } else {
+                if ($this->isProcessed) {
+                    Notification::addSuccess($this->getSuccessTitle($this->editUser->getDisplayName()));
+                    if ($this->redirect) {
+                        $this->forward->forward();
+                        $this->forward->setForward($this->links->linkVariant('chsett/dashboard'));
+                        $this->forward->forward();
+                    }
                 }
-            }
-            $editTmpl = new Templates\EditUserTemplate();
-            $editTmpl->setData($this->form, $this->getFormTitle());
-            if ($this->form->getControl('pass')) {
-                $passTmpl = new Templates\EditPassTemplate();
-                $editTmpl->addPass($passTmpl->setData($this->form)->render());
-            }
-            if ($this->form->getControl('pubKey')) {
-                $certTmpl = new Templates\EditCertTemplate();
-                $editTmpl->addCerts($certTmpl->setData($this->form)->render());
+                $editTmpl->setData($this->form, $this->getFormTitle());
+                if ($this->form->getControl('pass')) {
+                    $passTmpl = new Templates\EditPassTemplate();
+                    $editTmpl->addPass($passTmpl->setData($this->form)->render());
+                }
+                if ($this->form->getControl('pubKey')) {
+                    $certTmpl = new Templates\EditCertTemplate();
+                    $editTmpl->addCerts($certTmpl->setData($this->form)->render());
+                }
             }
             return $out->setContent($this->outModuleTemplate($editTmpl->render()));
         } catch ( FormsException $ex) {

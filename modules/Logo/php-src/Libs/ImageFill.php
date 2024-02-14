@@ -10,6 +10,7 @@ use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_images\Sources;
 use kalanis\kw_images\Traits\TLang;
 use kalanis\kw_images\Traits\TType;
+use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
 use kalanis\kw_paths\PathsException;
 
@@ -31,12 +32,13 @@ class ImageFill
     /** @var ISizes */
     protected $config = null;
 
-    public function __construct(ImageProcessor $processor, ISizes $config, Sources\Image $image, ?IIMTranslations $lang = null)
+    public function __construct(ImageProcessor $processor, ISizes $config, Sources\Image $image, IMime $mime, ?IIMTranslations $lang = null)
     {
         $this->setImLang($lang);
         $this->libImage = $image;
         $this->processor = $processor;
         $this->config = $config;
+        $this->initType($mime, $lang);
     }
 
     /**
@@ -86,7 +88,7 @@ class ImageFill
 
             $this->processor->load($this->getType($logoPath), $tempMarkPath);
         } else {
-            $this->processor->load($this->getType($logoPath), $logoPath);
+            $this->processor->load($this->getType([$logoPath]), $logoPath);
         }
     }
 

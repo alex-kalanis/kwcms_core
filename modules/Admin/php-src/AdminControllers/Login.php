@@ -119,7 +119,7 @@ class Login extends AAuthModule implements IHasTitle
                 $out = new Output\Html();
                 return $out->setContent($tmpl->setData(
                     $this->form,
-                    $link->linkVariant('lang-change', '', true)
+                    $link->linkVariant('lang-change')
                 )->render());
             }
         }

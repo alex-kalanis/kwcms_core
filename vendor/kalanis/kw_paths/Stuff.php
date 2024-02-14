@@ -163,7 +163,7 @@ class Stuff
      */
     public static function httpStringIntoArray(string $param): array
     {
-        parse_str($param, $result);
+        parse_str(html_entity_decode($param, ENT_QUOTES | ENT_HTML5, 'UTF-8'), $result);
         return $result;
     }
 

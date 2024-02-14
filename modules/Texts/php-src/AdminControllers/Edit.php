@@ -73,7 +73,7 @@ class Edit extends AAuthModule implements IHasTitle
 
         try {
             $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $fullPath = array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]);
+            $fullPath = array_filter(array_merge($userPath, Stuff::linkToArray($this->getWhereDir()), [strval($fileName)]));
 
             $content = $this->files->isFile($fullPath) ? $this->files->readFile($fullPath) : '{CREATE_NEW_FREE_FILE}';
             $this->editFileForm->composeForm($content, $fileName, $this->links->linkVariant($this->targetPreview()));

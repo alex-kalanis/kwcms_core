@@ -32,15 +32,15 @@ class Map extends AModule
     public function output(): AOutput
     {
         $template = new MapTemplate();
-        $template->setIfImage(!empty($this->getFromParam('im', '')));
-        $template->setTemplateName((string)$this->getFromParam('map', 'osm'));
+        $template->setIfImage(boolval(intval(strval($this->getFromParam('im', '0')))));
+        $template->setTemplateName(strval($this->getFromParam('map', 'osm')));
         $template->setData(
-            (string) $this->getFromParam('id', '0'),
-            (string) $this->getFromParam('ns', '50'),
-            (string) $this->getFromParam('ew', '0'),
-            (string) $this->getFromParam('lv', '10'),
-            (string) $this->getFromParam('w', '200'),
-            (string) $this->getFromParam('h', '200')
+            strval($this->getFromParam('id', '0')),
+            strval($this->getFromParam('ns', '50')),
+            strval($this->getFromParam('ew', '0')),
+            strval($this->getFromParam('lv', '10')),
+            strval($this->getFromParam('w', '200')),
+            strval($this->getFromParam('h', '200'))
         );
         $out = new Html();
         return $out->setContent($template->render());

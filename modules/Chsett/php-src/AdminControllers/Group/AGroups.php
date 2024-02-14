@@ -97,20 +97,22 @@ abstract class AGroups extends AAuthModule implements IHasTitle
     public function outHtml(): Output\AOutput
     {
         $out = new Output\Html();
+        $editTmpl = new Templates\EditGroupTemplate();
         try {
             if ($this->error) {
                 Notification::addError($this->error->getMessage());
-            }
-            if ($this->isProcessed) {
-                Notification::addSuccess($this->getSuccessTitle($this->group->getGroupName()));
-                if ($this->redirect) {
-                    $this->forward->forward();
-                    $this->forward->setForward($this->links->linkVariant('chsett/groups'));
-                    $this->forward->forward();
+            } else {
+                if ($this->isProcessed) {
+                    Notification::addSuccess($this->getSuccessTitle($this->group->getGroupName()));
+                    if ($this->redirect) {
+                        $this->forward->forward();
+                        $this->forward->setForward($this->links->linkVariant('chsett/groups'));
+                        $this->forward->forward();
+                    }
                 }
+                $editTmpl->setData($this->form, $this->getFormTitle());
             }
-            $editTmpl = new Templates\EditGroupTemplate();
-            return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, $this->getFormTitle())->render()));
+            return $out->setContent($this->outModuleTemplate($editTmpl->render()));
         } catch ( FormsException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }

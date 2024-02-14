@@ -65,7 +65,7 @@ abstract class AAccount extends AModule
         return $out->setContent(
             empty($this->name)
                 ? ''
-                : $this->getTemplate()->reset()->setData($this->fillLink($this->name))->render()
+                : $this->getTemplate()->reset()->setData($this->fillLink(urlencode($this->name)))->render()
         );
     }
 

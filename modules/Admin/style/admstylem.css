@@ -255,37 +255,37 @@
         text-transform: none;*/
     }
     
-    .app_texts {
-        background-image: url('app_text.png');
-    }
+    /*.app_texts {*/
+    /*    background-image: url('app_text.png');*/
+    /*}*/
     
-    .app_files {
-        background-image: url('app_file.png');
-    }
+    /*.app_files {*/
+    /*    background-image: url('app_file.png');*/
+    /*}*/
     
-    .app_images {
-        background-image: url('app_image.png');
-    }
+    /*.app_images {*/
+    /*    background-image: url('app_image.png');*/
+    /*}*/
     
-    .app_videos {
-        background-image: url('app_video.png');
-    }
+    /*.app_videos {*/
+    /*    background-image: url('app_video.png');*/
+    /*}*/
     
-    .app_menu {
-        background-image: url('app_menu.png');
-    }
+    /*.app_menu {*/
+    /*    background-image: url('app_menu.png');*/
+    /*}*/
     
-    .app_short {
-        background-image: url('app_short.png');
-    }
+    /*.app_short {*/
+    /*    background-image: url('app_short.png');*/
+    /*}*/
     
-    .app_logout {
-        background-image: url('app_logout.png');
-    }
+    /*.app_logout {*/
+    /*    background-image: url('app_logout.png');*/
+    /*}*/
     
-    .app_sett {
-        background-image: url('app_sett.png');
-    }
+    /*.app_sett {*/
+    /*    background-image: url('app_sett.png');*/
+    /*}*/
     
     #main .rowmenu>ul {
         padding: 1em; margin: 0px; list-style-type: none;
@@ -343,24 +343,25 @@
     }
     
     .select_dir li, .select_file li {
-        font-size: 0.9em; padding-left: 20px; list-style-type: none; background: url('/web/ms:sysimage/system/line.png') no-repeat 0px 2px, url('/web/ms:sysimage/system/sub.png') repeat 0px 2px;
+        font-size: 0.9em; padding-left: 20px; list-style-type: none;
+        background: url('/web/ms:sysimage/system/line.png') no-repeat 0px 2px, url('/web/ms:sysimage/system/sub.png') repeat 0px 2px;
     }
     
     .select_dir label {
-        padding-left: 20px; background: url('/web/ms:sysimage/system/dir.png') no-repeat 1px 0px;
-        background-repeat: no-repeat;
+        padding-left: 20px;
+        background: url('/web/ms:sysimage/system/dir.png') no-repeat 1px 0px;
         background-size: 20px 20px;
     }
     
     .select_file label {
-        padding-left: 20px; background: url('/web/ms:sysimage/system/file.png') no-repeat 1px 0px;
-        background-repeat: no-repeat;
+        padding-left: 20px;
+        background: url('/web/ms:sysimage/system/file.png') no-repeat 1px 0px;
         background-size: 20px 20px;
     }
     
     .select_file label.dir {
-        padding-left: 20px; background: url('/web/ms:sysimage/system/dir.png') no-repeat 1px 0px;
-        background-repeat: no-repeat;
+        padding-left: 20px;
+        background: url('/web/ms:sysimage/system/dir.png') no-repeat 1px 0px;
         background-size: 20px 20px;
     }
     

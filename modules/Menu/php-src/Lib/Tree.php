@@ -44,13 +44,13 @@ class Tree
         try {
             $path = $this->innerLink->toFullPath($startPath);
             $this->processor->setGroupKey($path);
-            $this->processor->setMeta(array_merge($path, [strval(Config::get('Menu','meta'))]));
+            $this->processor->setMetaKey(array_merge($path, [strval(Config::get('Menu','meta'))]));
             $menu = $this->processor->load()->getMeta()->getMenu();
         } catch (MenuException | PathsException $ex) {
             return null;
         }
         foreach ($menu->getEntries() as $item) {
-            $this->loadSub($item, $path);
+            $this->loadSub($item, array_values($path));
         }
         return $menu;
     }
@@ -65,15 +65,16 @@ class Tree
             return;
         }
         try {
-            $localPath = array_merge($deepLink, [Stuff::fileBase($item->getName())]);
+            $localPath = array_merge($deepLink, [Stuff::fileBase($item->getId())]);
+            $this->processor->getMeta()->reset();
             $this->processor->setGroupKey($localPath);
-            $this->processor->setMeta(array_merge($localPath, [strval(Config::get('Menu','meta'))]));
-            $menu = $this->processor->load()->getMeta()->getMenu();
-            if (!empty($menu)) {
-                foreach ($menu->getEntries() as $item) {
-                    $this->loadSub($item, $localPath);
+            $this->processor->setMetaKey(array_merge($localPath, [strval(Config::get('Menu','meta'))]));
+            $subMenu = $this->processor->load()->getMeta()->getMenu();
+            if (!empty($subMenu)) {
+                foreach ($subMenu->getEntries() as $subItem) {
+                    $this->loadSub($subItem, array_values($localPath));
                 }
-                $item->addSubmenu($menu);
+                $item->addSubmenu($subMenu);
             }
         } catch (MenuException | PathsException $ex) {
             // pass

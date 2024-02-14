@@ -155,7 +155,7 @@ class DependencyInjection
         foreach ($construct->getParameters() as $parameter) {
 
             // by type (class/instance name) from internal storage
-            $classType = strval($parameter->getType());
+            $classType = $parameter->getType() ? strval($parameter->getType()->getName()) : '';
             if ($known = $this->getRep($classType)) {
                 $initParams[] = $known;
                 continue;

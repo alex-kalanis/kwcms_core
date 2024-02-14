@@ -67,8 +67,8 @@ class Logo extends AModule
             boolval(Config::get('Core', 'page.more_lang', false))
         );
         $files = (new Factory(new FilesTranslations()))->getClass($constructParams);
-        $this->processor = $this->getFillLib($files);
         $this->mime = (new Check\Factory())->getLibrary(null);
+        $this->processor = $this->getFillLib($files);
     }
 
     /**
@@ -86,6 +86,7 @@ class Logo extends AModule
             ),
             (new Graphics\ImageConfig())->setData($params),
             new Sources\Image($files, (new \kalanis\kw_files\Extended\Config())->setData($params)),
+            $this->mime,
             $lang
         );
     }
@@ -123,11 +124,12 @@ class Logo extends AModule
             }
 
             $this->processor->process($logoPath);
+            $mimePath = is_array($logoPath) ? $logoPath : [$logoPath];
 
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $this->processor->created($logoPath)) );
-            header('Content-Type: ' . $this->mime->getMime(is_array($logoPath) ? $logoPath : [$logoPath]));
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $this->processor->created($mimePath)) );
+            header('Content-Type: ' . $this->mime->getMime($mimePath));
 
-            $this->processor->render($logoPath);
+            $this->processor->render($mimePath);
             return '';
 
         } catch (ImagesException | FilesException | PathsException $ex) {
@@ -142,8 +144,13 @@ class Logo extends AModule
     {
         $out = new Output\Html();
         $tmpl = new Libs\Template();
+        // static on user root
         return $out->setContent($tmpl->setData(
-            $this->extLink->linkVariant(null, 'Logo', true)
+            $this->extLink->linkVariant(['logo.png'], 'File', true, false)
         )->render());
+        // dynamic on module
+//        return $out->setContent($tmpl->setData(
+//            $this->extLink->linkVariant(null, 'Logo', true)
+//        )->render());
     }
 }

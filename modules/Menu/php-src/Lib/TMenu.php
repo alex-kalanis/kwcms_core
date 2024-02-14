@@ -67,10 +67,10 @@ trait TMenu
     {
         $this->initWhereDir(new SessionAdapter(), $inputs);
         $this->userDir->setUserPath($userDir);
-        $fullPath = array_merge(
+        $fullPath = array_filter(array_merge(
             array_values($this->userDir->process()->getFullPath()->getArray()),
             Stuff::linkToArray($this->getWhereDir())
-        );
+        ));
 
         // cannot init earlier due need of known user directory
         $this->libSemaphore = (new Semaphore\Factory())->getSemaphore([
@@ -86,7 +86,7 @@ trait TMenu
         ]);
 
         $this->libMenu->setGroupKey($fullPath);
-        $this->libMenu->setMeta(array_merge($fullPath, [$this->getMenuMeta()]));
+        $this->libMenu->setMetaKey(array_merge($fullPath, [$this->getMenuMeta()]));
         $this->libMenu->load();
     }
 

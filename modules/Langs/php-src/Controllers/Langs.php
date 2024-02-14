@@ -88,7 +88,7 @@ class Langs extends AModule
         if (!$this->willShow) {
             return;
         }
-        $this->possibleLangs = Lang::getLoader()->load(static::getClassName(static::class), 'dummy');
+        $this->possibleLangs = Lang::getLoader()->load('Langs', 'dummy');
         $this->availableLangs = $this->getLangs();
     }
 
@@ -99,9 +99,10 @@ class Langs extends AModule
      */
     protected function getLangs(): array
     {
+        $startPath = $this->innerLink->toFullPath([]);
         // get all langs from user
         $this->treeList->wantDeep(false);
-        $this->treeList->setStartPath($this->innerLink->toFullPath([]));
+        $this->treeList->setStartPath($startPath);
         $this->treeList->setFilterCallback([$this, 'justDirsCallback']);
         $this->treeList->process();
         // which langs are available by both code and user
@@ -109,8 +110,8 @@ class Langs extends AModule
         foreach ($this->treeList->getRoot()->getSubNodes() as $node) {
             $name = $this->arrPath->setArray($node->getPath())->getFileName();
             if (
-                $this->files->exists($node->getPath())
-                && $this->files->isDir($node->getPath())
+                $this->files->exists($startPath + $node->getPath())
+                && $this->files->isDir($startPath + $node->getPath())
                 && (isset($this->possibleLangs[$name]))
             ) {
                 $result[] = $node;
@@ -137,12 +138,14 @@ class Langs extends AModule
         $tmplItem = new Templates\Item();
         foreach ($this->availableLangs as $node) {
             $lang = $this->arrPath->setArray($node->getPath())->getFileName();
+            $noLangPath = StoreRouted::getPath()->getPath();
+            array_shift($noLangPath);
             $inputs[] = $tmplItem->reset()->setData(
-                $this->extLink->linkVariant(StoreRouted::getPath()->getPath(), '', false, $lang),
+                $this->extLink->linkVariant($noLangPath, [], false, $lang),
                 $this->possibleLangs[$lang]['name'],
                 $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true),
-                strval($this->getFromParam('vsize', '')),
-                strval($this->getFromParam('hsize', ''))
+                strval($this->getFromParam('vsize', '20')),
+                strval($this->getFromParam('hsize', '20'))
             )->render();
         }
 
@@ -165,7 +168,7 @@ class Langs extends AModule
             $lang = $this->arrPath->setArray($node->getPath())->getFileName();
             $hints[] = $tmplDesc->reset()->setData($this->possibleLangs[$lang]['hint'])->render();
             $inputs[] = $tmplLang->reset()->setData(
-                $this->extLink->linkVariant('', '', false, $lang),
+                $this->extLink->linkVariant($lang),
                 $this->possibleLangs[$lang]['name'],
                 $this->extLink->linkVariant('images/flags/' . $lang . '.png', 'sysimage', true),
                 strval($this->getFromParam('vsize', '')),

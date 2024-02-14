@@ -15,7 +15,7 @@ use kalanis\kw_templates\TemplateException;
 class MapTemplate extends ATemplate
 {
     protected $moduleName = 'Map';
-    protected $templateName = '';
+    protected $templateName = 'st_osm';
     protected $prefix = 'dn';
 
     /* Which styles are available and if they want solo rows */
@@ -39,7 +39,7 @@ class MapTemplate extends ATemplate
     public function setTemplateName(string $name): self
     {
         if (in_array($name, array_keys(static::$maps))) {
-            $this->templateName = $this->prefix . $name . IPaths::EXT;
+            $this->templateName = $this->prefix . $name;
             $this->setTemplate($this->loadTemplate());
         }
         return $this;

@@ -5,7 +5,6 @@ namespace kalanis\kw_images\Traits;
 
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
-use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_mime\Interfaces\IMime;
 use kalanis\kw_mime\MimeException;
 
@@ -21,8 +20,6 @@ trait TType
 
     /** @var IMime */
     protected $libMime = null;
-    /** @var ISizes|null */
-    protected $libSizes = null;
 
     public function initType(IMime $libMime, ?IIMTranslations $lang = null): void
     {

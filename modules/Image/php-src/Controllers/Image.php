@@ -124,7 +124,7 @@ class Image extends AModule
             $content = $this->toString($name, $this->sources->get($imagePath));
         } else {
             $path = realpath(implode(DIRECTORY_SEPARATOR, [
-                '..', 'images', 'no_image_available.png'
+                __DIR__, '..', '..', 'images', 'no_image_available.png'
             ]));
             $content = @file_get_contents($path);
         }
@@ -176,7 +176,7 @@ class Image extends AModule
         $linkPath = $this->arrPath->setArray($path)->getString();
         $hasWatermark = (bool) Config::get('Image', 'watermark', false);
         $canWatermark = (array) Config::get('Image', 'accept_watermark', []);
-        return $hasWatermark && in_array(Stuff::fileExt($this->arrPath->getFileName()), $canWatermark)
+        return $hasWatermark && in_array(strtolower(Stuff::fileExt($this->arrPath->getFileName())), $canWatermark)
             ? $this->extLink->linkVariant($linkPath, 'watermark', true)
             : $this->extLink->linkVariant($linkPath, 'image', true) ;
     }
