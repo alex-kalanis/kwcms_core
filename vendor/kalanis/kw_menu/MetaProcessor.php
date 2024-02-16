@@ -75,6 +75,13 @@ class MetaProcessor
         }
     }
 
+    public function reset(): void
+    {
+        $this->menu = new Menu\Menu();
+        $this->workList = [];
+        $this->highest = 0;
+    }
+
     public function menuPosition(Menu\Entry $item): int
     {
         return $item->getPosition();

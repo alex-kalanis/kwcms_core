@@ -42,7 +42,7 @@ class MoreEntries
      * @throws MenuException
      * @return $this
      */
-    public function setMeta(array $metaKey): self
+    public function setMetaKey(array $metaKey): self
     {
         $this->meta->setKey($metaKey);
         return $this;
