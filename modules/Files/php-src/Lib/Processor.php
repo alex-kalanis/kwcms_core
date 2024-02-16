@@ -171,7 +171,7 @@ class Processor
         return $this->files->saveFile(array_merge(
             $this->userPath,
             $this->workPath,
-            Stuff::filename($targetName)
+            [Stuff::filename($targetName)]
         ), $stream);
     }
 
