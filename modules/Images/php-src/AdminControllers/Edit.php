@@ -107,8 +107,8 @@ class Edit extends AAuthModule implements IHasTitle
             $this->fileName = strval($this->getFromParam('name'));
             // no name or invalid file name -> redirect!
 
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
             $this->checkExistence($this->libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);

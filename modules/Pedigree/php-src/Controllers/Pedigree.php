@@ -115,7 +115,7 @@ class Pedigree extends AModule
             return $out->setContent($this->error->getMessage());
 //            return $out->setContent($this->error->getMessage() . nl2br($this->error->getTraceAsString()));
         } else {
-            $table = HtmlElement::init('table', ['border' => '1', 'id' => 'pedigree']);
+            $table = HtmlElement::init('table', ['border' => '1', 'id' => 'pedigree', 'class' => 'pedigree_page']);
             $row1 = HtmlElement::init('tr');
             if (empty($tree[0])) {
                 $td = HtmlElement::init('td');

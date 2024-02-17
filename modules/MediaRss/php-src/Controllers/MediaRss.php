@@ -105,7 +105,7 @@ class MediaRss extends AModule
         try {
             Config::load('Core', 'page');
 
-            $userPath = $this->innerLink->toFullPath([]);
+            $userPath = array_filter($this->innerLink->toFullPath([]));
             $currentPath = array_filter(StoreRouted::getPath()->getPath());
 
             $tmpl = new Lib\MainTemplate();

@@ -83,8 +83,8 @@ class Dashboard extends AAuthModule implements IHasTitle
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $this->userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $this->currentPath = Stuff::linkToArray($this->getWhereDir());
+            $this->userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $this->currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->tree->setStartPath(array_merge($this->userPath, $this->currentPath));
             $this->tree->wantDeep(false);

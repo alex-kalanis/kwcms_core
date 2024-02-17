@@ -149,7 +149,7 @@ class Rss extends AModule
     protected function pathLookup(): array
     {
         $this->arrPath->setArray(StoreRouted::getPath()->getPath());
-        return array_merge($this->arrPath->getArrayDirectory(), [Stuff::fileBase($this->arrPath->getFileName())]);
+        return array_filter(array_merge($this->arrPath->getArrayDirectory(), [Stuff::fileBase($this->arrPath->getFileName())]));
     }
 
     protected function getImage(): string

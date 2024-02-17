@@ -77,8 +77,8 @@ class Properties extends AAuthModule implements IHasTitle
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $libAction = $this->getLibDirAction($this->files, $userPath, $currentPath);
             $this->hasExtra = $libAction->canUse();

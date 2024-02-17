@@ -39,8 +39,8 @@ class Thumb extends AEdit
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->fileName = strval($this->getFromParam('name'));
             $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);

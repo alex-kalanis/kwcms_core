@@ -15,37 +15,37 @@ class FilesTranslations implements IFLTranslations
 {
     public function flCannotProcessNode(string $name): string
     {
-        return Lang::get('core.files.cannot_process_path');
+        return Lang::get('core.files.cannot_process_path', $name);
     }
 
     public function flCannotLoadFile(string $fileName): string
     {
-        return Lang::get('core.files.cannot_load_file');
+        return Lang::get('core.files.cannot_load_file', $fileName);
     }
 
     public function flCannotSaveFile(string $fileName): string
     {
-        return Lang::get('core.files.cannot_save_file');
+        return Lang::get('core.files.cannot_save_file', $fileName);
     }
 
     public function flCannotOpenFile(string $fileName): string
     {
-        return Lang::get('core.files.cannot_open_file');
+        return Lang::get('core.files.cannot_open_file', $fileName);
     }
 
     public function flCannotWriteFile(string $fileName): string
     {
-        return Lang::get('core.files.cannot_write_file');
+        return Lang::get('core.files.cannot_write_file', $fileName);
     }
 
     public function flCannotGetFilePart(string $fileName): string
     {
-        return Lang::get('core.files.cannot_extract_content');
+        return Lang::get('core.files.cannot_extract_content', $fileName);
     }
 
     public function flCannotGetSize(string $fileName): string
     {
-        return Lang::get('core.files.cannot_get_file_size');
+        return Lang::get('core.files.cannot_get_file_size', $fileName);
     }
 
     public function flCannotCopyFile(string $sourceFileName, string $destFileName): string
