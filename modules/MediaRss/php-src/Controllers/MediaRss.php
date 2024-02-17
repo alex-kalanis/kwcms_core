@@ -106,14 +106,17 @@ class MediaRss extends AModule
             Config::load('Core', 'page');
 
             $userPath = array_filter($this->innerLink->toFullPath([]));
-            $currentPath = array_filter(StoreRouted::getPath()->getPath());
+            $currentPath = StoreRouted::getPath()->getPath();
+            $last = array_pop($currentPath);
+            $last = is_null($last) ? '' : Stuff::fileBase($last);
+            $currentPath[] = $last;
 
             $tmpl = new Lib\MainTemplate();
             return $out->setContent(
                 $tmpl->setData(
                     $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
                     Config::get('Core', 'page.site_name'),
-                    $this->libExternal->linkVariant(),
+                    $this->libExternal->linkVariant(StoreRouted::getPath()->getPath()),
                     $this->getLibDirAction($this->files, $userPath, $currentPath)->getDesc()
                 )->addItems(
                     implode('', $this->getItems(new Files($this->files), $userPath, $currentPath))

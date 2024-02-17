@@ -122,9 +122,10 @@ class Rss extends AModule
      */
     protected function getItems(): array
     {
+        $path = $this->pathLookup();
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $adapter = new Lib\MessageAdapter($this->files, $this->innerLink->toFullPath($this->pathLookup()));
+        $adapter = new Lib\MessageAdapter($this->files, $this->innerLink->toFullPath($path));
         $search = new Search($adapter->getRecord());
         $search->offset(intval(strval($this->getFromParam('offset', 0))));
         $search->limit(intval(strval($this->getFromParam('limit', Config::get('Rss', 'count', 10)))));
@@ -134,7 +135,7 @@ class Rss extends AModule
         foreach ($results as $orm) {
             /** @var Lib\ShortMessage $orm */
             $messages[] = $tmplItem->reset()->setData(
-                $this->libExternal->linkVariant(null, ''),
+                $this->libExternal->linkVariant($path),
                 strval($orm->title),
                 intval($orm->date),
                 strval($orm->content)
