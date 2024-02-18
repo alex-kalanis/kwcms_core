@@ -112,6 +112,26 @@ class Processor
      * @throws PathsException
      * @return bool
      */
+    public function cloneDir(string $entry, string $to): bool
+    {
+        return $this->files->copyDir(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ), array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($to)]
+        ));
+    }
+
+    /**
+     * @param string $entry
+     * @param string $to
+     * @throws FilesException
+     * @throws PathsException
+     * @return bool
+     */
     public function renameDir(string $entry, string $to): bool
     {
         return $this->files->moveDir(array_merge(
@@ -229,6 +249,26 @@ class Processor
             $this->userPath,
             Stuff::pathToArray($to),
             [Stuff::filename($entry)]
+        ));
+    }
+
+    /**
+     * @param string $entry
+     * @param string $to
+     * @throws FilesException
+     * @throws PathsException
+     * @return bool
+     */
+    public function cloneFile(string $entry, string $to): bool
+    {
+        return $this->files->copyFile(array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($entry)]
+        ), array_merge(
+            $this->userPath,
+            $this->workPath,
+            [Stuff::filename($to)]
         ));
     }
 
