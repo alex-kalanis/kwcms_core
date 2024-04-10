@@ -4,7 +4,6 @@ namespace kalanis\kw_menu\EntriesSource;
 
 
 use kalanis\kw_files\Access\CompositeAdapter;
-use kalanis\kw_files\Access\Factory as composite_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_menu\Interfaces\IEntriesSource;
 use kalanis\kw_menu\Interfaces\IMNTranslations;

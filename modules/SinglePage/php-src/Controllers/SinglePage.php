@@ -39,24 +39,17 @@ class SinglePage extends AModule
 {
     use TToString;
 
-    /** @var ILoader */
-    protected $loader = null;
+    protected ILoader $loader;
     /** @var IModule|null */
-    protected $module = null;
-    /** @var IModulesList */
-    protected $modulesList = null;
-    /** @var Processor */
-    protected $subModules = null;
-    /** @var string */
-    protected $content = '';
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected ?IModule $module = null;
+    protected IModulesList $modulesList;
+    protected Processor $subModules;
+    protected string $content = '';
+    protected ArrayPath $arrPath;
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -80,7 +73,10 @@ class SinglePage extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'site.more_lang', false))
+            boolval(Config::get('Core', 'site.more_lang', false)),
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
     }

@@ -12,6 +12,6 @@ namespace kalanis\kw_connect\core\Interfaces;
  */
 interface IOrder
 {
-    const ORDER_ASC = 'ASC';
-    const ORDER_DESC = 'DESC';
+    public const ORDER_ASC = 'ASC';
+    public const ORDER_DESC = 'DESC';
 }

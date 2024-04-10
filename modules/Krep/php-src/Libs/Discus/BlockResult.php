@@ -12,10 +12,8 @@ use KWCMS\modules\Krep\Libs;
  */
 class BlockResult
 {
-    /** @var Libs\Shared\Links */
-    protected $links = null;
-    /** @var Libs\Config */
-    protected $config = null;
+    protected Libs\Shared\Links $links;
+    protected Libs\Config $config;
 
     public function __construct(Libs\Shared\Links $links, Libs\Config $config)
     {

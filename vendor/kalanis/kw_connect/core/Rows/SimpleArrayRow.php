@@ -1,19 +1,19 @@
 <?php
 
-namespace kalanis\kw_connect\arrays;
+namespace kalanis\kw_connect\core\Rows;
 
 
 use kalanis\kw_connect\core\Interfaces\IRow;
 
 
 /**
- * Class Row
- * @package kalanis\kw_connect\arrays
+ * Class SimpleArrayRow
+ * @package kalanis\kw_connect\core\Rows
  */
-class Row implements IRow
+class SimpleArrayRow implements IRow
 {
     /** @var array<int|string, int|string|float|bool|null> */
-    protected $array;
+    protected array $array;
 
     /**
      * @param array<int|string, int|string|float|bool|null> $array

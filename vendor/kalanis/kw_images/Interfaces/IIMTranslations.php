@@ -17,6 +17,8 @@ interface IIMTranslations
 
     public function imCannotSaveResource(): string;
 
+    public function imUnknownMime(): string;
+
     public function imUnknownType(string $mime): string;
 
     public function imWrongInstance(string $class): string;

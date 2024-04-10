@@ -16,14 +16,10 @@ use kalanis\kw_forms\JWT\Token;
  */
 class JWT implements ICsrf
 {
-    /** @var string */
-    protected $sessionToken = '';
-
-    /** @var int */
-    protected $expire = 3600;
-
+    protected string $sessionToken = '';
+    protected int $expire = 3600;
     /** @var array<string, string> Token cache */
-    protected $tokens = [];
+    protected array $tokens = [];
 
     public function init(ArrayAccess &$cookie, int $expire = 3600): void
     {

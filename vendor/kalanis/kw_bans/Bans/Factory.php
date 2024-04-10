@@ -18,9 +18,9 @@ class Factory
 {
     use TLang;
 
-    const PREG_IP4 = '#[0-9\./\*]+#i';
-    const PREG_IP6 = '#[0-9a-f:/\*]+#i';
-    const PREG_NAME = '#[\*\?\:;\\//]#i';
+    protected const PREG_IP4 = '#[0-9\./\*]+#i';
+    protected const PREG_IP6 = '#[0-9a-f:/\*]+#i';
+    protected const PREG_NAME = '#[\*\?\:;\\//]#i';
 
     public function __construct(?IKBTranslations $lang = null)
     {

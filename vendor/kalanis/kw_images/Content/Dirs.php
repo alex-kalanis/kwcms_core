@@ -22,16 +22,11 @@ class Dirs
 {
     use TLang;
 
-    /** @var ImageSize */
-    protected $libSizes = null;
-    /** @var Sources\Thumb */
-    protected $libThumb = null;
-    /** @var Sources\DirDesc */
-    protected $libDirDesc = null;
-    /** @var Sources\DirThumb */
-    protected $libDirThumb = null;
-    /** @var Processor */
-    protected $libExt = null;
+    protected ImageSize $libSizes;
+    protected Sources\Thumb $libThumb;
+    protected Sources\DirDesc $libDirDesc;
+    protected Sources\DirThumb $libDirThumb;
+    protected Processor $libExt;
 
     public function __construct(ImageSize $sizes, Sources\Thumb $thumb, Sources\DirDesc $dirDesc, Sources\DirThumb $dirThumb, Processor $ext, ?IIMTranslations $lang = null)
     {

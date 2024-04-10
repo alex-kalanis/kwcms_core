@@ -11,9 +11,8 @@ namespace kalanis\kw_modules\Output;
  */
 class Html extends AOutput
 {
-    protected $canWrap = true;
-    /** @var string */
-    protected $content = '';
+    protected bool $canWrap = true;
+    protected string $content = '';
 
     public function setContent(string $content = ''): self
     {

@@ -24,7 +24,7 @@ class Edit extends Texts\AdminControllers\Edit
 {
     use Lib\TModuleTemplate;
 
-    protected $libMarkDown = null;
+    protected MarkdownExtra $libMarkDown;
 
     public function __construct(...$constructParams)
     {

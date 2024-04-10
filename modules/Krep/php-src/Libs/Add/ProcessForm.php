@@ -16,16 +16,11 @@ use KWCMS\modules\Krep\Libs;
  */
 class ProcessForm
 {
-    /** @var Libs\Config */
-    protected $config;
-    /** @var Libs\Shared\Query */
-    protected $query = null;
-    /** @var PostForm */
-    protected $form = null;
-    /** @var Libs\Add\Bans */
-    protected $bans = null;
-    /** @var Libs\Logs\CompositeLogger */
-    protected $logger = null;
+    protected Libs\Config $config;
+    protected Libs\Shared\Query $query;
+    protected PostForm $form;
+    protected Libs\Add\Bans $bans;
+    protected Libs\Logs\CompositeLogger $logger;
 
     public function __construct(
         Libs\Config $config,

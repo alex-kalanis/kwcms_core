@@ -21,7 +21,7 @@ abstract class AFilterFactory implements IFilterFactory
      * In child only fill this map
      * @var array<string, string>
      */
-    protected static $map = [];
+    protected static array $map = [];
 
     public static function getInstance(): self
     {

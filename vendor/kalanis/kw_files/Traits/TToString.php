@@ -24,16 +24,16 @@ trait TToString
     protected function toString(string $target, $content): string
     {
         if (is_null($content)) {
-            throw new FilesException($this->getLang()->flCannotLoadFile($target));
+            throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
         } elseif (is_bool($content)) {
-            throw new FilesException($this->getLang()->flCannotLoadFile($target));
+            throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
         } elseif (is_resource($content)) {
             rewind($content);
             $data = stream_get_contents($content, -1, 0);
             if (false === $data) {
                 // @codeCoverageIgnoreStart
                 // must die something with stream reading
-                throw new FilesException($this->getLang()->flCannotLoadFile($target));
+                throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
             }
             // @codeCoverageIgnoreEnd
             return strval($data);

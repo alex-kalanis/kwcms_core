@@ -13,7 +13,7 @@ use kalanis\kw_locks\LockException;
  */
 interface ILock
 {
-    const LOCK_FILE = '.lock'; # lock file ext
+    public const LOCK_FILE = '.lock'; # lock file ext
 
     /**
      * Already has lock

@@ -21,14 +21,10 @@ use kalanis\kw_paths\Stuff;
  */
 class ImageUpload
 {
-    /** @var Graphics */
-    protected $graphics = null;
-    /** @var Sources\Image */
-    protected $imageSource = null;
-    /** @var ISizes */
-    protected $config = null;
-    /** @var Images */
-    protected $images = null;
+    protected Graphics $graphics;
+    protected Sources\Image $imageSource;
+    protected ISizes $config;
+    protected Images $images;
 
     public function __construct(Graphics $graphics, Sources\Image $libImage, ISizes $config, Images $images)
     {

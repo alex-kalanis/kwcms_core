@@ -13,8 +13,8 @@ use kalanis\kw_cache\CacheException;
  */
 interface ICache
 {
-    const EXT_CACHE = '.cache'; # cache itself file ext
-    const EXT_RELOAD = '.reload'; # reload file ext
+    public const EXT_CACHE = '.cache'; # cache itself file ext
+    public const EXT_RELOAD = '.reload'; # reload file ext
 
     /**
      * @param string[] $what

@@ -22,12 +22,11 @@ class Processor
 {
     use TToString;
 
+    protected CompositeAdapter $files;
     /** @var string[] */
-    protected $userPath = [];
+    protected array $userPath = [];
     /** @var string[] */
-    protected $workPath = [];
-    /** @var CompositeAdapter */
-    protected $files = null;
+    protected array $workPath = [];
 
     public function __construct(CompositeAdapter $files)
     {

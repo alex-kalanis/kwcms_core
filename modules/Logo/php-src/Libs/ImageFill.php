@@ -25,12 +25,9 @@ class ImageFill
     use TLang;
     use TType;
 
-    /** @var Sources\Image */
-    protected $libImage = null;
-    /** @var ImageProcessor */
-    protected $processor = null;
-    /** @var ISizes */
-    protected $config = null;
+    protected Sources\Image $libImage;
+    protected ImageProcessor $processor;
+    protected ISizes $config;
 
     public function __construct(ImageProcessor $processor, ISizes $config, Sources\Image $image, IMime $mime, ?IIMTranslations $lang = null)
     {

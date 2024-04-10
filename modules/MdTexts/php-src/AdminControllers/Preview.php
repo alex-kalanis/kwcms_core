@@ -20,8 +20,7 @@ class Preview extends Texts\AdminControllers\Preview
 {
     use Lib\TModuleTemplate;
 
-    /** @var MarkdownExtra|null */
-    protected $libMarkdown = null;
+    protected MarkdownExtra $libMarkdown;
 
     public function __construct(...$constructParams)
     {

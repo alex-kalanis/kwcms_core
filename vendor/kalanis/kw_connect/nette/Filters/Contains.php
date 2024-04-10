@@ -12,7 +12,7 @@ class Contains extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->netteTable->where($colName . ' LIKE ?', $value);
+            $this->getSource()->where($colName . ' LIKE ?', $value);
         }
         return $this;
     }

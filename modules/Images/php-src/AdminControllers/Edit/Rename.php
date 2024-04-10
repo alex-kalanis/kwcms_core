@@ -21,10 +21,8 @@ use KWCMS\modules\Images\Forms;
  */
 class Rename extends AEdit
 {
-    /** @var string */
-    protected $targetName = '';
-    /** @var Forms\FileRenameForm */
-    protected $renameForm = null;
+    protected string $targetName = '';
+    protected Forms\FileRenameForm $renameForm;
 
     public function __construct(...$constructParams)
     {

@@ -10,8 +10,7 @@ namespace kalanis\kw_paths;
  */
 class Stored
 {
-    /** @var null|Path */
-    protected static $paths = null;
+    protected static ?Path $paths = null;
 
     public static function init(Path $path): void
     {

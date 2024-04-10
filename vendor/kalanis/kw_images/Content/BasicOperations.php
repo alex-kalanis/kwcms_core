@@ -15,12 +15,9 @@ use kalanis\kw_paths\PathsException;
  */
 class BasicOperations
 {
-    /** @var Sources\Image */
-    protected $libImage = null;
-    /** @var Sources\Thumb */
-    protected $libThumb = null;
-    /** @var Sources\Desc */
-    protected $libDesc = null;
+    protected Sources\Image $libImage;
+    protected Sources\Thumb $libThumb;
+    protected Sources\Desc $libDesc;
 
     public function __construct(Sources\Image $image, Sources\Thumb $thumb, Sources\Desc $desc)
     {

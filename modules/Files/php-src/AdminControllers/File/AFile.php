@@ -12,6 +12,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
@@ -37,16 +38,12 @@ abstract class AFile extends AAuthModule implements IHasTitle
     use TFilesDirs;
     use TFilesFile;
 
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var Lib\Processor */
-    protected $processor = null;
-    /** @var Lib\FileForm|null */
-    protected $fileForm = null;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected Lib\Processor $processor;
+    protected Lib\FileForm $fileForm;
     /** @var bool[] */
-    protected $processed = [];
+    protected array $processed = [];
 
     /**
      * @param mixed ...$constructParams
@@ -106,7 +103,7 @@ abstract class AFile extends AAuthModule implements IHasTitle
                 $this->fileForm,
                 Lang::get($this->getFormTitleLangKey())
             )->render()));
-        } catch (FormsException $ex) {
+        } catch (FormsException | NotifyException $ex) {
             $this->error = $ex;
         }
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));

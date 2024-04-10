@@ -12,10 +12,8 @@ use KWCMS\modules\Krep\Libs;
  */
 class Query
 {
-    /** @var string */
-    protected $wantDiscusLink = '/discus/';
-    /** @var string */
-    protected $wantRedirectLink = '/presmer';
+    protected string $wantDiscusLink = '/discus/';
+    protected string $wantRedirectLink = '/presmer';
 
     public function __construct(Libs\Config $config)
     {

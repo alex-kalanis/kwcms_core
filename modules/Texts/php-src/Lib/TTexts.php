@@ -23,9 +23,9 @@ trait TTexts
     use TWhereDir;
 
     /** @var UserDir */
-    protected $userDir = null;
+    protected ?UserDir $userDir = null;
     /** @var CompositeAdapter */
-    protected $files = null;
+    protected ?CompositeAdapter $files = null;
 
     /**
      * @param mixed $params

@@ -14,11 +14,10 @@ use kalanis\kw_forms\Controls\RadioSet;
  */
 class Radio extends Controls\Radio
 {
-    /** @var int */
-    private static $uniqid = 0;
+    private static int $uniqid = 0;
 
-    protected $templateLabel = '';
-    public $templateInput = '<label><input type="radio" value="%1$s"%2$s /> %3$s</label>';
+    protected string $templateLabel = '';
+    protected string $templateInput = '<label><input type="radio" value="%1$s"%2$s /> %3$s</label>';
 
     /**
      * @param string $alias

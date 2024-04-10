@@ -15,7 +15,7 @@ use kalanis\kw_rules\Exceptions\RuleException;
 trait TValidate
 {
     /** @var RuleException[][] */
-    protected $errors = [];
+    protected array $errors = [];
 
     public function validate(Interfaces\IValidate $entry): bool
     {

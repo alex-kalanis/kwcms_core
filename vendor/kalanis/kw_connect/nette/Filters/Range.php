@@ -19,10 +19,10 @@ class Range extends AType
         }
 
         if (!empty($value[0])) {
-            $this->netteTable->where($colName . ' > ?', $value[0]);
+            $this->getSource()->where($colName . ' > ?', $value[0]);
         }
         if (!empty($value[1])) {
-            $this->netteTable->where($colName . ' < ?', $value[1]);
+            $this->getSource()->where($colName . ' < ?', $value[1]);
         }
 
         return $this;

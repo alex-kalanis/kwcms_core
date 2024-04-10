@@ -20,8 +20,8 @@ class Memory implements ITargetFlat
     use TOperations;
     use TLang;
 
-    /** @var array<string, mixed> */
-    protected $data = [];
+    /** @var array<string, string> */
+    protected array $data = [];
 
     public function __construct(?IStTranslations $lang = null)
     {
@@ -38,7 +38,7 @@ class Memory implements ITargetFlat
         return isset($this->data[$key]);
     }
 
-    public function load(string $key)
+    public function load(string $key): string
     {
         if (!$this->exists($key)) {
             throw new StorageException($this->getStLang()->stCannotReadKey());
@@ -46,7 +46,7 @@ class Memory implements ITargetFlat
         return $this->data[$key];
     }
 
-    public function save(string $key, $data, ?int $timeout = null): bool
+    public function save(string $key, string $data, ?int $timeout = null): bool
     {
         $this->data[$key] = $data;
         return true;
@@ -79,7 +79,7 @@ class Memory implements ITargetFlat
         } else {
             $number = 1;
         }
-        return $this->save($key, $number);
+        return $this->save($key, strval($number));
     }
 
     public function decrement(string $key, int $step = 1): bool
@@ -89,6 +89,6 @@ class Memory implements ITargetFlat
         } else {
             $number = 0;
         }
-        return $this->save($key, $number);
+        return $this->save($key, strval($number));
     }
 }

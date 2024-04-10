@@ -21,10 +21,8 @@ use KWCMS\modules\Images\Forms;
  */
 class Desc extends AEdit
 {
-    /** @var string */
-    protected $fileName = '';
-    /** @var Forms\DescForm */
-    protected $descForm = null;
+    protected string $fileName = '';
+    protected Forms\DescForm $descForm;
 
     public function __construct(...$constructParams)
     {

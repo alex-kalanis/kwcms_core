@@ -15,8 +15,8 @@ use KWCMS\modules\Admin\Forms\LoginForm;
  */
 class LoginTemplate extends ATemplate
 {
-    protected $moduleName = 'Admin';
-    protected $templateName = 'login';
+    protected string $moduleName = 'Admin';
+    protected string $templateName = 'login';
 
     protected function fillInputs(): void
     {

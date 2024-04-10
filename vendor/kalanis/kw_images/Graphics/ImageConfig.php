@@ -13,14 +13,10 @@ use kalanis\kw_images\Interfaces\ISizes;
  */
 class ImageConfig implements ISizes
 {
-    /** @var int */
-    protected $maxWidth = 1024;
-    /** @var int */
-    protected $maxHeight = 1024;
-    /** @var int */
-    protected $maxFileSize = 10485760;
-    /** @var string */
-    protected $tempPrefix = '';
+    protected int $maxWidth = 1024;
+    protected int $maxHeight = 1024;
+    protected int $maxFileSize = 10485760;
+    protected string $tempPrefix = '';
 
     /**
      * @param array<string, string|int> $params

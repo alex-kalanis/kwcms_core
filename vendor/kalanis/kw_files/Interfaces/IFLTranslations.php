@@ -14,9 +14,13 @@ interface IFLTranslations
 
     public function flCannotLoadFile(string $fileName): string;
 
+    public function flBadMode(int $mode): string;
+
     public function flCannotSaveFile(string $fileName): string;
 
     public function flCannotOpenFile(string $fileName): string;
+
+    public function flCannotSeekFile(string $fileName): string;
 
     public function flCannotWriteFile(string $fileName): string;
 
@@ -45,6 +49,8 @@ interface IFLTranslations
     public function flNoProcessNodeSet(): string;
 
     public function flNoProcessFileSet(): string;
+
+    public function flNoProcessStreamSet(): string;
 
     public function flNoProcessDirSet(): string;
 

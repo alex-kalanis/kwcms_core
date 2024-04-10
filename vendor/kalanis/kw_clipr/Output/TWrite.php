@@ -15,11 +15,9 @@ use kalanis\kw_clipr\Interfaces;
 trait TWrite
 {
     /** @var string[] */
-    protected $progressIndicator = ['|', '/', '-', '\\'];
-    /** @var bool */
-    protected $workingSent = false;
-    /** @var int */
-    protected $lastOutputLength = 0;
+    protected array $progressIndicator = ['|', '/', '-', '\\'];
+    protected bool $workingSent = false;
+    protected int $lastOutputLength = 0;
 
     public function sendOk(): void
     {

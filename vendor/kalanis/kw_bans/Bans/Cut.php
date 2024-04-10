@@ -6,11 +6,9 @@ namespace kalanis\kw_bans\Bans;
 class Cut
 {
     /** @var array<int, string> */
-    protected $useAddress = [];
-    /** @var string */
-    protected $bitwiseBlock;
-    /** @var int */
-    protected $bitsInAffectedPart = 0;
+    protected array $useAddress = [];
+    protected string $bitwiseBlock = '';
+    protected int $bitsInAffectedPart = 0;
 
     /**
      * @param array<int, string> $useAddress

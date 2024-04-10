@@ -11,20 +11,24 @@ use kalanis\kw_files\Interfaces;
  * @package kalanis\kw_files\Access
  * Pass work with files in storage in one class
  */
-class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessDirs, Interfaces\IProcessFiles
+class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessDirs, Interfaces\IProcessFiles, Interfaces\IProcessFileStreams
 {
-    /** @var Interfaces\IProcessNodes */
-    protected $libNode = null;
-    /** @var Interfaces\IProcessDirs */
-    protected $libDir = null;
-    /** @var Interfaces\IProcessFiles */
-    protected $libFile = null;
+    protected Interfaces\IProcessNodes $libNode;
+    protected Interfaces\IProcessDirs $libDir;
+    protected Interfaces\IProcessFiles $libFile;
+    protected Interfaces\IProcessFileStreams $libStream;
 
-    public function __construct(Interfaces\IProcessNodes $libNode, Interfaces\IProcessDirs $libDir, Interfaces\IProcessFiles $libFile)
+    public function __construct(
+        Interfaces\IProcessNodes $libNode,
+        Interfaces\IProcessDirs $libDir,
+        Interfaces\IProcessFiles $libFile,
+        Interfaces\IProcessFileStreams $libStream
+    )
     {
         $this->libNode = $libNode;
         $this->libDir = $libDir;
         $this->libFile = $libFile;
+        $this->libStream = $libStream;
     }
 
     public function createDir(array $entry, bool $deep = false): bool
@@ -52,12 +56,12 @@ class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessD
         return $this->libDir->deleteDir($entry, $deep);
     }
 
-    public function saveFile(array $entry, $content, ?int $offset = null): bool
+    public function saveFile(array $entry, string $content, ?int $offset = null, int $mode = 0): bool
     {
         return $this->libFile->saveFile($entry, $content, $offset);
     }
 
-    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null): string
     {
         return $this->libFile->readFile($entry, $offset, $length);
     }
@@ -75,6 +79,26 @@ class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessD
     public function deleteFile(array $entry): bool
     {
         return $this->libFile->deleteFile($entry);
+    }
+
+    public function saveFileStream(array $entry, $content, int $mode = 0): bool
+    {
+        return $this->libStream->saveFileStream($entry, $content, $mode);
+    }
+
+    public function readFileStream(array $entry)
+    {
+        return $this->libStream->readFileStream($entry);
+    }
+
+    public function copyFileStream(array $source, array $dest): bool
+    {
+        return $this->libStream->copyFileStream($source, $dest);
+    }
+
+    public function moveFileStream(array $source, array $dest): bool
+    {
+        return $this->libStream->moveFileStream($source, $dest);
     }
 
     public function exists(array $entry): bool
@@ -125,5 +149,10 @@ class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessD
     public function getFile(): Interfaces\IProcessFiles
     {
         return $this->libFile;
+    }
+
+    public function getStream(): Interfaces\IProcessFileStreams
+    {
+        return $this->libStream;
     }
 }

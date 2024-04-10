@@ -13,8 +13,7 @@ use kalanis\kw_pedigree\Storage\APedigreeRecord;
  */
 trait TCorrectConnect
 {
-    /** @var APedigreeRecord|null */
-    protected $connectViaRecord = null;
+    protected ?APedigreeRecord $connectViaRecord = null;
 
     /**
      * @param mixed $constructParams

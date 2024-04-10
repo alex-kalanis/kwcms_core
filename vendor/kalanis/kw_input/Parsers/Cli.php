@@ -11,14 +11,14 @@ namespace kalanis\kw_input\Parsers;
  */
 class Cli extends AParser
 {
-    const DELIMITER_LONG_ENTRY = '--';
-    const DELIMITER_SHORT_ENTRY = '-';
-    const DELIMITER_PARAM_VALUE = '=';
-    const UNSORTED_PARAM = 'param_';
+    protected const DELIMITER_LONG_ENTRY = '--';
+    protected const DELIMITER_SHORT_ENTRY = '-';
+    protected const DELIMITER_PARAM_VALUE = '=';
+    public const UNSORTED_PARAM = 'param_';
 
     /** @var string[] */
-    protected static $availableLetters = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
-                                          'n','o','p','q','r','s','t','u','v','w','x','y','z'];
+    protected static array $availableLetters = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
+                                                'n','o','p','q','r','s','t','u','v','w','x','y','z'];
 
     /**
      * @param int[]|string[] $input is $argv in boot time

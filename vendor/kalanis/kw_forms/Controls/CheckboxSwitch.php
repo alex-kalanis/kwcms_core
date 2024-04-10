@@ -10,7 +10,7 @@ namespace kalanis\kw_forms\Controls;
  */
 class CheckboxSwitch extends Checkbox
 {
-    public $templateInput =
+    protected string $templateInput =
     '<label class="checkbox-switch">
         <input type="checkbox" value="%1$s"%2$s />
         <span class="label" data-on="On" data-off="Off"></span>

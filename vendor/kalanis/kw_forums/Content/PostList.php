@@ -11,16 +11,11 @@ namespace kalanis\kw_forums\Content;
  */
 class PostList
 {
-    /** @var int */
-    protected $id;
-    /** @var int */
-    protected $time;
-    /** @var int */
-    protected $counter;
-    /** @var string */
-    protected $name;
-    /** @var string */
-    protected $text;
+    protected int $id = 0;
+    protected int $time = 0;
+    protected int $counter = 0;
+    protected string $name = '';
+    protected string $text = '';
 
     public function setData(int $id = 0, int $time = 0, int $counter = 0, string $name = '', string $text = ''): self
     {

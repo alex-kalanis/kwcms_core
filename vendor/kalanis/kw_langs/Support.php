@@ -14,7 +14,7 @@ use kalanis\kw_routed_paths\RoutedPath;
  */
 class Support
 {
-    const LANG_KEY = 'lang';
+    public const LANG_KEY = 'lang';
 
     /**
      * @param ArrayAccess<string, mixed> $array

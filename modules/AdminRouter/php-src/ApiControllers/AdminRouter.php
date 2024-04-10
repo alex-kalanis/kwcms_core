@@ -31,18 +31,13 @@ use KWCMS\modules\Core\Libs\AModule;
  */
 class AdminRouter extends AModule
 {
-    /** @var ILoader */
-    protected $loader = null;
-    /** @var IModule|null */
-    protected $module = null;
-    /** @var IModulesList */
-    protected $modulesList = null;
-    /** @var Processor */
-    protected $subModules = null;
-    /** @var Lib\Chain\Processor */
-    protected $chainProcessor = null;
+    protected ILoader $loader;
+    protected ?IModule $module = null;
+    protected IModulesList $modulesList;
+    protected Processor $subModules;
+    protected Lib\Chain\Processor $chainProcessor;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams

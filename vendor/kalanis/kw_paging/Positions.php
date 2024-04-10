@@ -8,10 +8,9 @@ use kalanis\kw_pager\Interfaces\IPager;
 
 class Positions implements Interfaces\IPositions
 {
-    const FIRST_PAGE = 1;
+    public const FIRST_PAGE = 1;
 
-    /** @var IPager */
-    protected $pager = null;
+    protected IPager $pager;
 
     public function __construct(IPager $pager)
     {

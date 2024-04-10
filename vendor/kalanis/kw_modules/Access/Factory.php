@@ -16,6 +16,7 @@ use kalanis\kw_modules\ModulesLists\File;
 use kalanis\kw_modules\ModulesLists\ParamsFormat;
 use kalanis\kw_modules\Loaders;
 use kalanis\kw_modules\Mixer\Processor;
+use kalanis\kw_modules\Parser\GetModules;
 use kalanis\kw_modules\Traits\TMdLang;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_storage\Access\Factory as storage_factory;
@@ -33,8 +34,11 @@ class Factory
 {
     use TMdLang;
 
-    public function __construct(?IMdTranslations $lang = null)
+    protected ?GetModules $parser;
+
+    public function __construct(?GetModules $parser = null, ?IMdTranslations $lang = null)
     {
+        $this->parser = $parser;
         $this->setMdLang($lang);
     }
 
@@ -45,7 +49,7 @@ class Factory
      */
     public function getProcessor($params): Processor
     {
-        return new Processor($this->getLoader($params), $this->getModulesList($params), $this->getMdLang());
+        return new Processor($this->getLoader($params), $this->getModulesList($params), $this->getMdLang(), $this->parser);
     }
 
     /**

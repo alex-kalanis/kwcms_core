@@ -9,6 +9,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\Node;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -25,6 +26,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Templates;
 
@@ -40,18 +42,15 @@ class Dashboard extends AAuthModule implements IHasTitle
     use TWhereDir;
     use Lib\TLibAction;
 
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var Access\CompositeAdapter */
-    protected $files = null;
-    /** @var ITree */
-    protected $tree = null;
+    protected UserDir $userDir;
+    protected Access\CompositeAdapter $files;
+    protected ITree $tree;
     /** @var string[] */
-    protected $availableTypes = ['bmp', 'gif', 'jpeg', 'jpg', 'pic', 'png', 'tif', 'tiff', 'wbmp', 'webp', ];
+    protected array $availableTypes = ['bmp', 'gif', 'jpeg', 'jpg', 'pic', 'png', 'tif', 'tiff', 'wbmp', 'webp', ];
     /** @var string[] */
-    protected $userPath = [];
+    protected array $userPath = [];
     /** @var string[] */
-    protected $currentPath = [];
+    protected array $currentPath = [];
 
     /**
      * @param mixed ...$constructParams
@@ -65,6 +64,11 @@ class Dashboard extends AAuthModule implements IHasTitle
         $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->tree = new DataSources\Files($this->files);
         $this->userDir = new UserDir(new Lib\Translations());
+        $this->initLibAction(new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ));
     }
 
     public function allowedAccessClasses(): array
@@ -91,7 +95,7 @@ class Dashboard extends AAuthModule implements IHasTitle
             $this->tree->setFilterCallback([$this, 'filterFiles']);
             $this->tree->process();
 
-        } catch (PathsException $ex) {
+        } catch (PathsException | FormsException $ex) {
             $this->error = $ex;
         }
     }
@@ -131,7 +135,7 @@ class Dashboard extends AAuthModule implements IHasTitle
                 array_merge($this->userPath, $this->currentPath)
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));
-        } catch ( ConnectException | FilesException | FormsException | ImagesException | LangException | PathsException | TableException $ex) {
+        } catch ( ConnectException | FormsException | ImagesException | LangException | TableException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

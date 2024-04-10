@@ -26,7 +26,6 @@ class Factory
     protected $targetMap = [
         10 => Target\Memory::class,
         20 => Target\Volume::class,
-        21 => Target\VolumeStream::class,
         22 => Target\VolumeTargetFlat::class,
         'mem' => Target\Memory::class,
         'memory' => Target\Memory::class,
@@ -34,8 +33,6 @@ class Factory
         'volume' => Target\Volume::class,
         'volume::local' => Target\Volume::class,
         'local' => Target\Volume::class,
-        'stream' => Target\VolumeStream::class,
-        'volume::stream' => Target\VolumeStream::class,
         'volume::flat' => Target\VolumeTargetFlat::class,
     ];
 
@@ -108,7 +105,7 @@ class Factory
             // nothing found - use this
         }
         if ($key instanceof Key\ArrayKey) {
-            return new Target\VolumeStream($this->getStLang());
+            return new Target\Volume($this->getStLang());
         }
         if ($key instanceof Key\DirKey) {
             return new Target\Volume($this->getStLang());

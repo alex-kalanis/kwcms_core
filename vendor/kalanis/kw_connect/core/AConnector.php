@@ -13,7 +13,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
 abstract class AConnector extends AIterator
 {
     /** @var IRow[] */
-    protected $translatedData = [];
+    protected array $translatedData = [];
 
     protected function getIterableName(): string
     {

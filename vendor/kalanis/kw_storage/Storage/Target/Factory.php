@@ -16,19 +16,16 @@ use ReflectionException;
 class Factory
 {
     /** @var array<string, class-string<Interfaces\ITarget>|null> */
-    protected static $pairs = [
+    protected static array $pairs = [
         'mem' => Memory::class,
         'memory' => Memory::class,
         'vol' => Volume::class,
         'volume' => Volume::class,
         'volume::flat' => VolumeTargetFlat::class,
-        'volume::stream' => VolumeStream::class,
         'local' => Volume::class,
         'local::flat' => VolumeTargetFlat::class,
-        'local::stream' => VolumeStream::class,
         'drive' => Volume::class,
         'drive::flat' => VolumeTargetFlat::class,
-        'drive::stream' => VolumeStream::class,
         'none' => null,
     ];
 

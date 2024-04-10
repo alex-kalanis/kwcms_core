@@ -14,8 +14,8 @@ use KWCMS\modules\Menu\Forms\EditNamesForm;
  */
 class EditTemplate extends ATemplate
 {
-    protected $moduleName = 'Menu';
-    protected $templateName = 'edit';
+    protected string $moduleName = 'Menu';
+    protected string $templateName = 'edit';
 
     protected function fillInputs(): void
     {

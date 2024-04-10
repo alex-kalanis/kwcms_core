@@ -19,9 +19,8 @@ use kalanis\kw_semaphore\SemaphoreException;
 class Files implements ISemaphore
 {
     /** @var string[] */
-    protected $rootPath = [];
-    /** @var CompositeAdapter */
-    protected $lib = null;
+    protected array $rootPath = [];
+    protected CompositeAdapter $lib;
 
     /**
      * @param CompositeAdapter $lib

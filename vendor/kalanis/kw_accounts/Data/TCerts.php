@@ -10,10 +10,8 @@ namespace kalanis\kw_accounts\Data;
  */
 trait TCerts
 {
-    /** @var string */
-    protected $pubKey = '';
-    /** @var string */
-    protected $salt = '';
+    protected string $pubKey = '';
+    protected string $salt = '';
 
     public function updateCertInfo(?string $pubKey, ?string $salt): void
     {

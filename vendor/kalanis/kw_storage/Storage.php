@@ -18,10 +18,8 @@ class Storage
 {
     use TLang;
 
-    /** @var IStorage|null */
-    protected $storage = null;
-    /** @var Storage\Factory */
-    protected $storageFactory = null;
+    protected ?IStorage $storage = null;
+    protected Storage\Factory $storageFactory;
 
     public function __construct(Storage\Factory $storageFactory, ?IStTranslations $lang = null)
     {
@@ -56,9 +54,9 @@ class Storage
      * Get data from storage
      * @param string $key
      * @throws StorageException
-     * @return mixed
+     * @return string|null
      */
-    public function get(string $key)
+    public function get(string $key): ?string
     {
         $content = $this->getStorage()->read($key);
         return empty($content) ? null : $content ;
@@ -67,12 +65,12 @@ class Storage
     /**
      * Set data to storage
      * @param string $key
-     * @param mixed $value
+     * @param string $value
      * @param int $expire
      * @throws StorageException
      * @return boolean
      */
-    public function set(string $key, $value, ?int $expire = 8600): bool
+    public function set(string $key, string $value, ?int $expire = 8600): bool
     {
         return $this->getStorage()->write($key, $value, $expire);
     }
@@ -80,12 +78,12 @@ class Storage
     /**
      * Add data to storage
      * @param string $key
-     * @param mixed $value
+     * @param string $value
      * @param int $expire
      * @throws StorageException
      * @return boolean
      */
-    public function add(string $key, $value, ?int $expire = 8600): bool
+    public function add(string $key, string $value, ?int $expire = 8600): bool
     {
         // safeadd for multithread at any system
         if ($this->getStorage()->write($key, $value, $expire)) {

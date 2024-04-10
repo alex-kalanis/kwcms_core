@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_paging\Render;
+namespace kalanis\kw_paging\Traits;
 
 
 use kalanis\kw_paging\Interfaces\IPositions;
@@ -13,20 +13,18 @@ use kalanis\kw_paging\Interfaces\IPositions;
  */
 trait TDisplayPages
 {
-    /** @var int */
-    protected $displayPagesCount = IPositions::DEFAULT_DISPLAY_PAGES_COUNT;
+    use TPositions;
 
-    /** @var IPositions */
-    protected $positions = null;
+    protected int $displayPagesCount = IPositions::DEFAULT_DISPLAY_PAGES_COUNT;
 
     /**
      * Return array of page numbers, which will be rendered for current pager state. If we want another way to render, just overwrite this method.
      * @return int[]
      */
-    protected function getDisplayPages()
+    protected function getDisplayPages(): array
     {
-        $actualPage = $this->positions->getPager()->getActualPage(); // 2
-        $count = $this->positions->getPager()->getPagesCount(); // 20
+        $actualPage = $this->getPositions()->getPager()->getActualPage(); // 2
+        $count = $this->getPositions()->getPager()->getPagesCount(); // 20
         $whole = $this->displayPagesCount; // 10
 
         $half = floor($whole / 2); // 5
@@ -37,7 +35,7 @@ trait TDisplayPages
 
         // ++ < 10 && 3 <= 20
         while ((count($result) < $this->displayPagesCount) && ($i <= $count)) {
-            if ($this->positions->getPager()->pageExists($i)) {
+            if ($this->getPositions()->getPager()->pageExists($i)) {
                 $result[] = $i;
             }
             $i++;

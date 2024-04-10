@@ -15,7 +15,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class ConnectUserItem implements IRow
 {
-    protected $array;
+    protected array $array;
 
     public function __construct(IUser $user)
     {

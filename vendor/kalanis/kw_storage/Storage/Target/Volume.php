@@ -77,18 +77,18 @@ class Volume implements ITargetVolume
         return $recursive ? $this->removeCycle($key) : @rmdir($key);
     }
 
-    public function load(string $key)
+    public function load(string $key): string
     {
         $content = @file_get_contents($key);
         if (false === $content) {
             throw new StorageException($this->getStLang()->stCannotReadFile());
         }
-        return $content;
+        return strval($content);
     }
 
-    public function save(string $key, $data, ?int $timeout = null): bool
+    public function save(string $key, string $data, ?int $timeout = null): bool
     {
-        return (false !== @file_put_contents($key, strval($data)));
+        return (false !== @file_put_contents($key, $data));
     }
 
     public function copy(string $source, string $dest): bool
@@ -149,7 +149,7 @@ class Volume implements ITargetVolume
             $number = 1;
         }
         $this->remove($key); // hanging pointers
-        return $this->save($key, $number);
+        return $this->save($key, strval($number));
     }
 
     public function decrement(string $key, int $step = 1): bool
@@ -161,6 +161,6 @@ class Volume implements ITargetVolume
             $number = 0;
         }
         $this->remove($key); // hanging pointers
-        return $this->save($key, $number);
+        return $this->save($key, strval($number));
     }
 }

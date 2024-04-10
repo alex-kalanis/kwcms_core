@@ -10,5 +10,5 @@ namespace kalanis\kw_forms\Controls;
  */
 class Telephone extends Text
 {
-    protected $templateInput = '<input type="tel" value="%1$s"%2$s />%3$s';
+    protected string $templateInput = '<input type="tel" value="%1$s"%2$s />%3$s';
 }

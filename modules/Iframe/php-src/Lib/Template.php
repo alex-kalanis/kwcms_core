@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Template extends ATemplate
 {
-    protected $moduleName = 'Iframe';
-    protected $templateName = 'iframe';
+    protected string $moduleName = 'Iframe';
+    protected string $templateName = 'iframe';
 
     protected function fillInputs(): void
     {

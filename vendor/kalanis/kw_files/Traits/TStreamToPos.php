@@ -29,7 +29,7 @@ trait TStreamToPos
             $originalStat = fstat($original);
             if (false === $originalStat) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->getLang()->flCannotOpenFile('temp'));
+                throw new FilesException($this->getFlLang()->flCannotOpenFile('temp'));
             }
             // @codeCoverageIgnoreEnd
             $originalLength = $originalStat['size'];
@@ -37,7 +37,7 @@ trait TStreamToPos
             $addedStat = fstat($added);
             if (false === $addedStat) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->getLang()->flCannotOpenFile('temp'));
+                throw new FilesException($this->getFlLang()->flCannotOpenFile('temp'));
             }
             // @codeCoverageIgnoreEnd
             $addedLength = $addedStat['size'];
@@ -46,12 +46,12 @@ trait TStreamToPos
             $destination = fopen('php://temp', 'rb+'); // the target storage
             if (false === $destination) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->getLang()->flCannotOpenFile('temp'));
+                throw new FilesException($this->getFlLang()->flCannotOpenFile('temp'));
             }
             // @codeCoverageIgnoreEnd
             if ((0 !== $offset) && (false === stream_copy_to_stream($original, $destination, $offset, 0))) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->getLang()->flCannotWriteFile('temp'));
+                throw new FilesException($this->getFlLang()->flCannotWriteFile('temp'));
             }
             // @codeCoverageIgnoreEnd
 
@@ -60,21 +60,21 @@ trait TStreamToPos
                 $begin = fopen('php://temp', 'rb+');
                 if (false === $begin) {
                     // @codeCoverageIgnoreStart
-                    throw new FilesException($this->getLang()->flCannotOpenFile('temp'));
+                    throw new FilesException($this->getFlLang()->flCannotOpenFile('temp'));
                 }
                 // @codeCoverageIgnoreEnd
                 /** @scrutinizer ignore-unhandled */@fwrite($begin, str_repeat("\0", intval(abs($offset - $originalLength))));
                 /** @scrutinizer ignore-unhandled */@rewind($begin);
                 if (false === stream_copy_to_stream($begin, $destination, -1, 0)) {
                     // @codeCoverageIgnoreStart
-                    throw new FilesException($this->getLang()->flCannotWriteFile('temp'));
+                    throw new FilesException($this->getFlLang()->flCannotWriteFile('temp'));
                 }
                 // @codeCoverageIgnoreEnd
 
                 $beginStat = fstat($begin);
                 if (false === $beginStat) {
                     // @codeCoverageIgnoreStart
-                    throw new FilesException($this->getLang()->flCannotOpenFile('temp'));
+                    throw new FilesException($this->getFlLang()->flCannotOpenFile('temp'));
                 }
                 // @codeCoverageIgnoreEnd
                 $originalLength += $beginStat['size'];
@@ -83,7 +83,7 @@ trait TStreamToPos
             // amended data itself
             if (false === stream_copy_to_stream($added, $destination, -1, 0)) {
                 // @codeCoverageIgnoreStart
-                throw new FilesException($this->getLang()->flCannotWriteFile('temp'));
+                throw new FilesException($this->getFlLang()->flCannotWriteFile('temp'));
             }
             // @codeCoverageIgnoreEnd
 
@@ -92,18 +92,18 @@ trait TStreamToPos
                 $rest = fopen('php://temp', 'rb+'); // the temporary storage for the end
                 if (false === $rest) {
                     // @codeCoverageIgnoreStart
-                    throw new FilesException($this->getLang()->flCannotOpenFile('temp'));
+                    throw new FilesException($this->getFlLang()->flCannotOpenFile('temp'));
                 }
                 // @codeCoverageIgnoreEnd
                 if (false === stream_copy_to_stream($original, $rest, -1, $offset + $addedLength)) {
                     // @codeCoverageIgnoreStart
-                    throw new FilesException($this->getLang()->flCannotWriteFile('temp'));
+                    throw new FilesException($this->getFlLang()->flCannotWriteFile('temp'));
                 }
                 /** @scrutinizer ignore-unhandled */@rewind($rest);
                 // @codeCoverageIgnoreEnd
                 if (false === stream_copy_to_stream($rest, $destination, -1, 0)) {
                     // @codeCoverageIgnoreStart
-                    throw new FilesException($this->getLang()->flCannotWriteFile('temp'));
+                    throw new FilesException($this->getFlLang()->flCannotWriteFile('temp'));
                 }
                 // @codeCoverageIgnoreEnd
             }

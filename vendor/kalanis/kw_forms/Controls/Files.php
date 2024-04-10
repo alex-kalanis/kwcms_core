@@ -38,8 +38,8 @@ class Files extends AControl implements IMultiValue
 {
     use TShorterKey;
 
-    protected $templateLabel = '<label>%2$s</label>';
-    protected $templateInput = '%3$s';
+    protected string $templateLabel = '<label>%2$s</label>';
+    protected string $templateInput = '%3$s';
 
     /**
      * @param string $alias

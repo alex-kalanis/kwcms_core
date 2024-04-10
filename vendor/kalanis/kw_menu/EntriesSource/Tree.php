@@ -20,10 +20,8 @@ class Tree implements IEntriesSource
 {
     use TFilterHtml;
 
-    /** @var ITree */
-    protected $tree = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
+    protected ITree $tree;
+    protected ArrayPath $arrPath;
 
     public function __construct(ITree $tree)
     {

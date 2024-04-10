@@ -12,12 +12,9 @@ use KWCMS\modules\Krep\Libs;
  */
 class CompositeLogger
 {
-    /** @var Error */
-    protected $error = null;
-    /** @var Fail */
-    protected $fail = null;
-    /** @var Pass */
-    protected $pass = null;
+    protected Error $error;
+    protected Fail $fail;
+    protected Pass $pass;
 
     public function __construct(Error $error, Fail $fail, Pass $pass)
     {

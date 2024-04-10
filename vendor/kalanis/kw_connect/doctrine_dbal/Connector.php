@@ -3,14 +3,15 @@
 namespace kalanis\kw_connect\doctrine_dbal;
 
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use kalanis\kw_connect\arrays\Row;
 use kalanis\kw_connect\core\AConnector;
 use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
 use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_connect\core\Rows\SimpleArrayRow;
 
 
 /**
@@ -20,22 +21,19 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class Connector extends AConnector implements IIterableConnector
 {
-    /** @var QueryBuilder */
-    protected $queryBuilder;
-    /** @var string */
-    protected $primaryKey;
+    protected Connection $connection;
+    protected QueryBuilder $queryBuilder;
+    protected string $primaryKey = '';
     /** @var array<int, array<string>> */
-    protected $ordering;
-    /** @var int|null */
-    protected $limit;
-    /** @var int|null */
-    protected $offset;
-    /** @var bool */
-    protected $dataFetched = false;
+    protected array $ordering = [];
+    protected ?int $limit = null;
+    protected ?int $offset = null;
+    protected bool $dataFetched = false;
 
-    public function __construct(QueryBuilder $queryBuilder, string $primaryKey)
+    public function __construct(Connection $connection, string $primaryKey)
     {
-        $this->queryBuilder = $queryBuilder;
+        $this->connection = $connection;
+        $this->queryBuilder = $connection->createQueryBuilder();
         $this->primaryKey = $primaryKey;
     }
 
@@ -84,7 +82,7 @@ class Connector extends AConnector implements IIterableConnector
     protected function parseData(): void
     {
         foreach (
-            $this->queryBuilder->getConnection()->iterateNumeric(
+            $this->connection->iterateNumeric(
                 $this->queryBuilder->getSQL(),
                 $this->queryBuilder->getParameters(),
                 $this->queryBuilder->getParameterTypes()
@@ -100,7 +98,7 @@ class Connector extends AConnector implements IIterableConnector
      */
     protected function getTranslated($data): IRow
     {
-        return new Row($data);
+        return new SimpleArrayRow($data);
     }
 
     /**

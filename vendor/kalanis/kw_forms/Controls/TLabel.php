@@ -10,14 +10,13 @@ namespace kalanis\kw_forms\Controls;
  */
 trait TLabel
 {
-    /** @var string|null */
-    protected $label = null;
+    protected ?string $label = null;
 
     /**
      * 1 id(for=""), 2 labelText,  3 attributes
      * @var string
      */
-    protected $templateLabel = '<label for="%1$s"%3$s>%2$s</label>';
+    protected string $templateLabel = '<label for="%1$s"%3$s>%2$s</label>';
 
     /**
      * Set object label

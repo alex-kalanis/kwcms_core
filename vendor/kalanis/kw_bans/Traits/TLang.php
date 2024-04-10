@@ -9,8 +9,7 @@ use kalanis\kw_bans\Translations;
 
 trait TLang
 {
-    /** @var IKBTranslations|null */
-    protected $iKbLang = null;
+    protected ?IKBTranslations $iKbLang = null;
 
     protected function setIKbLang(?IKBTranslations $iKbLang = null): void
     {

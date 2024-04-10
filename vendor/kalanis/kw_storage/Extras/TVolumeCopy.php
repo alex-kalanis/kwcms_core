@@ -48,12 +48,7 @@ trait TVolumeCopy
 
         // Make destination directory
         if (!is_dir($dest)) {
-            $pass = @mkdir($dest, $permissions);
-            if (!$pass) {
-                // @codeCoverageIgnoreStart
-                return false;
-            }
-            // @codeCoverageIgnoreEnd
+            mkdir($dest, $permissions);
         }
 
         // Loop through the folder

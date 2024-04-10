@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class TwitterAccount extends AAccount
 {
-    protected $site = 'twitter';
-    protected $accountSite = 'twitter_account';
-    protected $shortSite = 'tw_account';
+    protected string $site = 'twitter';
+    protected string $accountSite = 'twitter_account';
+    protected string $shortSite = 'tw_account';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

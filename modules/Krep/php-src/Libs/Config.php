@@ -15,16 +15,18 @@ namespace KWCMS\modules\Krep\Libs;
  */
 class Config
 {
-    protected static $conf = [
+    /** @var array<string, string> */
+    protected static array $conf = [
         'path' => '/',
-        'site_name' => 'K-REPORT MOBILE 3.0',
+        'site_name' => 'K-REPORT MOBILE 3.1',
         'site_link' => 'krep.kalanys.com',
         'remote_domain' => 'www.k-report.net',
         'encoding' => 'utf-8',
-        'sign' => '\-2{Posláno z mobilu. 3.0}',
+        'sign' => '\-2{Posláno z mobilu. 3.1}',
     ];
 
-    public $menulinks = [
+    /** @var array<string, string> */
+    public array $menulinks = [
         "Železnice" => "/discus/messages/28/28.html",
         "Tramvaje a metro" => "/discus/messages/48/48.html",
         "Autobusy a trolejbusy" => "/discus/messages/2484/2484.html",

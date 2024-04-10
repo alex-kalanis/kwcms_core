@@ -40,24 +40,17 @@ class Themes extends AModule
 {
     use TToString;
 
-    /** @var IMime */
-    protected $mime = null;
-    /** @var StylesTemplate */
-    protected $template = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var ExternalLink */
-    protected $libExtLink = '';
+    protected IMime $mime;
+    protected StylesTemplate $template;
+    protected ArrayPath $arrPath;
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
+    protected ExternalLink $libExtLink;
+    protected Files $treeList;
     /** @var string[] */
-    protected $extPath = [];
+    protected array $extPath = [];
     /** @var string[] */
-    protected $dirPath = [];
-    /** @var Files */
-    protected $treeList = null;
+    protected array $dirPath = [];
 
     /**
      * @param mixed ...$constructParams
@@ -72,7 +65,10 @@ class Themes extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->treeList = new Files($this->files);

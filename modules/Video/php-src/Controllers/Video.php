@@ -27,14 +27,10 @@ use KWCMS\modules\Video\Templates;
  */
 class Video extends Dirlist
 {
-    /** @var Handler|null */
-    protected $currentPageHandler = null;
-    /** @var Templates\Player */
-    protected $templatePlayer = null;
-    /** @var IMime */
-    protected $fileMime = null;
-    /** @var string */
-    protected $fileToPlay = '';
+    protected ?Handler $currentPageHandler;
+    protected Templates\Player $templatePlayer;
+    protected IMime $fileMime;
+    protected string $fileToPlay;
 
     public function __construct(...$constructParams)
     {

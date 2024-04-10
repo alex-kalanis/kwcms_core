@@ -9,5 +9,5 @@ namespace KWCMS\modules\Socials\Templates;
  */
 class PinAccount extends ATmplAccount
 {
-    protected $templateName = 'pin_account';
+    protected string $templateName = 'pin_account';
 }

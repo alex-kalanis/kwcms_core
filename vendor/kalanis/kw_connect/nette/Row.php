@@ -14,7 +14,7 @@ use Nette\Database\IRow as NetteRow;
 class Row implements IRow
 {
     /** @var NetteRow<string|int, string|int|float|bool|null> */
-    protected $row;
+    protected NetteRow $row;
 
     /**
      * @param NetteRow<string|int, string|int|float|bool|null> $row

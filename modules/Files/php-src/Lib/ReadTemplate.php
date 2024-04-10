@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ReadTemplate extends ATemplate
 {
-    protected $moduleName = 'Files';
-    protected $templateName = 'file_read';
+    protected string $moduleName = 'Files';
+    protected string $templateName = 'file_read';
 
     protected function fillInputs(): void
     {

@@ -1,11 +1,11 @@
 <?php
 
-namespace kalanis\kw_input\Simplified;
+namespace kalanis\kw_input\Traits;
 
 
 /**
  * Trait TNullBytes
- * @package kalanis\kw_input\Extras
+ * @package kalanis\kw_input\Traits
  * Remove null bytes from string
  */
 trait TNullBytes

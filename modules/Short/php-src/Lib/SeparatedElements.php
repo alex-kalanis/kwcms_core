@@ -13,5 +13,5 @@ use kalanis\kw_mapper\Storage\Shared\FormatFiles;
  */
 class SeparatedElements extends FormatFiles\SeparatedElements
 {
-    protected $delimitLines = "\r\n";
+    protected string $delimitLines = "\r\n";
 }

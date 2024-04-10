@@ -3,7 +3,10 @@
 namespace kalanis\kw_input\Simplified;
 
 
-use ArrayAccess;
+use ArrayIterator;
+use kalanis\kw_input\Interfaces;
+use kalanis\kw_input\Traits;
+use Traversable;
 
 
 /**
@@ -11,9 +14,9 @@ use ArrayAccess;
  * @package kalanis\kw_input\Extras
  * Accessing _SESSION via ArrayAccess
  */
-class SessionAdapter implements ArrayAccess
+class SessionAdapter implements Interfaces\IFilteredInputs
 {
-    use TNullBytes;
+    use Traits\TFill;
 
     /**
      * @param string|int $offset
@@ -69,5 +72,13 @@ class SessionAdapter implements ArrayAccess
     public final function offsetUnset($offset): void
     {
         unset($_SESSION[$this->removeNullBytes(strval($offset))]);
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator(
+            $this->fillFromEntries(Interfaces\IEntry::SOURCE_SESSION, $_SESSION),
+            ArrayIterator::STD_PROP_LIST | ArrayIterator::ARRAY_AS_PROPS
+        );
     }
 }

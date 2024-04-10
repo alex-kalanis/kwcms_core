@@ -27,9 +27,9 @@ class Lookup extends AAuthModule
     /** @var MapperException|null */
     protected $error = null;
     /** @var ARecord[] */
-    protected $lookedUp = [];
+    protected array $lookedUp = [];
     /** @var GetEntries */
-    protected $entry = null;
+    protected ?GetEntries $entry = null;
 
     /**
      * @param mixed ...$constructParams

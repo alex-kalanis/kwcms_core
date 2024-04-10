@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ItemTemplate extends ATemplate
 {
-    protected $moduleName = 'Rss';
-    protected $templateName = 'item';
+    protected string $moduleName = 'Rss';
+    protected string $templateName = 'item';
 
     protected function fillInputs(): void
     {

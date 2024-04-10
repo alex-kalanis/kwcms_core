@@ -10,6 +10,6 @@ namespace kalanis\kw_pedigree\Interfaces;
  */
 interface ISex
 {
-    const MALE = 'male';
-    const FEMALE = 'female';
+    public const MALE = 'male';
+    public const FEMALE = 'female';
 }

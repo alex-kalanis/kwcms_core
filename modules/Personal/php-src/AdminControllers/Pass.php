@@ -13,6 +13,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Personal\Lib;
@@ -28,14 +29,12 @@ class Pass extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IAuth|null */
-    protected $libAuth = null;
-    /** @var Interfaces\IProcessAccounts|null */
-    protected $libAccount = null;
-    /** @var Lib\FormPass|null */
-    protected $form = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    /** @var Interfaces\IAuth */
+    protected ?Interfaces\IAuth $libAuth = null;
+    /** @var Interfaces\IProcessAccounts */
+    protected ?Interfaces\IProcessAccounts $libAccount = null;
+    protected Lib\FormPass $form;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams
@@ -94,7 +93,7 @@ class Pass extends AAuthModule implements IHasTitle
             }
             $editTmpl = new Templates\PassTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form)->render()));
-        } catch ( FormsException $ex) {
+        } catch ( FormsException | NotifyException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

@@ -5,6 +5,7 @@ namespace kalanis\kw_connect\arrays;
 
 use ArrayAccess;
 use Countable;
+use kalanis\kw_connect\core\Rows\SimpleArrayRow;
 
 
 /**
@@ -15,12 +16,12 @@ use Countable;
 class FilteringArrays implements ArrayAccess, Countable
 {
     /**
-     * @var array<string|int, string|int|float|bool|null|Row>
+     * @var array<string|int, string|int|float|bool|null|SimpleArrayRow>
      */
-    protected $array;
+    protected array $array;
 
     /**
-     * @param array<string|int, string|int|float|bool|null|Row> $array
+     * @param array<string|int, string|int|float|bool|null|SimpleArrayRow> $array
      */
     public function __construct(array &$array)
     {
@@ -28,7 +29,7 @@ class FilteringArrays implements ArrayAccess, Countable
     }
 
     /**
-     * @return array<string|int, string|int|float|bool|null|Row>
+     * @return array<string|int, string|int|float|bool|null|SimpleArrayRow>
      */
     public function &getArray()
     {
@@ -36,7 +37,7 @@ class FilteringArrays implements ArrayAccess, Countable
     }
 
     /**
-     * @param array<string|int, string|int|float|bool|null|Row> $array
+     * @param array<string|int, string|int|float|bool|null|SimpleArrayRow> $array
      * @return $this
      */
     public function setArray($array): self
@@ -62,7 +63,7 @@ class FilteringArrays implements ArrayAccess, Countable
 
     /**
      * @param string|int $offset
-     * @return string|int|float|bool|null|Row
+     * @return string|int|float|bool|null|SimpleArrayRow
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -72,7 +73,7 @@ class FilteringArrays implements ArrayAccess, Countable
 
     /**
      * @param string|int $offset
-     * @param string|int|float|bool|null|Row $value
+     * @param string|int|float|bool|null|SimpleArrayRow $value
      */
     public function offsetSet($offset, $value): void
     {

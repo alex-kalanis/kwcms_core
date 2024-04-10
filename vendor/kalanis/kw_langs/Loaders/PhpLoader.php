@@ -18,7 +18,7 @@ use kalanis\kw_routed_paths\RoutedPath;
 class PhpLoader implements ILoader
 {
     /** @var string[] */
-    protected $pathMasks = [
+    protected array $pathMasks = [
         '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%8$s%9$s', # all modules, translations in sub dir separated
         '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s%9$s', # all modules, translations as single file in sub dir
         '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%8$s', # all modules, translations separated
@@ -29,10 +29,8 @@ class PhpLoader implements ILoader
         '%2$s%1$s%7$s%1$s%7$s%9$s', # in lang root as single file
     ];
 
-    /** @var Path */
-    protected $pathLib = null;
-    /** @var RoutedPath */
-    protected $routedLib = null;
+    protected Path $pathLib;
+    protected RoutedPath $routedLib;
 
     public function __construct(Path $pathLib, RoutedPath $routedLib)
     {
@@ -76,7 +74,7 @@ class PhpLoader implements ILoader
     protected function includedLang(string $path): array
     {
         $lang = [];
-        include ($path);
+        include_once ($path);
         return (array) $lang;
     }
 }

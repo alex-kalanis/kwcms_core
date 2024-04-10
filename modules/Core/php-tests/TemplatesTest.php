@@ -41,7 +41,7 @@ class TemplatesTest extends CommonTestClass
 
 class XTemplate extends ATemplate
 {
-    protected $templateName = 'cell';
+    protected string $templateName = 'cell';
 
     protected function fillInputs(): void
     {
@@ -52,7 +52,7 @@ class XTemplate extends ATemplate
 
 class XNopeTemplate extends ATemplate
 {
-    protected $templateName = 'intentionally not exists';
+    protected string $templateName = 'intentionally not exists';
 
     protected function fillInputs(): void
     {

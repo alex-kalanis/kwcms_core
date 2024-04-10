@@ -3,8 +3,11 @@
 namespace kalanis\kw_input\Simplified;
 
 
-use ArrayAccess;
+use ArrayIterator;
 use kalanis\kw_input\InputException;
+use kalanis\kw_input\Interfaces;
+use kalanis\kw_input\Traits;
+use Traversable;
 
 
 /**
@@ -14,26 +17,27 @@ use kalanis\kw_input\InputException;
  * Also set them into the headers
  * "Cannot modify header information - headers already sent"
  */
-class CookieAdapter implements ArrayAccess
+class CookieAdapter implements Interfaces\IFilteredInputs
 {
-    use TNullBytes;
+    use Traits\TFill;
 
-    /** @var string */
-    protected static $domain = '';
-    /** @var string */
-    protected static $path = '';
-    /** @var int|null */
-    protected static $expire = null;
-    /** @var bool */
-    protected static $secure = false;
-    /** @var bool */
-    protected static $httpOnly = false;
-    /** @var bool */
-    protected static $sameSite = false;
-    /** @var bool */
-    protected static $dieOnSent = false;
+    protected static string $domain = '';
+    protected static string $path = '';
+    protected static ?int $expire = null;
+    protected static bool $secure = false;
+    protected static bool $httpOnly = false;
+    protected static bool $sameSite = false;
+    protected static bool $dieOnSent = false;
 
-    public static function init(string $domain, string $path, ?int $expire = null, bool $secure = false, bool $httpOnly = false, bool $sameSite = false, bool $dieOnSent = false): void
+    public static function init(
+        string $domain,
+        string $path,
+        ?int $expire = null,
+        bool $secure = false,
+        bool $httpOnly = false,
+        bool $sameSite = false,
+        bool $dieOnSent = false
+    ): void
     {
         static::$domain = $domain;
         static::$path = $path;
@@ -113,29 +117,16 @@ class CookieAdapter implements ArrayAccess
         }
         // @codeCoverageIgnoreStart
         $expire = is_null(static::$expire) ? null : time() + static::$expire;
-        // TODO: php 7.3 required for 'samesite'
-        if (73000 < PHP_VERSION_ID) {
-            setcookie($offset, strval($value), [
-                'expires'  => intval($expire),
-                'path'     => strval(static::$path),
-                'domain'   => strval(static::$domain),
-                'secure'   => boolval(static::$secure),
-                'httponly' => boolval(static::$httpOnly),
-                'samesite' => static::$sameSite ? 'Strict' : 'Lax', // not in usual config
-            ]);
-        } else {
-            setcookie(
-                $offset,
-                strval($value),
-                intval($expire),
-                strval(static::$path),
-                strval(static::$domain),
-                boolval(static::$secure),
-                boolval(static::$httpOnly)
-            );
-        }
+        setcookie($offset, strval($value), [
+            'expires'  => intval($expire),
+            'path'     => strval(static::$path),
+            'domain'   => strval(static::$domain),
+            'secure'   => boolval(static::$secure),
+            'httponly' => boolval(static::$httpOnly),
+            'samesite' => static::$sameSite ? 'Strict' : 'Lax', // not in usual config
+        ]);
+        // @codeCoverageIgnoreEnd
     }
-    // @codeCoverageIgnoreEnd
 
     /**
      * @param string|int $offset
@@ -154,4 +145,12 @@ class CookieAdapter implements ArrayAccess
         setcookie(strval($this->removeNullBytes(strval($offset))), '', (time() - 3600), static::$path, static::$domain);
     }
     // @codeCoverageIgnoreEnd
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator(
+            $this->fillFromEntries(Interfaces\IEntry::SOURCE_COOKIE, $_COOKIE),
+            ArrayIterator::STD_PROP_LIST | ArrayIterator::ARRAY_AS_PROPS
+        );
+    }
 }

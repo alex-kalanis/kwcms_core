@@ -21,10 +21,8 @@ define('NOCAPTCHA_API_SECURE_SERVER', 'https://www.google.com/recaptcha/api/site
  */
 class NoCaptcha extends ACaptcha
 {
-    /** @var string */
-    protected static $publicKey = '';
-    /** @var string */
-    protected static $privateKey = '';
+    protected static string $publicKey = '';
+    protected static string $privateKey = '';
 
     public static function init(string $privateKey, string $publicKey): void
     {

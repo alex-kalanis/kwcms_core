@@ -5,12 +5,14 @@ namespace KWCMS\modules\Short\AdminControllers;
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
@@ -39,19 +41,16 @@ class Delete extends AAuthModule implements IHasTitle
 
     /** @var MapperException|null */
     protected $error = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
+    protected CompositeAdapter $files;
+    protected UserDir $userDir;
+    protected Forward $forward;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
+     * @throws HandlerException
      * @throws LangException
      * @throws PathsException
      */
@@ -83,7 +82,7 @@ class Delete extends AAuthModule implements IHasTitle
             $record = $adapter->getRecord();
             $record->id = strval($this->getFromParam('id'));
             $this->isProcessed = $record->delete();
-        } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
+        } catch (ConfException | FilesException | FormsException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;
         }
     }

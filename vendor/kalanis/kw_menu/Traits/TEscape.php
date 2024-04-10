@@ -11,7 +11,7 @@ namespace kalanis\kw_menu\Traits;
 trait TEscape
 {
     /** @var array<string, string> */
-    protected static $escapeNlTr = [
+    protected static array $escapeNlTr = [
         '|' => '---!!::SEP::!!---',
         "\r\n" => '---!!::CRLF::!!---',
         "\r" => '---!!::CR::!!---',

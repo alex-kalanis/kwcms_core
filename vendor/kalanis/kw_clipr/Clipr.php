@@ -13,12 +13,9 @@ use kalanis\kw_input\Interfaces\IFiltered;
  */
 class Clipr
 {
-    /** @var Interfaces\ILoader */
-    protected $loader = null;
-    /** @var IFiltered */
-    protected $variables = null;
-    /** @var Clipr\Sources */
-    protected $sources = null;
+    protected Interfaces\ILoader $loader;
+    protected IFiltered $variables;
+    protected Clipr\Sources $sources;
 
     public function __construct(Interfaces\ILoader $loader, Clipr\Sources $sources, IFiltered $variables)
     {

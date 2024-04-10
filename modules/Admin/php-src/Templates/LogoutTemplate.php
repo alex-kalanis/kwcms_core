@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class LogoutTemplate extends ATemplate
 {
-    protected $moduleName = 'Admin';
-    protected $templateName = 'logout';
+    protected string $moduleName = 'Admin';
+    protected string $templateName = 'logout';
 
     protected function fillInputs(): void
     {

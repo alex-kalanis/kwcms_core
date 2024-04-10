@@ -23,8 +23,7 @@ class DataStorage implements IMimeChecks
     use Traits\TResult;
     use Traits\TStorage;
 
-    /** @var ArrayPath */
-    protected $pathLib = null;
+    protected ArrayPath $pathLib;
 
     public function __construct(?IMiTranslations $lang = null)
     {

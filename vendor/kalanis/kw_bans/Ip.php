@@ -11,12 +11,10 @@ namespace kalanis\kw_bans;
  */
 class Ip
 {
-    /** @var int */
-    protected $type = Interfaces\IIpTypes::TYPE_NONE;
+    protected int $type = Interfaces\IIpTypes::TYPE_NONE;
     /** @var array<int, string> */
-    protected $address = [];
-    /** @var int */
-    protected $affectedBits = 0;
+    protected array $address = [];
+    protected int $affectedBits = 0;
 
     /**
      * @param int $type

@@ -12,9 +12,9 @@ class ToWith extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->queryBuilder->where($this->queryBuilder->expr()->lte(
+            $this->getSource()->where($this->getSource()->expr()->lte(
                 $colName,
-                $this->queryBuilder->createNamedParameter($value)
+                $this->getSource()->createNamedParameter($value)
             ));
         }
         return $this;

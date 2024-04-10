@@ -9,13 +9,12 @@ use kalanis\kw_modules\Translations;
 
 /**
  * Trait TMdLang
- * @package kalanis\kw_files\Processing
+ * @package kalanis\kw_modules\Traits
  * Translations trait
  */
 trait TMdLang
 {
-    /** @var IMdTranslations|null */
-    protected $mdLang = null;
+    protected ?IMdTranslations $mdLang = null;
 
     public function setMdLang(?IMdTranslations $mdLang = null): void
     {

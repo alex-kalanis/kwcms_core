@@ -21,9 +21,9 @@ use ReflectionException;
 class KwDiLoader implements Interfaces\ITargetDirs
 {
     /** @var array<string, array<string>> */
-    protected $paths = [];
+    protected array $paths = [];
     /** @var array<mixed> */
-    protected $additionalParams = [];
+    protected array $additionalParams = [];
 
     /**
      * @param array<string, array<string>> $paths where will DI be looking for tasks

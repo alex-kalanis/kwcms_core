@@ -10,10 +10,10 @@ namespace kalanis\kw_routed_paths;
  */
 class Support
 {
-    const PREFIX_MOD_NORMAL = 'm'; # show in normal mode
-    const PREFIX_MOD_SINGLE = 'ms'; # show module as single window
-    const PREFIX_USER = 'u'; # this is about that user
-    const PREFIX_LANG = 'l'; # this is about that language
+    public const PREFIX_MOD_NORMAL = 'm'; # show in normal mode
+    public const PREFIX_MOD_SINGLE = 'ms'; # show module as single window
+    public const PREFIX_USER = 'u'; # this is about that user
+    public const PREFIX_LANG = 'l'; # this is about that language
 
     /**
      * @param string $name

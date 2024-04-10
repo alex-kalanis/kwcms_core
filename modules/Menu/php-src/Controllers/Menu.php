@@ -42,20 +42,15 @@ use KWCMS\modules\Menu\Templates;
  */
 class Menu extends AModule
 {
-    /** @var bool */
-    protected $canCache = false;
+    protected bool $canCache = false;
     /** @var string[]|null */
-    protected $startPath = null;
-    /** @var ICache */
-    protected $libCache = null;
+    protected ?array $startPath = null;
+    protected ICache $libCache;
     /** @var ExternalLink */
-    protected $externalLink = null;
-    /** @var ITree */
-    protected $menuTree = null;
-    /** @var Templates\Open */
-    protected $tmplOpen = null;
-    /** @var Templates\Display */
-    protected $tmplDisplay = null;
+    protected ExternalLink $externalLink;
+    protected Lib\Tree $menuTree;
+    protected Templates\Open $tmplOpen;
+    protected Templates\Display $tmplDisplay;
 
     /**
      * @param mixed ...$constructParams

@@ -33,14 +33,10 @@ use KWCMS\modules\Rss\RssException;
  */
 class Rss extends AModule
 {
-    /** @var ExternalLink */
-    protected $libExternal = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected ExternalLink $libExternal;
+    protected CompositeAdapter $files;
+    protected ArrayPath $arrPath;
+    protected InnerLinks $innerLink;
 
     /**
      * @param mixed ...$constructParams
@@ -57,7 +53,10 @@ class Rss extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
     }
 

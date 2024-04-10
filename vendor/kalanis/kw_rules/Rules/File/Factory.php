@@ -17,8 +17,8 @@ use ReflectionException;
  */
 class Factory implements IRuleFactory
 {
-    /** @var array<string, string> */
-    protected static $map = [
+    /** @var array<string, class-string<AFileRule>> */
+    protected array $map = [
         IRules::FILE_EXISTS             => FileExists::class,
         IRules::FILE_SENT               => FileSent::class,
         IRules::FILE_RECEIVED           => FileReceived::class,
@@ -39,10 +39,9 @@ class Factory implements IRuleFactory
      */
     public function getRule(string $ruleName): AFileRule
     {
-        if (isset(static::$map[$ruleName])) {
-            $rule = static::$map[$ruleName];
+        if (isset($this->map[$ruleName])) {
+            $rule = $this->map[$ruleName];
             try {
-                /** @var class-string $rule */
                 $ref = new ReflectionClass($rule);
                 $class = $ref->newInstance();
                 if ($class instanceof AFileRule) {

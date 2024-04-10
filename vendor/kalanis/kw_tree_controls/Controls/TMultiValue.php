@@ -16,7 +16,7 @@ trait TMultiValue
     use Controls\TShorterKey;
 
     /** @var Controls\AControl[]|Controls\Checkbox[] */
-    protected $inputs = [];
+    protected array $inputs = [];
 
     /**
      * @return array<string|int, string|int|float|bool|IFileEntry|null>

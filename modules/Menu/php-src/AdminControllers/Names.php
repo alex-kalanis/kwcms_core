@@ -35,8 +35,7 @@ class Names extends AAuthModule implements IHasTitle
 
     /** @var MenuException|null */
     protected $error = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams

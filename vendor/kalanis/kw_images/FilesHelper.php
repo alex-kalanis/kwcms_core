@@ -22,6 +22,8 @@ use kalanis\kw_paths\PathsException;
  * Operations over files
  * @package kalanis\kw_images
  * @codeCoverageIgnore building libraries with volume as main dependency
+ * @deprecated since 2024-03-31
+ * @see \kalanis\kw_images\Access\Factory
  */
 class FilesHelper
 {

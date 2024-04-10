@@ -11,6 +11,8 @@ use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_pedigree\PedigreeException;
 use kalanis\kw_routed_paths\StoreRouted;
@@ -26,12 +28,10 @@ use KWCMS\modules\Pedigree\Lib;
  */
 class Add extends APedigree
 {
-    /** @var Lib\MessageForm|null */
-    protected $form = null;
+    protected Lib\MessageForm $form;
     /** @var GetEntries */
-    protected $entry = null;
-    /** @var ExternalLink */
-    protected $extLink = null;
+    protected ?GetEntries $entry = null;
+    protected ExternalLink $extLink;
 
     public function __construct(...$constructParams)
     {
@@ -66,7 +66,7 @@ class Add extends APedigree
                 );
                 $this->isProcessed = $processEntry || (true === $processFamily);
             }
-        } catch (MapperException | FormsException | PedigreeException $ex) {
+        } catch (MapperException | FormsException | PathsException | PedigreeException $ex) {
             $this->error = $ex;
         }
     }
@@ -85,7 +85,7 @@ class Add extends APedigree
             Scripts::want('Pedigree', 'names.js');
             $editTmpl = new Lib\EditTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, $this->entry, Lang::get('pedigree.add_record'))->render()));
-        } catch (FormsException $ex) {
+        } catch (FormsException | NotifyException $ex) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
     }

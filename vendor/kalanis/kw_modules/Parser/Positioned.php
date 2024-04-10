@@ -10,12 +10,9 @@ namespace kalanis\kw_modules\Parser;
  */
 class Positioned
 {
-    /** @var string */
-    protected $braced = '';
-    /** @var string */
-    protected $inner = '';
-    /** @var int */
-    protected $position = 0;
+    protected string $braced = '';
+    protected string $inner = '';
+    protected int $position = 0;
 
     public function __construct(string $braced, string $inner, int $position = 0)
     {

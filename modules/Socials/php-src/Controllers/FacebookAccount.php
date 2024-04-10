@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class FacebookAccount extends AAccount
 {
-    protected $site = 'facebook';
-    protected $accountSite = 'facebook_account';
-    protected $shortSite = 'fb_account';
+    protected string $site = 'facebook';
+    protected string $accountSite = 'facebook_account';
+    protected string $shortSite = 'fb_account';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

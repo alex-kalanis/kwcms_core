@@ -13,8 +13,7 @@ use kalanis\kw_user_paths\Translations;
  */
 trait TLang
 {
-    /** @var IUPTranslations|null */
-    protected $upLang = null;
+    protected ?IUPTranslations $upLang = null;
 
     public function setUpLang(?IUPTranslations $upLang = null): void
     {

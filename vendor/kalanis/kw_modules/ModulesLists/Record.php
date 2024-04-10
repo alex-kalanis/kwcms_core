@@ -10,12 +10,10 @@ namespace kalanis\kw_modules\ModulesLists;
  */
 class Record
 {
-    /** @var string */
-    protected $moduleName = '';
+    protected string $moduleName = '';
     /** @var array<string|int, string|int|float|bool|array<string|int>> */
-    protected $params = [];
-    /** @var bool */
-    protected $enabled = false;
+    protected array $params = [];
+    protected bool $enabled = false;
 
     public function setModuleName(string $moduleName): void
     {

@@ -5,10 +5,8 @@ namespace kalanis\kw_pager;
 
 class DefaultSettings implements Interfaces\ISettings
 {
-    /** @var int */
-    protected $maxResults = 0;
-    /** @var int */
-    protected $limitPerPage = 0;
+    protected int $maxResults = 0;
+    protected int $limitPerPage = 0;
 
     public function __construct(int $limitPerPage, int $maxResults)
     {

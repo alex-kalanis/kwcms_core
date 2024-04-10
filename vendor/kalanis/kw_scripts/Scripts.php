@@ -13,12 +13,11 @@ use kalanis\kw_scripts\Interfaces\ILoader;
  */
 class Scripts
 {
-    /** @var ILoader */
-    protected static $loader = null;
+    protected static ?ILoader $loader = null;
     /** @var array<string, array<int, string>> */
-    protected static $scripts = [];
+    protected static array $scripts = [];
 
-    public static function init(ILoader $loader): void
+    public static function init(?ILoader $loader): void
     {
         static::$loader = $loader;
     }
@@ -47,6 +46,9 @@ class Scripts
      */
     public static function getFile(string $module, string $path): ?string
     {
+        if (is_null(static::$loader)) {
+            throw new ScriptsException('Set the loader first!');
+        }
         return static::$loader->load($module, $path);
     }
 }

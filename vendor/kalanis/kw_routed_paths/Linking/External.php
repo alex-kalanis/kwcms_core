@@ -9,12 +9,10 @@ namespace kalanis\kw_routed_paths\Linking;
  */
 class External
 {
-    /** @var Link */
-    protected $lib = null;
+    protected Link $lib;
     /** @var string[] */
-    protected $presetPath = [];
-    /** @var string|null */
-    protected $userName = null;
+    protected array $presetPath = [];
+    protected ?string $userName = null;
 
     /**
      * @param Link $lib

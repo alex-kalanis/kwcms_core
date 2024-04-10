@@ -9,6 +9,6 @@ namespace KWCMS\modules\HtmlTexts\Lib;
  */
 class EditTemplate extends \KWCMS\modules\Texts\Lib\EditTemplate
 {
-    protected $moduleName = 'HtmlTexts';
-    protected $templateName = 'edit';
+    protected string $moduleName = 'HtmlTexts';
+    protected string $templateName = 'edit';
 }

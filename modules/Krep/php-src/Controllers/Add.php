@@ -15,26 +15,18 @@ use KWCMS\modules\Krep\Libs;
  */
 class Add extends ADisposition
 {
-    /** @var Libs\Add\PostForm|null */
-    protected $form = null;
-    /** @var Libs\Add\ServerData */
-    protected $serverData = null;
-    /** @var Libs\Add\ProcessPage */
-    protected $processPage = null;
-    /** @var Libs\Add\ProcessForm */
-    protected $processForm = null;
-    /** @var Libs\Shared\PageData */
-    protected $pageData = null;
+    /** @var Libs\Add\PostForm */
+    protected ?Libs\Add\PostForm $form = null;
+    protected Libs\Add\ServerData $serverData;
+    protected Libs\Add\ProcessPage $processPage;
+    protected Libs\Add\ProcessForm $processForm;
+    protected Libs\Shared\PageData $pageData;
     /** @var Libs\ModuleException|null */
     protected $error = null;
-    /** @var Libs\Add\BlockResult */
-    protected $blockResult = null;
-    /** @var Libs\Add\ErrorResult */
-    protected $errorResult = null;
-    /** @var Libs\Add\RenderFactory */
-    protected $renderFactory = null;
-    /** @var Libs\Logs\CompositeLogger */
-    protected $logger = null;
+    protected Libs\Add\BlockResult $blockResult;
+    protected Libs\Add\ErrorResult $errorResult;
+    protected Libs\Add\RenderFactory $renderFactory;
+    protected Libs\Logs\CompositeLogger $logger;
 
     public function __construct(
         Libs\Config $config,

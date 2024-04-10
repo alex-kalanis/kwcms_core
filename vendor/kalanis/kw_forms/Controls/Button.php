@@ -10,8 +10,8 @@ namespace kalanis\kw_forms\Controls;
  */
 class Button extends AControl
 {
-    protected $templateLabel = '';
-    protected $templateInput = '<input type="button" value="%1$s"%2$s />';
+    protected string $templateLabel = '';
+    protected string $templateInput = '<input type="button" value="%1$s"%2$s />';
     protected $originalValue = 'button';
 
     public function set(string $alias, string $title = ''): self

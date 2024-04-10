@@ -14,18 +14,13 @@ use KWCMS\modules\Krep\Libs;
  */
 class Discus extends ADisposition
 {
-    /** @var Libs\Discus\ProcessPage */
-    protected $processor = null;
-    /** @var Libs\Shared\PageData */
-    protected $pageData = null;
+    protected Libs\Discus\ProcessPage $processor;
+    protected Libs\Shared\PageData $pageData;
     /** @var Libs\ModuleException|null */
     protected $error = null;
-    /** @var Libs\Discus\BlockResult */
-    protected $blockResult = null;
-    /** @var Libs\Discus\ErrorResult */
-    protected $errorResult = null;
-    /** @var Libs\Discus\RenderFactory */
-    protected $renderFactory = null;
+    protected Libs\Discus\BlockResult $blockResult;
+    protected Libs\Discus\ErrorResult $errorResult;
+    protected Libs\Discus\RenderFactory $renderFactory;
 
 //    /**
 //     * @param mixed ...$constructParams

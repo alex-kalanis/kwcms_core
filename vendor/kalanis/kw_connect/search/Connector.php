@@ -22,14 +22,10 @@ use kalanis\kw_mapper\Search\Search as MapperSearch;
  */
 class Connector extends AConnector implements IIterableConnector
 {
-    /** @var MapperSearch */
-    public $dataSource;
-
+    protected MapperSearch $dataSource;
     /** @var ARecord[] */
-    protected $rawData = [];
-
-    /** @var bool */
-    protected $dataFetched = false;
+    protected array $rawData = [];
+    protected bool $dataFetched = false;
 
     public function __construct(MapperSearch $search)
     {

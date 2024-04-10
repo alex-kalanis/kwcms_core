@@ -14,8 +14,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class PageTemplate extends ATemplate
 {
-    protected $moduleName = 'SinglePage';
-    protected $templateName = 'template';
+    protected string $moduleName = 'SinglePage';
+    protected string $templateName = 'template';
 
     protected function fillInputs(): void
     {

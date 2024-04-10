@@ -10,14 +10,15 @@ namespace kalanis\kw_accounts\Interfaces;
  */
 interface IUser
 {
-    const LOWEST_USER_ID = '1000';
-    const STATUS_NONE = 'none';
+    public const LOWEST_USER_ID = '1000';
+    public const STATUS_NONE = 'none';
 
-    const USER_STATUS_DISABLED = 0;
-    const USER_STATUS_ENABLED = 1;
-    const USER_STATUS_UNKNOWN = 2;
-    const USER_STATUS_ONLY_LOGIN = 3;
-    const USER_STATUS_ONLY_CERT = 4;
+    public const USER_STATUS_ERROR = 0;
+    public const USER_STATUS_ENABLED = 1;
+    public const USER_STATUS_UNKNOWN = 2;
+    public const USER_STATUS_DISABLED = 3;
+    public const USER_STATUS_ONLY_LOGIN = 4;
+    public const USER_STATUS_ONLY_CERT = 5;
 
     /**
      * Fill user; null values will not change

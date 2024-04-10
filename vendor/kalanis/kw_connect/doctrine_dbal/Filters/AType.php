@@ -14,14 +14,8 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
  */
 abstract class AType implements IFilterType
 {
-    /** @var QueryBuilder */
-    protected $queryBuilder;
+    protected ?QueryBuilder $queryBuilder = null;
 
-    /**
-     * @param QueryBuilder $dataSource
-     * @throws ConnectException
-     * @return $this
-     */
     public function setDataSource($dataSource)
     {
         if (!$dataSource instanceof QueryBuilder) {
@@ -34,6 +28,18 @@ abstract class AType implements IFilterType
 
     public function getDataSource()
     {
+        return $this->queryBuilder;
+    }
+
+    /**
+     * @throws ConnectException
+     * @return QueryBuilder
+     */
+    public function getSource(): QueryBuilder
+    {
+        if (!$this->queryBuilder) {
+            throw new ConnectException('Set the datasource first!');
+        }
         return $this->queryBuilder;
     }
 }

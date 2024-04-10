@@ -5,12 +5,9 @@ namespace kalanis\kw_templates\Template;
 
 class Item
 {
-    /** @var string */
-    protected $key = '';
-    /** @var string */
-    protected $default = '';
-    /** @var string|null */
-    protected $value = null;
+    protected string $key = '';
+    protected string $default = '';
+    protected ?string $value = null;
 
     public function setData(string $key, string $default = ''): self
     {

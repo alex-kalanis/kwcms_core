@@ -10,10 +10,8 @@ namespace kalanis\kw_address_handler\Sources;
  */
 class Sources
 {
-    /** @var string */
-    protected $address = '';
-    /** @var string */
-    protected $path = '';
+    protected string $address = '';
+    protected string $path = '';
 
     public function __toString()
     {

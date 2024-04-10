@@ -10,5 +10,5 @@ namespace kalanis\kw_forms\Controls;
  */
 class Description extends AControl
 {
-    public $templateInput = '%1$s %3$s';
+    protected string $templateInput = '%1$s %3$s';
 }

@@ -8,14 +8,13 @@ use kalanis\kw_semaphore\Translations;
 
 
 /**
- * Trait TEscape
+ * Trait TLang
  * @package kalanis\kw_semaphore\Traits
  * Translations
  */
 trait TLang
 {
-    /** @var ISMTranslations|null */
-    protected $smLang = null;
+    protected ?ISMTranslations $smLang = null;
 
     public function setSmLang(?ISMTranslations $lang = null): self
     {

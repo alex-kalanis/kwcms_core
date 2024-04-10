@@ -33,16 +33,12 @@ use KWCMS\modules\Layout\LayoutTemplate;
  */
 class Layout extends AModule
 {
-    /** @var ILoader */
-    protected $loader = null;
-    /** @var IModule|null */
-    protected $module = null;
-    /** @var IModulesList */
-    protected $modulesList = null;
-    /** @var Processor */
-    protected $subModules = null;
+    protected ILoader $loader;
+    protected ?IModule $module = null;
+    protected IModulesList $modulesList;
+    protected Processor $subModules;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams

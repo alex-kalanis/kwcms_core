@@ -22,7 +22,7 @@ class Factory
 
     public function __construct(?Interfaces\IFLTranslations $lang = null)
     {
-        $this->setLang($lang);
+        $this->setFlLang($lang);
     }
 
     /**
@@ -35,9 +35,10 @@ class Factory
     {
         if (is_string($param)) {
             return new CompositeAdapter(
-                new Processing\Volume\ProcessNode($param, $this->lang),
-                new Processing\Volume\ProcessDir($param, $this->lang),
-                new Processing\Volume\ProcessFile($param, $this->lang)
+                new Processing\Volume\ProcessNode($param, $this->flLang),
+                new Processing\Volume\ProcessDir($param, $this->flLang),
+                new Processing\Volume\ProcessFile($param, $this->flLang),
+                new Processing\Volume\ProcessFile($param, $this->flLang)
             );
 
         } elseif (is_array($param)) {
@@ -46,23 +47,26 @@ class Factory
             }
             if (isset($param['path']) && is_string($param['path'])) {
                 return new CompositeAdapter(
-                    new Processing\Volume\ProcessNode($param['path'], $this->lang),
-                    new Processing\Volume\ProcessDir($param['path'], $this->lang),
-                    new Processing\Volume\ProcessFile($param['path'], $this->lang)
+                    new Processing\Volume\ProcessNode($param['path'], $this->flLang),
+                    new Processing\Volume\ProcessDir($param['path'], $this->flLang),
+                    new Processing\Volume\ProcessFile($param['path'], $this->flLang),
+                    new Processing\Volume\ProcessFile($param['path'], $this->flLang)
                 );
 
             } elseif (isset($param['source']) && is_string($param['source'])) {
                 return new CompositeAdapter(
-                    new Processing\Volume\ProcessNode($param['source'], $this->lang),
-                    new Processing\Volume\ProcessDir($param['source'], $this->lang),
-                    new Processing\Volume\ProcessFile($param['source'], $this->lang)
+                    new Processing\Volume\ProcessNode($param['source'], $this->flLang),
+                    new Processing\Volume\ProcessDir($param['source'], $this->flLang),
+                    new Processing\Volume\ProcessFile($param['source'], $this->flLang),
+                    new Processing\Volume\ProcessFile($param['source'], $this->flLang)
                 );
 
             } elseif (isset($param['source']) && is_object($param['source']) && ($param['source'] instanceof IStorage)) {
                 return new CompositeAdapter(
-                    new Processing\Storage\ProcessNode($param['source'], $this->lang),
-                    new Processing\Storage\ProcessDir($param['source'], $this->lang),
-                    new Processing\Storage\ProcessFile($param['source'], $this->lang)
+                    new Processing\Storage\ProcessNode($param['source'], $this->flLang),
+                    new Processing\Storage\ProcessDir($param['source'], $this->flLang),
+                    new Processing\Storage\ProcessFile($param['source'], $this->flLang),
+                    new Processing\Storage\ProcessFileStream($param['source'], $this->flLang)
                 );
             }
 
@@ -72,13 +76,14 @@ class Factory
 
             } elseif ($param instanceof IStorage) {
                 return new CompositeAdapter(
-                    new Processing\Storage\ProcessNode($param, $this->lang),
-                    new Processing\Storage\ProcessDir($param, $this->lang),
-                    new Processing\Storage\ProcessFile($param, $this->lang)
+                    new Processing\Storage\ProcessNode($param, $this->flLang),
+                    new Processing\Storage\ProcessDir($param, $this->flLang),
+                    new Processing\Storage\ProcessFile($param, $this->flLang),
+                    new Processing\Storage\ProcessFileStream($param, $this->flLang)
                 );
             }
         }
 
-        throw new FilesException($this->getLang()->flNoAvailableClasses());
+        throw new FilesException($this->getFlLang()->flNoAvailableClasses());
     }
 }

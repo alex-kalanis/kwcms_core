@@ -32,13 +32,13 @@ trait TMenu
     use TWhereDir;
 
     /** @var MoreEntries */
-    protected $libMenu = null;
+    protected ?MoreEntries $libMenu = null;
     /** @var ISemaphore */
-    protected $libSemaphore = null;
+    protected ?ISemaphore $libSemaphore = null;
     /** @var Access\CompositeAdapter */
-    protected $files = null;
+    protected ?Access\CompositeAdapter $files = null;
     /** @var UserDir */
-    protected $userDir = null;
+    protected ?UserDir $userDir = null;
 
     /**
      * @param mixed $params

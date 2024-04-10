@@ -21,21 +21,16 @@ use kalanis\kw_mapper\Records\ARecord;
 class Connector extends AConnector implements IIterableConnector
 {
     /** @var ARecord[] */
-    protected $dataSource;
+    protected array $dataSource;
     /** @var array<IRow> */
-    protected $filteredData = [];
-    /** @var string */
-    protected $orderDirection = IOrder::ORDER_ASC;
-    /** @var string */
-    protected $orderColumn = '';
-    /** @var string|null */
-    protected $filterByColumn = null;
+    protected array $filteredData = [];
+    protected string $orderDirection = IOrder::ORDER_ASC;
+    protected string $orderColumn = '';
+    protected ?string $filterByColumn = null;
     /** @var string|int|null */
     protected $filterByNamePart = null;
-    /** @var int|null */
-    protected $offset = null;
-    /** @var int|null */
-    protected $limit = null;
+    protected ?int $offset = null;
+    protected ?int $limit = null;
 
     /**
      * @param array<ARecord> $records

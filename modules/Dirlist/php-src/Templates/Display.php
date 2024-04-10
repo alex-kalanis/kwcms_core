@@ -18,11 +18,11 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Display extends ATemplate
 {
-    protected $moduleName = 'Dirlist';
-    protected $templateName = 'list';
+    protected string $moduleName = 'Dirlist';
+    protected string $templateName = 'list';
 
     /* Which styles are available and if they want solo rows */
-    protected static $styles = [ # usage of one line - one file (for count cols)
+    protected static array $styles = [ # usage of one line - one file (for count cols)
         'icon' => false,
         'compact' => false,
         'list' => true

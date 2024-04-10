@@ -10,16 +10,12 @@ namespace kalanis\kw_menu\Menu;
  */
 class Menu
 {
-    /** @var string */
-    protected $file = '';
-    /** @var string */
-    protected $name = '';
-    /** @var string */
-    protected $title = '';
-    /** @var int */
-    protected $displayCount = 0;
+    protected string $file = '';
+    protected string $name = '';
+    protected string $title = '';
+    protected int $displayCount = 0;
     /** @var Entry[] */
-    protected $entries = [];
+    protected array $entries = [];
 
     public function clear(): self
     {

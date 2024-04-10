@@ -19,7 +19,7 @@ class Range extends AType
             throw new ConnectException('Value must be an array of two values with keys 0 and 1.');
         }
 
-        $this->dataSource->setArray(array_filter($this->dataSource->getArray(), function (IRow $item) use ($colName, $value) {
+        $this->getSource()->setArray(array_filter($this->getSource()->getArray(), function (IRow $item) use ($colName, $value) {
             $itemValue = $item->getValue($colName);
             return $itemValue > $value[0] && $itemValue < $value[1];
         }));

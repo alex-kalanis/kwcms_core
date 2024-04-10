@@ -5,12 +5,9 @@ namespace kalanis\kw_pager;
 
 class BasicPager implements Interfaces\IPager
 {
-    /** @var int */
-    protected $maxResults = 0;
-    /** @var int */
-    protected $actualPage = 0;
-    /** @var int */
-    protected $limitPerPage = 0;
+    protected int $maxResults = 0;
+    protected int $actualPage = 0;
+    protected int $limitPerPage = 0;
 
     public function setMaxResults(int $maxResults): Interfaces\IPager
     {

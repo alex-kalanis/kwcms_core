@@ -14,12 +14,12 @@ use kalanis\kw_templates\TemplateException;
  */
 class MapTemplate extends ATemplate
 {
-    protected $moduleName = 'Map';
-    protected $templateName = 'st_osm';
-    protected $prefix = 'dn';
+    protected string $moduleName = 'Map';
+    protected string $templateName = 'st_osm';
+    protected string $prefix = 'dn';
 
     /* Which styles are available and if they want solo rows */
-    protected static $maps = [ # usage of one line - one file (for count cols)
+    protected static array $maps = [ # usage of one line - one file (for count cols)
         'google' => false,
         'osm' => false,
 //        'seznam' => true,

@@ -10,18 +10,18 @@ namespace kalanis\kw_input\Interfaces;
  */
 interface IEntry
 {
-    const SOURCE_CLI = 'cli';
-    const SOURCE_GET = 'get';
-    const SOURCE_POST = 'post';
-    const SOURCE_FILES = 'files';
-    const SOURCE_COOKIE = 'cookie';
-    const SOURCE_SESSION = 'session';
-    const SOURCE_SERVER = 'server';
-    const SOURCE_ENV = 'environment';
-    const SOURCE_EXTERNAL = 'external';
-    const SOURCE_JSON = 'json';
-    const SOURCE_XML = 'xml';
-    const SOURCE_RAW = 'raw';
+    public const SOURCE_CLI = 'cli';
+    public const SOURCE_GET = 'get';
+    public const SOURCE_POST = 'post';
+    public const SOURCE_FILES = 'files';
+    public const SOURCE_COOKIE = 'cookie';
+    public const SOURCE_SESSION = 'session';
+    public const SOURCE_SERVER = 'server';
+    public const SOURCE_ENV = 'environment';
+    public const SOURCE_EXTERNAL = 'external';
+    public const SOURCE_JSON = 'json';
+    public const SOURCE_XML = 'xml';
+    public const SOURCE_RAW = 'raw';
 
     /**
      * Return source of entry

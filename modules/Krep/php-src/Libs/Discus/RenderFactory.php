@@ -14,10 +14,9 @@ use KWCMS\modules\Krep\Libs\Shared\PageData;
  */
 class RenderFactory
 {
-    /** @var RenderTopics */
-    protected $topics = null;
-    /** @var RenderThemas */
-    protected $themas = null;
+    protected RenderSinglePost $post;
+    protected RenderTopics $topics;
+    protected RenderThemas $themas;
 
     public function __construct(RenderSinglePost $post, RenderTopics $topics, RenderThemas $themas)
     {

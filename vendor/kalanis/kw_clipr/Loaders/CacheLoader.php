@@ -16,10 +16,9 @@ use kalanis\kw_clipr\Tasks\ATask;
  */
 class CacheLoader implements ILoader, ISubLoaders
 {
-    /** @var ILoader */
-    protected $loader = null;
+    protected ILoader $loader;
     /** @var ATask[] */
-    protected $loadedClasses = [];
+    protected array $loadedClasses = [];
 
     public static function init(ILoader $loader): self
     {

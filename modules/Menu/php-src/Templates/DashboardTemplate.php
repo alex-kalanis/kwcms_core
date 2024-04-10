@@ -15,8 +15,8 @@ use KWCMS\modules\Menu\Forms\EditPropsForm;
  */
 class DashboardTemplate extends ATemplate
 {
-    protected $moduleName = 'Menu';
-    protected $templateName = 'dashboard';
+    protected string $moduleName = 'Menu';
+    protected string $templateName = 'dashboard';
 
     protected function fillInputs(): void
     {

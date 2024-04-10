@@ -13,12 +13,11 @@ use kalanis\kw_styles\Interfaces\ILoader;
  */
 class Styles
 {
-    /** @var ILoader */
-    protected static $loader = null;
+    protected static ?ILoader $loader = null;
     /** @var array<string, array<int, string>> */
-    protected static $styles = [];
+    protected static array $styles = [];
 
-    public static function init(ILoader $loader): void
+    public static function init(?ILoader $loader): void
     {
         static::$loader = $loader;
     }
@@ -47,6 +46,9 @@ class Styles
      */
     public static function getFile(string $module, string $path): ?string
     {
+        if (!static::$loader) {
+            throw new StylesException('Set the loader first!');
+        }
         return static::$loader->load($module, $path);
     }
 }

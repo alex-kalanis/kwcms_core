@@ -9,6 +9,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -22,6 +23,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -38,18 +40,12 @@ class Properties extends AAuthModule implements IHasTitle
     use Templates\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Access\CompositeAdapter */
-    protected $files = null;
-    /** @var Forms\DescForm */
-    protected $descForm = null;
-    /** @var Forms\DirExtraForm */
-    protected $extraForm = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var bool */
-    protected $hasExtra = false;
-    /** @var bool */
-    protected $processed = false;
+    protected Access\CompositeAdapter $files;
+    protected Forms\DescForm $descForm;
+    protected Forms\DirExtraForm $extraForm;
+    protected UserDir $userDir;
+    protected bool $hasExtra = false;
+    protected bool $processed = false;
 
     /**
      * @param mixed ...$constructParams
@@ -64,6 +60,11 @@ class Properties extends AAuthModule implements IHasTitle
         $this->descForm = new Forms\DescForm('dirPropsForm');
         $this->extraForm = new Forms\DirExtraForm('dirPropsForm');
         $this->userDir = new UserDir(new Lib\Translations());
+        $this->initLibAction(new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ));
     }
 
     public function allowedAccessClasses(): array

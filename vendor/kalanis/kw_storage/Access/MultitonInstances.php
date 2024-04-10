@@ -13,10 +13,8 @@ use kalanis\kw_storage\Interfaces;
  */
 class MultitonInstances
 {
-    /** @var MultitonInstances|null */
-    protected static $instance = null;
-    /** @var Multiton */
-    protected $multi = null;
+    protected static ?MultitonInstances $instance = null;
+    protected Multiton $multi;
 
     public static function init(?Interfaces\IStTranslations $lang = null): void
     {

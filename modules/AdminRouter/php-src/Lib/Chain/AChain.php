@@ -22,22 +22,16 @@ use kalanis\kw_routed_paths\Support;
  */
 abstract class AChain
 {
-    /** @var AChain|null */
-    protected $next = null;
-    /** @var IFiltered */
-    protected $inputs = null;
-    /** @var IModule|null */
-    protected $module = null;
-    /** @var ILoader */
-    protected $loader = null;
-    /** @var RoutedPath */
-    protected $path = null;
+    protected ?AChain $next = null;
+    protected ?IFiltered $inputs = null;
+    protected ?IModule $module = null;
+    protected ILoader $loader;
+    protected RoutedPath $path;
     /** @var string[]|Entry[] */
-    protected $params = [];
-    /** @var int */
-    protected $keyLevel = 0;
+    protected array $params = [];
+    protected int $keyLevel = 0;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * AChain constructor.

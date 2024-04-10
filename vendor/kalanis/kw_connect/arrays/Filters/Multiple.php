@@ -4,6 +4,7 @@ namespace kalanis\kw_connect\arrays\Filters;
 
 
 use kalanis\kw_connect\core\ConnectException;
+use kalanis\kw_connect\core\Interfaces\IFilterFactory;
 use kalanis\kw_connect\core\Interfaces\IFilterSubs;
 use kalanis\kw_connect\core\TMultiple;
 
@@ -28,14 +29,17 @@ class Multiple extends AType implements IFilterSubs
     {
         $sourceName = $this->getDataSourceName();
         $data = $this->$sourceName;
-        foreach ($value as list($filterType, $expected)) {
-            $subFilter = $this->filterFactory->getFilter($filterType);
-            if ($subFilter instanceof IFilterSubs) {
-                $subFilter->addFilterFactory($this->filterFactory);
+        $filterFactory = $this->filterFactory;
+        if ($filterFactory && ($filterFactory instanceof IFilterFactory)) {
+            foreach ($value as list($filterType, $expected)) {
+                $subFilter = $filterFactory->getFilter($filterType);
+                if ($subFilter instanceof IFilterSubs) {
+                    $subFilter->addFilterFactory($filterFactory);
+                }
+                $subFilter->setDataSource($data);
+                $subFilter->setFiltering($colName, $expected);
+                $data = $subFilter->getDataSource();
             }
-            $subFilter->setDataSource($data);
-            $subFilter->setFiltering($colName, $expected);
-            $data = $subFilter->getDataSource();
         }
         $this->$sourceName = $data;
         return $this;

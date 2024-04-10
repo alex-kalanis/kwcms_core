@@ -11,8 +11,7 @@ trait TStorage
 {
     use TLang;
 
-    /** @var Storage|null */
-    protected $storage = null;
+    protected ?Storage $storage = null;
 
     public function setStorage(Storage $lang = null): void
     {

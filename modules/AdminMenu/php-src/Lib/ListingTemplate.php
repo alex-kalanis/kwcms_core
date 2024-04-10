@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ListingTemplate extends ATemplate
 {
-    protected $moduleName = 'AdminMenu';
-    protected $templateName = 'listing';
+    protected string $moduleName = 'AdminMenu';
+    protected string $templateName = 'listing';
 
     protected function fillInputs(): void
     {

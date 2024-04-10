@@ -13,7 +13,7 @@ use kalanis\kw_pager\Interfaces\IPager;
  */
 interface IPositions
 {
-    const DEFAULT_DISPLAY_PAGES_COUNT = 10;
+    public const DEFAULT_DISPLAY_PAGES_COUNT = 10;
 
     /**
      * Exists next page?

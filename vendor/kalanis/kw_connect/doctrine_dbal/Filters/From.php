@@ -12,9 +12,9 @@ class From extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->queryBuilder->where($this->queryBuilder->expr()->gt(
+            $this->getSource()->where($this->getSource()->expr()->gt(
                 $colName,
-                $this->queryBuilder->createNamedParameter($value)
+                $this->getSource()->createNamedParameter($value)
             ));
         }
         return $this;

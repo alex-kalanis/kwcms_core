@@ -19,9 +19,8 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
 class ConnectArray extends Connector
 {
     /** @var string[] */
-    protected $whereDir = [];
-    /*** @var IProcessFiles */
-    protected $libFiles = null;
+    protected array $whereDir = [];
+    protected IProcessFiles $libFiles;
 
     public function __construct(array $source, array $whereDir, IProcessFiles $libFiles)
     {

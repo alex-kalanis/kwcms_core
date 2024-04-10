@@ -13,8 +13,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class Row implements IRow
 {
-    /** @var ARecord */
-    protected $record;
+    protected ARecord $record;
 
     public function __construct(ARecord $record)
     {

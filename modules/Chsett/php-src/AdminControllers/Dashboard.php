@@ -27,10 +27,8 @@ class Dashboard extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IProcessGroups */
-    protected $libGroups = null;
-    /** @var Interfaces\IProcessClasses */
-    protected $libClasses = null;
+    protected Interfaces\IProcessGroups $libGroups;
+    protected Interfaces\IProcessClasses $libClasses;
     /** @var Interfaces\IProcessAccounts|Interfaces\IAuthCert */
     protected $libAccounts = null;
 

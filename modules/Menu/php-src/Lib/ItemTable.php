@@ -25,10 +25,8 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class ItemTable
 {
-    /** @var Forward|null */
-    protected $forward = null;
-    /** @var ExternalLink|null */
-    protected $link = null;
+    protected Forward $forward;
+    protected ExternalLink $link;
 
     public function __construct(ExternalLink $link)
     {

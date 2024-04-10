@@ -15,7 +15,7 @@ use kalanis\kw_bans\Interfaces\IKBTranslations;
 class Bans
 {
     /** @var Bans\ABan[] */
-    protected $sources = null;
+    protected array $sources = [];
 
     /**
      * @param IKBTranslations|null $lang

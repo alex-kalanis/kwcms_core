@@ -15,13 +15,11 @@ use kalanis\kw_tree_controls\ControlNode;
  */
 abstract class ATreeControl extends Controls\AControl
 {
-    protected $templateInput = '%1$s'; // by our own!
-    /** @var ControlNode|null */
-    protected $tree = null;
+    protected string $templateInput = '%1$s'; // by our own!
+    protected ?ControlNode $tree = null;
     /** @var Controls\AControl[]|Controls\Checkbox[]|Controls\Radio[]|Controls\SelectOption[] */
-    protected $inputs = [];
-    /** @var bool */
-    protected $wantEmptySub = true;
+    protected array $inputs = [];
+    protected bool $wantEmptySub = true;
 
     public function set(string $key, string $value = '', string $label = '', ?FileNode $tree = null, bool $wantRootControl = true): self
     {

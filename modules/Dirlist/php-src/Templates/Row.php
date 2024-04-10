@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Row extends ATemplate
 {
-    protected $moduleName = 'Dirlist';
-    protected $templateName = 'row';
+    protected string $moduleName = 'Dirlist';
+    protected string $templateName = 'row';
 
     protected function fillInputs(): void
     {

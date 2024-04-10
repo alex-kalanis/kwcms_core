@@ -11,11 +11,12 @@ use ArrayAccess;
  * @package kalanis\kw_address_handler\Sources
  * Class for accessing params inside the address as array
  * Not ArrayIterator due memory consumption
+ * @implements ArrayAccess<string|int, string>
  */
 class Params implements ArrayAccess
 {
     /** @var array<string|int, string> */
-    protected $paramsData = [];
+    protected array $paramsData = [];
 
     /**
      * @param array<string|int, string> $data

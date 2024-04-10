@@ -19,7 +19,7 @@ class Volume implements IEntriesSource
     use TFilterHtml;
 
     /** @var string path to menu dir */
-    protected $rootPath = '';
+    protected string $rootPath = '';
 
     public function __construct(string $rootPath)
     {

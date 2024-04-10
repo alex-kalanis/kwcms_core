@@ -22,9 +22,9 @@ use kalanis\kw_routed_paths\RoutedPath;
  */
 class ExternalLink
 {
-    protected $useRewrite = false;
-    protected $moreLangs = false;
-    protected $usedLang = '';
+    protected bool $useRewrite = false;
+    protected bool $moreLangs = false;
+    protected string $usedLang = '';
 
     public function __construct(RoutedPath $routedPath, ?bool $moreUsers = null, ?bool $moreLangs = null)
     {

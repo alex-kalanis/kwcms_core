@@ -25,10 +25,9 @@ use KWCMS\modules\Core\Libs\AModule;
  */
 class Core extends AModule
 {
-    /** @var AModule|null */
-    protected $module = null;
+    protected ?AModule $module = null;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams

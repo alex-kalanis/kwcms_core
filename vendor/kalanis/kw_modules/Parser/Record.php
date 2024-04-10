@@ -10,28 +10,21 @@ namespace kalanis\kw_modules\Parser;
  */
 class Record
 {
-    /** @var string */
-    protected $moduleName = '';
-    /** @var array<string|int, string|int|float|bool|array<string|int>> */
-    protected $params = [];
+    protected string $moduleName = '';
+    protected string $content = '';
     /** @var string[] */
-    protected $path = [];
-    /** @var string */
-    protected $toChange = '';
-    /** @var string */
-    protected $whatReplace = '';
+    protected array $path = [];
+    protected string $toChange = '';
+    protected string $whatReplace = '';
 
     public function setModuleName(string $moduleName): void
     {
         $this->moduleName = $moduleName;
     }
 
-    /**
-     * @param array<string|int, string|int|float|bool|array<string|int>> $params
-     */
-    public function setParams(array $params = []): void
+    public function setContent(string $content = ''): void
     {
-        $this->params = $params;
+        $this->content = $content;
     }
 
     /**
@@ -57,12 +50,9 @@ class Record
         return $this->moduleName;
     }
 
-    /**
-     * @return array<string|int, string|int|float|bool|array<string|int>>
-     */
-    public function getParams(): array
+    public function getContent(): string
     {
-        return $this->params;
+        return $this->content;
     }
 
     /**

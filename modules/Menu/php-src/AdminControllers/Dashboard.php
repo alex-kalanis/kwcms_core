@@ -36,10 +36,8 @@ class Dashboard extends AAuthModule implements IHasTitle
     use Lib\TMenu;
     use Templates\TModuleTemplate;
 
-    /** @var Forms\EditPropsForm */
-    protected $editPropsForm = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    protected Forms\EditPropsForm $editPropsForm;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams

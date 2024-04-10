@@ -14,8 +14,7 @@ use kalanis\kw_storage\Translations;
  */
 trait TLang
 {
-    /** @var IStTranslations|null */
-    protected $stLang = null;
+    protected ?IStTranslations $stLang = null;
 
     public function setStLang(?IStTranslations $lang = null): self
     {

@@ -5,7 +5,6 @@ namespace KWCMS\modules\Menu\Templates;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
-use kalanis\kw_paths\Path;
 use kalanis\kw_routed_paths\RoutedPath;
 use KWCMS\modules\Core\Libs\ExternalLink;
 
@@ -16,8 +15,8 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 trait TModuleTemplate
 {
-    /** @var ExternalLink|null */
-    protected $links = null;
+    /** @var ExternalLink */
+    protected ?ExternalLink $links = null;
 
     /**
      * @param RoutedPath $routedPath

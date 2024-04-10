@@ -23,20 +23,20 @@ interface IStorage
     /**
      * Create new record in storage
      * @param string $sharedKey
-     * @param mixed $data
+     * @param string $data
      * @param int|null $timeout
      * @throws StorageException
      * @return bool
      */
-    public function write(string $sharedKey, $data, ?int $timeout = null): bool;
+    public function write(string $sharedKey, string $data, ?int $timeout = null): bool;
 
     /**
      * Read storage record
      * @param string $sharedKey
      * @throws StorageException
-     * @return mixed
+     * @return string
      */
-    public function read(string $sharedKey);
+    public function read(string $sharedKey): string;
 
     /**
      * Delete storage record - usually on finish or discard

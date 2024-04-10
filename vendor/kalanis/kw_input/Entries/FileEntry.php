@@ -13,14 +13,10 @@ use kalanis\kw_input\Interfaces;
  */
 class FileEntry extends Entry implements Interfaces\IFileEntry
 {
-    /** @var string */
-    protected $mimeType = '';
-    /** @var string */
-    protected $tmpName = '';
-    /** @var int */
-    protected $error = 0;
-    /** @var int */
-    protected $size = 0;
+    protected string $mimeType = '';
+    protected string $tmpName = '';
+    protected int $error = 0;
+    protected int $size = 0;
 
     public function setFile(string $fileName, string $tmpName, string $mimeType, int $error, int $size): self
     {

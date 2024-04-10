@@ -13,7 +13,7 @@ use kalanis\kw_forms\Controls;
 trait TSimpleValue
 {
     /** @var Controls\AControl[]|Controls\Checkbox[]|Controls\SelectOption[] */
-    protected $inputs = [];
+    protected array $inputs = [];
 
     public function getValue()
     {

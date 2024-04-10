@@ -4,10 +4,11 @@ namespace KWCMS\modules\Icon\Controllers;
 
 
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\Factory as files_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Traits\TToString;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\Content\Images;
-use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
@@ -36,16 +37,11 @@ class Icon extends AModule
 {
     use TToString;
 
-    /** @var IMime */
-    protected $mime = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var ExternalLink */
-    protected $libExternal = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Images */
-    protected $sources = null;
+    protected IMime $mime;
+    protected ArrayPath $arrPath;
+    protected ExternalLink $libExternal;
+    protected InnerLinks $innerLink;
+    protected Images $sources;
 
     /**
      * @param mixed ...$constructParams
@@ -62,15 +58,17 @@ class Icon extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
-        );
-        $this->sources = FilesHelper::getImages(
-            $constructParams,
+            boolval(Config::get('Core', 'page.more_lang', false)),
             [],
-            new ImagesTranslations(),
-            new FilesTranslations()
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->mime = (new Check\Factory())->getLibrary(null);
+        $this->sources = (new images_factory(
+            (new files_factory(new FilesTranslations()))->getClass($constructParams),
+            $this->mime,
+            new ImagesTranslations()
+        ))->getImages($constructParams);
     }
 
     public function process(): void

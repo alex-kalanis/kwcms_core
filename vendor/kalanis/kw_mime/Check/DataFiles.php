@@ -25,12 +25,11 @@ class DataFiles implements IMimeChecks
     use Traits\TToString;
     use TFile;
 
-    /** @var ArrayPath */
-    protected $pathLib = null;
+    protected ArrayPath $pathLib;
 
     public function __construct(?IFLTranslations $flLang = null, ?IMiTranslations $miLang = null)
     {
-        $this->setLang($flLang);
+        $this->setFlLang($flLang);
         $this->setMiLang($miLang);
         $this->pathLib = new ArrayPath();
     }

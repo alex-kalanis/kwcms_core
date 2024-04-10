@@ -13,8 +13,7 @@ use kalanis\kw_storage\Interfaces\IKey;
  */
 class ArrayKey implements IKey
 {
-    /** @var string */
-    protected $prefix = '';
+    protected string $prefix = '';
 
     /**
      * @param string[] $prefix

@@ -8,6 +8,7 @@ use kalanis\kw_accounts\Interfaces\IProcessGroups;
 use kalanis\kw_accounts\Interfaces\IUser;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -18,6 +19,7 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
@@ -37,16 +39,11 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class GroupTable
 {
-    /** @var IFiltered|null */
-    protected $variables = null;
-    /** @var ExternalLink|null */
-    protected $link = null;
-    /** @var IProcessGroups|null */
-    protected $libGroups = null;
-    /** @var IUser|null */
-    protected $currentUser = null;
-    /** @var Forward|null */
-    protected $forward = null;
+    protected IFiltered $variables;
+    protected ExternalLink $link;
+    protected IProcessGroups $libGroups;
+    protected IUser $currentUser;
+    protected Forward $forward;
 
     public function __construct(IFiltered $inputs, ExternalLink $link, IProcessGroups $groups, IUser $currentUser)
     {
@@ -61,6 +58,7 @@ class GroupTable
      * @return Table
      * @throws AccountsException
      * @throws FormsException
+     * @throws HandlerException
      * @throws LangException
      * @throws TableException
      */
@@ -109,6 +107,8 @@ class GroupTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @return string
      */
     public function idLink($id): string
@@ -123,6 +123,8 @@ class GroupTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @return string
      */
     public function editLink($id): string
@@ -137,6 +139,8 @@ class GroupTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @return string
      */
     public function deleteLink($id): string

@@ -15,10 +15,8 @@ use kalanis\kw_pedigree\Storage\APedigreeRecord;
  */
 class GetEntries
 {
-    /** @var APedigreeRecord */
-    protected $record = null;
-    /** @var Storage\AEntryAdapter */
-    protected $storage = null;
+    protected APedigreeRecord $record;
+    protected Storage\AEntryAdapter $storage;
 
     /**
      * @param APedigreeRecord $record

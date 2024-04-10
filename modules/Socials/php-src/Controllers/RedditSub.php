@@ -15,14 +15,10 @@ use KWCMS\modules\Socials\Templates;
  */
 class RedditSub extends AModule
 {
-    /** @var string */
-    protected $name = '';
-    /** @var string */
-    protected $site = 'reddit';
-    /** @var string */
-    protected $accountSite = 'reddit_sub';
-    /** @var string */
-    protected $shortSite = 'rdt';
+    protected string $name = '';
+    protected string $site = 'reddit';
+    protected string $accountSite = 'reddit_sub';
+    protected string $shortSite = 'rdt';
 
     public function __construct(...$constructParams)
     {

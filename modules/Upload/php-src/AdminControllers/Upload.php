@@ -40,13 +40,10 @@ class Upload extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
 
-    protected $inSteps = '';
-    /** @var Lib\Uploader */
-    protected $lib = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var FileLib\Processor */
-    protected $processor = null;
+    protected string $inSteps = '';
+    protected Lib\Uploader $lib;
+    protected UserDir $userDir;
+    protected FileLib\Processor $processor;
 
     /**
      * @param mixed ...$constructParams

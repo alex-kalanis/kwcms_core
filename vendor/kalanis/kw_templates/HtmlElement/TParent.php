@@ -16,8 +16,7 @@ use kalanis\kw_templates\Interfaces\IHtmlElement;
  */
 trait TParent
 {
-    /** @var IHtmlElement|null */
-    protected $parent;
+    protected ?IHtmlElement $parent = null;
 
     /**
      * Set parent element

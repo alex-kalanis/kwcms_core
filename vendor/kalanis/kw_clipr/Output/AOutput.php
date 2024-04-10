@@ -10,14 +10,11 @@ namespace kalanis\kw_clipr\Output;
  */
 abstract class AOutput
 {
-    /** @var string */
-    protected $closeSequence = '';
-    /** @var string */
-    protected $formatBackSequence = '';
-    /** @var string */
-    protected $eolSequence = PHP_EOL;
+    protected string $closeSequence = '';
+    protected string $formatBackSequence = '';
+    protected string $eolSequence = PHP_EOL;
     /** @var string[] */
-    protected $tags = [];
+    protected array $tags = [];
 
     public function __construct()
     {

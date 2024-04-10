@@ -14,14 +14,11 @@ use kalanis\kw_forms\Exceptions\RenderException;
  */
 abstract class AGraphical extends ACaptcha
 {
-    protected $templateLabel = '<img src="data:image/png;base64,%2$s" id="%1$s" alt="You need to solve this." />';
-    protected $templateInput = '<input type="text" value=""%2$s />';
-    /** @var string */
-    protected $font = '';
-    /** @var string */
-    protected $renderError = 'Cannot render captcha image!';
-    /** @var ArrayAccess */
-    protected $session = null;
+    protected string $templateLabel = '<img src="data:image/png;base64,%2$s" id="%1$s" alt="You need to solve this." />';
+    protected string $templateInput = '<input type="text" value=""%2$s />';
+    protected string $font = '';
+    protected string $renderError = 'Cannot render captcha image!';
+    protected ?ArrayAccess $session = null;
 
     protected function fillSession(string $alias, ArrayAccess &$session, string $text): void
     {
@@ -106,5 +103,16 @@ abstract class AGraphical extends ACaptcha
         }
 //print_r(['CPT_>'=>$string]);
         return $string;
+    }
+
+    protected function getSession(): ArrayAccess
+    {
+        if (!empty($this->session)) {
+            return $this->session;
+        }
+        // @codeCoverageIgnoreStart
+        // you need to whant session before call that sets the control
+        throw new \LogicException('Set the session first!');
+        // @codeCoverageIgnoreEnd
     }
 }

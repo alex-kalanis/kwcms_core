@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class VkAccount extends AAccount
 {
-    protected $site = 'vk';
-    protected $accountSite = 'vk_account';
-    protected $shortSite = 'vk';
+    protected string $site = 'vk';
+    protected string $accountSite = 'vk_account';
+    protected string $shortSite = 'vk';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

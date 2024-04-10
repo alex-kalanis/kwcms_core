@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Menu extends ATemplate
 {
-    protected $moduleName = 'Langs';
-    protected $templateName = 'menu';
+    protected string $moduleName = 'Langs';
+    protected string $templateName = 'menu';
 
     protected function fillInputs(): void
     {

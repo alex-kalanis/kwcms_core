@@ -37,18 +37,13 @@ use KWCMS\modules\Watermark\Libs;
  */
 class Watermark extends AModule
 {
-    /** @var IMime */
-    protected $mime = null;
+    protected IMime $mime;
     /** @var string[] */
-    protected $imagePath = [];
-    /** @var bool */
-    protected $repeat = false;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Libs\ImageFill */
-    protected $processor = null;
+    protected array $imagePath = [];
+    protected bool $repeat = false;
+    protected ArrayPath $arrPath;
+    protected InnerLinks $innerLink;
+    protected Libs\ImageFill $processor;
 
     /**
      * @param mixed ...$constructParams
@@ -66,7 +61,10 @@ class Watermark extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
+            boolval(Config::get('Core', 'page.more_lang', false)),
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $libProcess = (new access_factory(new FilesTranslations()))->getClass($constructParams);
         $this->mime = $this->getMimeLib($libProcess);

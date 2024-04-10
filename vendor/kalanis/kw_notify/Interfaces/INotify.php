@@ -13,10 +13,10 @@ use kalanis\kw_notify\NotifyException;
  */
 interface INotify
 {
-    const TARGET_INFO = 'info';
-    const TARGET_ERROR = 'error';
-    const TARGET_WARNING = 'warning';
-    const TARGET_SUCCESS = 'success';
+    public const TARGET_INFO = 'info';
+    public const TARGET_ERROR = 'error';
+    public const TARGET_WARNING = 'warning';
+    public const TARGET_SUCCESS = 'success';
 
     /**
      * Add content to stack
@@ -29,16 +29,16 @@ interface INotify
     /**
      * Check if stack exists
      * @param string $stackName
-     * @return bool
      * @throws NotifyException
+     * @return bool
      */
     public function check(string $stackName): bool;
 
     /**
      * Return content in stack
      * @param string $stackName
-     * @return string[]
      * @throws NotifyException
+     * @return string[]
      */
     public function get(string $stackName): array;
 

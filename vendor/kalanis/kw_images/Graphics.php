@@ -21,12 +21,8 @@ class Graphics
     use TType;
     use TSizes;
 
-    /** @var Graphics\Processor */
-    protected $libGraphics = null;
-    /** @var IMime */
-    protected $libMime = null;
-    /** @var ISizes|null */
-    protected $libSizes = null;
+    protected Graphics\Processor $libGraphics;
+    protected ?ISizes $libSizes = null;
 
     public function __construct(Graphics\Processor $libGraphics, IMime $libMime, ?IIMTranslations $lang = null)
     {
@@ -47,14 +43,12 @@ class Graphics
      */
     public function check(string $tempPath): bool
     {
-        if (!$this->libSizes) {
-            throw new ImagesException($this->getImLang()->imSizesNotSet());
-        }
+        $this->getLibSizes();
         $size = @filesize($tempPath);
         if (false === $size) {
             throw new ImagesException($this->getImLang()->imImageSizeExists());
         }
-        if ($this->libSizes->getMaxSize() < $size) {
+        if ($this->getLibSizes()->getMaxSize() < $size) {
             throw new ImagesException($this->getImLang()->imImageSizeTooLarge());
         }
         return true;
@@ -70,19 +64,29 @@ class Graphics
      */
     public function resize(string $tempPath, array $realSourceName, ?array $realTargetName = null): bool
     {
-        if (!$this->libSizes) {
-            throw new ImagesException($this->getImLang()->imSizesNotSet());
-        }
+        $this->getLibSizes();
         $realTargetName = is_null($realTargetName) ? $realSourceName : $realTargetName;
         $this->libGraphics->load($this->getType($realSourceName), $tempPath);
         $sizes = $this->calculateSize(
             $this->libGraphics->width(),
-            $this->libSizes->getMaxWidth(),
+            $this->getLibSizes()->getMaxWidth(),
             $this->libGraphics->height(),
-            $this->libSizes->getMaxHeight()
+            $this->getLibSizes()->getMaxHeight()
         );
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
         $this->libGraphics->save($this->getType($realTargetName), $tempPath);
         return true;
+    }
+
+    /**
+     * @throws ImagesException
+     * @return ISizes
+     */
+    protected function getLibSizes(): ISizes
+    {
+        if (empty($this->libSizes)) {
+            throw new ImagesException($this->getImLang()->imSizesNotSet());
+        }
+        return $this->libSizes;
     }
 }

@@ -38,6 +38,6 @@ class Text extends AGraphical
     public function checkFillCaptcha($value): bool
     {
         $formName = $this->getKey() . '_last';
-        return $this->session->offsetExists($formName) && (strval($this->session->offsetGet($formName)) == strval($value));
+        return $this->getSession()->offsetExists($formName) && (strval($this->getSession()->offsetGet($formName)) == strval($value));
     }
 }

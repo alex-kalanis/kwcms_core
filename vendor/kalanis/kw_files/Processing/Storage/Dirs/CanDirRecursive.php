@@ -20,13 +20,12 @@ use kalanis\kw_storage\StorageException;
  */
 class CanDirRecursive extends ADirs
 {
-    /** @var IPassDirs */
-    protected $storage = null;
+    protected IPassDirs $storage;
 
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
-        $this->setLang($lang);
+        $this->setFlLang($lang);
     }
 
     public function createDir(array $entry, bool $deep = false): bool
@@ -35,7 +34,7 @@ class CanDirRecursive extends ADirs
         try {
             return $this->storage->mkDir($path, $deep);
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotCreateDir($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotCreateDir($path), $ex->getCode(), $ex);
         }
     }
 
@@ -53,7 +52,7 @@ class CanDirRecursive extends ADirs
         $entryPath = $this->compactName($entry, $this->getStorageSeparator());
         try {
             if (!$this->storage->isDir($this->getStorageSeparator() . $entryPath)) {
-                throw new FilesException($this->getLang()->flCannotReadDir($entryPath));
+                throw new FilesException($this->getFlLang()->flCannotReadDir($entryPath));
             }
             $files = [];
             $sepLen = mb_strlen($this->getStorageSeparator());
@@ -92,7 +91,7 @@ class CanDirRecursive extends ADirs
             }
             return $files;
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotReadDir($entryPath), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotReadDir($entryPath), $ex->getCode(), $ex);
         }
     }
 
@@ -120,7 +119,7 @@ class CanDirRecursive extends ADirs
 
             return $this->storage->copy($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotCopyDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -148,7 +147,7 @@ class CanDirRecursive extends ADirs
 
             return $this->storage->move($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotMoveDir($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -162,7 +161,7 @@ class CanDirRecursive extends ADirs
                 return false;
             }
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotRemoveDir($path), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotRemoveDir($path), $ex->getCode(), $ex);
         }
     }
 
@@ -182,6 +181,6 @@ class CanDirRecursive extends ADirs
      */
     protected function noDirectoryDelimiterSet(): string
     {
-        return $this->getLang()->flNoDirectoryDelimiterSet();
+        return $this->getFlLang()->flNoDirectoryDelimiterSet();
     }
 }

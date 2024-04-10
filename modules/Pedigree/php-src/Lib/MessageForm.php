@@ -25,8 +25,8 @@ use kalanis\kw_rules\Interfaces\IRules;
  */
 class MessageForm extends Form
 {
-    /** @var GetEntries|null */
-    protected $entry = null;
+    /** @var GetEntries */
+    protected ?GetEntries $entry = null;
 
     /**
      * @param GetEntries $entry

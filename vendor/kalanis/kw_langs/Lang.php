@@ -14,14 +14,12 @@ use kalanis\kw_langs\Interfaces\ILoader;
  */
 class Lang
 {
-    /** @var ILoader */
-    protected static $loader = null;
+    protected static ?ILoader $loader = null;
     /** @var array<string, string> */
-    protected static $translations = [];
-    /** @var string */
-    protected static $usedLang = '';
+    protected static array $translations = [];
+    protected static string $usedLang = '';
 
-    public static function init(ILoader $loader, string $usedLang): void
+    public static function init(?ILoader $loader, string $usedLang): void
     {
         static::$usedLang = $usedLang;
         static::$loader = $loader;
@@ -33,6 +31,9 @@ class Lang
      */
     public static function load(string $module): void
     {
+        if (!static::$loader) {
+            throw new LangException('Set the loader first!');
+        }
         $data = static::$loader->load($module, static::$usedLang);
         if (!empty($data)) {
             static::loadData(static::$usedLang, $data);

@@ -10,10 +10,9 @@ namespace kalanis\kw_forms\Controls;
  */
 class SelectOptgroup extends AControl
 {
-    /** @var int */
-    private static $uniqid = 0;
-    protected $templateLabel = '';
-    protected $templateInput = '<optgroup label="%1$s">%3$s</optgroup>';
+    private static int $uniqid = 0;
+    protected string $templateLabel = '';
+    protected string $templateInput = '<optgroup label="%1$s">%3$s</optgroup>';
 
     /**
      * Create element Optgroup

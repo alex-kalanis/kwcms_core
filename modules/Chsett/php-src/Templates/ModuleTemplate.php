@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ModuleTemplate extends ATemplate
 {
-    protected $moduleName = 'Chsett';
-    protected $templateName = 'module';
+    protected string $moduleName = 'Chsett';
+    protected string $templateName = 'module';
 
     protected function fillInputs(): void
     {

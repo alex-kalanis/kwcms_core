@@ -24,10 +24,8 @@ use KWCMS\modules\Core\Libs\AModule;
  */
 class Sysimage extends AModule
 {
-    /** @var IMime */
-    protected $mime = null;
-    /** @var string */
-    protected $imagePath = '';
+    protected IMime $mime;
+    protected string $imagePath = '';
 
     public function __construct(...$constructParams)
     {

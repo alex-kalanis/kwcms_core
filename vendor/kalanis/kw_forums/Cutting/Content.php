@@ -12,21 +12,18 @@ class Content
 {
     // it's necessary to have both arrays sorted this way - it's for lookup by positions
     /** @var string[] */
-    protected static $OPENING_TAGS = ['<b ',  '<b>',  '<i ',  '<i>',  '<u ',  '<u>',  '<center>',  '<span>',  '<span ',  '<font color', '<font face', '<font size', '<font ', '<font', '<table ', '<table', '<tr>', '<td>', '<a ', '<a>'];
+    protected static array $OPENING_TAGS = ['<b ',  '<b>',  '<i ',  '<i>',  '<u ',  '<u>',  '<center>',  '<span>',  '<span ',  '<font color', '<font face', '<font size', '<font ', '<font', '<table ', '<table', '<tr>', '<td>', '<a ', '<a>'];
     /** @var string[] */
-    protected static $CLOSING_TAGS = ['</b>', '</b>', '</i>', '</i>', '</u>', '</u>', '</center>', '</span>', '</span>', '</font>', '</font>', '</font>', '</font>', '</font>', '</table>', '</table>', '</tr>', '</td>', '</a>', '</a>'];
+    protected static array $CLOSING_TAGS = ['</b>', '</b>', '</i>', '</i>', '</u>', '</u>', '</center>', '</span>', '</span>', '</font>', '</font>', '</font>', '</font>', '</font>', '</table>', '</table>', '</tr>', '</td>', '</a>', '</a>'];
 
-    /** @var int */
-    protected $wordLengthNeedle = 20;
-    /** @var int */
-    protected $maxLength = 0;
-    /** @var string */
-    protected $content = '';
+    protected int $wordLengthNeedle = 20;
+    protected int $maxLength = 0;
+    protected string $content = '';
     /**
      * Contains positions of tags in
      * @var int[]
      */
-    protected $tagPositionsStack = [];
+    protected array $tagPositionsStack = [];
 
     public function __construct(int $maxLength)
     {

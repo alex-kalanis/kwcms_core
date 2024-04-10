@@ -15,8 +15,7 @@ use kalanis\kw_input\Interfaces\IEntry;
  */
 class CliEntry extends ALoader
 {
-    /** @var string */
-    protected static $basicPath = '';
+    protected static string $basicPath = '';
 
     /**
      * @param string $path

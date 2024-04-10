@@ -10,10 +10,9 @@ use KWCMS\modules\Krep\Libs;
 
 class RenderForm implements Libs\Interfaces\IContent
 {
-    /** @var Libs\Shared\Links */
-    protected $links = null;
-    /** @var PostForm|null */
-    protected $form = null;
+    protected Libs\Shared\Links $links;
+    /** @var PostForm */
+    protected ?PostForm $form = null;
 
     public function __construct(Libs\Shared\Links $links)
     {

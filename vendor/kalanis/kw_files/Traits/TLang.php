@@ -9,24 +9,23 @@ use kalanis\kw_files\Translations;
 
 /**
  * Trait TLang
- * @package kalanis\kw_files\Processing
+ * @package kalanis\kw_files\Traits
  * Translations trait
  */
 trait TLang
 {
-    /** @var IFLTranslations|null */
-    protected $lang = null;
+    protected ?IFLTranslations $flLang = null;
 
-    public function setLang(?IFLTranslations $lang = null): void
+    public function setFlLang(?IFLTranslations $flLang = null): void
     {
-        $this->lang = $lang;
+        $this->flLang = $flLang;
     }
 
-    public function getLang(): IFLTranslations
+    public function getFlLang(): IFLTranslations
     {
-        if (empty($this->lang)) {
-            $this->lang = new Translations();
+        if (empty($this->flLang)) {
+            $this->flLang = new Translations();
         }
-        return $this->lang;
+        return $this->flLang;
     }
 }

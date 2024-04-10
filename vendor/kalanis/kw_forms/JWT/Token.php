@@ -5,6 +5,7 @@ namespace kalanis\kw_forms\JWT;
 
 use Firebase\JWT\Key;
 
+
 /**
  * Class Token
  * @package kalanis\kw_forms\JWT
@@ -13,12 +14,9 @@ use Firebase\JWT\Key;
  */
 class Token
 {
-    /** @var string */
-    protected static $domain = '';
-    /** @var string */
-    protected static $privateKey = '';
-    /** @var string */
-    protected static $lastError = '';
+    protected static string $domain = '';
+    protected static string $privateKey = '';
+    protected static string $lastError = '';
 
     /**
      * Initialize library - set somewhere in bootstrap alongside the other configurations

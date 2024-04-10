@@ -12,10 +12,9 @@ use kalanis\kw_input\Interfaces\IEntry;
 
 abstract class AAdapter implements ArrayAccess, Countable, Iterator, IEntry
 {
-    /** @var string|null */
-    protected $key = null;
+    protected ?string $key = null;
     /** @var array<string, string|int|float|null|IEntry> */
-    protected $vars = [];
+    protected array $vars = [];
 
     /**
      * @param string $inputType

@@ -13,8 +13,7 @@ use kalanis\UploadPerPartes;
  */
 class Uploader extends UploadPerPartes\Uploader
 {
-    /** @var CompositeAdapter */
-    protected $files = null;
+    protected CompositeAdapter $files;
 
     public function __construct(CompositeAdapter $files)
     {

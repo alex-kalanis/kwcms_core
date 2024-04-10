@@ -9,14 +9,13 @@ use kalanis\kw_files\Interfaces\IProcessFiles;
 
 /**
  * trait TFile
- * @package kalanis\kw_files\Processing
+ * @package kalanis\kw_files\Traits
  */
 trait TFile
 {
     use TLang;
 
-    /** @var IProcessFiles|null */
-    protected $processFile = null;
+    protected ?IProcessFiles $processFile = null;
 
     public function setProcessFile(?IProcessFiles $dirs = null): void
     {
@@ -30,7 +29,7 @@ trait TFile
     public function getProcessFile(): IProcessFiles
     {
         if (empty($this->processFile)) {
-            throw new FilesException($this->getLang()->flNoProcessFileSet());
+            throw new FilesException($this->getFlLang()->flNoProcessFileSet());
         }
         return $this->processFile;
     }

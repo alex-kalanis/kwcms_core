@@ -12,10 +12,8 @@ use KWCMS\modules\Krep\Libs;
  */
 class ProcessPage
 {
-    /** @var Libs\Shared\Query */
-    protected $query = null;
-    /** @var Libs\Shared\Parser */
-    protected $parser = null;
+    protected Libs\Shared\Query $query;
+    protected Libs\Shared\Parser $parser;
 
     public function __construct(
         Libs\Shared\Query $query,

@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class LinkedinAccount extends AAccount
 {
-    protected $site = 'linkedin';
-    protected $accountSite = 'linkedin_account';
-    protected $shortSite = 'in';
+    protected string $site = 'linkedin';
+    protected string $accountSite = 'linkedin_account';
+    protected string $shortSite = 'in';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

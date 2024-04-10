@@ -19,12 +19,9 @@ class StorageLock implements IPassedKey
 {
     use TLang;
 
-    /** @var IStorage */
-    protected $storage = null;
-    /** @var string */
-    protected $specialKey = '';
-    /** @var string */
-    protected $checkContent = '';
+    protected IStorage $storage;
+    protected string $specialKey = '';
+    protected string $checkContent = '';
 
     public function __construct(IStorage $storage, ?IKLTranslations $lang = null)
     {

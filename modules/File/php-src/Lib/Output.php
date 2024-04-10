@@ -21,14 +21,12 @@ class Output extends AOutput
 {
     use TToString;
 
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var AAdapter|null */
-    protected $sizeAdapter = null;
-    /** @var string */
-    protected $name = '';
+    protected CompositeAdapter $files;
+    /** @var AAdapter */
+    protected ?AAdapter $sizeAdapter = null;
+    protected string $name = '';
     /** @var string[] */
-    protected $path = [];
+    protected array $path = [];
 
     public function __construct(CompositeAdapter $files, string $name, array $path)
     {

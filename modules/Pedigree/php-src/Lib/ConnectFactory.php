@@ -13,7 +13,8 @@ use kalanis\kw_pedigree\Storage;
  */
 class ConnectFactory
 {
-    protected $map = [
+    /** @var array<string, class-string> */
+    protected array $map = [
         'volume' => Storage\File\PedigreeRecord::class,
         'file' => Storage\File\PedigreeRecord::class,
         'table' => Storage\SingleTable\PedigreeRecord::class,

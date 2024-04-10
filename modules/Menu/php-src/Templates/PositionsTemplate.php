@@ -15,8 +15,8 @@ use KWCMS\modules\Menu\Forms\EditPosForm;
  */
 class PositionsTemplate extends ATemplate
 {
-    protected $moduleName = 'Menu';
-    protected $templateName = 'positions';
+    protected string $moduleName = 'Menu';
+    protected string $templateName = 'positions';
 
     protected function fillInputs(): void
     {

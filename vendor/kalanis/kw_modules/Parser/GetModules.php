@@ -7,7 +7,6 @@ use kalanis\kw_modules\Interfaces\IMdTranslations;
 use kalanis\kw_modules\ModuleException;
 use kalanis\kw_modules\Support;
 use kalanis\kw_modules\Traits\TMdLang;
-use kalanis\kw_paths\Stuff;
 
 
 /**
@@ -41,10 +40,9 @@ class GetModules
 {
     use TMdLang;
 
-    /** @var string */
-    protected $content = '';
+    protected string $content = '';
     /** @var array<string, Record> */
-    protected $foundModules = [];
+    protected array $foundModules = [];
 
     public function __construct(?IMdTranslations $lang = null)
     {
@@ -120,11 +118,11 @@ class GetModules
                 $changeLen = $rest[$i]->getPos() + strlen($rest[$i]->getBraced()) - $top->getPos();
 
                 $parts = Support::modulePathFromTemplate(Support::clearModuleName($top->getInner()));
-                $readParams = substr($this->content, $paramStart, $paramLen);
+                $readInternals = substr($this->content, $paramStart, $paramLen);
                 $toChange = substr($this->content, $top->getPos(), $changeLen);
 //print_r(['proc', $parts, $readParams, $toChange]);
                 $rec = new Record();
-                $rec->setParams(Stuff::httpStringIntoArray($readParams));
+                $rec->setContent($readInternals);
                 $rec->setModuleName(strval(reset($parts)));
                 $rec->setModulePath($parts);
                 $rec->setContentToChange($toChange);
@@ -188,7 +186,7 @@ class GetModules
 
     protected function makeHash(Record $record): string
     {
-        return md5(sprintf('%s-%s', implode('::', $record->getModulePath()), serialize($record->getParams())));
+        return md5(sprintf('%s-%s', implode('::', $record->getModulePath()), $record->getContent()));
     }
 
     /**

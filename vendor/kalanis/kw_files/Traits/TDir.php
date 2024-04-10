@@ -9,14 +9,13 @@ use kalanis\kw_files\Interfaces\IProcessDirs;
 
 /**
  * trait TDir
- * @package kalanis\kw_files\Processing
+ * @package kalanis\kw_files\Traits
  */
 trait TDir
 {
     use TLang;
 
-    /** @var IProcessDirs|null */
-    protected $processDir = null;
+    protected ?IProcessDirs $processDir = null;
 
     public function setProcessDir(?IProcessDirs $dirs = null): void
     {
@@ -30,7 +29,7 @@ trait TDir
     public function getProcessDir(): IProcessDirs
     {
         if (empty($this->processDir)) {
-            throw new FilesException($this->getLang()->flNoProcessDirSet());
+            throw new FilesException($this->getFlLang()->flNoProcessDirSet());
         }
         return $this->processDir;
     }

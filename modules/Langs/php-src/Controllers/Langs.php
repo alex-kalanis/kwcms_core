@@ -36,21 +36,15 @@ class Langs extends AModule
     use TFilesDirs;
 
     /** @var array<string, array<string, string>> */
-    protected $possibleLangs = [];
+    protected array $possibleLangs = [];
     /** @var Node[] */
-    protected $availableLangs = [];
-    /** @var ExternalLink */
-    protected $extLink = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var Files */
-    protected $treeList = null;
-    /** @var UserInnerLinks */
-    protected $innerLink = null;
-    /** @var bool */
-    protected $willShow = false;
+    protected array $availableLangs = [];
+    protected ExternalLink $extLink;
+    protected ArrayPath $arrPath;
+    protected CompositeAdapter $files;
+    protected Files $treeList;
+    protected UserInnerLinks $innerLink;
+    protected bool $willShow = false;
 
     /**
      * @param mixed ...$constructParams

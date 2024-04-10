@@ -10,26 +10,39 @@ namespace kalanis\kw_address_handler;
  */
 class Forward
 {
-    const KEY_FORWARD = 'fwd';
+    public const KEY_FORWARD = 'fwd';
 
-    /** @var Handler */
-    protected $urlHandler;
+    protected Handler $urlHandler;
 
     public function __construct()
     {
         $this->urlHandler = new Handler();
     }
 
+    /**
+     * @param string $link
+     * @throws HandlerException
+     * @return $this
+     */
     public function setLink(string $link): self
     {
         return $this->setSource(new Sources\Address($link));
     }
 
+    /**
+     * @throws HandlerException
+     * @return string
+     */
     public function getLink(): string
     {
         return strval($this->urlHandler->getAddress());
     }
 
+    /**
+     * @param Sources\Sources $sources
+     * @throws HandlerException
+     * @return $this
+     */
     public function setSource(Sources\Sources $sources): self
     {
         $this->urlHandler->setSource($sources);

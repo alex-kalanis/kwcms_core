@@ -31,10 +31,8 @@ abstract class AControl implements Interfaces\IValidate, IHtmlElement, IWrapper
     /** @var string|int|float|bool|null */
     protected $originalValue = null;
     // sprintf: 1 value, 2 attributes, 3 children
-    /** @var string */
-    protected $templateInput = '';
-    /** @var bool */
-    protected static $escapeOutput = true;
+    protected string $templateInput = '';
+    protected static bool $escapeOutput = true;
 
     /**
      * @param string|int|bool|null $can
@@ -44,7 +42,7 @@ abstract class AControl implements Interfaces\IValidate, IHtmlElement, IWrapper
         static::$escapeOutput = !empty($can);
     }
 
-    protected function whichFactory(): Interfaces\IRuleFactory
+    protected function whichRulesFactory(): Interfaces\IRuleFactory
     {
         return new Rules\Factory();
     }

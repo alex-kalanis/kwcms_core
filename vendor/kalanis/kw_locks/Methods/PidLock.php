@@ -18,10 +18,8 @@ class PidLock implements IPassedKey
 {
     use TLang;
 
-    /** @var string */
-    protected $tempPath = '';
-    /** @var string */
-    protected $specialKey = '';
+    protected string $tempPath = '';
+    protected string $specialKey = '';
 
     /**
      * @param string $tempPath

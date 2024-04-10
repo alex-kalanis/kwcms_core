@@ -15,13 +15,8 @@ use Nette\Database\Table\Selection;
 abstract class AType implements IFilterType
 {
     /** @var Selection */
-    protected $netteTable;
+    protected ?Selection $netteTable = null;
 
-    /**
-     * @param Selection $dataSource
-     * @throws ConnectException
-     * @return $this
-     */
     public function setDataSource($dataSource)
     {
         if (!$dataSource instanceof Selection) {
@@ -34,6 +29,18 @@ abstract class AType implements IFilterType
 
     public function getDataSource()
     {
+        return $this->netteTable;
+    }
+
+    /**
+     * @throws ConnectException
+     * @return Selection
+     */
+    public function getSource(): Selection
+    {
+        if (!$this->netteTable) {
+            throw new ConnectException('Set the datasource first!');
+        }
         return $this->netteTable;
     }
 }

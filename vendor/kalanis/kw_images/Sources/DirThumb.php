@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Sources;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_paths\PathsException;
 
 
@@ -14,6 +15,8 @@ use kalanis\kw_paths\PathsException;
  */
 class DirThumb extends AFiles
 {
+    use TToString;
+
     /**
      * @param string[] $path
      * @throws FilesException
@@ -34,7 +37,7 @@ class DirThumb extends AFiles
      */
     public function set(array $path, $content): bool
     {
-        return $this->lib->saveFile($this->getPath($path), $content);
+        return $this->lib->saveFile($this->getPath($path), $this->toString(implode(DIRECTORY_SEPARATOR, $path), $content));
     }
 
     /**

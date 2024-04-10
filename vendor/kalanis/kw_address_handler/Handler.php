@@ -11,17 +11,24 @@ namespace kalanis\kw_address_handler;
  */
 class Handler
 {
-    /** @var Sources\Sources|null */
-    protected $source = null;
-    /** @var Params */
-    protected $params = null;
+    protected ?Sources\Sources $source = null;
+    protected Params $params;
 
+    /**
+     * @param Sources\Sources|null $address
+     * @throws HandlerException
+     */
     public function __construct(?Sources\Sources $address = null)
     {
         $this->params = new Params();
         $this->setSource($address);
     }
 
+    /**
+     * @param Sources\Sources|null $sources
+     * @throws HandlerException
+     * @return $this
+     */
     public function setSource(?Sources\Sources $sources): self
     {
         if (empty($sources)) {
@@ -32,11 +39,14 @@ class Handler
         return $this;
     }
 
+    /**
+     * @throws HandlerException
+     */
     protected function parse(): void
     {
-        $parts = parse_url($this->source->/** @scrutinizer ignore-call */getAddress());
+        $parts = parse_url($this->getSourceClass()->getAddress());
         if ((false !== $parts) && isset($parts['path'])) {
-            $this->source->/** @scrutinizer ignore-call */setPath($parts['path']);
+            $this->getSourceClass()->setPath($parts['path']);
             if (!isset($parts['query'])) {
                 $parts['query'] = '';
             }
@@ -64,16 +74,21 @@ class Handler
 
     /**
      * Get address if there is anything to parse
+     * @throws HandlerException
      * @return string|null
      */
     public function getAddress(): ?string
     {
-        return $this->source ? $this->rebuild()->source->/** @scrutinizer ignore-call */getAddress() : null;
+        return $this->source ? $this->rebuild()->getSourceClass()->getAddress() : null;
     }
 
+    /**
+     * @throws HandlerException
+     * @return $this
+     */
     protected function rebuild(): self
     {
-        $parts = parse_url($this->source->/** @scrutinizer ignore-call */getAddress());
+        $parts = parse_url($this->getSourceClass()->getAddress());
         if (false !== $parts) {
             if (!isset($parts['query'])) {
                 $parts['query'] = '';
@@ -88,7 +103,7 @@ class Handler
                 }
             }
             $parts['query'] = http_build_query($queryArray);
-            $this->source->/** @scrutinizer ignore-call */setAddress($this->buildAddress($parts));
+            $this->getSourceClass()->setAddress($this->buildAddress($parts));
         }
         return $this;
     }
@@ -222,5 +237,18 @@ class Handler
         }
 
         return $url;
+    }
+
+    /**
+     * Returns the object with address
+     * @throws HandlerException
+     * @return Sources\Sources
+     */
+    protected function getSourceClass(): Sources\Sources
+    {
+        if (empty($this->source)) {
+            throw new HandlerException('Set the source first!');
+        }
+        return $this->source;
     }
 }

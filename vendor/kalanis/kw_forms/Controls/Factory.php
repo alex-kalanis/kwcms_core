@@ -11,7 +11,7 @@ use ReflectionException;
 class Factory
 {
     /** @var array<string, string> */
-    protected static $map = [
+    protected static array $map = [
         'input' => Input::class,
         'text' => Text::class,
         'textarea' => Textarea::class,

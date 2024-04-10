@@ -48,6 +48,11 @@ class Translations implements IIMTranslations
         return 'Cannot save image resource!';
     }
 
+    public function imUnknownMime(): string
+    {
+        return 'Unknown mime class!';
+    }
+
     public function imUnknownType(string $type): string
     {
         return sprintf('Unknown type *%s*', $type);

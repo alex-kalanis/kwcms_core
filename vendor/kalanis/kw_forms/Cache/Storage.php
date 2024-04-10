@@ -11,12 +11,9 @@ use kalanis\kw_storage\StorageException;
 
 class Storage
 {
-    /** @var ITarget|null */
-    protected $target = null;
-    /** @var Key */
-    protected $key = null;
-    /** @var ICachedFormat */
-    protected $format = null;
+    protected ?ITarget $target = null;
+    protected Key $key;
+    protected ICachedFormat $format;
 
     public function __construct(?ITarget $target = null, ?ICachedFormat $format = null)
     {

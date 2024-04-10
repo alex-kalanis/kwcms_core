@@ -12,7 +12,7 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 abstract class ATmplAccount extends ATemplate
 {
-    protected $moduleName = 'Socials';
+    protected string $moduleName = 'Socials';
 
     protected function fillInputs(): void
     {

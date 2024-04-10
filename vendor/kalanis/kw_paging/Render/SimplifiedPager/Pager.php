@@ -4,7 +4,7 @@ namespace kalanis\kw_paging\Render\SimplifiedPager;
 
 
 use kalanis\kw_paging\Interfaces\IPositions;
-use kalanis\kw_paging\Render\THelpingText;
+use kalanis\kw_paging\Traits\THelpingText;
 use kalanis\kw_templates\ATemplate;
 use kalanis\kw_templates\Template\TFile;
 

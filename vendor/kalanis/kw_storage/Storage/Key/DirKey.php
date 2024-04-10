@@ -13,8 +13,7 @@ use kalanis\kw_storage\Interfaces\IKey;
  */
 class DirKey implements IKey
 {
-    /** @var string */
-    protected $path = '';
+    protected string $path = '';
 
     public function __construct(string $dir)
     {

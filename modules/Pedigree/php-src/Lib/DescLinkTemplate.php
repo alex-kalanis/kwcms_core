@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class DescLinkTemplate extends ATemplate
 {
-    protected $moduleName = 'Pedigree';
-    protected $templateName = 'desc_link';
+    protected string $moduleName = 'Pedigree';
+    protected string $templateName = 'desc_link';
 
     protected function fillInputs(): void
     {

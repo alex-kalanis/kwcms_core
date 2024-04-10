@@ -13,8 +13,7 @@ use kalanis\kw_storage\Interfaces\IKey;
  */
 class StaticPrefixKey implements IKey
 {
-    /** @var string */
-    protected static $prefix = '/var/cache/wwwcache/';
+    protected static string $prefix = '/var/cache/wwwcache/';
 
     public static function setPrefix(string $prefix): void
     {

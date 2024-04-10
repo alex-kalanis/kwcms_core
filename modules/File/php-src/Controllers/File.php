@@ -34,16 +34,12 @@ use KWCMS\modules\File\Lib;
  */
 class File extends AModule
 {
-    /** @var IMime */
-    protected $mime = null;
+    protected IMime $mime;
     /** @var Lib\SizeAdapters\AAdapter|null */
     protected $sizeAdapter = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected ArrayPath $arrPath;
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
 
     /**
      * @param mixed ...$constructParams
@@ -58,7 +54,10 @@ class File extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
+            boolval(Config::get('Core', 'page.more_lang', false)),
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->mime = (new Check\Factory())->getLibrary(null);

@@ -5,8 +5,8 @@ namespace kalanis\kw_clipr\Output;
 
 class Web extends AOutput
 {
-    protected $closeSequence = '</span>';
-    protected $eolSequence = "<br/>\r\n";
+    protected string $closeSequence = '</span>';
+    protected string $eolSequence = "<br/>\r\n";
 
     protected function setTags(): void
     {

@@ -15,16 +15,11 @@ use KWCMS\modules\Krep\Libs;
  */
 class Bans
 {
-    /** @var kw\Basic */
-    protected $name = null;
-    /** @var kw\Basic */
-    protected $browser = null;
-    /** @var kw\IP4 */
-    protected $ip4 = null;
-    /** @var kw\IP6 */
-    protected $ip6 = null;
-    /** @var Libs\Logs\CompositeLogger */
-    protected $logger = null;
+    protected kw\Basic $name;
+    protected kw\Basic $browser;
+    protected kw\IP4 $ip4;
+    protected kw\IP6 $ip6;
+    protected Libs\Logs\CompositeLogger $logger;
 
     /**
      * @param Libs\Logs\CompositeLogger $logger

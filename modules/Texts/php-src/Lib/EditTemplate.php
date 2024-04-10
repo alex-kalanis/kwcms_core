@@ -14,8 +14,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class EditTemplate extends ATemplate
 {
-    protected $moduleName = 'Texts';
-    protected $templateName = 'edit';
+    protected string $moduleName = 'Texts';
+    protected string $templateName = 'edit';
 
     protected function fillInputs(): void
     {

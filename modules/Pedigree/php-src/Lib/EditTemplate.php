@@ -15,8 +15,8 @@ use kalanis\kw_pedigree\GetEntries;
  */
 class EditTemplate extends ATemplate
 {
-    protected $moduleName = 'Pedigree';
-    protected $templateName = 'edit';
+    protected string $moduleName = 'Pedigree';
+    protected string $templateName = 'edit';
 
     protected function fillInputs(): void
     {

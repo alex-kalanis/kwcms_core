@@ -35,10 +35,8 @@ class Positions extends AAuthModule implements IHasTitle
     use Lib\TMenu;
     use Templates\TModuleTemplate;
 
-    /** @var Forms\EditPosForm|null */
-    protected $editPosForm = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    protected Forms\EditPosForm $editPosForm;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams

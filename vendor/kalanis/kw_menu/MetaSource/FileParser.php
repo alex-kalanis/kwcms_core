@@ -18,10 +18,8 @@ class FileParser implements Interfaces\IMetaFileParser
 {
     use TEscape;
 
-    /** @var Menu */
-    protected $menu = null;
-    /** @var Entry */
-    protected $entry = null;
+    protected Menu $menu;
+    protected Entry $entry;
 
     public function __construct()
     {

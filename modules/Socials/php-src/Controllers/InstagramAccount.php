@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class InstagramAccount extends AAccount
 {
-    protected $site = 'instagram';
-    protected $accountSite = 'instagram_account';
-    protected $shortSite = 'insta';
+    protected string $site = 'instagram';
+    protected string $accountSite = 'instagram_account';
+    protected string $shortSite = 'insta';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

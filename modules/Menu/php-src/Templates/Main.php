@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Main extends ATemplate
 {
-    protected $moduleName = 'Menu';
-    protected $templateName = 'menu';
+    protected string $moduleName = 'Menu';
+    protected string $templateName = 'menu';
 
     protected function fillInputs(): void
     {

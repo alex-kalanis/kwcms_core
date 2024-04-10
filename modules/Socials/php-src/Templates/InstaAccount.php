@@ -9,5 +9,5 @@ namespace KWCMS\modules\Socials\Templates;
  */
 class InstaAccount extends ATmplAccount
 {
-    protected $templateName = 'instagram_account';
+    protected string $templateName = 'instagram_account';
 }

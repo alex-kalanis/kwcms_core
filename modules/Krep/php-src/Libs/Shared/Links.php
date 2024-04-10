@@ -12,8 +12,7 @@ use KWCMS\modules\Krep\Libs;
  */
 class Links
 {
-    /** @var Libs\Config */
-    protected $config = null;
+    protected Libs\Config $config;
 
     public function __construct(Libs\Config $config)
     {

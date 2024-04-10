@@ -19,12 +19,10 @@ class SemaphoreLock implements IPassedKey
 {
     use TLang;
 
-    /** @var ISemaphore */
-    protected $semaphore = null;
+    protected ISemaphore $semaphore;
     /** @var string[] */
-    protected $specialKey = [];
-    /** @var string */
-    protected $checkContent = '';
+    protected array $specialKey = [];
+    protected string $checkContent = '';
 
     public function __construct(ISemaphore $semaphore, ?IKLTranslations $lang = null)
     {

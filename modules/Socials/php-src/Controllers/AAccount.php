@@ -16,14 +16,10 @@ use KWCMS\modules\Socials\Templates\ATmplAccount;
  */
 abstract class AAccount extends AModule
 {
-    /** @var string */
-    protected $name = '';
-    /** @var string */
-    protected $site = '';
-    /** @var string */
-    protected $accountSite = '';
-    /** @var string */
-    protected $shortSite = '';
+    protected string $name = '';
+    protected string $site = '';
+    protected string $accountSite = '';
+    protected string $shortSite = '';
 
     public function __construct(...$constructParams)
     {

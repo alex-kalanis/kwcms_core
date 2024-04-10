@@ -34,10 +34,8 @@ class Edit extends AAuthModule implements IHasTitle
     use Lib\TTexts;
     use Lib\TModuleTemplate;
 
-    /** @var Lib\EditFileForm|null */
-    protected $editFileForm = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    protected Lib\EditFileForm $editFileForm;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams

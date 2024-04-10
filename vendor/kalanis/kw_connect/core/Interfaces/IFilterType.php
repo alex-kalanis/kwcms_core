@@ -13,7 +13,7 @@ use kalanis\kw_connect\core\ConnectException;
  */
 interface IFilterType
 {
-    const EMPTY_FILTER = '';
+    public const EMPTY_FILTER = '';
 
     /**
      * @param mixed $dataSource

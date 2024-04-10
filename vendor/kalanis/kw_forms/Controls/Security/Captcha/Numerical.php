@@ -41,7 +41,7 @@ class Numerical extends AGraphical
     public function checkFillCaptcha($value): bool
     {
         $formName = $this->getKey() . '_last';
-        return $this->session->offsetExists($formName) && (intval($this->session->offsetGet($formName)) == intval($value));
+        return $this->getSession()->offsetExists($formName) && (intval($this->getSession()->offsetGet($formName)) == intval($value));
     }
 
     public function renderLabel($attributes = null): string

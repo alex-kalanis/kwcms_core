@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class PreviewTemplate extends ATemplate
 {
-    protected $moduleName = 'Texts';
-    protected $templateName = 'preview';
+    protected string $moduleName = 'Texts';
+    protected string $templateName = 'preview';
 
     protected function fillInputs(): void
     {

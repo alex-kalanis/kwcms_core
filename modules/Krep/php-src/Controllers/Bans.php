@@ -22,14 +22,11 @@ use KWCMS\modules\Krep\Libs\ModuleException;
  */
 class Bans extends ADisposition
 {
-    /** @var string */
-    protected $bansPath = '';
-    /** @var string */
-    protected $banIp = 'https://www.k-report.net/pomocnaslozka/bnip.txt';
-    /** @var string */
-    protected $banWord = 'https://www.k-report.net/pomocnaslozka/bnwd.txt';
+    protected string $bansPath = '';
+    protected string $banIp = 'https://www.k-report.net/pomocnaslozka/bnip.txt';
+    protected string $banWord = 'https://www.k-report.net/pomocnaslozka/bnwd.txt';
     /** @var array<mixed> */
-    protected $data = [];
+    protected array $data = [];
 
     public function __construct(Config $config, string $bans_path)
     {

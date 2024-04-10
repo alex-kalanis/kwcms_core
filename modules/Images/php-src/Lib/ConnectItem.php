@@ -18,7 +18,7 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  */
 class ConnectItem implements IRow
 {
-    protected $array;
+    protected array $array;
 
     /**
      * @param FileNode $item

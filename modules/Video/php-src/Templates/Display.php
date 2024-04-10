@@ -4,8 +4,6 @@ namespace KWCMS\modules\Video\Templates;
 
 
 use kalanis\kw_confs\Config;
-use kalanis\kw_templates\TemplateException;
-use KWCMS\modules\Core\Libs\ATemplate;
 
 
 /**
@@ -18,31 +16,9 @@ use KWCMS\modules\Core\Libs\ATemplate;
 # - list -> table with listed details (icon-name-details)
 
  */
-class Display extends ATemplate
+class Display extends \KWCMS\modules\Dirlist\Templates\Display
 {
-    protected $moduleName = 'Video';
-    protected $templateName = 'list';
-
-    /* Which styles are available and if they want solo rows */
-    protected static $styles = [ # usage of one line - one file (for count cols)
-        'icon' => false,
-        'compact' => false,
-        'list' => true
-    ];
-
-    /**
-     * @param string $name
-     * @throws TemplateException
-     * @return $this
-     */
-    public function setTemplateName(string $name): self
-    {
-        if (in_array($name, array_keys(static::$styles))) {
-            $this->templateName = $name;
-            $this->setTemplate($this->loadTemplate());
-        }
-        return $this;
-    }
+    protected string $moduleName = 'Video';
 
     protected function fillInputs(): void
     {

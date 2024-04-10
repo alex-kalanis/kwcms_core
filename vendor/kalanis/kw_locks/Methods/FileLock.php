@@ -21,8 +21,7 @@ class FileLock implements ILock
 {
     use TLang;
 
-    /** @var string */
-    protected $lockFilename = '';
+    protected string $lockFilename = '';
     /** @var resource|null */
     protected $handle = null;
 

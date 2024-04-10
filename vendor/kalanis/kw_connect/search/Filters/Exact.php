@@ -12,7 +12,7 @@ class Exact extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->search->exact($colName, $value);
+            $this->getSource()->exact($colName, $value);
         }
         return $this;
     }

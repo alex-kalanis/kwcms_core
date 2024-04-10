@@ -14,10 +14,8 @@ use kalanis\kw_accounts\Interfaces\IExpire;
  */
 trait TExpiration
 {
-    /** @var int */
-    protected $changeInterval = 31536000; // 60×60×24×365 - one year
-    /** @var int */
-    protected $changeNotice = 2592000; // 60×60×24×30 - one month
+    protected int $changeInterval = 31536000; // 60×60×24×365 - one year
+    protected int $changeNotice = 2592000; // 60×60×24×30 - one month
 
     protected function initExpiry(int $changeInterval, int $changeNoticeBefore): void
     {

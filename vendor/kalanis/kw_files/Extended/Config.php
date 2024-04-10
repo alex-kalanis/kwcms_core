@@ -9,21 +9,15 @@ namespace kalanis\kw_files\Extended;
  */
 class Config
 {
-    const FILE_TEMP = '.tmp';
-    const FILE_EXT = '.png';
+    protected const FILE_TEMP = '.tmp';
+    protected const FILE_EXT = '.png';
 
-    /** @var string */
-    protected $descDir = '.txt'; # description dir
-    /** @var string */
-    protected $descFile = 'index'; # description index filename
-    /** @var string */
-    protected $descExt = '.dsc'; # description file's extension - add to original name
-    /** @var string */
-    protected $thumbDir = '.tmb'; # thumbnail dir
-    /** @var string */
-    protected $thumbExt = self::FILE_EXT;
-    /** @var string */
-    protected $thumbTemp = self::FILE_TEMP;
+    protected string $descDir = '.txt'; # description dir
+    protected string $descFile = 'index'; # description index filename
+    protected string $descExt = '.dsc'; # description file's extension - add to original name
+    protected string $thumbDir = '.tmb'; # thumbnail dir
+    protected string $thumbExt = self::FILE_EXT;
+    protected string $thumbTemp = self::FILE_TEMP;
 
     /**
      * @param array<string, string|int> $params

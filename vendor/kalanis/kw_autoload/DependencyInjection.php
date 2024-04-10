@@ -16,11 +16,10 @@ use ReflectionException;
  */
 class DependencyInjection
 {
-    /** @var DependencyInjection|null */
-    protected static $instance = null;
+    protected static ?DependencyInjection $instance = null;
 
     /** @var array<string, object> */
-    protected $classes = [];
+    protected array $classes = [];
 
     public static function getInstance(): self
     {
@@ -155,7 +154,7 @@ class DependencyInjection
         foreach ($construct->getParameters() as $parameter) {
 
             // by type (class/instance name) from internal storage
-            $classType = $parameter->getType() ? strval($parameter->getType()->getName()) : '';
+            $classType = strval($parameter->getType());
             if ($known = $this->getRep($classType)) {
                 $initParams[] = $known;
                 continue;

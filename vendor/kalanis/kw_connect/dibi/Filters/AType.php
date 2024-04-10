@@ -14,14 +14,8 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
  */
 abstract class AType implements IFilterType
 {
-    /** @var Fluent */
-    protected $dibiFluent;
+    protected ?Fluent $dibiFluent = null;
 
-    /**
-     * @param Fluent $dataSource
-     * @throws ConnectException
-     * @return $this
-     */
     public function setDataSource($dataSource)
     {
         if (!$dataSource instanceof Fluent) {
@@ -34,6 +28,18 @@ abstract class AType implements IFilterType
 
     public function getDataSource()
     {
+        return $this->dibiFluent;
+    }
+
+    /**
+     * @throws ConnectException
+     * @return Fluent
+     */
+    public function getSource(): Fluent
+    {
+        if (!$this->dibiFluent) {
+            throw new ConnectException('Set the datasource first!');
+        }
         return $this->dibiFluent;
     }
 }

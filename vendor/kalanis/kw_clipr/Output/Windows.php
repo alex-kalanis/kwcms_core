@@ -14,9 +14,9 @@ namespace kalanis\kw_clipr\Output;
  */
 class Windows extends AOutput
 {
-    protected $closeSequence = "\e[0m";
-    protected $formatBackSequence = "\e[%dD";
-    protected $eolSequence = "\r\n";
+    protected string $closeSequence = "\e[0m";
+    protected string $formatBackSequence = "\e[%dD";
+    protected string $eolSequence = "\r\n";
 
     protected function setTags(): void
     {

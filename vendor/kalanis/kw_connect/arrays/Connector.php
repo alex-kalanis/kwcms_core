@@ -10,6 +10,7 @@ use kalanis\kw_connect\core\Interfaces\IFilterSubs;
 use kalanis\kw_connect\core\Interfaces\IIterableConnector;
 use kalanis\kw_connect\core\Interfaces\IOrder;
 use kalanis\kw_connect\core\Interfaces\IRow;
+use kalanis\kw_connect\core\Rows\SimpleArrayRow;
 
 
 /**
@@ -23,19 +24,16 @@ class Connector extends AConnector implements IIterableConnector
     /** @var string|int|null */
     protected $primaryKey = null;
     /** @var array<int|string, array<int|string, string|int|float|bool|null>> */
-    protected $dataSource = [];
+    protected array $dataSource = [];
     /** @var array<int, array<string>> */
-    protected $ordering = [];
-    /** @var array<string|int|bool|Row> */
-    protected $filteredData = [];
-    /** @var string */
-    protected $sortDirection = IOrder::ORDER_ASC;
+    protected array $ordering = [];
+    /** @var array<string|int|bool|SimpleArrayRow> */
+    protected array $filteredData = [];
+    protected string $sortDirection = IOrder::ORDER_ASC;
     /** @var array<string|int> */
-    protected $filtering = [];
-    /** @var int|null */
-    protected $offset = null;
-    /** @var int|null */
-    protected $limit = null;
+    protected array $filtering = [];
+    protected ?int $offset = null;
+    protected ?int $limit = null;
 
     /**
      * @param array<int|string, array<int|string, string|int|float|bool|null>> $source
@@ -72,7 +70,7 @@ class Connector extends AConnector implements IIterableConnector
      */
     public function getTranslated($data): IRow
     {
-        return new Row($data);
+        return new SimpleArrayRow($data);
     }
 
     public function setOrdering(string $colName, string $direction): void

@@ -17,14 +17,13 @@ use KWCMS\modules\Krep\Libs\Config;
 class Parser implements ITargets
 {
     /** @var Config */
-    protected $config = null;
+    protected Config $config;
     /** @var PageData */
-    protected $pageData = null;
+    protected ?PageData $pageData = null;
 
     public function __construct(Config $config)
     {
         $this->config = $config;
-        return $this;
     }
 
     public function process(string $response, bool $canPost, ?int $currentPost): PageData

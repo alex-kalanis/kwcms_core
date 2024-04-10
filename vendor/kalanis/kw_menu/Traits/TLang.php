@@ -14,8 +14,7 @@ use kalanis\kw_menu\Translations;
  */
 trait TLang
 {
-    /** @var IMNTranslations|null */
-    protected $mnLang = null;
+    protected ?IMNTranslations $mnLang = null;
 
     public function setMnLang(?IMNTranslations $lang = null): self
     {

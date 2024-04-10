@@ -16,12 +16,11 @@ use KWCMS\modules\Images\Interfaces\IProcessDirs;
  */
 class ProcessDir implements IProcessDirs
 {
-    /** @var Content\Dirs|null */
-    protected $libDirs = null;
+    protected Content\Dirs $libDirs;
     /** @var string[] */
-    protected $userDir = [];
+    protected array $userDir = [];
     /** @var string[] */
-    protected $currentDir = [];
+    protected array $currentDir = [];
 
     /**
      * @param Content\Dirs $dirs

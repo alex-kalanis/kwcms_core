@@ -13,22 +13,15 @@ use kalanis\kw_accounts\Interfaces\IProcessClasses;
  */
 class FileUser implements IUser
 {
-    /** @var string */
-    protected $authId = '0';
-    /** @var string */
-    protected $authName = '';
-    /** @var string */
-    protected $authGroup = '0';
-    /** @var int */
-    protected $authClass = IProcessClasses::CLASS_UNKNOWN;
-    /** @var int */
-    protected $authStatus = IUser::USER_STATUS_UNKNOWN;
-    /** @var string */
-    protected $displayName = '';
-    /** @var string */
-    protected $dir = '';
+    protected string $authId = '0';
+    protected string $authName = '';
+    protected string $authGroup = '0';
+    protected int $authClass = IProcessClasses::CLASS_UNKNOWN;
+    protected int $authStatus = IUser::USER_STATUS_UNKNOWN;
+    protected string $displayName = '';
+    protected string $dir = '';
     /** @var array<string|int, string|int|float|bool> */
-    protected $extra = [];
+    protected array $extra = [];
 
     public function setUserData(?string $authId, ?string $authName, ?string $authGroup, ?int $authClass, ?int $authStatus, ?string $displayName, ?string $dir, ?array $extra = []): void
     {

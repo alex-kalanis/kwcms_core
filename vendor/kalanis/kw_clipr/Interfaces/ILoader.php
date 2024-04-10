@@ -14,7 +14,7 @@ use kalanis\kw_clipr\Tasks\ATask;
  */
 interface ILoader
 {
-    const DEFAULT_TASK = 'clipr\Info';
+    public const DEFAULT_TASK = 'clipr\Info';
 
     /**
      * @param string $classFromParam

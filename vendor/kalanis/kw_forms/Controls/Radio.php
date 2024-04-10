@@ -15,7 +15,7 @@ class Radio extends AControl implements IOriginalValue
 {
     use TChecked;
 
-    public $templateInput = '<input type="radio" value="%1$s"%2$s />';
+    protected string $templateInput = '<input type="radio" value="%1$s"%2$s />';
 
     /**3
      * @param string $alias

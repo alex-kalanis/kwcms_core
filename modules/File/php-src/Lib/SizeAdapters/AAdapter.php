@@ -12,8 +12,7 @@ use KWCMS\modules\File\Lib\Seek;
  */
 abstract class AAdapter
 {
-    /** @var Seek|null */
-    protected $seek = null;
+    protected Seek $seek;
 
     public function __construct()
     {

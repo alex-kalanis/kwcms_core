@@ -1,15 +1,15 @@
 <?php
 
-namespace kalanis\kw_paging\Render;
+namespace kalanis\kw_paging;
 
 
 use kalanis\kw_paging\Interfaces\IPGTranslations;
 
 
 /**
- * Trait THelpingText
- * @package kalanis\kw_paging\Render\SimplifiedPager
- * Trait for render simple helping text about
+ * Class Translations
+ * @package kalanis\kw_paging
+ * Translations
  */
 class Translations implements IPGTranslations
 {

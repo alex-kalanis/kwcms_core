@@ -22,10 +22,8 @@ use KWCMS\modules\Images\Forms;
  */
 class Thumb extends AEdit
 {
-    /** @var string */
-    protected $fileName = '';
-    /** @var Forms\FileThumbForm */
-    protected $thumbForm = null;
+    protected string $fileName = '';
+    protected Forms\FileThumbForm $thumbForm;
 
     public function __construct(...$constructParams)
     {

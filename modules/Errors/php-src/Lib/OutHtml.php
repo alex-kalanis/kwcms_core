@@ -15,10 +15,8 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class OutHtml extends Html
 {
-    /** @var Template */
-    protected $template = null;
-    /** @var ExternalLink */
-    protected $linkExternal = null;
+    protected Template $template;
+    protected ExternalLink $linkExternal;
 
     public function __construct()
     {

@@ -15,8 +15,8 @@ use KWCMS\modules\Personal\Lib\FormPass;
  */
 class PassTemplate extends ATemplate
 {
-    protected $moduleName = 'Personal';
-    protected $templateName = 'pass';
+    protected string $moduleName = 'Personal';
+    protected string $templateName = 'pass';
 
     protected function fillInputs(): void
     {

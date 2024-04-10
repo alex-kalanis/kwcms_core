@@ -19,10 +19,10 @@ class HtmlElement extends AHtmlElement
     use TCss, TStyles;
 
     /** @var string[] */
-    protected static $emptyElements = ['img','hr','br','input','meta','area','embed','keygen','link','param','frame'];
+    protected static array $emptyElements = ['img','hr','br','input','meta','area','embed','keygen','link','param','frame'];
 
     /** @var string  element's name */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @param string $name

@@ -15,10 +15,8 @@ use kalanis\kw_locks\LockException;
  */
 class ClassLock implements ILock
 {
-    /** @var string */
-    protected $lockFilename = '';
-    /** @var IPassedKey */
-    protected $parentClass = null;
+    protected string $lockFilename = '';
+    protected IPassedKey $parentClass;
 
     public function __construct(IPassedKey $parentClass)
     {

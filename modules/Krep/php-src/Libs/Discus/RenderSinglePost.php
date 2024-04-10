@@ -10,8 +10,7 @@ use KWCMS\modules\Krep\Libs;
 
 class RenderSinglePost implements ITargets, Libs\Interfaces\IContent
 {
-    /** @var Libs\Config */
-    protected $config = null;
+    protected Libs\Config $config;
 
     public function __construct(Libs\Config $config)
     {

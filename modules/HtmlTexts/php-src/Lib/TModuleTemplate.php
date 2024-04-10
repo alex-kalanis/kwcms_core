@@ -16,8 +16,8 @@ use KWCMS\modules\Texts\Lib\ModuleTemplate;
  */
 trait TModuleTemplate
 {
-    /** @var ExternalLink|null */
-    protected $links = null;
+    /** @var ExternalLink */
+    protected ?ExternalLink $links = null;
 
     /**
      * @param RoutedPath $routedPath

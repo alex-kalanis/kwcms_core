@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class YoutubeAccount extends AAccount
 {
-    protected $site = 'youtube';
-    protected $accountSite = 'youtube_account';
-    protected $shortSite = 'yt_account';
+    protected string $site = 'youtube';
+    protected string $accountSite = 'youtube_account';
+    protected string $shortSite = 'yt_account';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

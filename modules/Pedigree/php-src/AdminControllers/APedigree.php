@@ -5,6 +5,7 @@ namespace KWCMS\modules\Pedigree\AdminControllers;
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
@@ -30,16 +31,15 @@ abstract class APedigree extends AAuthModule implements IHasTitle
 
     /** @var MapperException|null */
     protected $error = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
+    protected bool $isProcessed = false;
+    protected Forward $forward;
 
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws LangException
      * @throws PedigreeException
+     * @throws HandlerException
      */
     public function __construct(...$constructParams)
     {

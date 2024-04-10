@@ -5,6 +5,7 @@ namespace KWCMS\modules\Short\AdminControllers;
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
@@ -21,6 +22,7 @@ use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree_controls\TWhereDir;
@@ -42,23 +44,19 @@ class Edit extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Lib\MessageForm */
-    protected $form = null;
     /** @var MapperException */
     protected $error = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
+    protected Lib\MessageForm $form;
+    protected CompositeAdapter $files;
+    protected UserDir $userDir;
+    protected Forward $forward;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
+     * @throws HandlerException
      * @throws LangException
      * @throws PathsException
      */
@@ -128,7 +126,7 @@ class Edit extends AAuthModule implements IHasTitle
             $this->forward->forward($this->isProcessed);
             $editTmpl = new Lib\EditTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.update_texts'))->render()));
-        } catch (FormsException $ex) {
+        } catch (FormsException | NotifyException $ex) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
     }

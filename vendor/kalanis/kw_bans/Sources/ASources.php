@@ -11,7 +11,7 @@ namespace kalanis\kw_bans\Sources;
 abstract class ASources
 {
     /** @var array<int, string> */
-    protected $knownRecords = [];
+    protected array $knownRecords = [];
 
     /**
      * @return array<int, string>

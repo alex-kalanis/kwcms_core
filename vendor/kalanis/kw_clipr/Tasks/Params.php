@@ -15,9 +15,9 @@ use Traversable;
 class Params
 {
     /** @var array<string, IEntry> */
-    protected $inputs = [];
+    protected array $inputs = [];
     /** @var array<string, Params\Option> */
-    protected $available = [];
+    protected array $available = [];
 
     /**
      * @param array<IEntry> $inputs

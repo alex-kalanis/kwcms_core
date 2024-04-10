@@ -14,11 +14,11 @@ use kalanis\kw_notify\Interfaces\INotify;
  */
 class Stack implements INotify
 {
-    /** @var ArrayAccess|null */
-    protected $storage = null;
+    /** @var ArrayAccess<string, array<string>> */
+    protected ArrayAccess $storage;
 
     /**
-     * @param ArrayAccess $storage Usually $_SESSION adapter
+     * @param ArrayAccess<string, array<string>> $storage Usually $_SESSION adapter
      */
     public function __construct(ArrayAccess $storage)
     {
@@ -60,7 +60,11 @@ class Stack implements INotify
 
     public function get(string $stackName): array
     {
-        return $this->check($stackName) ? $this->storage->offsetGet($stackName) : [] ;
+        if (!$this->check($stackName)) {
+            return [];
+        }
+        $data = $this->storage->offsetGet($stackName);
+        return empty($data) ? [] : $data;
     }
 
     public function reset(string $stackName): void

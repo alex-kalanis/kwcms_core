@@ -23,6 +23,11 @@ class FilesTranslations implements IFLTranslations
         return Lang::get('core.files.cannot_load_file', $fileName);
     }
 
+    public function flBadMode(int $mode): string
+    {
+        return Lang::get('core.files.bad_mode', $mode);
+    }
+
     public function flCannotSaveFile(string $fileName): string
     {
         return Lang::get('core.files.cannot_save_file', $fileName);
@@ -31,6 +36,11 @@ class FilesTranslations implements IFLTranslations
     public function flCannotOpenFile(string $fileName): string
     {
         return Lang::get('core.files.cannot_open_file', $fileName);
+    }
+
+    public function flCannotSeekFile(string $fileName): string
+    {
+        return Lang::get('core.files.cannot_seek_file', $fileName);
     }
 
     public function flCannotWriteFile(string $fileName): string
@@ -101,6 +111,11 @@ class FilesTranslations implements IFLTranslations
     public function flNoProcessFileSet(): string
     {
         return Lang::get('core.files.no_process_files');
+    }
+
+    public function flNoProcessStreamSet(): string
+    {
+        return Lang::get('core.files.no_process_streams');
     }
 
     public function flNoProcessDirSet(): string

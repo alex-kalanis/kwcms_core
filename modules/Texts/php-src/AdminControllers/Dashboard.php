@@ -35,14 +35,10 @@ class Dashboard extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
 
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var Lib\NewFileForm|null */
-    protected $newFileForm = null;
-    /** @var Lib\OpenFileForm|null */
-    protected $openFileForm = null;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected Lib\NewFileForm $newFileForm;
+    protected Lib\OpenFileForm $openFileForm;
 
     /**
      * @param mixed ...$constructParams
@@ -80,7 +76,7 @@ class Dashboard extends AAuthModule implements IHasTitle
 
             $this->newFileForm->composeForm($this->links->linkVariant($this->getTargetEdit()));
             $this->openFileForm->composeForm($this->getWhereDir(), $this->tree->getRoot(), $this->links->linkVariant($this->getTargetEdit()));
-        } catch (FilesException | PathsException $ex) {
+        } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;
         }
     }

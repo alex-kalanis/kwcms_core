@@ -10,5 +10,5 @@ namespace kalanis\kw_forms\Controls;
  */
 class Html extends AControl
 {
-    public $templateInput = '<span %2$s>%1$s</span>';
+    protected string $templateInput = '<span %2$s>%1$s</span>';
 }

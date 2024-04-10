@@ -15,8 +15,8 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 trait TModuleTemplate
 {
-    /** @var ExternalLink|null */
-    protected $links = null;
+    /** @var ExternalLink */
+    protected ?ExternalLink $links = null;
 
     /**
      * @throws LangException

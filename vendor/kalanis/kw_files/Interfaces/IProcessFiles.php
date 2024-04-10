@@ -16,13 +16,14 @@ interface IProcessFiles
 {
     /**
      * @param string[] $entry
-     * @param string|resource $content
+     * @param string $content
      * @param int<0, max>|null $offset null for complete rewrite, number for insert somewhere
+     * @param int<0, max> $mode
      * @throws FilesException
      * @throws PathsException
      * @return bool
      */
-    public function saveFile(array $entry, $content, ?int $offset = null): bool;
+    public function saveFile(array $entry, string $content, ?int $offset = null, int $mode = 0): bool;
 
     /**
      * @param string[] $entry
@@ -30,9 +31,9 @@ interface IProcessFiles
      * @param int<0, max>|null $length
      * @throws FilesException
      * @throws PathsException
-     * @return string|resource
+     * @return string
      */
-    public function readFile(array $entry, ?int $offset = null, ?int $length = null);
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null): string;
 
     /**
      * @param string[] $source

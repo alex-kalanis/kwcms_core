@@ -12,10 +12,7 @@ use KWCMS\modules\Krep\Libs;
  */
 class ErrorResult
 {
-    /** @var Libs\Shared\Links */
-    protected $links = null;
-    /** @var Libs\ModuleException */
-    protected $exception = null;
+    protected Libs\Shared\Links $links;
 
     public function __construct(Libs\Shared\Links $links)
     {

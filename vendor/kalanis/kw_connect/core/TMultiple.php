@@ -14,10 +14,9 @@ use kalanis\kw_connect\core\Interfaces\IFilterSubs;
  */
 trait TMultiple
 {
-    /** @var IFilterFactory */
-    protected $filterFactory = null;
+    protected ?IFilterFactory $filterFactory = null;
 
-    public function addFilterFactory(IFilterFactory $factory): void
+    public function addFilterFactory(?IFilterFactory $factory): void
     {
         $this->filterFactory = $factory;
     }
@@ -31,13 +30,15 @@ trait TMultiple
      */
     public function setFiltering(string $colName, $value)
     {
-        foreach ($value as list($filterType, $expected)) {
-            $subFilter = $this->filterFactory->getFilter($filterType);
-            if ($subFilter instanceof IFilterSubs) {
-                $subFilter->addFilterFactory($this->filterFactory);
+        if ($this->filterFactory && ($this->filterFactory instanceof IFilterFactory)) {
+            foreach ($value as list($filterType, $expected)) {
+                $subFilter = $this->filterFactory->getFilter($filterType);;
+                if ($subFilter instanceof IFilterSubs) {
+                    $subFilter->addFilterFactory($this->filterFactory);
+                }
+                $subFilter->setDataSource($this->{$this->getDataSourceName()});
+                $subFilter->setFiltering($colName, $expected);
             }
-            $subFilter->setDataSource($this->{$this->getDataSourceName()});
-            $subFilter->setFiltering($colName, $expected);
         }
         return $this;
     }

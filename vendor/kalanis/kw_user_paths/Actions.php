@@ -20,12 +20,9 @@ class Actions
 {
     use TLang;
 
-    /** @var UserDir */
-    protected $data = null;
-    /** @var IProcessNodes */
-    protected $nodes = null;
-    /** @var IProcessDirs */
-    protected $dirs = null;
+    protected UserDir $data;
+    protected IProcessNodes $nodes;
+    protected IProcessDirs $dirs;
 
     public function __construct(UserDir $data, IProcessNodes $nodes, IProcessDirs $dirs, ?Interfaces\IUPTranslations $lang = null)
     {

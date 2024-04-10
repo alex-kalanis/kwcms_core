@@ -15,7 +15,7 @@ use kalanis\kw_modules\Interfaces\IModule;
 class ClassLoader implements ILoader
 {
     /** @var ILoader[] */
-    protected $loaders = [];
+    protected array $loaders = [];
 
     /**
      * @param ILoader[] $loaders

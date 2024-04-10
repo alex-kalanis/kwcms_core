@@ -567,8 +567,7 @@ class CustomList implements IMimeChecks
         'zsh' => 'text/x-script.zsh',
     ];
 
-    /** @var ArrayPath */
-    protected $pathLib = null;
+    protected ArrayPath $pathLib;
 
     public function __construct()
     {

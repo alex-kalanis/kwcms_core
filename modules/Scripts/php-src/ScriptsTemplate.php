@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ScriptsTemplate extends ATemplate
 {
-    protected $moduleName = 'Scripts';
-    protected $templateName = 'template';
+    protected string $moduleName = 'Scripts';
+    protected string $templateName = 'template';
 
     protected function fillInputs(): void
     {

@@ -13,10 +13,8 @@ use kalanis\kw_storage\Interfaces;
  */
 class FactoryInstances
 {
-    /** @var FactoryInstances|null */
-    protected static $instance = null;
-    /** @var Factory */
-    protected $factory = null;
+    protected static ?FactoryInstances $instance = null;
+    protected Factory $factory;
 
     public static function init(?Interfaces\IStTranslations $lang = null): void
     {

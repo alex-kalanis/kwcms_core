@@ -36,6 +36,11 @@ class ImageSizeMax extends AFileRule
         throw new RuleException($this->errorText);
     }
 
+    /**
+     * @param mixed|null $againstValue
+     * @throws RuleException
+     * @return array<mixed>|mixed|null
+     */
     protected function checkValue($againstValue)
     {
         if (!is_array($againstValue)) {

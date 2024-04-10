@@ -3,8 +3,8 @@
 namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_confs\ConfException;
-use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -26,12 +26,9 @@ use KWCMS\modules\Images\Forms;
  */
 class Copy extends AEdit
 {
-    /** @var string */
-    protected $fileName = '';
-    /** @var Forms\FileActionForm */
-    protected $copyForm = null;
-    /** @var ITree */
-    protected $tree = null;
+    protected string $fileName = '';
+    protected Forms\FileActionForm $copyForm;
+    protected ITree $tree;
 
     /**
      * @param mixed ...$constructParams
@@ -39,6 +36,7 @@ class Copy extends AEdit
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
+     * @throws HandlerException
      */
     public function __construct(...$constructParams)
     {

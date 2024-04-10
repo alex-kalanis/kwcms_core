@@ -15,11 +15,9 @@ use kalanis\kw_paths\PathsException;
 class MoreEntries
 {
     /** @var string[] */
-    protected $groupKey = [];
-    /** @var MetaProcessor */
-    protected $meta = null;
-    /** @var Interfaces\IEntriesSource */
-    protected $dataSource = null;
+    protected array $groupKey = [];
+    protected MetaProcessor $meta;
+    protected Interfaces\IEntriesSource $dataSource;
 
     public function __construct(MetaProcessor $metaSource, Interfaces\IEntriesSource $dataSource)
     {
@@ -42,7 +40,7 @@ class MoreEntries
      * @throws MenuException
      * @return $this
      */
-    public function setMetaKey(array $metaKey): self
+    public function setMeta(array $metaKey): self
     {
         $this->meta->setKey($metaKey);
         return $this;

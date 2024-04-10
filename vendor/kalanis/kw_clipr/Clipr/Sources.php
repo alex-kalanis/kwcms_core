@@ -15,8 +15,7 @@ use kalanis\kw_input\Interfaces\IEntry;
  */
 class Sources
 {
-    /** @var string */
-    protected $sourceType = '';
+    protected string $sourceType = '';
 
     public function determineInput(bool $isWeb = false, bool $noColor = false): self
     {

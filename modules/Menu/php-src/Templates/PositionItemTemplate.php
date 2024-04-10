@@ -14,8 +14,8 @@ use KWCMS\modules\Menu\Forms\InputPosition;
  */
 class PositionItemTemplate extends ATemplate
 {
-    protected $moduleName = 'Menu';
-    protected $templateName = 'position_item';
+    protected string $moduleName = 'Menu';
+    protected string $templateName = 'position_item';
 
     protected function fillInputs(): void
     {

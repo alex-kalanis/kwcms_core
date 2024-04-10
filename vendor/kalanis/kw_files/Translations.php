@@ -18,6 +18,11 @@ class Translations implements IFLTranslations
         return 'Cannot process wanted path.';
     }
 
+    public function flBadMode(int $mode): string
+    {
+        return 'Bad mode for file processing.';
+    }
+
     public function flCannotLoadFile(string $fileName): string
     {
         return 'Cannot load wanted file.';
@@ -36,6 +41,16 @@ class Translations implements IFLTranslations
     public function flCannotOpenFile(string $fileName): string
     {
         return 'Cannot open wanted file.';
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     * @codeCoverageIgnore failing streams
+     */
+    public function flCannotSeekFile(string $fileName): string
+    {
+        return 'Cannot write wanted file.';
     }
 
     /**
@@ -125,6 +140,11 @@ class Translations implements IFLTranslations
     public function flNoProcessFileSet(): string
     {
         return 'No processing files library set!';
+    }
+
+    public function flNoProcessStreamSet(): string
+    {
+        return 'No processing stream library set!';
     }
 
     public function flNoProcessDirSet(): string

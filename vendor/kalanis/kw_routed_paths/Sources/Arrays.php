@@ -11,7 +11,7 @@ namespace kalanis\kw_routed_paths\Sources;
 class Arrays extends ASource
 {
     /** @var array<string, bool|int|float|string|array<string>> */
-    protected $input = [];
+    protected array $input = [];
 
     /**
      * @param array<string, bool|int|float|string|array<string>> $inputs

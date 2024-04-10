@@ -15,8 +15,7 @@ namespace kalanis\kw_modules\Output;
  */
 abstract class AOutput
 {
-    /** @var bool */
-    protected $canWrap = false;
+    protected bool $canWrap = false;
 
     public function __toString()
     {

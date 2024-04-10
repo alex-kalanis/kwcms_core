@@ -10,9 +10,9 @@ namespace kalanis\kw_forms\Controls;
  */
 class Hidden extends AControl
 {
-    protected $templateError = '';
-    protected $templateLabel = '';
-    protected $templateInput = '<input type="hidden" value="%1$s"%2$s />';
+    protected string $templateError = '';
+    protected string $templateLabel = '';
+    protected string $templateInput = '<input type="hidden" value="%1$s"%2$s />';
 
     public function set(string $alias, ?string $value = null): self
     {

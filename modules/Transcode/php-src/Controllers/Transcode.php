@@ -14,14 +14,12 @@ use KWCMS\modules\Transcode\Templates;
 
 class Transcode extends AModule
 {
-    /** @var Lib\VariantFactory */
-    protected $libFactory = null;
-    /** @var Lib\AVariant|null */
-    protected $libVariant = null;
-    /** @var Lib\MessageForm */
-    protected $form = [];
+    protected Lib\VariantFactory $libFactory;
+    /** @var Lib\AVariant */
+    protected ?Lib\AVariant $libVariant = null;
+    protected Lib\MessageForm $form;
     /** @var string[] */
-    protected $conf = [];
+    protected array $conf = [];
 
     public function __construct(
         Lib\MessageForm $form,

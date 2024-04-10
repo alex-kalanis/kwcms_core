@@ -18,10 +18,8 @@ use KWCMS\modules\Iframe\Lib;
  */
 class Iframe extends AModule
 {
-    /** @var Lib\Template */
-    protected $template = null;
-    /** @var string */
-    protected $link = '';
+    protected Lib\Template $template;
+    protected string $link = '';
 
     /**
      * @param mixed ...$constructParams

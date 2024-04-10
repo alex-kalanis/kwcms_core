@@ -14,8 +14,8 @@ use KWCMS\modules\Personal\Lib\FormProps;
  */
 class CertTemplate extends ATemplate
 {
-    protected $moduleName = 'Personal';
-    protected $templateName = 'cert';
+    protected string $moduleName = 'Personal';
+    protected string $templateName = 'cert';
 
     protected function fillInputs(): void
     {

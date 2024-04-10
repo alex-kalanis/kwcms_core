@@ -16,10 +16,8 @@ use kalanis\kw_semaphore\SemaphoreException;
  */
 class Semaphore implements ICache
 {
-    /** @var ICache */
-    protected $cache = null;
-    /** @var ISemaphore */
-    protected $reloadSemaphore = null;
+    protected ICache $cache;
+    protected ISemaphore $reloadSemaphore;
 
     public function __construct(ICache $cache, ISemaphore $reloadSemaphore)
     {

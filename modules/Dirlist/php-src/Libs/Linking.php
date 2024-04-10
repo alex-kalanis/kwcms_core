@@ -16,9 +16,9 @@ use kalanis\kw_paging\Interfaces\ILink;
  */
 class Linking implements ILink
 {
-    const PAGE_KEY = 's';
-    protected $handler = null;
-    protected $variable = null;
+    public const PAGE_KEY = 's';
+    protected Handler $handler;
+    protected SingleVariable $variable;
 
     public function __construct(Sources\Sources $sources, string $key = self::PAGE_KEY)
     {

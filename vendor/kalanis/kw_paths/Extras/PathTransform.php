@@ -16,8 +16,7 @@ class PathTransform
 {
     use TPathTransform;
 
-    /** @var IPATranslations */
-    protected $lang = null;
+    protected IPATranslations $lang;
 
     public static function get(IPATranslations $lang = null): self
     {

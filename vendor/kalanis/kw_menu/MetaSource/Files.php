@@ -27,11 +27,9 @@ class Files implements IMetaSource
     use TToString;
 
     /** @var string[] */
-    protected $key = [];
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var IMetaFileParser */
-    protected $parser = null;
+    protected array $key = [];
+    protected CompositeAdapter $files;
+    protected IMetaFileParser $parser;
 
     /**
      * @param CompositeAdapter $files

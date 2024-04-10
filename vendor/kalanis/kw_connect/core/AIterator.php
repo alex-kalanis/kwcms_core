@@ -14,7 +14,7 @@ abstract class AIterator implements \ArrayAccess, \IteratorAggregate, \Countable
      * Iterable variable
      * @var array<string|int, string|int|float|bool|null>
      */
-    protected $iterable = [];
+    protected array $iterable = [];
 
     /**
      * Name of iterable variable;

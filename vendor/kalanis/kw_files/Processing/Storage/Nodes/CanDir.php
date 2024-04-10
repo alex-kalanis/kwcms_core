@@ -16,13 +16,12 @@ use kalanis\kw_storage\StorageException;
  */
 class CanDir extends ANodes
 {
-    /** @var IPassDirs */
-    protected $storage = null;
+    protected IPassDirs $storage;
 
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)
     {
         $this->storage = $storage;
-        $this->setLang($lang);
+        $this->setFlLang($lang);
     }
 
     public function exists(array $entry): bool
@@ -101,6 +100,6 @@ class CanDir extends ANodes
      */
     protected function noDirectoryDelimiterSet(): string
     {
-        return $this->getLang()->flNoDirectoryDelimiterSet();
+        return $this->getFlLang()->flNoDirectoryDelimiterSet();
     }
 }

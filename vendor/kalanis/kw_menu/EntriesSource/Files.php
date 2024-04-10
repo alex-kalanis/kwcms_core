@@ -23,10 +23,8 @@ class Files implements IEntriesSource
 {
     use TFilterHtml;
 
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
+    protected CompositeAdapter $files;
+    protected ArrayPath $arrPath;
 
     public function __construct(CompositeAdapter $files)
     {

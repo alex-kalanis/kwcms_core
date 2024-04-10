@@ -9,10 +9,8 @@ use kalanis\kw_bans\Sources\ASources;
 
 class Basic extends ABan
 {
-    /** @var ASources */
-    protected $source = null;
-    /** @var string */
-    protected $searchKey = '';
+    protected ASources $source;
+    protected string $searchKey = '';
 
     public function __construct(ASources $source, ?IKBTranslations $lang = null)
     {

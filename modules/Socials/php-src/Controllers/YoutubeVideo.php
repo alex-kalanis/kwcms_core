@@ -15,12 +15,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class YoutubeVideo extends AModule
 {
-    /** @var string */
-    protected $link = '';
-    /** @var int|null */
-    protected $width = null;
-    /** @var int|null */
-    protected $height = null;
+    protected string $link = '';
+    protected ?int $width = null;
+    protected ?int $height = null;
 
     public function __construct(...$constructParams)
     {

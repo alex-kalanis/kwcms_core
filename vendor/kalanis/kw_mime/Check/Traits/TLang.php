@@ -9,8 +9,7 @@ use kalanis\kw_mime\Translations;
 
 trait TLang
 {
-    /** @var IMiTranslations|null */
-    protected $miLang = null;
+    protected ?IMiTranslations $miLang = null;
 
     public function setMiLang(IMiTranslations $lang = null): void
     {

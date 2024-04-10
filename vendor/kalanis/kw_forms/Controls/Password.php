@@ -10,7 +10,7 @@ namespace kalanis\kw_forms\Controls;
  */
 class Password extends AControl
 {
-    public $templateInput = '<input type="password" value=""%2$s />';
+    protected string $templateInput = '<input type="password" value=""%2$s />';
 
     public function set(string $alias, string $label = ''): self
     {

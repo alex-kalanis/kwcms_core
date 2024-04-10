@@ -1,9 +1,8 @@
 <?php
 
-namespace kalanis\kw_paging\Render;
+namespace kalanis\kw_paging\Traits;
 
 
-use kalanis\kw_paging\Interfaces\IPGTranslations;
 use kalanis\kw_paging\Interfaces\IPositions;
 
 
@@ -14,20 +13,14 @@ use kalanis\kw_paging\Interfaces\IPositions;
  */
 trait THelpingText
 {
-    /** @var IPGTranslations|null*/
-    protected $lang = null;
-
-    public function setLang(?IPGTranslations $lang): void
-    {
-        $this->lang = $lang;
-    }
+    use TLang;
 
     public function getFilledText(?IPositions $positions): string
     {
-        if (!$this->lang || !$positions) {
+        if (!$this->kpgLang || !$positions) {
             return '';
         }
-        return $this->lang->kpgShowResults(
+        return $this->getKpgLang()->kpgShowResults(
             $positions->getPager()->getOffset() + 1,
             min($positions->getPager()->getOffset() + $positions->getPager()->getLimit(), $positions->getPager()->getMaxResults()),
             $positions->getPager()->getMaxResults()

@@ -21,8 +21,7 @@ use KWCMS\modules\Images\Forms;
  */
 class Delete extends AEdit
 {
-    /** @var Forms\FileDeleteForm */
-    protected $deleteForm = null;
+    protected Forms\FileDeleteForm $deleteForm;
 
     public function __construct(...$constructParams)
     {

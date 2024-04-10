@@ -15,12 +15,10 @@ use kalanis\kw_tree\Essentials\FileNode;
  */
 class ControlNode
 {
-    /** @var FileNode|null */
-    protected $node = null;
-    /** @var AControl|null */
-    protected $control = null;
+    protected ?FileNode $node = null;
+    protected ?AControl $control = null;
     /** @var ControlNode[] */
-    protected $subNodes = [];
+    protected array $subNodes = [];
 
     public function setNode(?FileNode $node = null): self
     {
