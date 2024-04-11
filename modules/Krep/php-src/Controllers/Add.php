@@ -21,8 +21,7 @@ class Add extends ADisposition
     protected Libs\Add\ProcessPage $processPage;
     protected Libs\Add\ProcessForm $processForm;
     protected Libs\Shared\PageData $pageData;
-    /** @var Libs\ModuleException|null */
-    protected $error = null;
+    protected ?Libs\ModuleException $error = null;
     protected Libs\Add\BlockResult $blockResult;
     protected Libs\Add\ErrorResult $errorResult;
     protected Libs\Add\RenderFactory $renderFactory;

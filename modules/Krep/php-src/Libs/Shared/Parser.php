@@ -16,19 +16,24 @@ use KWCMS\modules\Krep\Libs\Config;
  */
 class Parser implements ITargets
 {
-    /** @var Config */
     protected Config $config;
+    protected PageData $libPage;
+    protected TopicList $libTopic;
+    protected PostList $libPost;
     /** @var PageData */
     protected ?PageData $pageData = null;
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, PageData $libPage, TopicList $libTopic, PostList $libPost)
     {
         $this->config = $config;
+        $this->libPage = $libPage;
+        $this->libTopic = $libTopic;
+        $this->libPost = $libPost;
     }
 
     public function process(string $response, bool $canPost, ?int $currentPost): PageData
     {
-        $this->pageData = new PageData();
+        $this->pageData = clone $this->libPage;
         $data = $this->parsePage($response);
         // sestav data do struktury
 
@@ -149,7 +154,6 @@ class Parser implements ITargets
 
     protected function parsePosts(string $body): void
     {
-        $libPost = new PostList();
         $body = $this->getLargerBlock($body, '(<body)(.*?)(</body>)');
         $body = $this->getLargerBlock($body, '(<tbody id="dfprispevky">)(.*?)(</tbody>)');
         $end = '<!--/Post:';
@@ -169,7 +173,7 @@ class Parser implements ITargets
                 $text = iconv($this->pageData->encodingRemote, $encodingTarget, $text);
             }
 
-            $post = clone $libPost;
+            $post = clone $this->libPost;
             $this->pageData->posts[] = $post->setData(intval($num), intval($time), intval($count), $name, $this->getSmileys($text));
 
             $tpe = strpos($body, $end) + strlen($end);
@@ -179,7 +183,6 @@ class Parser implements ITargets
 
     protected function parseTopics(string $body): void
     {
-        $libTopic = new TopicList();
         $body = $this->getLargerBlock($body, '(<tbody class="dfdialogy">)(.*?)(</tbody>)');
         $end = '<!--/Top-->';
         while (strpos($body, $end)) {
@@ -202,7 +205,7 @@ class Parser implements ITargets
                 $name = iconv($this->pageData->encodingRemote, $encodingTarget, $name);
             }
 
-            $topic = clone $libTopic;
+            $topic = clone $this->libTopic;
             $this->pageData->topics[] = $topic->setData(intval($num), intval($time), $name, '', 0, $asHeader);
             $tpe = strpos($body, $end) + strlen($end);
             $body = substr($body, $tpe);

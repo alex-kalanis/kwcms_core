@@ -16,8 +16,7 @@ class Discus extends ADisposition
 {
     protected Libs\Discus\ProcessPage $processor;
     protected Libs\Shared\PageData $pageData;
-    /** @var Libs\ModuleException|null */
-    protected $error = null;
+    protected ?Libs\ModuleException $error = null;
     protected Libs\Discus\BlockResult $blockResult;
     protected Libs\Discus\ErrorResult $errorResult;
     protected Libs\Discus\RenderFactory $renderFactory;
@@ -70,7 +69,7 @@ class Discus extends ADisposition
                 strval($this->getFromInput('SCRIPT_NAME', '', [IEntry::SOURCE_SERVER])),
                 boolval(intval(strval($this->getFromInput('arch', 0)))),
                 strval($this->getFromInput('prisp', ''))
-        );
+            );
         } catch (Libs\ModuleException $ex) {
             $this->error = $ex;
         }
