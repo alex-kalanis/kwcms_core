@@ -40,6 +40,7 @@ require_once(__DIR__ . implode(DIRECTORY_SEPARATOR, ['', '..', 'vendor', 'kalani
 spl_autoload_register('\kalanis\kw_autoload\Autoload::autoloading');
 
 $di = \kalanis\kw_autoload\DependencyInjection::getInstance();
+$di->setParamNamesForAdditional(['extraParams', 'addedParams']);
 
 // where is the system?
 $systemPaths = new \kalanis\kw_paths\Path();
