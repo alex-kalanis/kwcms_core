@@ -9,6 +9,7 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Traits\TToString;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\ILoader;
 use kalanis\kw_modules\Interfaces\IModule;
@@ -25,6 +26,7 @@ use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_user_paths\InnerLinks;
 use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Errors\Controllers\Errors;
 use KWCMS\modules\SinglePage\PageTemplate;
 
 
@@ -50,6 +52,7 @@ class SinglePage extends AModule
     protected InnerLinks $innerLink;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
     protected array $constructParams = [];
+    protected bool $dumpImmediately = false;
 
     /**
      * @param mixed ...$constructParams
@@ -79,23 +82,41 @@ class SinglePage extends AModule
             boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
+        $this->dumpImmediately = boolval(intval(Config::get('Core', 'site.debug', false)));
     }
 
     /**
      * @throws FilesException
+     * @throws LangException
      * @throws ModuleException
      * @throws PathsException
      */
     public function process(): void
     {
-        $configPath = Config::get('Core', 'singlePage', 'index.htm');
-        $path = $this->innerLink->toFullPath(
-            $this->arrPath->setString($configPath)->getArray()
-        );
-        if (!$this->files->isFile($path)) {
-            throw new ModuleException(sprintf('Cannot load content on path *%s*', $configPath));
+        try {
+            $configPath = Config::get('Core', 'singlePage', 'index.htm');
+            $path = $this->innerLink->toFullPath(
+                $this->arrPath->setString($configPath)->getArray()
+            );
+            if (!$this->files->isFile($path)) {
+                throw new ModuleException(sprintf('Cannot load content on path *%s*', $configPath), 404);
+            }
+            $this->content = $this->toString(Stuff::arrayToPath($path), $this->files->readFile($path));
+        } catch (ModuleException $ex) {
+            if ($this->dumpImmediately) {
+                throw $ex;
+            }
+            $module = new Errors($this->constructParams);
+            $module->init($this->inputs, array_merge(
+                $this->params, [
+                    ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT,
+                    'error' => $ex->getCode() ?: 500,
+                    'error_message' => $ex->getMessage()
+                ]
+            ));
+            $module->process();
+            $this->content = $module->output()->output();
         }
-        $this->content = $this->toString(Stuff::arrayToPath($path), $this->files->readFile($path));
     }
 
     public function output(): AOutput

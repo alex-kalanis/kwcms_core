@@ -15,6 +15,7 @@ use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Errors\Controllers\Errors;
 
 
 /**
@@ -28,6 +29,7 @@ class Core extends AModule
     protected ?AModule $module = null;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
     protected array $constructParams = [];
+    protected bool $dumpImmediately = false;
 
     /**
      * @param mixed ...$constructParams
@@ -40,9 +42,11 @@ class Core extends AModule
         Lang::load(static::getClassName(static::class));
 
         $this->constructParams = $constructParams;
+        $this->dumpImmediately = boolval(intval(Config::get('Core', 'site.debug', false)));
     }
 
     /**
+     * @throws LangException
      * @throws ModuleException
      * @throws PathsException
      */
@@ -63,18 +67,33 @@ class Core extends AModule
             throw new ModuleException(sprintf('Module *%s* not found, not even *%s*!', $wantModuleName, $defaultModuleName));
         }
 
-        $this->module = $modulesFactory->getLoader($this->constructParams)->load([$moduleRecord->getModuleName()], $this->constructParams);
+        try {
+            $this->module = $modulesFactory->getLoader($this->constructParams)->load([$moduleRecord->getModuleName()], $this->constructParams);
 
-        if (!$this->module) {
-            throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
+            if (!$this->module) {
+                throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
+            }
+
+            $this->module->init($this->inputs, array_merge(
+                $moduleRecord->getParams(),
+                $this->params,
+                [ISitePart::KEY_LEVEL => ISitePart::SITE_RESPONSE]
+            ));
+            $this->module->process();
+        } catch (ModuleException $ex) {
+            if ($this->dumpImmediately) {
+                throw $ex;
+            }
+            $this->module = new Errors($this->constructParams);
+            $this->module->init($this->inputs, array_merge(
+                $moduleRecord->getParams(), $this->params, [
+                    ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT,
+                    'error' => $ex->getCode() ?: 500,
+                    'error_message' => $ex->getMessage()
+                ]
+            ));
+            $this->module->process();
         }
-
-        $this->module->init($this->inputs, array_merge(
-            $moduleRecord->getParams(),
-            $this->params,
-            [ISitePart::KEY_LEVEL => ISitePart::SITE_RESPONSE]
-        ));
-        $this->module->process();
     }
 
     public function output(): AOutput

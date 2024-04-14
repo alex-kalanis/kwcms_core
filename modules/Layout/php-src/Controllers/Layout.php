@@ -6,6 +6,7 @@ namespace KWCMS\modules\Layout\Controllers;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_input\Interfaces\IEntry;
+use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Access\Factory as modules_factory;
 use kalanis\kw_modules\Interfaces\IModule;
 use kalanis\kw_modules\Interfaces\Lists\IModulesList;
@@ -20,6 +21,7 @@ use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AModule;
+use KWCMS\modules\Errors\Controllers\Errors;
 use KWCMS\modules\Layout\BodyTemplate;
 use KWCMS\modules\Layout\LayoutTemplate;
 
@@ -39,6 +41,7 @@ class Layout extends AModule
     protected Processor $subModules;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
     protected array $constructParams = [];
+    protected bool $dumpImmediately = false;
 
     /**
      * @param mixed ...$constructParams
@@ -47,6 +50,7 @@ class Layout extends AModule
      */
     public function __construct(...$constructParams)
     {
+        Config::load('Core', 'site');
         Config::load('Core', 'page');
 
         $this->constructParams = $constructParams;
@@ -55,9 +59,11 @@ class Layout extends AModule
         $this->loader = $modulesFactory->getLoader(['modules_loaders' => [$constructParams, 'web']]);
         $this->modulesList = $modulesFactory->getModulesList($constructParams);
         $this->subModules = new Processor($this->loader, $this->modulesList);
+        $this->dumpImmediately = boolval(intval(Config::get('Core', 'site.debug', false)));
     }
 
     /**
+     * @throws LangException
      * @throws ModuleException
      * @throws PathsException
      */
@@ -71,20 +77,35 @@ class Layout extends AModule
         $moduleRecord = $this->modulesList->get($wantModuleName);
         $moduleRecord = $moduleRecord ?? $this->modulesList->get($defaultModuleName);
 
-        if (empty($moduleRecord)) {
-            throw new ModuleException(sprintf('Module *%s* not found!', $wantModuleName));
+        try {
+            if (empty($moduleRecord)) {
+                throw new ModuleException(sprintf('Module *%s* not found!', $wantModuleName));
+            }
+
+            $this->module = $this->loader->load([$moduleRecord->getModuleName()], $this->constructParams);
+
+            if (!$this->module) {
+                throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
+            }
+
+            $this->module->init($this->inputs, array_merge(
+                $moduleRecord->getParams(), $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT]
+            ));
+            $this->module->process();
+        } catch (ModuleException $ex) {
+            if ($this->dumpImmediately) {
+                throw $ex;
+            }
+            $this->module = new Errors($this->constructParams);
+            $this->module->init($this->inputs, array_merge(
+                $moduleRecord->getParams(), $this->params, [
+                    ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT,
+                    'error' => $ex->getCode() ?: 500,
+                    'error_message' => $ex->getMessage()
+                ]
+            ));
+            $this->module->process();
         }
-
-        $this->module = $this->loader->load([$moduleRecord->getModuleName()], $this->constructParams);
-
-        if (!$this->module) {
-            throw new ModuleException(sprintf('Controller for module *%s* not found!', $moduleRecord->getModuleName()));
-        }
-
-        $this->module->init($this->inputs, array_merge(
-            $moduleRecord->getParams(), $this->params, [ISitePart::KEY_LEVEL => ISitePart::SITE_LAYOUT]
-        ));
-        $this->module->process();
     }
 
     public function output(): AOutput

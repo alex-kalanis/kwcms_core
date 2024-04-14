@@ -24,10 +24,15 @@ class OutHtml extends Html
         $this->linkExternal = new ExternalLink(StoreRouted::getPath());
     }
 
-    public function setContent(string $content = ''): parent
+    public function setContent(string $content = '', string $specificDescription = ''): parent
     {
-        $imgLink = $this->linkExternal->linkVariant('files/alert.png', 'sysimage', true);
-        $this->template->reset()->setData($content, Lang::get('error.desc.' . $content), $imgLink);
+        $imgLink = $this->linkExternal->linkVariant('system/alert.png', 'sysimage', true);
+        $this->template->reset()->setData(
+            $content,
+            Lang::get('error.desc.' . $content),
+            $imgLink,
+            $specificDescription
+        );
         return $this;
     }
 
