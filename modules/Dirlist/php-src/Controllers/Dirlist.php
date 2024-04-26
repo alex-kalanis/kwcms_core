@@ -51,8 +51,7 @@ class Dirlist extends AModule
     protected Templates\Row $templateRow;
     protected Templates\Display $templateDisplay;
     protected ExternalLink $linkExternal;
-    /** @var Images|null */
-    protected $libImages = null;
+    protected Images $libImages;
     /** @var SimplifiedPager|null */
     protected $pager = null;
     protected ArrayPath $arrPath;

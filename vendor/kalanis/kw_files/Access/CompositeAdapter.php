@@ -58,7 +58,7 @@ class CompositeAdapter implements Interfaces\IProcessNodes, Interfaces\IProcessD
 
     public function saveFile(array $entry, string $content, ?int $offset = null, int $mode = 0): bool
     {
-        return $this->libFile->saveFile($entry, $content, $offset);
+        return $this->libFile->saveFile($entry, $content, $offset, $mode);
     }
 
     public function readFile(array $entry, ?int $offset = null, ?int $length = null): string

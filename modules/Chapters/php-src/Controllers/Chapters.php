@@ -68,10 +68,11 @@ class Chapters extends AModule
      */
     public function process(): void
     {
-        $this->arrPath->setArray($this->innerLink->toFullPath(StoreRouted::getPath()->getPath()));
+        $this->arrPath->setArray($this->innerLink->toFullPath([]));
         $this->currentFile = $this->arrPath->getFileName();
         $this->mask = Config::get('Chapters', 'regexp_name', 'chapter_([0-9]{1,4})\.htm');
 
+//print_r(['proc', $this->arrPath]);
         $this->treeList
             ->setStartPath($this->arrPath->getArrayDirectory()) # use dir path
             ->setFilterCallback([$this, 'isUsable'])
@@ -79,14 +80,20 @@ class Chapters extends AModule
             ->process()
         ;
 
-        $this->availableFiles = $this->treeList->getRoot()->getSubNodes();
-        sort($this->availableFiles);
-        $this->position = $this->getPosition();
+        if ($this->treeList->getRoot()) {
+            $this->availableFiles = $this->treeList->getRoot()->getSubNodes();
+            sort($this->availableFiles);
+            $this->position = $this->getPosition();
+        }
     }
 
     public function isUsable(Node $file): bool
     {
         $file = $this->arrPath->setArray($file->getPath())->getFileName();
+        if (empty($file)) {
+            return false;
+        }
+
         if ('.' == $file[0]) {
             return false;
         }
