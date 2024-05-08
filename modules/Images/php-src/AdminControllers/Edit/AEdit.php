@@ -48,6 +48,8 @@ abstract class AEdit extends AAuthModule
     protected Forward $forward;
     protected bool $isProcessed = false;
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
@@ -69,6 +71,7 @@ abstract class AEdit extends AAuthModule
             null,
             new ImagesTranslations()
         ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array

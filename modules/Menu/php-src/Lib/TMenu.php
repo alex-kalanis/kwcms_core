@@ -86,7 +86,7 @@ trait TMenu
         ]);
 
         $this->libMenu->setGroupKey($fullPath);
-        $this->libMenu->setMetaKey(array_merge($fullPath, [$this->getMenuMeta()]));
+        $this->libMenu->setMeta(array_merge($fullPath, [$this->getMenuMeta()]));
         $this->libMenu->load();
     }
 

@@ -40,7 +40,7 @@ class Desc extends AEdit
             $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->fileName = strval($this->getFromParam('name'));
-            $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+            $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
             $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->descForm->composeForm($libAction->readDesc(

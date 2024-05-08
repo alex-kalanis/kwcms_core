@@ -61,6 +61,8 @@ class Edit extends AAuthModule implements IHasTitle
     protected Forward $forward;
     protected bool $redirect = false;
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws LangException
@@ -86,6 +88,7 @@ class Edit extends AAuthModule implements IHasTitle
             null,
             new ImagesTranslations()
         ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -104,7 +107,7 @@ class Edit extends AAuthModule implements IHasTitle
             $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
             $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
-            $this->libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+            $this->libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
             $this->checkExistence($this->libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->tree->wantDeep(true);

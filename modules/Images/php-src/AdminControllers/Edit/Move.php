@@ -63,7 +63,7 @@ class Move extends AEdit
             $this->moveForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->moveForm->process()) {
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->moveFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,

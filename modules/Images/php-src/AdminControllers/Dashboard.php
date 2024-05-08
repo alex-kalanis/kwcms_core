@@ -52,6 +52,8 @@ class Dashboard extends AAuthModule implements IHasTitle
     /** @var string[] */
     protected array $currentPath = [];
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws FilesException
@@ -69,6 +71,7 @@ class Dashboard extends AAuthModule implements IHasTitle
             null,
             new ImagesTranslations()
         ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -131,7 +134,7 @@ class Dashboard extends AAuthModule implements IHasTitle
             $table = new Lib\ListTable(
                 $this->inputs,
                 $this->links,
-                $this->getLibFileAction($this->files, $this->userPath, $this->currentPath),
+                $this->getLibFileAction($this->constructParams, $this->userPath, $this->currentPath),
                 array_merge($this->userPath, $this->currentPath)
             );
             return $out->setContent($this->outModuleTemplate($table->getTable($this->tree)->render()));

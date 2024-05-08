@@ -42,7 +42,7 @@ class Delete extends AEdit
             $this->deleteForm->composeForm('#');
             $this->deleteForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->deleteForm->process()) {
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->deleteFile($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
             }

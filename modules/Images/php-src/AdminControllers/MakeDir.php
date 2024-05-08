@@ -51,6 +51,8 @@ class MakeDir extends AAuthModule implements IHasTitle
     protected ITree $tree;
     protected bool $processed = false;
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws FilesException
@@ -69,6 +71,7 @@ class MakeDir extends AAuthModule implements IHasTitle
             null,
             new ImagesTranslations()
         ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -93,7 +96,7 @@ class MakeDir extends AAuthModule implements IHasTitle
             $this->createForm->composeForm($this->tree->getRoot(),'#');
             $this->createForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->createForm->process()) {
-                $libAction = $this->getLibDirAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibDirAction($this->constructParams, $userPath, $currentPath);
                 $this->processed = $libAction->createDir(
                     strval($this->createForm->getControl('where')->getValue()),
                     strval($this->createForm->getControl('name')->getValue())

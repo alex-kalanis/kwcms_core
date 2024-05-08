@@ -49,6 +49,8 @@ class MediaRss extends AModule
     /** @var string[] */
     protected array $acceptTypes = [];
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
@@ -79,6 +81,7 @@ class MediaRss extends AModule
         ))->getImages($constructParams);
 
         $this->acceptTypes = (array) Config::get(static::getClassName(static::class), 'accept_types', []);
+        $this->constructParams = $constructParams;
     }
 
     public function process(): void
@@ -115,7 +118,7 @@ class MediaRss extends AModule
                     $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
                     Config::get('Core', 'page.site_name'),
                     $this->libExternal->linkVariant(StoreRouted::getPath()->getPath()),
-                    $this->getLibDirAction($this->files, $userPath, $currentPath)->getDesc()
+                    $this->getLibDirAction($this->constructParams, $userPath, $currentPath)->getDesc()
                 )->addItems(
                     implode('', $this->getItems(new Files($this->files), $userPath, $currentPath))
                 )->render()

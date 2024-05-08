@@ -47,6 +47,8 @@ class Properties extends AAuthModule implements IHasTitle
     protected bool $hasExtra = false;
     protected bool $processed = false;
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws FilesException
@@ -65,6 +67,7 @@ class Properties extends AAuthModule implements IHasTitle
             null,
             new ImagesTranslations()
         ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -81,7 +84,7 @@ class Properties extends AAuthModule implements IHasTitle
             $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
             $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
-            $libAction = $this->getLibDirAction($this->files, $userPath, $currentPath);
+            $libAction = $this->getLibDirAction($this->constructParams, $userPath, $currentPath);
             $this->hasExtra = $libAction->canUse();
             if ($this->hasExtra) {
                 $this->descForm->composeForm($libAction->getDesc(),'#');

@@ -74,7 +74,7 @@ class PhpLoader implements ILoader
     protected function includedLang(string $path): array
     {
         $lang = [];
-        include_once ($path);
+        include ($path);
         return (array) $lang;
     }
 }

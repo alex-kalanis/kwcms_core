@@ -48,6 +48,8 @@ class Upload extends AAuthModule implements IHasTitle
     protected UserDir $userDir;
     protected bool $processed = false;
 
+    protected $constructParams = [];
+
     /**
      * @param mixed ...$constructParams
      * @throws FilesException
@@ -65,6 +67,7 @@ class Upload extends AAuthModule implements IHasTitle
             null,
             new ImagesTranslations()
         ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -96,7 +99,7 @@ class Upload extends AAuthModule implements IHasTitle
                 if (!$file instanceof IFileEntry) {
                     throw new ImagesException(Lang::get('images.error.must_contain_file'));
                 }
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $usedName = $libAction->findFreeName($file->getValue());
                 $this->processed = $libAction->uploadFile(
                     $file,

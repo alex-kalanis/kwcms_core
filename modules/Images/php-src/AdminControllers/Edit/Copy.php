@@ -64,7 +64,7 @@ class Copy extends AEdit
             $this->copyForm->setInputs(new InputVarsAdapter($this->inputs));
 
             if ($this->copyForm->process()) {
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
                 $this->isProcessed = $libAction->copyFile(
                     $this->fileName,
