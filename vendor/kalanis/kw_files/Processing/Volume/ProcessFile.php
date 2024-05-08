@@ -6,6 +6,7 @@ namespace kalanis\kw_files\Processing\Volume;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces;
 use kalanis\kw_files\Processing\TPath;
+use kalanis\kw_files\Traits\TCheckModes;
 use kalanis\kw_files\Traits\TLang;
 use kalanis\kw_paths\Extras\TPathTransform;
 use kalanis\kw_paths\PathsException;
@@ -19,6 +20,7 @@ use Throwable;
  */
 class ProcessFile implements Interfaces\IProcessFiles, Interfaces\IProcessFileStreams
 {
+    use TCheckModes;
     use TLang;
     use TPath;
     use TPathTransform;
@@ -73,7 +75,19 @@ class ProcessFile implements Interfaces\IProcessFiles, Interfaces\IProcessFileSt
         $path = $this->fullPath($entry);
         try {
             if (FILE_APPEND == $mode) {
-                $handler = @fopen($path, 'ab');
+                if (@is_file($path)) {
+                    $handler = @fopen($path, 'ab+');
+                    if (false === $handler) {
+                        // @codeCoverageIgnoreStart
+                        throw new FilesException($this->getFlLang()->flCannotOpenFile($path));
+                    }
+                    if (!is_null($offset)) {
+                        @ftruncate($handler, intval($offset));
+                        @fseek($handler, intval($offset));
+                    }
+                } else {
+                    $handler = @fopen($path, 'ab');
+                }
             } else {
                 $handler = @fopen($path, 'wb');
             }
@@ -134,17 +148,6 @@ class ProcessFile implements Interfaces\IProcessFiles, Interfaces\IProcessFileSt
             throw new FilesException($this->getFlLang()->flCannotSaveFile($path), $ex->getCode(), $ex);
         }
         // @codeCoverageIgnoreEnd
-    }
-
-    /**
-     * @param int<0, max> $mode
-     * @throws FilesException
-     */
-    protected function checkSupportedModes(int $mode): void
-    {
-        if (!in_array($mode, [0, FILE_APPEND])) {
-            throw new FilesException($this->getFlLang()->flBadMode($mode));
-        }
     }
 
     public function copyFile(array $source, array $dest): bool

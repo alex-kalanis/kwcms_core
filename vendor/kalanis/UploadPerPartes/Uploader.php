@@ -4,8 +4,7 @@ namespace kalanis\UploadPerPartes;
 
 
 use kalanis\UploadPerPartes\Interfaces;
-use kalanis\UploadPerPartes\Uploader\Calculates;
-use kalanis\UploadPerPartes\Uploader\Hashed;
+use Psr\Container\ContainerInterface;
 
 
 /**
@@ -15,178 +14,39 @@ use kalanis\UploadPerPartes\Uploader\Hashed;
  */
 class Uploader
 {
-    /** @var Keys\AKey */
-    protected $key = null;
-    /** @var Interfaces\IUPPTranslations */
-    protected $lang = null;
-    /** @var Interfaces\IInfoStorage */
-    protected $infoStorage = null;
-    /** @var Interfaces\IDataStorage */
-    protected $dataStorage = null;
-    /** @var Uploader\TargetSearch */
-    protected $targetSearch = null;
-    /** @var Calculates */
-    protected $calculations = null;
-    /** @var Hashed */
-    protected $hashed = null;
-    /** @var Uploader\DriveFile must stay for tests */
-    protected $driver = null;
-    /** @var Uploader\Processor */
-    protected $processor = null;
+    protected Interfaces\IOperations $target;
+    protected Responses\ErrorResponse $errorResponse;
 
     /**
-     * @throws Exceptions\UploadException
+     * @param ContainerInterface|null $container
+     * @param array{
+     *              "calc_size"?: int|object|null,
+     *              "temp_location"?: string|null,
+     *              "target_location"?: string|null,
+     *              "lang"?: string|int|object|null,
+     *              "target"?: string|int|object|null,
+     *              "data_encoder"?: string|int|object|null,
+     *              "data_modifier"?: string|int|object|null,
+     *              "key_encoder"?: string|int|object|null,
+     *              "key_modifier"?: string|int|object|null,
+     *              "driving_file"?: string|int|object|null,
+     *              "temp_storage"?: string|int|object|null,
+     *              "temp_encoder"?: string|int|object|null,
+     *              "final_storage"?: string|int|object|null,
+     *              "final_encoder"?: string|int|object|null,
+     *              "checksum"?: string|null,
+     *              "decoder"?: string|null,
+     *              "can_continue"?: bool|null,
+     *             } $params
+     * @throws UploadException
      */
-    public function __construct()
+    public function __construct(
+        ?ContainerInterface $container = null,
+        $params = []
+    )
     {
-        $this->lang = $this->getTranslations();
-        $this->infoStorage = $this->getInfoStorage();
-        $this->dataStorage = $this->getDataStorage();
-        $this->targetSearch = $this->getTarget($this->infoStorage, $this->dataStorage);
-        $this->calculations = $this->getCalc();
-        $this->hashed = $this->getHashed();
-        $this->key = $this->getKeyFactory()->getVariant($this->targetSearch, $this->getKeyVariant());
-        $this->driver = new Uploader\DriveFile($this->infoStorage, $this->getInfoFormatFactory()->getFormat($this->getInfoFormat()), $this->key, $this->lang);
-        $this->processor = $this->getProcessor($this->driver, $this->dataStorage, $this->hashed);
-    }
-
-    protected function getTranslations(): Interfaces\IUPPTranslations
-    {
-        return new Uploader\Translations();
-    }
-
-    protected function getInfoStorage(): Interfaces\IInfoStorage
-    {
-        return new InfoStorage\Volume($this->lang);
-    }
-
-    protected function getDataStorage(): Interfaces\IDataStorage
-    {
-        return new DataStorage\VolumeBasic($this->lang);
-    }
-
-    protected function getTarget(
-        Interfaces\IInfoStorage $infoStorage,
-        Interfaces\IDataStorage $dataStorage,
-        Interfaces\IUPPTranslations $lang = null
-    ): Uploader\TargetSearch
-    {
-        return new Uploader\TargetSearch($infoStorage, $dataStorage, $lang);
-    }
-
-    protected function getCalc(): Calculates
-    {
-        return new Calculates(262144);
-    }
-
-    protected function getHashed(): Hashed
-    {
-        return new Hashed();
-    }
-
-    protected function getInfoFormatFactory(): InfoFormat\Factory
-    {
-        return new InfoFormat\Factory($this->lang);
-    }
-
-    protected function getInfoFormat(): int
-    {
-        return InfoFormat\Factory::FORMAT_JSON;
-    }
-
-    protected function getKeyFactory(): Keys\Factory
-    {
-        return new Keys\Factory($this->lang);
-    }
-
-    protected function getKeyVariant(): int
-    {
-        return Keys\Factory::VARIANT_VOLUME;
-    }
-
-    protected function getProcessor(
-        Uploader\DriveFile $driver,
-        Interfaces\IDataStorage $storage,
-        Hashed $hashed,
-        ?Interfaces\IUPPTranslations $lang = null
-    ): Uploader\Processor
-    {
-        return new Uploader\Processor($driver, $storage, $hashed, $lang);
-    }
-
-    /**
-     * Upload file by parts, final status
-     * @param string $sharedKey
-     * @return Response\AResponse
-     */
-    public function cancel(string $sharedKey): Response\AResponse
-    {
-        try {
-            $this->processor->cancel($sharedKey);
-            return Response\CancelResponse::initCancel($this->lang, $sharedKey);
-        } catch (Exceptions\UploadException $ex) {
-            return Response\CancelResponse::initError($this->lang, $sharedKey, $ex);
-        }
-    }
-
-    /**
-     * Upload file by parts, final status
-     * @param string $sharedKey
-     * @return Response\AResponse
-     */
-    public function done(string $sharedKey): Response\AResponse
-    {
-        try {
-            return Response\DoneResponse::initDone($this->lang, $sharedKey, $this->processor->done($sharedKey));
-        } catch (Exceptions\UploadException $ex) {
-            return Response\DoneResponse::initError($this->lang, $sharedKey, InfoFormat\Data::init(), $ex);
-        }
-    }
-
-    /**
-     * Upload file by parts, use driving file
-     * @param string $sharedKey
-     * @param string $content binary content
-     * @param int<0, max>|null $segment where it save
-     * @return Response\AResponse
-     */
-    public function upload(string $sharedKey, string $content, ?int $segment = null): Response\AResponse
-    {
-        try {
-            return Response\UploadResponse::initOK($this->lang, $sharedKey, $this->processor->upload($sharedKey, $content, $segment));
-        } catch (Exceptions\UploadException $e) {
-            return Response\UploadResponse::initError($this->lang, $sharedKey, InfoFormat\Data::init(), $e);
-        }
-    }
-
-    /**
-     * Delete problematic segments
-     * @param string $sharedKey
-     * @param int<0, max> $segment
-     * @return Response\AResponse
-     */
-    public function truncateFrom(string $sharedKey, int $segment): Response\AResponse
-    {
-        try {
-            return Response\TruncateResponse::initOK($this->lang, $sharedKey, $this->processor->truncateFrom($sharedKey, $segment));
-        } catch (Exceptions\UploadException $e) {
-            return Response\TruncateResponse::initError($this->lang, $sharedKey, InfoFormat\Data::init(), $e);
-        }
-    }
-
-    /**
-     * Check already uploaded parts
-     * @param string $sharedKey
-     * @param int<0, max> $segment
-     * @return Response\AResponse
-     */
-    public function check(string $sharedKey, int $segment): Response\AResponse
-    {
-        try {
-            return Response\CheckResponse::initOK($this->lang, $sharedKey, $this->processor->check($sharedKey, $segment));
-        } catch (Exceptions\UploadException $e) {
-            return Response\CheckResponse::initError($this->lang, $sharedKey, $e);
-        }
+        $this->errorResponse = new Responses\ErrorResponse();
+        $this->target = (new Target\Factory(new Uploader\LangFactory(), $container))->getTarget(new Uploader\Config($params));
     }
 
     /**
@@ -194,27 +54,95 @@ class Uploader
      * @param string $targetPath
      * @param string $remoteFileName posted file name
      * @param int<0, max> $length complete file size
-     * @return Response\AResponse
+     * @param string $clientData stored string from client
+     * @return Responses\BasicResponse
      */
-    public function init(string $targetPath, string $remoteFileName, int $length): Response\AResponse
+    public function init(string $targetPath, string $remoteFileName, int $length, string $clientData = '̈́'): Responses\BasicResponse
     {
-        $partsCounter = $this->calculations->calcParts($length);
         try {
-            $this->targetSearch->setTargetDir($targetPath)->setRemoteFileName($remoteFileName)->process();
-            $this->key->generateKeys();
-            $dataPack = InfoFormat\Data::init()->setData(
-                $this->targetSearch->getFinalTargetName(),
-                $this->targetSearch->getTemporaryTargetLocation(),
-                $length,
-                $partsCounter,
-                $this->calculations->getBytesPerPart()
-            );
-            return Response\InitResponse::initOk($this->lang, $this->key->getSharedKey(), $this->processor->init($dataPack, $this->key->getSharedKey()));
+            return $this->target->init($targetPath, $remoteFileName, $length, $clientData);
+        } catch (UploadException $ex) {
+            return $this->errorResponse->setError($ex)->setBasics('', $clientData);
+        }
+    }
 
-        } catch (Exceptions\UploadException $e) { // obecne neco spatne
-            return Response\InitResponse::initError($this->lang, InfoFormat\Data::init()->setData(
-                $remoteFileName, '', $length, $partsCounter, $this->calculations->getBytesPerPart()
-            ), $e);
+    /**
+     * Check already uploaded parts
+     * @param string $serverData
+     * @param int<0, max> $segment
+     * @param string $method which method will be used on segment
+     * @param string $clientData stored string from client
+     * @return Responses\BasicResponse
+     */
+    public function check(string $serverData, int $segment, string $method, string $clientData = ''): Responses\BasicResponse
+    {
+        try {
+            return $this->target->check($serverData, $segment, $method, $clientData);
+        } catch (UploadException $ex) {
+            return $this->errorResponse->setError($ex)->setBasics($serverData, $clientData);
+        }
+    }
+
+    /**
+     * Delete problematic segments
+     * @param string $serverData stored string for server
+     * @param int<0, max> $segment
+     * @param string $clientData stored string from client
+     * @return Responses\BasicResponse
+     */
+    public function truncateFrom(string $serverData, int $segment, string $clientData = ''): Responses\BasicResponse
+    {
+        try {
+            return $this->target->truncate($serverData, $segment, $clientData);
+        } catch (UploadException $ex) {
+            return $this->errorResponse->setError($ex)->setBasics($serverData, $clientData);
+        }
+    }
+
+    /**
+     * Upload file by parts, use driving file
+     * @param string $serverData stored string for server
+     * @param string $content binary content
+     * @param string $method how is content encoded
+     * @param string $clientData stored string from client
+     * @return Responses\BasicResponse
+     */
+    public function upload(string $serverData, string $content, string $method, string $clientData = ''): Responses\BasicResponse
+    {
+        try {
+            return $this->target->upload($serverData, $content, $method, $clientData);
+        } catch (UploadException $ex) {
+            return $this->errorResponse->setError($ex)->setBasics($serverData, $clientData);
+        }
+    }
+
+    /**
+     * Upload file by parts, final status
+     * @param string $serverData stored string for server
+     * @param string $clientData stored string from client
+     * @return Responses\BasicResponse
+     */
+    public function done(string $serverData, string $clientData = ''): Responses\BasicResponse
+    {
+        try {
+            return $this->target->done($serverData, $clientData);
+        } catch (UploadException $ex) {
+            return $this->errorResponse->setError($ex)->setBasics($serverData, $clientData);
+        }
+    }
+
+    /**
+     * Upload file by parts, final status
+     * @param string $serverData stored string for server
+     * @param string $clientData stored string from client
+     * @return Responses\BasicResponse
+     */
+    public function cancel(string $serverData, string $clientData = ''): Responses\BasicResponse
+    {
+        try {
+            return $this->target->cancel($serverData, $clientData);
+        } catch (UploadException $ex) {
+            return $this->errorResponse->setError($ex)->setBasics($serverData, $clientData);
         }
     }
 }

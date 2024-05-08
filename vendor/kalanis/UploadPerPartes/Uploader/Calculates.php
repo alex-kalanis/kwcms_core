@@ -5,22 +5,22 @@ namespace kalanis\UploadPerPartes\Uploader;
 
 /**
  * Class Calculates
- * @package kalanis\UploadPerPartes
+ * @package kalanis\UploadPerPartes\Uploader
  * Calculations over sizes
  */
 class Calculates
 {
-    const DEFAULT_BYTES_PER_PART = 262144; // 1024*256
+    protected const DEFAULT_BYTES_PER_PART = 262144; // 1024*256
 
     /** @var int<0, max> */
-    protected $bytesPerPart = 0;
+    protected int $bytesPerPart = 0;
 
-    /**
-     * @param int<0, max>|null $bytesPerPart
-     */
-    public function __construct(int $bytesPerPart = null)
+    public function __construct(Config $config)
     {
-        $this->bytesPerPart = empty($bytesPerPart) ? static::DEFAULT_BYTES_PER_PART : $bytesPerPart ;
+        $this->bytesPerPart = empty($config->bytesPerPart)
+            ? static::DEFAULT_BYTES_PER_PART
+            : max(0, $config->bytesPerPart)
+        ;
     }
 
     /**
@@ -39,5 +39,15 @@ class Calculates
     {
         $partsCounter = abs(intval($length / $this->bytesPerPart));
         return (($length % $this->bytesPerPart) == 0) ? $partsCounter : $partsCounter + 1;
+    }
+
+    /**
+     * @param Data $data
+     * @param int $segment
+     * @return int<0, max>
+     */
+    public function bytesFromSegment(Data $data, int $segment): int
+    {
+        return max(0, $data->bytesPerPart * $segment);
     }
 }

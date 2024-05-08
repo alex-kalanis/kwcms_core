@@ -5,14 +5,14 @@ namespace KWCMS\modules\Upload\Lib;
 
 use kalanis\kw_langs\Lang;
 use kalanis\kw_user_paths\Interfaces\IUPTranslations;
-use kalanis\UploadPerPartes\Interfaces\IUPPTranslations;
+use kalanis\UploadPerPartes\Interfaces\IUppTranslations;
 
 
 /**
  * Class Translations
  * @package KWCMS\modules\Upload\Lib
  */
-class Translations implements IUPPTranslations, IUPTranslations
+class Translations implements IUppTranslations, IUPTranslations
 {
     public function upUserNameIsShort(): string
     {
@@ -44,84 +44,134 @@ class Translations implements IUPPTranslations, IUPTranslations
         return Lang::get('chdir.user_dir.cannot_get_full_paths');
     }
 
+    public function uppBadResponse(string $responseType): string
+    {
+        return Lang::get('upload.vendor.sent_file_name_is_empty', $responseType);
+    }
+
+    public function uppTargetNotSet(): string
+    {
+        return Lang::get('upload.vendor.target_not_set');
+    }
+
+    public function uppTargetIsWrong(string $url): string
+    {
+        return Lang::get('upload.vendor.target_is_wrong', $url);
+    }
+
+    public function uppChecksumVariantIsWrong(string $variant): string
+    {
+        return Lang::get('upload.vendor.checksum_is_wrong', $variant);
+    }
+
+    public function uppDecoderVariantIsWrong(string $variant): string
+    {
+        return Lang::get('upload.vendor.decoder_is_wrong', $variant);
+    }
+
+    public function uppIncomingDataCannotDecode(): string
+    {
+        return Lang::get('upload.vendor.cannot_decode_incoming_data');
+    }
+
     public function uppSentNameIsEmpty(): string
     {
-        return Lang::get('upload.vendor.sent_file_name_is_empty');
+        return Lang::get('upload.vendor.sent_file_name_empty');
     }
 
-    public function uppUploadNameIsEmpty(): string
+    public function uppChecksumIsEmpty(): string
     {
-        return Lang::get('upload.vendor.upload_file_name_is_empty');
+        return Lang::get('upload.vendor.checksum_data_is_empty');
     }
 
-    public function uppSharedKeyIsEmpty(): string
+    public function uppDataEncoderVariantNotSet(): string
     {
-        return Lang::get('upload.vendor.shared_key_is_empty');
+        return Lang::get('upload.vendor.driving_encoder_not_set');
     }
 
-    public function uppSharedKeyIsInvalid(): string
+    public function uppDataEncoderVariantIsWrong(string $variant): string
     {
-        return Lang::get('upload.vendor.shared_key_is_invalid');
+        return Lang::get('upload.vendor.driving_encoder_is_wrong', $variant);
     }
 
-    public function uppKeyVariantNotSet(): string
+    public function uppDataModifierVariantNotSet(): string
     {
-        return Lang::get('upload.vendor.key_variant_not_known');
+        return Lang::get('upload.vendor.driving_modifier_not_set');
     }
 
-    public function uppTargetDirIsEmpty(): string
+    public function uppDataModifierVariantIsWrong(string $variant): string
     {
-        return Lang::get('upload.vendor.target_dir_is_empty');
+        return Lang::get('upload.vendor.driving_modifier_is_wrong', $variant);
     }
 
-    public function uppDriveFileAlreadyExists(string $driveFile): string
+    public function uppKeyEncoderVariantNotSet(): string
     {
-        return Lang::get('upload.vendor.drive_file_already_exists');
+        return Lang::get('upload.vendor.driving_key_encoder_not_set');
     }
 
-    public function uppDriveFileNotContinuous(string $driveFile): string
+    public function uppKeyEncoderVariantIsWrong(string $className): string
     {
-        return Lang::get('upload.vendor.drive_file_not_continuous');
+        return Lang::get('upload.vendor.driving_key_encoder_is_wrong', $className);
     }
 
-    public function uppDriveFileCannotRemove(string $key): string
+    public function uppKeyModifierVariantNotSet(): string
     {
-        return Lang::get('upload.vendor.drive_file_cannot_remove');
+        return Lang::get('upload.vendor.driving_key_modifier_not_set');
     }
 
-    public function uppDriveFileVariantNotSet(): string
+    public function uppKeyModifierVariantIsWrong(string $className): string
     {
-        return Lang::get('upload.vendor.drive_file_variant_not_known');
+        return Lang::get('upload.vendor.driving_key_modifier_is_wrong', $className);
     }
 
-    public function uppDriveDataNotSet(): string
+    public function uppDriveFileStorageNotSet(): string
     {
-        return Lang::get('upload.vendor.drive_data_not_set');
+        return Lang::get('upload.vendor.drive_file_storage_not_set');
     }
 
     public function uppDriveFileCannotRead(string $key): string
     {
-        return Lang::get('upload.vendor.drive_file_cannot_read');
+        return Lang::get('upload.vendor.drive_file_cannot_read', $key);
     }
 
     public function uppDriveFileCannotWrite(string $key): string
     {
-        return Lang::get('upload.vendor.drive_file_cannot_write');
+        return Lang::get('upload.vendor.drive_file_cannot_write', $key);
     }
 
-    public function uppCannotRemoveData(string $location): string
+    public function uppDriveFileAlreadyExists(string $driveFile): string
     {
-        return Lang::get('upload.vendor.data_cannot_remove');
+        return Lang::get('upload.vendor.drive_file_already_exists', $driveFile);
     }
 
-    public function uppReadTooEarly(string $key): string
+    public function uppTempEncoderVariantNotSet(): string
     {
-        return Lang::get('upload.vendor.data_read_early');
+        return Lang::get('upload.vendor.temp_encoder_not_set');
     }
 
-    public function uppCannotOpenFile(string $location): string
+    public function uppTempEncoderVariantIsWrong(string $variant): string
     {
-        return Lang::get('upload.vendor.data_cannot_open');
+        return Lang::get('upload.vendor.temp_encoder_is_wrong', $variant);
+    }
+
+    public function uppTempStorageNotSet(): string
+    {
+        return Lang::get('upload.vendor.temp_storage_not_set');
+    }
+
+    public function uppFinalEncoderVariantNotSet(): string
+    {
+        return Lang::get('upload.vendor.final_encoder_not_set');
+    }
+
+    public function uppFinalEncoderVariantIsWrong(string $variant): string
+    {
+        return Lang::get('upload.vendor.final_encoder_is_wrong');
+    }
+
+    public function uppFinalStorageNotSet(): string
+    {
+        return Lang::get('upload.vendor.final_storage_not_set');
     }
 
     public function uppCannotReadFile(string $location): string
@@ -129,14 +179,19 @@ class Translations implements IUPPTranslations, IUPTranslations
         return Lang::get('upload.vendor.data_cannot_read');
     }
 
-    public function uppCannotSeekFile(string $location): string
-    {
-        return Lang::get('upload.vendor.data_cannot_seek');
-    }
-
     public function uppCannotWriteFile(string $location): string
     {
         return Lang::get('upload.vendor.data_cannot_write');
+    }
+
+    public function uppDriveFileCannotRemove(string $key): string
+    {
+        return Lang::get('upload.vendor.drive_file_cannot_remove');
+    }
+
+    public function uppCannotRemoveData(string $location): string
+    {
+        return Lang::get('upload.vendor.data_cannot_remove');
     }
 
     public function uppCannotTruncateFile(string $location): string
@@ -147,20 +202,5 @@ class Translations implements IUPPTranslations, IUPTranslations
     public function uppSegmentOutOfBounds(int $segment): string
     {
         return Lang::get('upload.vendor.segment_out_of_bounds');
-    }
-
-    public function uppSegmentNotUploadedYet(int $segment): string
-    {
-        return Lang::get('upload.vendor.segment_not_uploaded');
-    }
-
-    public function uppKeyVariantIsWrong(string $className): string
-    {
-        return Lang::get('upload.vendor.key_variant_is_wrong');
-    }
-
-    public function uppDriveFileVariantIsWrong(string $className): string
-    {
-        return Lang::get('upload.vendor.file_variant_is_wrong');
     }
 }

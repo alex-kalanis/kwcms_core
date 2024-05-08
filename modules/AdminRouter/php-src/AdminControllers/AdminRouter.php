@@ -145,13 +145,4 @@ class AdminRouter extends AModule
         $template->change($template->get(), $tmpl);
         return $out->setContent($template->render());
     }
-
-    /**
-     * Real modules with basic templates - admin, page, ...
-     * @return string[]
-     */
-    protected function modulesWithPassingParams(): array
-    {
-        return ['Layout', 'AdminRouter', 'SinglePage', 'Image', 'Pedigree'];
-    }
 }
