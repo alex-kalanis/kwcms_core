@@ -17,7 +17,7 @@ use KWCMS\modules\Core\Libs\AModule;
  */
 class LangChange extends AModule
 {
-    protected $session = null;
+    protected SessionAdapter $session;
 
     public function __construct(...$constructParams)
     {

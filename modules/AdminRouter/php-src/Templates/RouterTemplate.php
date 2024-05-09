@@ -14,8 +14,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class RouterTemplate extends ATemplate
 {
-    protected $moduleName = 'AdminRouter';
-    protected $templateName = 'template';
+    protected string $moduleName = 'AdminRouter';
+    protected string $templateName = 'template';
 
     protected function fillInputs(): void
     {

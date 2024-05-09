@@ -13,11 +13,10 @@ use KWCMS\modules\Krep\Libs;
  */
 abstract class ALogs
 {
-    /** @var string */
-    protected $logsPath = null;
+    protected string $logsPath = '';
 
     // datum_citelne|datum_ux|ip|clanek|jmeno|poslana_ip|prohlizec|bere...
-    protected $format = "{DATE}|{TIMESTAMP}|{IP}|{TOPIC}|{NAME}|posted_ip|{BROWSER}|{ACCEPT}\r\n";
+    protected string $format = "{DATE}|{TIMESTAMP}|{IP}|{TOPIC}|{NAME}|posted_ip|{BROWSER}|{ACCEPT}\r\n";
 
     public function __construct(string $logs_path)
     {

@@ -13,8 +13,7 @@ use kalanis\kw_cache\Interfaces\ICache;
  */
 class Variable implements ICache
 {
-    /** @var string|null */
-    protected $content = null;
+    protected ?string $content = null;
 
     public function init(array $what): void
     {

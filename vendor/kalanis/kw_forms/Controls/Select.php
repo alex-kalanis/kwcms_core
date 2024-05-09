@@ -10,7 +10,7 @@ namespace kalanis\kw_forms\Controls;
  */
 class Select extends AControl
 {
-    protected $templateInput = '<select %2$s>%3$s</select>';
+    protected string $templateInput = '<select %2$s>%3$s</select>';
 
     /**
      * Create element of form entry Select

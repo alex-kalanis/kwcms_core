@@ -12,8 +12,7 @@ trait TRule
 {
     /** @var mixed|null */
     protected $againstValue = null;
-    /** @var string */
-    protected $errorText = '';
+    protected string $errorText = '';
 
     /**
      * @param mixed|null $againstValue

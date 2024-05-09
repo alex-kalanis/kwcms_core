@@ -4,10 +4,9 @@ namespace kalanis\kw_paging\Render;
 
 
 use kalanis\kw_pager\Interfaces\IPager;
-use kalanis\kw_paging\Interfaces\ILink;
-use kalanis\kw_paging\Interfaces\IOutput;
-use kalanis\kw_paging\Interfaces\IPGTranslations;
-use kalanis\kw_paging\Interfaces\IPositions;
+use kalanis\kw_paging\Interfaces;
+use kalanis\kw_paging\Traits;
+use kalanis\kw_paging\Translations;
 
 
 /**
@@ -16,34 +15,31 @@ use kalanis\kw_paging\Interfaces\IPositions;
  * Port of pager from running project. Not so nice, only basics here
  * Main problem is too many templates and some of them are not used
  */
-class DefaultPager implements IOutput
+class DefaultPager implements Interfaces\IOutput
 {
-    use TDisplayPages;
+    use Traits\TDisplayPages;
 
-    /** @var ILink */
-    protected $link = null;
-    /** @var DefaultPager\Pager */
-    protected $pager = null;
-    /** @var DefaultPager\PrevPage */
-    protected $prevPage = null;
-    /** @var DefaultPager\PrevPageDisabled */
-    protected $prevPageDis = null;
-    /** @var DefaultPager\CurrentPage */
-    protected $currentPage = null;
-    /** @var DefaultPager\AnotherPage */
-    protected $anotherPage = null;
-    /** @var DefaultPager\NextPage */
-    protected $nextPage = null;
-    /** @var DefaultPager\NextPageDisabled */
-    protected $nextPageDis = null;
+    protected Interfaces\ILink $link;
+    protected DefaultPager\Pager $pager;
+    protected DefaultPager\PrevPage $prevPage;
+    protected DefaultPager\PrevPageDisabled $prevPageDis;
+    protected DefaultPager\CurrentPage $currentPage;
+    protected DefaultPager\AnotherPage $anotherPage;
+    protected DefaultPager\NextPage $nextPage;
+    protected DefaultPager\NextPageDisabled $nextPageDis;
 
-    public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)
+    public function __construct(
+        Interfaces\IPositions $positions,
+        Interfaces\ILink $link,
+        int $displayPages = Interfaces\IPositions::DEFAULT_DISPLAY_PAGES_COUNT,
+        ?Interfaces\IPGTranslations $lang = null
+    )
     {
         $this->positions = $positions;
         $this->link = $link;
         $this->displayPagesCount = $displayPages;
         $this->pager = new DefaultPager\Pager();
-        $this->pager->setLang($lang ?: new Translations());
+        $this->pager->setKpgLang($lang ?: new Translations());
         $this->prevPage = new DefaultPager\PrevPage();
         $this->prevPageDis = new DefaultPager\PrevPageDisabled();
         $this->currentPage = new DefaultPager\CurrentPage();
@@ -59,12 +55,12 @@ class DefaultPager implements IOutput
 
     public function render(bool $showPositions = true): string
     {
-        if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
+        if (!$this->getPositions()->prevPageExists() && !$this->getPositions()->nextPageExists()) {
             return '';
         }
         $pages = [];
         foreach ($this->getDisplayPages() as $displayPage) {
-            if ($this->positions->getPager()->getActualPage() == $displayPage) {
+            if ($this->getPositions()->getPager()->getActualPage() == $displayPage) {
                 $pages[] = $this->currentPage->reset()->setData($this->link, $displayPage)->render();
             } else {
                 $pages[] = $this->anotherPage->reset()->setData($this->link, $displayPage)->render();
@@ -72,16 +68,16 @@ class DefaultPager implements IOutput
         }
 
         $this->pager->setData(
-            $this->positions->prevPageExists() ? $this->prevPage->setData($this->link, $this->positions)->render() : $this->prevPageDis->render(),
-            $this->positions->nextPageExists() ? $this->nextPage->setData($this->link, $this->positions)->render() : $this->nextPageDis->render(),
+            $this->getPositions()->prevPageExists() ? $this->prevPage->setData($this->link, $this->getPositions())->render() : $this->prevPageDis->render(),
+            $this->getPositions()->nextPageExists() ? $this->nextPage->setData($this->link, $this->getPositions())->render() : $this->nextPageDis->render(),
             implode('', $pages),
-            $showPositions ? $this->positions : null
+            $showPositions ? $this->getPositions() : null
         );
         return $this->pager->render();
     }
 
     public function getPager(): IPager
     {
-        return $this->positions->getPager();
+        return $this->getPositions()->getPager();
     }
 }

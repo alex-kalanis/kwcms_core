@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class TopTemplate extends ATemplate
 {
-    protected $moduleName = 'AdminRouter';
-    protected $templateName = 'top';
+    protected string $moduleName = 'AdminRouter';
+    protected string $templateName = 'top';
 
     protected function fillInputs(): void
     {

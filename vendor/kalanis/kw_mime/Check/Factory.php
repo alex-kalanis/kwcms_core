@@ -16,14 +16,12 @@ use kalanis\kw_storage\Storage;
  */
 class Factory
 {
+    use Traits\TLang;
     use Traits\TCheckCalls;
-
-    /** @var IMiTranslations|null */
-    protected $lang = null;
 
     public function __construct(?IMiTranslations $lang = null)
     {
-        $this->lang = $lang;
+        $this->setMiLang($lang);
     }
 
     /**
@@ -33,16 +31,16 @@ class Factory
     public function getLibrary($source): IMime
     {
         if ($this->isMimeFunction()) {
-            if ($source instanceof IProcessFiles) {
-                $lib = new DataFiles(null, $this->lang);
+            if (is_object($source) && ($source instanceof IProcessFiles)) {
+                $lib = new DataFiles(null, $this->getMiLang());
                 $lib->canUse($source);
                 return $lib;
-            } elseif ($source instanceof Storage) {
-                $lib = new DataStorage($this->lang);
+            } elseif (is_object($source) && ($source instanceof Storage)) {
+                $lib = new DataStorage($this->getMiLang());
                 $lib->canUse($source);
                 return $lib;
             } elseif (is_string($source)) {
-                $lib = new LocalVolume1($this->lang);
+                $lib = new LocalVolume1($this->getMiLang());
                 $lib->canUse($source);
                 return $lib;
             } else {

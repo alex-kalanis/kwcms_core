@@ -15,10 +15,9 @@ use kalanis\kw_paths\PathsException;
  */
 class FindFreeName
 {
-    const FREE_NAME_SEPARATOR = '_';
+    protected const FREE_NAME_SEPARATOR = '_';
 
-    /** @var Interfaces\IProcessNodes */
-    protected $nodes = null;
+    protected Interfaces\IProcessNodes $nodes;
 
     public function __construct(Interfaces\IProcessNodes $nodes)
     {

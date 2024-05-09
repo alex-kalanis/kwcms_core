@@ -25,14 +25,11 @@ trait THtmlElement
     use TAttributes;
     use TParent;
 
-    /** @var string  */
-    protected $template = '';
+    protected string $template = '';
     /** @var IHtmlElement[] */
-    protected $children = [];
-    /** @var string */
-    protected $childDelimiter = PHP_EOL;
-    /** @var string|null */
-    protected $alias = null;
+    protected array $children = [];
+    protected string $childDelimiter = PHP_EOL;
+    protected ?string $alias = null;
 
     /**
      * Returns object alias

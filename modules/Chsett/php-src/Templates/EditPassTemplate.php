@@ -13,8 +13,8 @@ use KWCMS\modules\Chsett\Lib\FormUsers;
  */
 class EditPassTemplate extends ATemplate
 {
-    protected $moduleName = 'Chsett';
-    protected $templateName = 'edit_user_pass';
+    protected string $moduleName = 'Chsett';
+    protected string $templateName = 'edit_user_pass';
 
     protected function fillInputs(): void
     {

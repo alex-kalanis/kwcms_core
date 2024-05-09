@@ -6,11 +6,11 @@ namespace KWCMS\modules\MediaRss\Controllers;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
-use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\Access\Factory as files_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\Content\Images;
-use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
@@ -41,18 +41,15 @@ class MediaRss extends AModule
 {
     use TLibAction;
 
-    /** @var ExternalLink */
-    protected $libExternal = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Images */
-    protected $sources = null;
+    protected ExternalLink $libExternal;
+    protected CompositeAdapter $files;
+    protected ArrayPath $arrPath;
+    protected InnerLinks $innerLink;
+    protected Images $sources;
     /** @var string[] */
-    protected $acceptTypes = [];
+    protected array $acceptTypes = [];
+
+    protected $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -71,16 +68,20 @@ class MediaRss extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
-        );
-        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
-        $this->sources = FilesHelper::getImages(
-            $this->files,
+            boolval(Config::get('Core', 'page.more_lang', false)),
             [],
-            new ImagesTranslations(),
-            new FilesTranslations()
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
+        $this->files = (new files_factory(new FilesTranslations()))->getClass($constructParams);
+        $this->sources = (new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ))->getImages($constructParams);
+
         $this->acceptTypes = (array) Config::get(static::getClassName(static::class), 'accept_types', []);
+        $this->constructParams = $constructParams;
     }
 
     public function process(): void
@@ -105,16 +106,19 @@ class MediaRss extends AModule
         try {
             Config::load('Core', 'page');
 
-            $userPath = $this->innerLink->toFullPath([]);
-            $currentPath = array_filter(StoreRouted::getPath()->getPath());
+            $userPath = array_filter($this->innerLink->toFullPath([]));
+            $currentPath = StoreRouted::getPath()->getPath();
+            $last = array_pop($currentPath);
+            $last = is_null($last) ? '' : Stuff::fileBase($last);
+            $currentPath[] = $last;
 
             $tmpl = new Lib\MainTemplate();
             return $out->setContent(
                 $tmpl->setData(
                     $this->libExternal->linkVariant('rss/rss-style.css', 'styles', true, false),
                     Config::get('Core', 'page.site_name'),
-                    $this->libExternal->linkVariant(),
-                    $this->getLibDirAction($this->files, $userPath, $currentPath)->getDesc()
+                    $this->libExternal->linkVariant(StoreRouted::getPath()->getPath()),
+                    $this->getLibDirAction($this->constructParams, $userPath, $currentPath)->getDesc()
                 )->addItems(
                     implode('', $this->getItems(new Files($this->files), $userPath, $currentPath))
                 )->render()

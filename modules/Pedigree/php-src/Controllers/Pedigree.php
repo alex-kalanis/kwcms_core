@@ -34,18 +34,16 @@ class Pedigree extends AModule
 {
     use Lib\TCorrectConnect;
 
-    const BRANCHES = 2; # count of sub-branches of each entry
+    protected const BRANCHES = 2; # count of sub-branches of each entry
 
-    /** @var ExternalLink|null */
-    protected $externalLink = null;
+    protected ExternalLink $externalLink;
     /** @var MapperException|null */
     protected $error = null;
-    /** @var GetEntries|null */
-    protected $entries = null;
-    /** @var int */
-    protected $depth = 0;
+    /** @var GetEntries */
+    protected ?GetEntries $entries = null;
+    protected int $depth = 0;
     /** @var mixed */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -115,7 +113,7 @@ class Pedigree extends AModule
             return $out->setContent($this->error->getMessage());
 //            return $out->setContent($this->error->getMessage() . nl2br($this->error->getTraceAsString()));
         } else {
-            $table = HtmlElement::init('table', ['border' => '1', 'id' => 'pedigree']);
+            $table = HtmlElement::init('table', ['border' => '1', 'id' => 'pedigree', 'class' => 'pedigree_page']);
             $row1 = HtmlElement::init('tr');
             if (empty($tree[0])) {
                 $td = HtmlElement::init('td');

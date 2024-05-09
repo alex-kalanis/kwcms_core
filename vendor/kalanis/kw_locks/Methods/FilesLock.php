@@ -23,14 +23,11 @@ class FilesLock implements IPassedKey
     use TLang;
     use TToString;
 
-    /** @var ArrayPath */
-    protected $arrPt = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
+    protected ArrayPath $arrPt;
+    protected CompositeAdapter $files;
     /** @var string[] */
-    protected $specialKey = [];
-    /** @var string */
-    protected $checkContent = '';
+    protected array $specialKey = [];
+    protected string $checkContent = '';
 
     public function __construct(CompositeAdapter $files, ?IKLTranslations $lang = null)
     {

@@ -12,7 +12,7 @@ namespace kalanis\kw_forms\Controls;
 */
 class Input extends AControl
 {
-    protected $templateInput = '<input value="%1$s"%2$s />%3$s';
+    protected string $templateInput = '<input value="%1$s"%2$s />%3$s';
 
     public function set(string $type, string $alias, ?string $value = null, string $label = ''): self
     {

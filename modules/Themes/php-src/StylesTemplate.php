@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class StylesTemplate extends ATemplate
 {
-    protected $moduleName = 'Themes';
-    protected $templateName = 'template';
+    protected string $moduleName = 'Themes';
+    protected string $templateName = 'template';
 
     protected function fillInputs(): void
     {

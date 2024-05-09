@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class MessageTemplate extends ATemplate
 {
-    protected $moduleName = 'Short';
-    protected $templateName = 'message';
+    protected string $moduleName = 'Short';
+    protected string $templateName = 'message';
 
     protected function fillInputs(): void
     {

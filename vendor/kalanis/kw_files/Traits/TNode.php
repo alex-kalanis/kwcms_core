@@ -9,14 +9,13 @@ use kalanis\kw_files\Interfaces\IProcessNodes;
 
 /**
  * Trait TNode
- * @package kalanis\kw_files\Processing
+ * @package kalanis\kw_files\Traits
  */
 trait TNode
 {
     use TLang;
 
-    /** @var IProcessNodes|null */
-    protected $processNode = null;
+    protected ?IProcessNodes $processNode = null;
 
     public function setProcessNode(?IProcessNodes $dirs = null): void
     {
@@ -30,7 +29,7 @@ trait TNode
     public function getProcessNode(): IProcessNodes
     {
         if (empty($this->processNode)) {
-            throw new FilesException($this->getLang()->flNoProcessNodeSet());
+            throw new FilesException($this->getFlLang()->flNoProcessNodeSet());
         }
         return $this->processNode;
     }

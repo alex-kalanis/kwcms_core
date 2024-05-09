@@ -13,6 +13,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Personal\Lib;
@@ -28,16 +29,14 @@ class Dashboard extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IAuthCert|null */
-    protected $libUsers = null;
-    /** @var Interfaces\IProcessAccounts|null */
-    protected $libAccounts = null;
+    /** @var Interfaces\IAuthCert */
+    protected ?Interfaces\IAuthCert $libUsers = null;
+    /** @var Interfaces\IProcessAccounts */
+    protected ?Interfaces\IProcessAccounts $libAccounts = null;
     /** @var Interfaces\IUserCert|Interfaces\IUser|null */
     protected $editUser = null;
-    /** @var Lib\FormProps|null */
-    protected $form = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    protected Lib\FormProps $form;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams
@@ -128,7 +127,7 @@ class Dashboard extends AAuthModule implements IHasTitle
                 $editTmpl->addCerts($certTmpl->setData($this->form)->render());
             }
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form)->render()));
-        } catch ( FormsException $ex) {
+        } catch ( FormsException | NotifyException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

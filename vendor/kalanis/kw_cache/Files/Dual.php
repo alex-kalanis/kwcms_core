@@ -22,14 +22,12 @@ class Dual implements ICache
 {
     use TToString;
 
-    /** @var CompositeAdapter */
-    protected $cacheLib = null;
-    /** @var CompositeAdapter */
-    protected $reloadLib = null;
+    protected CompositeAdapter $cacheLib;
+    protected CompositeAdapter $reloadLib;
     /** @var string[] */
-    protected $cachePath = [];
+    protected array $cachePath = [];
     /** @var string[] */
-    protected $reloadPath = [];
+    protected array $reloadPath = [];
 
     public function __construct(CompositeAdapter $cacheLib, ?CompositeAdapter $reloadLib = null)
     {

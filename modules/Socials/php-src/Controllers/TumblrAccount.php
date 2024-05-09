@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class TumblrAccount extends AAccount
 {
-    protected $site = 'tumblr';
-    protected $accountSite = 'tumblr_account';
-    protected $shortSite = 'tmb_account';
+    protected string $site = 'tumblr';
+    protected string $accountSite = 'tumblr_account';
+    protected string $shortSite = 'tmb_account';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

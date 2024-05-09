@@ -12,6 +12,7 @@ use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_tree\DataSources;
 use kalanis\kw_tree\Interfaces\ITree;
@@ -35,16 +36,12 @@ abstract class ADir extends AAuthModule implements IHasTitle
     use TWhereDir;
     use TFilesDirs;
 
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var Lib\Processor */
-    protected $processor = null;
-    /** @var Lib\DirForm|null */
-    protected $dirForm = null;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected Lib\Processor $processor;
+    protected Lib\DirForm $dirForm;
     /** @var bool[] */
-    protected $processed = [];
+    protected array $processed = [];
 
     /**
      * @param mixed ...$constructParams
@@ -104,7 +101,7 @@ abstract class ADir extends AAuthModule implements IHasTitle
                 $this->dirForm,
                 Lang::get($this->getFormTitleLangKey())
             )->render()));
-        } catch (FilesException | FormsException $ex) {
+        } catch (FormsException | NotifyException $ex) {
             $this->error = $ex;
         }
         return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));

@@ -21,12 +21,11 @@ class Files implements IFile
 {
     use TMdLang;
 
-    /** @var IProcessFiles */
-    protected $files = null;
+    protected IProcessFiles $files;
     /** @var string[] */
-    protected $moduleConfPath = [];
+    protected array $moduleConfPath = [];
     /** @var string[] */
-    protected $path = [];
+    protected array $path = [];
 
     /**
      * @param IProcessFiles $files
@@ -50,8 +49,7 @@ class Files implements IFile
     public function load(): string
     {
         try {
-            $data = $this->files->readFile($this->getPath());
-            return is_resource($data) ? strval(stream_get_contents($data, -1, 0)) : strval($data);
+            return $this->files->readFile($this->getPath());
         } catch (FilesException | PathsException $ex) {
             throw new ModuleException($this->getMdLang()->mdStorageLoadProblem(), 0, $ex);
         }

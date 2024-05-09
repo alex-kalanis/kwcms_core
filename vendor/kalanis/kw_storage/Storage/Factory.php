@@ -14,10 +14,8 @@ use kalanis\kw_storage\StorageException;
  */
 class Factory
 {
-    /** @var Target\Factory */
-    protected $targetFactory = null;
-    /** @var Key\Factory */
-    protected $keyFactory = null;
+    protected Target\Factory $targetFactory;
+    protected Key\Factory $keyFactory;
 
     public function __construct(Key\Factory $keyFactory, Target\Factory $targetFactory)
     {

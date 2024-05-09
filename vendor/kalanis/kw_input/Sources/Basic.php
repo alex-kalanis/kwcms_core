@@ -16,9 +16,9 @@ use kalanis\kw_input\Parsers;
 class Basic implements Interfaces\ISource
 {
     /** @var string[]|int[]|array<string|int, string|int|bool> */
-    protected $cliArgs = [];
+    protected array $cliArgs = [];
     /** @var string[]|int[]|array<string|int, string|int|bool> */
-    protected $externalArgs = [];
+    protected array $externalArgs = [];
 
     /**
      * @param array<string|int, string|int> $cliArgs

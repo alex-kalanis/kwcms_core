@@ -22,10 +22,9 @@ class Basic implements ICache
 {
     use TToString;
 
-    /** @var CompositeAdapter */
-    protected $cacheStorage = null;
+    protected CompositeAdapter $cacheStorage;
     /** @var string[] */
-    protected $cachePath = [];
+    protected array $cachePath = [];
 
     public function __construct(CompositeAdapter $cacheStorage)
     {

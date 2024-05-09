@@ -10,6 +10,7 @@ use kalanis\kw_forms\Adapters\InputFilesAdapter;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IFileEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
@@ -25,6 +26,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -41,14 +43,12 @@ class Upload extends AAuthModule implements IHasTitle
     use Templates\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Access\CompositeAdapter */
-    protected $files = null;
-    /** @var Forms\FileUploadForm */
-    protected $fileForm = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var bool */
-    protected $processed = false;
+    protected Access\CompositeAdapter $files;
+    protected Forms\FileUploadForm $fileForm;
+    protected UserDir $userDir;
+    protected bool $processed = false;
+
+    protected $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -62,6 +62,12 @@ class Upload extends AAuthModule implements IHasTitle
         $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->fileForm = new Forms\FileUploadForm('uploadImageForm');
         $this->userDir = new UserDir(new Lib\Translations());
+        $this->initLibAction(new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -79,8 +85,8 @@ class Upload extends AAuthModule implements IHasTitle
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->fileForm->composeForm();
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs), new InputFilesAdapter($this->inputs));
@@ -93,7 +99,7 @@ class Upload extends AAuthModule implements IHasTitle
                 if (!$file instanceof IFileEntry) {
                     throw new ImagesException(Lang::get('images.error.must_contain_file'));
                 }
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $usedName = $libAction->findFreeName($file->getValue());
                 $this->processed = $libAction->uploadFile(
                     $file,

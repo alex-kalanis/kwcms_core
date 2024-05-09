@@ -12,22 +12,22 @@ class CliExpandPager extends CliPager
 {
     public function render(bool $showPositions = true): string
     {
-        if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
-            return $this->getFilledText($this->positions);
+        if (!$this->getPositions()->prevPageExists() && !$this->getPositions()->nextPageExists()) {
+            return $this->getFilledText($this->getPositions());
         }
         $pages = [];
 
-        $pages[] = $this->positions->prevPageExists() ? static::PREV_PAGE . static::PREV_PAGE . ' ' . $this->positions->getFirstPage() : static::NONE_PAGE . static::NONE_PAGE ;
-        $pages[] = $this->positions->prevPageExists() ? static::PREV_PAGE . ' ' . $this->positions->getPrevPage() : static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->prevPageExists() ? static::PREV_PAGE . static::PREV_PAGE . ' ' . $this->getPositions()->getFirstPage() : static::NONE_PAGE . static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->prevPageExists() ? static::PREV_PAGE . ' ' . $this->getPositions()->getPrevPage() : static::NONE_PAGE ;
 
         foreach ($this->getDisplayPages() as $displayPage) {
-            $current = ($this->positions->getPager()->getActualPage() == $displayPage);
+            $current = ($this->getPositions()->getPager()->getActualPage() == $displayPage);
             $pages[] = $current ? static::SELECT_PAGE . $displayPage . static::SELECT_PAGE : $displayPage ;
         }
 
-        $pages[] = $this->positions->nextPageExists() ? $this->positions->getNextPage() . ' ' . static::NEXT_PAGE : static::NONE_PAGE ;
-        $pages[] = $this->positions->nextPageExists() ? $this->positions->getLastPage() . ' ' . static::NEXT_PAGE . static::NEXT_PAGE : static::NONE_PAGE . static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->nextPageExists() ? $this->getPositions()->getNextPage() . ' ' . static::NEXT_PAGE : static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->nextPageExists() ? $this->getPositions()->getLastPage() . ' ' . static::NEXT_PAGE . static::NEXT_PAGE : static::NONE_PAGE . static::NONE_PAGE ;
 
-        return implode(' | ', $pages) . ( $showPositions ? (PHP_EOL . $this->getFilledText($this->positions) ) : '');
+        return implode(' | ', $pages) . ( $showPositions ? (PHP_EOL . $this->getFilledText($this->getPositions()) ) : '');
     }
 }

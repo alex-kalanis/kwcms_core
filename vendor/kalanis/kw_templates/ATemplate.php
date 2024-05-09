@@ -10,32 +10,24 @@ namespace kalanis\kw_templates;
  */
 abstract class ATemplate
 {
-    /** @var string */
-    protected $template = '';
-    /** @var string */
-    protected $defaultTemplate = '';
-    /** @var Template\Item */
-    protected static $item = null;
+    protected string $template = '';
+    protected string $defaultTemplate = '';
+    protected static ?Template\Item $item = null;
     /** @var Template\Item[] */
-    protected $items = [];
+    protected array $items = [];
 
     public function __construct()
     {
-        $this->loadItem();
         $this->setTemplate($this->loadTemplate());
         $this->fillInputs();
     }
 
-    /**
-     * Load item as only object across the project, then copy it only when need
-     */
-    protected function loadItem(): void
+    protected function getTemplateItem(): Template\Item
     {
-        // due init...
-        // @phpstan-ignore-next-line
         if (empty(static::$item)) {
             static::$item = new Template\Item();
         }
+        return static::$item;
     }
 
     protected function setTemplate(string $content): self
@@ -58,7 +50,7 @@ abstract class ATemplate
 
     protected function addInput(string $key, string $default = '', ?string $value = null): self
     {
-        $copy = clone static::$item;
+        $copy = clone $this->getTemplateItem();
         $this->addItem($copy->setData($key, $default)->setValue($value));
         return $this;
     }

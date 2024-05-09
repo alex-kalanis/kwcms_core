@@ -12,7 +12,7 @@ namespace kalanis\kw_input\Parsers;
  */
 class Json extends AParser
 {
-    const FLAG_FILE = 'FILE';
+    public const FLAG_FILE = 'FILE';
 
     /**
      * @param int[]|string[] $input is path to json content

@@ -33,9 +33,9 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class Login extends AAuthModule implements IHasTitle
 {
-    protected $form = null;
-    protected $cookieAdapter = null;
-    protected $sessionAdapter = null;
+    protected Forms\LoginForm $form;
+    protected CookieAdapter $cookieAdapter;
+    protected SessionAdapter $sessionAdapter;
 
     public function __construct(...$constructParams)
     {

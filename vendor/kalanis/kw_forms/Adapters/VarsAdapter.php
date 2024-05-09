@@ -9,8 +9,7 @@ use kalanis\kw_input\Interfaces\IEntry;
 
 class VarsAdapter extends AAdapter
 {
-    /** @var string */
-    protected $inputType = '';
+    protected string $inputType = '';
 
     public function loadEntries(string $inputType): void
     {

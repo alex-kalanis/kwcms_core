@@ -3,9 +3,8 @@
 namespace kalanis\kw_input\Filtered;
 
 
-use ArrayAccess;
-use kalanis\kw_input\Input;
 use kalanis\kw_input\Interfaces;
+use kalanis\kw_input\Traits;
 
 
 /**
@@ -15,8 +14,11 @@ use kalanis\kw_input\Interfaces;
  */
 class EntryArrays implements Interfaces\IFiltered
 {
+    use Traits\TFilter;
+    use Traits\TKV;
+
     /** @var array<int|string, Interfaces\IEntry> */
-    protected $inputs = [];
+    protected array $inputs = [];
 
     /**
      * @param array<int|string, Interfaces\IEntry> $inputs
@@ -26,27 +28,16 @@ class EntryArrays implements Interfaces\IFiltered
         $this->inputs = $inputs;
     }
 
-    public function getInObject(?string $entryKey = null, array $entrySources = []): ArrayAccess
-    {
-        return new Input($this->getInArray($entryKey, $entrySources));
-    }
-
     public function getInArray(?string $entryKey = null, array $entrySources = []): array
     {
-        $result = [];
-        foreach ($this->inputs as $input) {
-            /** @var Interfaces\IEntry $input */
-            $passSource = $passKey = false;
-            if (empty($entrySources) || in_array($input->getSource(), $entrySources)) {
-                $passSource = true;
-            }
-            if (is_null($entryKey) || ($input->getKey() === $entryKey)) {
-                $passKey = true;
-            }
-            if ($passSource && $passKey) {
-                $result[$input->getKey()] = $input;
-            }
-        }
-        return $result;
+        return $this->keysValues(
+            $this->whichSource(
+                $entrySources,
+                $this->whichKeys(
+                    $entryKey,
+                    $this->inputs
+                )
+            )
+        );
     }
 }

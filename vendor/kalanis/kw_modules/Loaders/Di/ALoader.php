@@ -24,8 +24,7 @@ abstract class ALoader implements ILoader
 {
     use TMdLang;
 
-    /** @var ContainerInterface */
-    protected $container = null;
+    protected ContainerInterface $container;
 
     public function __construct(ContainerInterface $container, ?IMdTranslations $lang = null)
     {

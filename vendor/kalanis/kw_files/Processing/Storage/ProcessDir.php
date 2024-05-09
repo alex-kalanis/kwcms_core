@@ -15,8 +15,7 @@ use kalanis\kw_storage\Interfaces\IStorage;
  */
 class ProcessDir implements IProcessDirs
 {
-    /** @var IProcessDirs */
-    protected $adapter = null;
+    protected IProcessDirs $adapter;
 
     public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {

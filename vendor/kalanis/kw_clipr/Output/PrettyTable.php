@@ -31,17 +31,16 @@ use kalanis\kw_clipr\Clipr\Useful;
 class PrettyTable implements \Iterator
 {
     /** @var array<int, string> */
-    protected $header = [];
+    protected array $header = [];
     /** @var array<int, string> */
-    protected $colors = [];
+    protected array $colors = [];
     /** @var array<int, string> */
-    protected $colorsHeader = [];
+    protected array $colorsHeader = [];
     /** @var array<int, array<int, string>> */
-    protected $table = [];
-    /** @var int */
-    protected $position = 0;
+    protected array $table = [];
+    protected int $position = 0;
     /** @var array<int, int> */
-    protected $lengths = [];
+    protected array $lengths = [];
 
     /**
      * @param array<int, string> $values

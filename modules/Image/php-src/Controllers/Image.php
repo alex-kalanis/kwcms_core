@@ -5,10 +5,11 @@ namespace KWCMS\modules\Image\Controllers;
 
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
+use kalanis\kw_files\Access\Factory as files_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Traits\TToString;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\Content\Images;
-use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
@@ -40,16 +41,11 @@ class Image extends AModule
 {
     use TToString;
 
-    /** @var IMime */
-    protected $mime = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var ExternalLink */
-    protected $extLink = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Images */
-    protected $sources = null;
+    protected IMime $mime;
+    protected ArrayPath $arrPath;
+    protected ExternalLink $extLink;
+    protected InnerLinks $innerLink;
+    protected Images $sources;
     /** @var mixed */
     protected $constructParams = [];
 
@@ -76,13 +72,13 @@ class Image extends AModule
             boolval(Config::get('Core', 'page.system_prefix', false)),
             boolval(Config::get('Core', 'page.data_separator', false))
         );
-        $this->sources = FilesHelper::getImages(
-            $constructParams,
-            [],
-            new ImagesTranslations(),
-            new FilesTranslations()
-        );
         $this->mime = (new Check\Factory())->getLibrary(null);
+        $this->sources = (new images_factory(
+            (new files_factory(new FilesTranslations()))->getClass($constructParams),
+            $this->mime,
+            new ImagesTranslations()
+        ))->getImages($constructParams);
+
     }
 
     public function process(): void

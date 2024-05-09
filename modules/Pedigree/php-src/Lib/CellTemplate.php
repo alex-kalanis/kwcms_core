@@ -14,11 +14,11 @@ use kalanis\kw_templates\TemplateException;
  */
 class CellTemplate extends ATemplate
 {
-    protected $moduleName = 'Pedigree';
-    protected $templateName = 'cell_norm';
+    protected string $moduleName = 'Pedigree';
+    protected string $templateName = 'cell_norm';
 
     /* Which styles are available */
-    protected static $styles = [
+    protected static array $styles = [
         'first',
         'norm',
         'ext',

@@ -30,18 +30,18 @@ interface ITarget
     /**
      * @param string $key
      * @throws StorageException
-     * @return mixed
+     * @return string
      */
-    public function load(string $key);
+    public function load(string $key): string;
 
     /**
      * @param string $key
-     * @param mixed $data
+     * @param string $data
      * @param int|null $timeout
      * @throws StorageException
      * @return bool
      */
-    public function save(string $key, $data, ?int $timeout = null): bool;
+    public function save(string $key, string $data, ?int $timeout = null): bool;
 
     /**
      * @param string $key

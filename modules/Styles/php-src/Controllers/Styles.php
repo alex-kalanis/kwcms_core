@@ -6,8 +6,10 @@ namespace KWCMS\modules\Styles\Controllers;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Traits\TToString;
+use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_modules\Output;
 use kalanis\kw_modules\Support;
+use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
@@ -26,7 +28,9 @@ class Styles extends AStyles
 
     public function outContent(): Output\AOutput
     {
-        $gotPath = $this->params['path']->getValue();
+        $gotPath = $this->getFromInput('path', [], [IEntry::SOURCE_EXTERNAL]);
+        $gotPath = is_object($gotPath) ? $gotPath->getValue() : $gotPath;
+        $gotPath = is_array($gotPath) ? $gotPath : (new ArrayPath())->setString(strval($gotPath))->getArray();
         $content = $this->getUserContent($gotPath);
         if (is_null($content)) {
             $moduleName = array_shift($gotPath);

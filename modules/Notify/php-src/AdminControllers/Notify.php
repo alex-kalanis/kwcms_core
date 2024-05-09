@@ -20,7 +20,8 @@ use KWCMS\modules\Notify\Template;
  */
 class Notify extends AModule
 {
-    protected static $cssClasses = [
+    /** @var array<string, string> */
+    protected static array $cssClasses = [
         INotify::TARGET_ERROR => 'alert-box-danger',
         INotify::TARGET_WARNING => 'alert-box-warning',
         INotify::TARGET_SUCCESS => 'alert-box-success',

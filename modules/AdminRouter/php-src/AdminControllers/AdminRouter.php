@@ -38,18 +38,14 @@ use KWCMS\modules\Core\Libs\AModule;
  */
 class AdminRouter extends AModule
 {
-    /** @var ILoader */
-    protected $loader = null;
+    protected ILoader $loader;
     /** @var IModule|null */
-    protected $module = null;
-    /** @var IModulesList */
-    protected $modulesList = null;
-    /** @var Processor */
-    protected $subModules = null;
-    /** @var Lib\Chain\Processor */
-    protected $chainProcessor = null;
+    protected ?IModule $module = null;
+    protected IModulesList $modulesList;
+    protected Processor $subModules;
+    protected Lib\Chain\Processor $chainProcessor;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -127,10 +123,10 @@ class AdminRouter extends AModule
     protected function wrapped(AOutput $content): AOutput
     {
         Lang::load('Admin');
-        Styles::want('styles', 'admin/admstyle.css');
-        Styles::want('styles', 'admin/admstylem.css');
-        Styles::want('styles', 'admin/admprint.css');
-        Scripts::want('scripts', 'admin/themes.js');
+        Styles::want('admin', 'admstyle.css');
+        Styles::want('admin', 'admstylem.css');
+        Styles::want('admin', 'admprint.css');
+        Scripts::want('admin', 'themes.js');
         $out = new Raw();
         $template = new Templates\RouterTemplate();
         $template->setData(
@@ -148,14 +144,5 @@ class AdminRouter extends AModule
         $tmpl = $this->subModules->fill($template->get(), $this->inputs, ISitePart::SITE_LAYOUT, $this->params, $this->constructParams);
         $template->change($template->get(), $tmpl);
         return $out->setContent($template->render());
-    }
-
-    /**
-     * Real modules with basic templates - admin, page, ...
-     * @return string[]
-     */
-    protected function modulesWithPassingParams(): array
-    {
-        return ['Layout', 'AdminRouter', 'SinglePage', 'Image', 'Pedigree'];
     }
 }

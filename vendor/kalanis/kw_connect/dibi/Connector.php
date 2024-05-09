@@ -20,20 +20,15 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class Connector extends AConnector implements IIterableConnector
 {
-    /** @var Fluent */
-    protected $dibiFluent;
-    /** @var string */
-    protected $primaryKey;
+    protected Fluent $dibiFluent;
+    protected string $primaryKey;
     /** @var array<int, array<string>> */
-    protected $sorters;
-    /** @var int|null */
-    protected $limit;
-    /** @var int|null */
-    protected $offset;
+    protected array $sorters = [];
+    protected ?int $limit = null;
+    protected ?int $offset = null;
     /** @var DRow[] */
-    protected $rawData = [];
-    /** @var bool */
-    protected $dataFetched = false;
+    protected array $rawData = [];
+    protected bool $dataFetched = false;
 
     public function __construct(Fluent $dataSource, string $primaryKey)
     {

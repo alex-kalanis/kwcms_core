@@ -17,7 +17,7 @@ use kalanis\kw_templates\Interfaces\IHtmlElement;
 trait TSubControls
 {
     /** @var array<string, AControl> */
-    protected $controls = [];
+    protected array $controls = [];
 
     public function addControl(string $key, AControl $control): void
     {

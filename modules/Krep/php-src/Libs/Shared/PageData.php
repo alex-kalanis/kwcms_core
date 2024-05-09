@@ -14,44 +14,27 @@ use kalanis\kw_forums\Interfaces\ITargets;
  */
 class PageData implements ITargets
 {
-    /** @var string */
-    public $response = '';
+    public string $response = '';
     /** @var Content\PostList[] */
-    public $posts = [];
+    public array $posts = [];
     /** @var Content\TopicList[] */
-    public $topics = [];
-    /** @var int */
-    public $showForm = self::FORM_SEND_ALL;
-    /** @var int */
-    public $listingType = self::LISTING_TOPIC;
-    /** @var bool */
-    public $canPost = self::IS_ALIVE;
-    /** @var string */
-    public $encodingRemote = 'utf-8';
-    /** @var int */
-    public $discusNumber = 0;
-    /** @var string */
-    public $discusDesc = '';
-    /** @var int */
-    public $topicNumber = 0;
-    /** @var string */
-    public $topicDesc = '';
-    /** @var int */
-    public $levelNumber = 0;
-    /** @var string */
-    public $levelDesc = '';
-    /** @var string */
-    public $title = '';
-    /** @var string */
-    public $announce = '';
-    /** @var int */
-    public $parentDiscusNumber = 0;
-    /** @var int */
-    public $currentDiscusNumber = 0;
-    /** @var bool */
-    public $die = false;
-    /** @var int|null */
-    public $currentPost = null;
+    public array $topics = [];
+    public int $showForm = self::FORM_SEND_ALL;
+    public int $listingType = self::LISTING_TOPIC;
+    public bool $canPost = self::IS_ALIVE;
+    public string $encodingRemote = 'utf-8';
+    public int $discusNumber = 0;
+    public string $discusDesc = '';
+    public int $topicNumber = 0;
+    public string $topicDesc = '';
+    public int $levelNumber = 0;
+    public string $levelDesc = '';
+    public string $title = '';
+    public string $announce = '';
+    public int $parentDiscusNumber = 0;
+    public int $currentDiscusNumber = 0;
+    public bool $die = false;
+    public ?int $currentPost = null;
 
     public function getShowForm(): int
     {

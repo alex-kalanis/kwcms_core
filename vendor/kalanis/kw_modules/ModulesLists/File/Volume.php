@@ -18,10 +18,8 @@ class Volume implements IFile
 {
     use TMdLang;
 
-    /** @var string */
-    protected $moduleConfPath = '';
-    /** @var string */
-    protected $path = '';
+    protected string $moduleConfPath = '';
+    protected string $path = '';
 
     public function __construct(string $moduleConfPath, ?IMdTranslations $lang = null)
     {

@@ -8,10 +8,9 @@ use kalanis\kw_forms\Exceptions\FormsException;
 
 class VariantFactory
 {
-    /** @var string */
-    protected $path = '';
+    protected string $path = '';
     /** @var string[] */
-    protected $available = [];
+    protected array $available = [];
 
     public function __construct(?string $path = null)
     {

@@ -24,7 +24,7 @@ namespace kalanis\kw_forms\Controls;
  */
 class RadioSet extends AControl
 {
-    protected $templateInput = '%3$s';
+    protected string $templateInput = '%3$s';
 
     /**
      * Add group of elements of form entries Radio

@@ -6,111 +6,111 @@ namespace kalanis\kw_rules\Interfaces;
 interface IRules
 {
     /* Match all subrules, fail if any fails */
-    const MATCH_ALL = 'matchall';
+    public const MATCH_ALL = 'matchall';
     /* Match any subrule, fail if every one fails */
-    const MATCH_ANY = 'matchany';
+    public const MATCH_ANY = 'matchany';
     /* Match by entry, fail if subrule or entry itself is not valid */
-    const MATCH_ENTRY = 'matchentry';
+    public const MATCH_ENTRY = 'matchentry';
 
     /* Match always - usually kill the rest of processing */
-    const ALWAYS = 'always';
+    public const ALWAYS = 'always';
     /* Match when input equals expected value */
-    const EQUALS = 'equals';
+    public const EQUALS = 'equals';
     /* Match when input not equals expected value */
-    const NOT_EQUALS = 'nequals';
+    public const NOT_EQUALS = 'nequals';
     /* Match when input is in array of expected values */
-    const IN_ARRAY = 'inarr';
+    public const IN_ARRAY = 'inarr';
     /* Match when input is not in array expected values */
-    const NOT_IN_ARRAY = 'ninarr';
+    public const NOT_IN_ARRAY = 'ninarr';
     /* Check if input is greater than preset value */
-    const IS_GREATER_THAN = 'greater';
+    public const IS_GREATER_THAN = 'greater';
     /* Check if input is lower than preset value */
-    const IS_LOWER_THAN = 'lower';
+    public const IS_LOWER_THAN = 'lower';
     /* Check if input is greater than or equals preset value */
-    const IS_GREATER_THAN_EQUALS = 'gteq';
+    public const IS_GREATER_THAN_EQUALS = 'gteq';
     /* Check if input is lower than or equals preset value */
-    const IS_LOWER_THAN_EQUALS = 'lweq';
+    public const IS_LOWER_THAN_EQUALS = 'lweq';
     /* Check if input is number */
-    const IS_NUMERIC = 'numeric';
+    public const IS_NUMERIC = 'numeric';
     /* Check if input is string */
-    const IS_STRING = 'string';
+    public const IS_STRING = 'string';
     /* Check if input is boolean (true, false, 0, 1) */
-    const IS_BOOL = 'bool';
+    public const IS_BOOL = 'bool';
     /* Check if input matches preset pattern in regular expression */
-    const MATCHES_PATTERN = 'match';
+    public const MATCHES_PATTERN = 'match';
     /* Check if input length is longer than preset value */
-    const LENGTH_MIN = 'min';
+    public const LENGTH_MIN = 'min';
     /* Check if input length is shorter than preset value */
-    const LENGTH_MAX = 'max';
+    public const LENGTH_MAX = 'max';
     /* Check if input length equals preset value */
-    const LENGTH_EQUALS = 'eql';
+    public const LENGTH_EQUALS = 'eql';
     /* Check if input is in range of values (x and y) */
-    const IN_RANGE = 'range';
+    public const IN_RANGE = 'range';
     /* Check if input is in range of values <x and y> */
-    const IN_RANGE_EQUALS = 'rangeequals';
+    public const IN_RANGE_EQUALS = 'rangeequals';
     /* Check if input is not in range of values (x and y) */
-    const NOT_IN_RANGE = 'nrange';
+    public const NOT_IN_RANGE = 'nrange';
     /* Check if input is not in range of values <x and y> */
-    const NOT_IN_RANGE_EQUALS = 'nrangeeqals';
+    public const NOT_IN_RANGE_EQUALS = 'nrangeeqals';
     /* Check if value is filled with something */
-    const IS_FILLED = 'fill';
-    const IS_NOT_EMPTY = 'nemtpy';
+    public const IS_FILLED = 'fill';
+    public const IS_NOT_EMPTY = 'nemtpy';
     /* Check if value is considered empty */
-    const IS_EMPTY = 'empty';
+    public const IS_EMPTY = 'empty';
     /* Check if value satisfies callback function */
-    const SATISFIES_CALLBACK = 'call';
+    public const SATISFIES_CALLBACK = 'call';
     /* Check if value is correct email */
-    const IS_EMAIL = 'mail';
+    public const IS_EMAIL = 'mail';
     /* Check if value is valid domain */
-    const IS_DOMAIN = 'domain';
+    public const IS_DOMAIN = 'domain';
     /* Check if input is callable URL (got code 200) */
-    const URL_EXISTS = 'url';
+    public const URL_EXISTS = 'url';
     /* Check if input is active domain callable from the line */
-    const IS_ACTIVE_DOMAIN = 'domainactive';
+    public const IS_ACTIVE_DOMAIN = 'domainactive';
     /* Check if input is valid JSON string */
-    const IS_JSON_STRING = 'json';
+    public const IS_JSON_STRING = 'json';
 
     /// Checks for files ///
     /* Has file been sent */
-    const FILE_EXISTS = 'fileexist';
+    public const FILE_EXISTS = 'fileexist';
     /* Has file been sent */
-    const FILE_SENT = 'fileout';
+    public const FILE_SENT = 'fileout';
     /* Has file been received */
-    const FILE_RECEIVED = 'filein';
+    public const FILE_RECEIVED = 'filein';
     /* Check file max size */
-    const FILE_MAX_SIZE = 'filesize';
+    public const FILE_MAX_SIZE = 'filesize';
     /* Check if file mime type is in preset array */
-    const FILE_MIMETYPE_IN_LIST = 'filemimelist';
+    public const FILE_MIMETYPE_IN_LIST = 'filemimelist';
     /* Check if file mime type equals preset one */
-    const FILE_MIMETYPE_EQUALS = 'filemime';
+    public const FILE_MIMETYPE_EQUALS = 'filemime';
     /* Check if input file is an image */
-    const IS_IMAGE = 'image';
+    public const IS_IMAGE = 'image';
     /* Check if input image has correct size */
-    const IMAGE_DIMENSION_EQUALS = 'imgsizeeq';
+    public const IMAGE_DIMENSION_EQUALS = 'imgsizeeq';
     /* Check if input image has size defined in preset list */
-    const IMAGE_DIMENSION_IN_LIST = 'imgsizelist';
+    public const IMAGE_DIMENSION_IN_LIST = 'imgsizelist';
     /* Check if input image is not larger than preset values */
-    const IMAGE_MAX_DIMENSION = 'imgmaxsize';
+    public const IMAGE_MAX_DIMENSION = 'imgmaxsize';
     /* Check if input image is not smaller than preset values */
-    const IMAGE_MIN_DIMENSION = 'imgminsize';
+    public const IMAGE_MIN_DIMENSION = 'imgminsize';
 
     /// Need external sources ///
     /* Check if input is post code */
-    const IS_POST_CODE = 'postcode';
+    public const IS_POST_CODE = 'postcode';
     /* Check if input is valid phone number */
-    const IS_TELEPHONE = 'phone';
+    public const IS_TELEPHONE = 'phone';
     /* Check if input is correct EU VAT number */
-    const IS_EU_VAT = 'euvat';
+    public const IS_EU_VAT = 'euvat';
     /* Check if input is correct date in expected format */
-    const IS_DATE = 'date';
+    public const IS_DATE = 'date';
     /* Check if input is correct date in expected format */
-    const IS_DATE_REGEX = 'rgxdate';
+    public const IS_DATE_REGEX = 'rgxdate';
 
     /// Secured matching - like for passwords ///
     /* Match when hash of input equals hashed expected value */
-    const SAFE_EQUALS_BASIC = 'hbequals';
+    public const SAFE_EQUALS_BASIC = 'hbequals';
     /* Match when input equals expected value via direct function */
-    const SAFE_EQUALS_FUNC = 'hfequals';
+    public const SAFE_EQUALS_FUNC = 'hfequals';
     /* Match when hashes of input and expected value equals via password check */
-    const SAFE_EQUALS_PASS = 'hpass';
+    public const SAFE_EQUALS_PASS = 'hpass';
 }

@@ -16,9 +16,9 @@ use kalanis\kw_clipr\Tasks\ATask;
 class MultiLoader implements ILoader, ISubLoaders
 {
     /** @var ILoader[] */
-    protected $subLoaders = [];
+    protected array $subLoaders = [];
     /** @var ATask[] */
-    protected $loadedClasses = [];
+    protected array $loadedClasses = [];
 
     public static function init(): self
     {

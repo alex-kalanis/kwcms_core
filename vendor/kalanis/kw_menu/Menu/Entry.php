@@ -10,18 +10,12 @@ namespace kalanis\kw_menu\Menu;
  */
 class Entry
 {
-    /** @var string */
-    protected $id = '';
-    /** @var string */
-    protected $name = '';
-    /** @var string */
-    protected $desc = '';
-    /** @var int */
-    protected $position = 0;
-    /** @var bool */
-    protected $goSub = false;
-    /** @var Menu|null */
-    protected $submenu = null;
+    protected string $id = '';
+    protected string $name = '';
+    protected string $desc = '';
+    protected int $position = 0;
+    protected bool $goSub = false;
+    protected ?Menu $submenu = null;
 
     public function setData(string $id, string $name, string $desc, int $position, bool $goSub = false): self
     {

@@ -17,7 +17,7 @@ use ReflectionException;
  */
 class Factory implements IRuleFactory
 {
-    /** @var array<string, string> */
+    /** @var array<string, class-string<ARule>> */
     protected static $map = [
         IRules::MATCH_ALL              => MatchAll::class,
         IRules::MATCH_ANY              => MatchAny::class,
@@ -71,7 +71,6 @@ class Factory implements IRuleFactory
         if (isset(static::$map[$ruleName])) {
             $rule = static::$map[$ruleName];
             try {
-                /** @var class-string $rule */
                 $ref = new ReflectionClass($rule);
                 $class = $ref->newInstance();
                 if ($class instanceof ARule) {

@@ -20,8 +20,7 @@ use kalanis\kw_rules\Interfaces\IRules;
  */
 class MessageForm extends Form
 {
-    /** @var ShortMessage|null */
-    protected $defaultRecord = null;
+    protected ?ShortMessage $defaultRecord = null;
 
     public function composeForm(ShortMessage $defaultRecord): self
     {

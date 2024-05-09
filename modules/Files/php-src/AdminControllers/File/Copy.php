@@ -16,7 +16,7 @@ use kalanis\kw_paths\Stuff;
 /**
  * Class Copy
  * @package KWCMS\modules\Files\File
- * Copy content
+ * Copy selected file to another dir
  */
 class Copy extends AFile
 {
@@ -31,8 +31,8 @@ class Copy extends AFile
         $this->userDir->setUserPath($this->getUserDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $workPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $workPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->tree->setStartPath($userPath);
             $this->tree->wantDeep(true);

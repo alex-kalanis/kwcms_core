@@ -15,14 +15,10 @@ class ThumbConfig implements ISizes
 {
     const FILE_TEMP = 'thumb_tmp';
 
-    /** @var int */
-    protected $maxWidth = 180;
-    /** @var int */
-    protected $maxHeight = 180;
-    /** @var int */
-    protected $maxFileSize = 10485760;
-    /** @var string */
-    protected $tempPrefix = self::FILE_TEMP;
+    protected int $maxWidth = 180;
+    protected int $maxHeight = 180;
+    protected int $maxFileSize = 10485760;
+    protected string $tempPrefix = self::FILE_TEMP;
 
     /**
      * @param array<string, string|int> $params

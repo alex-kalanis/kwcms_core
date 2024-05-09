@@ -39,12 +39,10 @@ class Dashboard extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
 
-    /** @var Search|null */
-    protected $search = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
+    /** @var Search */
+    protected ?Search $search = null;
+    protected UserDir $userDir;
+    protected CompositeAdapter $files;
     /** @var MapperException|ConnectException|null */
     protected $error = null;
 
@@ -79,7 +77,7 @@ class Dashboard extends AAuthModule implements IHasTitle
 
             $adapter = new Lib\MessageAdapter($this->files, array_merge($userPath, $currentPath));
             $this->search = new Search($adapter->getRecord());
-        } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
+        } catch (ConfException | FilesException | FormsException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;
         }
     }

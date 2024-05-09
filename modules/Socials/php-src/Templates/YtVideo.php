@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class YtVideo extends ATemplate
 {
-    protected $moduleName = 'Socials';
-    protected $templateName = 'yt_video';
+    protected string $moduleName = 'Socials';
+    protected string $templateName = 'yt_video';
 
     protected function fillInputs(): void
     {

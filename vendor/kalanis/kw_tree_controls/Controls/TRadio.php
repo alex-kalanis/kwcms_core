@@ -11,7 +11,7 @@ namespace kalanis\kw_tree_controls\Controls;
 trait TRadio
 {
     /** @var Radio[] */
-    protected $inputs = [];
+    protected array $inputs = [];
 
     public function getValue()
     {

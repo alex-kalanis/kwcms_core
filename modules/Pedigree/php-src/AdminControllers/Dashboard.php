@@ -30,8 +30,8 @@ class Dashboard extends AAuthModule implements IHasTitle
 {
     use Lib\TModuleTemplate;
 
-    /** @var GetEntries|null */
-    protected $entries = null;
+    /** @var GetEntries */
+    protected ?GetEntries $entries = null;
     /** @var MapperException|ConnectException|null */
     protected $error = null;
 

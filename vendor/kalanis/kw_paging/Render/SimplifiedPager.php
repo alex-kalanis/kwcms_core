@@ -4,10 +4,9 @@ namespace kalanis\kw_paging\Render;
 
 
 use kalanis\kw_pager\Interfaces\IPager;
-use kalanis\kw_paging\Interfaces\ILink;
-use kalanis\kw_paging\Interfaces\IOutput;
-use kalanis\kw_paging\Interfaces\IPGTranslations;
-use kalanis\kw_paging\Interfaces\IPositions;
+use kalanis\kw_paging\Interfaces;
+use kalanis\kw_paging\Traits;
+use kalanis\kw_paging\Translations;
 
 
 /**
@@ -15,31 +14,31 @@ use kalanis\kw_paging\Interfaces\IPositions;
  * @package kalanis\kw_paging\Render
  * Simplified pager with less classes
  */
-class SimplifiedPager implements IOutput
+class SimplifiedPager implements Interfaces\IOutput
 {
-    use TDisplayPages;
+    use Traits\TDisplayPages;
 
-    const PREV_PAGE = '&lt;';
-    const NEXT_PAGE = '&gt;';
+    public const PREV_PAGE = '&lt;';
+    public const NEXT_PAGE = '&gt;';
 
-    /** @var ILink */
-    protected $link = null;
-    /** @var SimplifiedPager\Pager */
-    protected $pager = null;
-    /** @var SimplifiedPager\CurrentPage */
-    protected $currentPage = null;
-    /** @var SimplifiedPager\AnotherPage */
-    protected $anotherPage = null;
-    /** @var SimplifiedPager\DisabledPage */
-    protected $disabledPage = null;
+    protected Interfaces\ILink $link;
+    protected SimplifiedPager\Pager $pager;
+    protected SimplifiedPager\CurrentPage $currentPage;
+    protected SimplifiedPager\AnotherPage $anotherPage;
+    protected SimplifiedPager\DisabledPage $disabledPage;
 
-    public function __construct(IPositions $positions, ILink $link, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)
+    public function __construct(
+        Interfaces\IPositions $positions,
+        Interfaces\ILink $link,
+        int $displayPages = Interfaces\IPositions::DEFAULT_DISPLAY_PAGES_COUNT,
+        ?Interfaces\IPGTranslations $lang = null
+    )
     {
         $this->positions = $positions;
         $this->link = $link;
         $this->displayPagesCount = $displayPages;
         $this->pager = new SimplifiedPager\Pager();
-        $this->pager->setLang($lang ?: new Translations());
+        $this->pager->setKpgLang($lang ?: new Translations());
         $this->currentPage = new SimplifiedPager\CurrentPage();
         $this->anotherPage = new SimplifiedPager\AnotherPage();
         $this->disabledPage = new SimplifiedPager\DisabledPage();
@@ -52,38 +51,38 @@ class SimplifiedPager implements IOutput
 
     public function render(bool $showPositions = true): string
     {
-        if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
+        if (!$this->getPositions()->prevPageExists() && !$this->getPositions()->nextPageExists()) {
             return '';
         }
         $pages = [];
 
-        $first = $this->positions->prevPageExists() ? $this->anotherPage : $this->disabledPage;
-        $this->link->setPageNumber($this->positions->getFirstPage());
+        $first = $this->getPositions()->prevPageExists() ? $this->anotherPage : $this->disabledPage;
+        $this->link->setPageNumber($this->getPositions()->getFirstPage());
         $pages[] = $first->reset()->setData($this->link, static::PREV_PAGE . static::PREV_PAGE)->render();
-        $this->link->setPageNumber($this->positions->getPrevPage());
+        $this->link->setPageNumber($this->getPositions()->getPrevPage());
         $pages[] = $first->reset()->setData($this->link, static::PREV_PAGE)->render();
 
         foreach ($this->getDisplayPages() as $displayPage) {
-            $current = ($this->positions->getPager()->getActualPage() == $displayPage) ? $this->currentPage : $this->anotherPage ;
+            $current = ($this->getPositions()->getPager()->getActualPage() == $displayPage) ? $this->currentPage : $this->anotherPage ;
             $this->link->setPageNumber($displayPage);
             $pages[] = $current->reset()->setData($this->link, strval($displayPage))->render();
         }
 
-        $last = $this->positions->nextPageExists() ? $this->anotherPage : $this->disabledPage;
-        $this->link->setPageNumber($this->positions->getNextPage());
+        $last = $this->getPositions()->nextPageExists() ? $this->anotherPage : $this->disabledPage;
+        $this->link->setPageNumber($this->getPositions()->getNextPage());
         $pages[] = $last->reset()->setData($this->link, static::NEXT_PAGE)->render();
-        $this->link->setPageNumber($this->positions->getLastPage());
+        $this->link->setPageNumber($this->getPositions()->getLastPage());
         $pages[] = $last->reset()->setData($this->link, static::NEXT_PAGE . static::NEXT_PAGE)->render();
 
         $this->pager->setData(
             implode('', $pages),
-            $showPositions ? $this->positions : null
+            $showPositions ? $this->getPositions() : null
         );
         return $this->pager->render();
     }
 
     public function getPager(): IPager
     {
-        return $this->positions->getPager();
+        return $this->getPositions()->getPager();
     }
 }

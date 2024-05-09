@@ -24,12 +24,10 @@ class Semaphore implements ICache
 {
     use TToString;
 
-    /** @var CompositeAdapter */
-    protected $lib = null;
-    /** @var ISemaphore */
-    protected $reloadSemaphore = null;
+    protected CompositeAdapter $lib;
+    protected ISemaphore $reloadSemaphore;
     /** @var string[] */
-    protected $cachePath = [ICache::EXT_CACHE];
+    protected array $cachePath = [ICache::EXT_CACHE];
 
     public function __construct(CompositeAdapter $lib, ISemaphore $reloadSemaphore)
     {

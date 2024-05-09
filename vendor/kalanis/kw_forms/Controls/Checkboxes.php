@@ -32,8 +32,8 @@ class Checkboxes extends AControl implements IMultiValue
 {
     use TShorterKey;
 
-    public $templateLabel = '<label>%2$s</label>';
-    public $templateInput = '%3$s';
+    protected string $templateLabel = '<label>%2$s</label>';
+    protected string $templateInput = '%3$s';
 
     /**
      * Create group of form elements Checkbox

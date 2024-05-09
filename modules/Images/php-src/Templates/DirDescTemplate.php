@@ -15,8 +15,8 @@ use KWCMS\modules\Images\Forms\DescForm;
  */
 class DirDescTemplate extends ATemplate
 {
-    protected $moduleName = 'Images';
-    protected $templateName = 'dir_props';
+    protected string $moduleName = 'Images';
+    protected string $templateName = 'dir_props';
 
     protected function fillInputs(): void
     {

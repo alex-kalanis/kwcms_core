@@ -5,11 +5,14 @@ namespace KWCMS\modules\Images\AdminControllers\Edit;
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access;
+use kalanis\kw_files\Access\Factory as files_factory;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
@@ -20,6 +23,7 @@ use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Templates;
 
@@ -39,21 +43,20 @@ abstract class AEdit extends AAuthModule
 
     /** @var ImagesException|null */
     protected $error = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var Access\CompositeAdapter */
-    protected $files = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
+    protected UserDir $userDir;
+    protected Access\CompositeAdapter $files;
+    protected Forward $forward;
+    protected bool $isProcessed = false;
+
+    protected $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
-     * @throws LangException
      * @throws FilesException
+     * @throws LangException
      * @throws PathsException
+     * @throws HandlerException
      */
     public function __construct(...$constructParams)
     {
@@ -61,8 +64,14 @@ abstract class AEdit extends AAuthModule
         Config::load('Images');
         $this->forward = new Forward();
         $this->forward->setSource(new ServerRequest());
-        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
+        $this->files = (new files_factory(new FilesTranslations()))->getClass($constructParams);
         $this->userDir = new UserDir(new Lib\Translations());
+        $this->initLibAction(new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array

@@ -16,16 +16,14 @@ use kalanis\kw_forms\Interfaces\ITimeout;
  */
 class Factory
 {
-    const TYPE_DISABLED = 1;
-    const TYPE_TEXT = 2;
-    const TYPE_MATH = 3;
-    const TYPE_COLOUR = 4;
-    const TYPE_NOCAPTCHA = 5;
+    public const TYPE_DISABLED = 1;
+    public const TYPE_TEXT = 2;
+    public const TYPE_MATH = 3;
+    public const TYPE_COLOUR = 4;
+    public const TYPE_NOCAPTCHA = 5;
 
-    /** @var ITimeout|null */
-    protected $libTimeout = null;
-    /** @var string */
-    protected $captchaError = 'The CAPTCHA wasn\'t entered correctly. Please try it again.';
+    protected ?ITimeout $libTimeout = null;
+    protected string $captchaError = 'The CAPTCHA wasn\'t entered correctly. Please try it again.';
 
     public function __construct(ITimeout $libTimeout = null, string $captchaError = '')
     {

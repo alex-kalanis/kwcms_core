@@ -19,14 +19,12 @@ use kalanis\kw_storage\StorageException;
  */
 class Dual implements ICache
 {
-    /** @var IStorage */
-    protected $cacheStorage = null;
-    /** @var IStorage */
-    protected $reloadStorage = null;
+    protected IStorage $cacheStorage;
+    protected IStorage $reloadStorage;
     /** @var string[] */
-    protected $cachePath = [ICache::EXT_CACHE];
+    protected array $cachePath = [ICache::EXT_CACHE];
     /** @var string[] */
-    protected $reloadPath = [ICache::EXT_RELOAD];
+    protected array $reloadPath = [ICache::EXT_RELOAD];
 
     public function __construct(IStorage $cacheStorage, ?IStorage $reloadStorage = null)
     {

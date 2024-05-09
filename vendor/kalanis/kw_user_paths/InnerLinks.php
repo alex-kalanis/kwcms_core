@@ -15,20 +15,14 @@ use kalanis\kw_routed_paths\RoutedPath;
  */
 class InnerLinks
 {
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var RoutedPath */
-    protected $routedPath = null;
-    /** @var bool */
-    protected $moreUsers = false;
-    /** @var bool */
-    protected $moreLangs = false;
+    protected ArrayPath $arrPath;
+    protected RoutedPath $routedPath;
+    protected bool $moreUsers = false;
+    protected bool $moreLangs = false;
     /** @var string[] */
-    protected $prefixPath = [];
-    /** @var bool */
-    protected $useSystemPrefix = true;
-    /** @var bool */
-    protected $useDataSeparator = true;
+    protected array $prefixPath = [];
+    protected bool $useSystemPrefix = true;
+    protected bool $useDataSeparator = true;
 
     /**
      * @param RoutedPath $routedPath

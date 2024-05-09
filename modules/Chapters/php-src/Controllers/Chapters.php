@@ -29,24 +29,16 @@ use KWCMS\modules\Core\Libs\FilesTranslations;
  */
 class Chapters extends AModule
 {
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var Files */
-    protected $treeList = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var ExternalLink */
-    protected $linkExternal = null;
-    /** @var Lib\PageTemplate */
-    protected $tmplPage = null;
-    /** @var string */
-    protected $currentFile = '';
-    /** @var string */
-    protected $mask = '';
+    protected ArrayPath $arrPath;
+    protected Files $treeList;
+    protected InnerLinks $innerLink;
+    protected ExternalLink $linkExternal;
+    protected Lib\PageTemplate $tmplPage;
+    protected string $currentFile = '';
+    protected string $mask = '';
     /** @var FileNode[] */
-    protected $availableFiles = [];
-    /** @var int|null */
-    protected $position = null;
+    protected array $availableFiles = [];
+    protected ?int $position = null;
 
     /**
      * @param mixed ...$constructParams
@@ -63,7 +55,10 @@ class Chapters extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
+            boolval(Config::get('Core', 'page.more_lang', false)),
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->treeList = new Files((new Factory(new FilesTranslations()))->getClass($constructParams));
     }
@@ -73,10 +68,11 @@ class Chapters extends AModule
      */
     public function process(): void
     {
-        $this->arrPath->setArray($this->innerLink->toFullPath(StoreRouted::getPath()->getPath()));
+        $this->arrPath->setArray($this->innerLink->toFullPath([]));
         $this->currentFile = $this->arrPath->getFileName();
         $this->mask = Config::get('Chapters', 'regexp_name', 'chapter_([0-9]{1,4})\.htm');
 
+//print_r(['proc', $this->arrPath]);
         $this->treeList
             ->setStartPath($this->arrPath->getArrayDirectory()) # use dir path
             ->setFilterCallback([$this, 'isUsable'])
@@ -84,14 +80,20 @@ class Chapters extends AModule
             ->process()
         ;
 
-        $this->availableFiles = $this->treeList->getRoot()->getSubNodes();
-        sort($this->availableFiles);
-        $this->position = $this->getPosition();
+        if ($this->treeList->getRoot()) {
+            $this->availableFiles = $this->treeList->getRoot()->getSubNodes();
+            sort($this->availableFiles);
+            $this->position = $this->getPosition();
+        }
     }
 
     public function isUsable(Node $file): bool
     {
         $file = $this->arrPath->setArray($file->getPath())->getFileName();
+        if (empty($file)) {
+            return false;
+        }
+
         if ('.' == $file[0]) {
             return false;
         }

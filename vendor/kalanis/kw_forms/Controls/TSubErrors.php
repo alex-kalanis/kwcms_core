@@ -14,7 +14,7 @@ use kalanis\kw_rules\Exceptions\RuleException;
 trait TSubErrors
 {
     /** @var array<string, array<int, RuleException>> */
-    protected $errors = [];
+    protected array $errors = [];
 
     /**
      * @return array<string, array<int, RuleException>>

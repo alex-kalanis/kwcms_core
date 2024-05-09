@@ -14,18 +14,12 @@ use KWCMS\modules\Krep\Libs;
  */
 class Discus extends ADisposition
 {
-    /** @var Libs\Discus\ProcessPage */
-    protected $processor = null;
-    /** @var Libs\Shared\PageData */
-    protected $pageData = null;
-    /** @var Libs\ModuleException|null */
-    protected $error = null;
-    /** @var Libs\Discus\BlockResult */
-    protected $blockResult = null;
-    /** @var Libs\Discus\ErrorResult */
-    protected $errorResult = null;
-    /** @var Libs\Discus\RenderFactory */
-    protected $renderFactory = null;
+    protected Libs\Discus\ProcessPage $processor;
+    protected Libs\Shared\PageData $pageData;
+    protected ?Libs\ModuleException $error = null;
+    protected Libs\Discus\BlockResult $blockResult;
+    protected Libs\Discus\ErrorResult $errorResult;
+    protected Libs\Discus\RenderFactory $renderFactory;
 
 //    /**
 //     * @param mixed ...$constructParams
@@ -75,7 +69,7 @@ class Discus extends ADisposition
                 strval($this->getFromInput('SCRIPT_NAME', '', [IEntry::SOURCE_SERVER])),
                 boolval(intval(strval($this->getFromInput('arch', 0)))),
                 strval($this->getFromInput('prisp', ''))
-        );
+            );
         } catch (Libs\ModuleException $ex) {
             $this->error = $ex;
         }

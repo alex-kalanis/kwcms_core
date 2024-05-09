@@ -19,15 +19,15 @@ class Range extends AType
         }
 
         if (!empty($value[0])) {
-            $this->queryBuilder->where($this->queryBuilder->expr()->gt(
+            $this->getSource()->where($this->getSource()->expr()->gt(
                 $colName,
-                $this->queryBuilder->createNamedParameter($value[0])
+                $this->getSource()->createNamedParameter($value[0])
             ));
         }
         if (!empty($value[1])) {
-            $this->queryBuilder->where($this->queryBuilder->expr()->lt(
+            $this->getSource()->where($this->getSource()->expr()->lt(
                 $colName,
-                $this->queryBuilder->createNamedParameter($value[1])
+                $this->getSource()->createNamedParameter($value[1])
             ));
         }
 

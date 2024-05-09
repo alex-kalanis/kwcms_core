@@ -14,7 +14,7 @@ use ReflectionException;
  */
 class Factory
 {
-    protected static $map = [
+    protected static array $map = [
         'none' => None::class,
         'seek' => Seek::class,
         'bytes' => Bytes::class,

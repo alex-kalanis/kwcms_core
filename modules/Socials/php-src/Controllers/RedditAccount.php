@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class RedditAccount extends AAccount
 {
-    protected $site = 'reddit';
-    protected $accountSite = 'reddit_account';
-    protected $shortSite = 'rdt';
+    protected string $site = 'reddit';
+    protected string $accountSite = 'reddit_account';
+    protected string $shortSite = 'rdt';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

@@ -29,8 +29,8 @@ use KWCMS\modules\Core\Interfaces\Modules\IHasUser;
  */
 abstract class AAuthModule extends AModule implements IHasUser
 {
-    /** @var IUser|null */
-    protected $user = null;
+    /** @var IUser */
+    protected ?IUser $user = null;
     /** @var AuthException|LockException|null */
     protected $error = null;
 
@@ -47,7 +47,7 @@ abstract class AAuthModule extends AModule implements IHasUser
             if (!$authTree) {
                 throw new AuthException('No classes set to authorize against!');
             }
-            $authTree->findMethod($this->inputs->getInObject(null, $this->getPossibleSources()));
+            $authTree->findMethod(new \ArrayObject($this->inputs->getInArray(null, $this->getPossibleSources())));
             if ($authTree->getMethod() && $authTree->getMethod()->isAuthorized()) {
                 $this->user = $authTree->getMethod()->getLoggedUser();
                 if ($this->user && in_array($this->user->getClass(), $this->allowedAccessClasses())) {

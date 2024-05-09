@@ -3,49 +3,26 @@
 namespace kalanis\kw_input\Filtered;
 
 
-use ArrayAccess;
-use kalanis\kw_input\Entries\Entry;
-use kalanis\kw_input\Input;
+use IteratorAggregate;
 use kalanis\kw_input\Interfaces;
+use kalanis\kw_input\Traits\TFill;
 
 
 /**
- * Class SimpleArrays
+ * Class ArrayAccessed
  * @package kalanis\kw_input\Filtered
  * Helping class for passing info from simple arrays into objects
  */
-class ArrayAccessed implements Interfaces\IFiltered
+class ArrayAccessed extends AFromArrays
 {
-    /** @var ArrayAccess */
-    protected $inputs = null;
-    /** @var string */
-    protected $source = '';
+    use TFill;
 
     /**
-     * @param ArrayAccess $inputs
+     * @param IteratorAggregate<string|int, mixed|null> $inputs
      * @param string $source
      */
-    public function __construct(ArrayAccess $inputs, string $source = Interfaces\IEntry::SOURCE_EXTERNAL)
+    public function __construct(IteratorAggregate $inputs, string $source = Interfaces\IEntry::SOURCE_EXTERNAL)
     {
-        $this->inputs = $inputs;
-        $this->source = $source;
-    }
-
-    public function getInObject(?string $entryKey = null, array $entrySources = []): ArrayAccess
-    {
-        return new Input($this->getInArray($entryKey, $entrySources));
-    }
-
-    public function getInArray(?string $entryKey = null, array $entrySources = []): array
-    {
-        $result = [];
-        foreach ($this->inputs as $key => $value) {
-            if (is_null($entryKey) || ($key === $entryKey)) {
-                $entry = new Entry();
-                $entry->setEntry($this->source, strval($key), $value);
-                $result[strval($key)] = $entry;
-            }
-        }
-        return $result;
+        parent::__construct($this->fillFromIterator($source, $inputs));
     }
 }

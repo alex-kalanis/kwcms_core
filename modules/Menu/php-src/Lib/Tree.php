@@ -21,12 +21,10 @@ use kalanis\kw_user_paths\UserInnerLinks;
  */
 class Tree
 {
-    /** @var MoreEntries|null */
-    protected $processor = null;
+    protected MoreEntries $processor;
     /** @var ITree */
-    protected $tree = null;
-    /** @var UserInnerLinks */
-    protected $innerLink = null;
+    protected ?ITree $tree = null;
+    protected UserInnerLinks $innerLink;
 
     public function __construct(MoreEntries $processor, UserInnerLinks $innerLink)
     {
@@ -44,7 +42,7 @@ class Tree
         try {
             $path = $this->innerLink->toFullPath($startPath);
             $this->processor->setGroupKey($path);
-            $this->processor->setMetaKey(array_merge($path, [strval(Config::get('Menu','meta'))]));
+            $this->processor->setMeta(array_merge($path, [strval(Config::get('Menu','meta'))]));
             $menu = $this->processor->load()->getMeta()->getMenu();
         } catch (MenuException | PathsException $ex) {
             return null;
@@ -68,7 +66,7 @@ class Tree
             $localPath = array_merge($deepLink, [Stuff::fileBase($item->getId())]);
             $this->processor->getMeta()->reset();
             $this->processor->setGroupKey($localPath);
-            $this->processor->setMetaKey(array_merge($localPath, [strval(Config::get('Menu','meta'))]));
+            $this->processor->setMeta(array_merge($localPath, [strval(Config::get('Menu','meta'))]));
             $subMenu = $this->processor->load()->getMeta()->getMenu();
             if (!empty($subMenu)) {
                 foreach ($subMenu->getEntries() as $subItem) {

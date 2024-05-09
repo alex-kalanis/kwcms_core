@@ -12,13 +12,11 @@ use kalanis\kw_bans\Traits;
 abstract class AIP extends ABan
 {
     use Traits\TExpandIp;
+    use Traits\TIp;
 
     /** @var Ip[] */
-    protected $knownIps = [];
-    /** @var Ip */
-    protected $searchIp = null;
-    /** @var int */
-    protected $bitsInBlock = 4;
+    protected array $knownIps = [];
+    protected int $bitsInBlock = 4;
 
     public function __construct(ASources $source, ?IKBTranslations $lang = null)
     {
@@ -31,7 +29,7 @@ abstract class AIP extends ABan
 
     public function setLookedFor(string $lookedFor): void
     {
-        $this->searchIp = $this->expandIP($lookedFor);
+        $this->setBasicIp($this->expandIP($lookedFor));
     }
 
     protected function matched(): array
@@ -43,7 +41,7 @@ abstract class AIP extends ABan
     {
         // compare only parts unaffected by mask, then special bitwise compare for partially affected, cut the rest
         $knownToCompare = $this->cutPositions($ipAddress->getAddress(), $ipAddress->getAffectedBits());
-        $searchToCompare = $this->cutPositions($this->searchIp->getAddress(), $ipAddress->getAffectedBits());
+        $searchToCompare = $this->cutPositions($this->getBasicIp()->getAddress(), $ipAddress->getAffectedBits());
 
 //print_r(['cutted', $knownToCompare, $searchToCompare, $leftKnownToBitwiseCompare, $leftSearchToBitwiseCompare, $bitsInAffectedPart]);
         // now compare only relevant portions

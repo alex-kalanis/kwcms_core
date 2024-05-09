@@ -21,7 +21,7 @@ class IsPostCode extends ARule
     use TCheckString;
 
     /** @var array<string, array<string, string>> */
-    protected static $codes = [];
+    protected static array $codes = [];
 
     public static function loadCodes(string $pathToCodes): void
     {

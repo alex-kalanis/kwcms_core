@@ -4,6 +4,7 @@ namespace kalanis\kw_tree_controls;
 
 
 use ArrayAccess;
+use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Interfaces\IFiltered;
 
 
@@ -14,12 +15,9 @@ use kalanis\kw_input\Interfaces\IFiltered;
  */
 trait TWhereDir
 {
-    /** @var string */
-    protected $whereConst = 'dir';
-    /** @var ArrayAccess|null */
-    protected $storeWhere = null;
-    /** @var IFiltered|null */
-    protected $anotherSource = null;
+    protected string $whereConst = 'dir';
+    protected ?ArrayAccess $storeWhere = null;
+    protected ?IFiltered $anotherSource = null;
 
     public function initWhereDir(ArrayAccess $storeWhere, ?IFiltered $inputs): void
     {
@@ -27,22 +25,54 @@ trait TWhereDir
         $this->anotherSource = $inputs;
     }
 
+    /**
+     * @param string $where
+     * @throws FormsException
+     */
     public function updateWhereDir(string $where): void
     {
         if ($this->storeWhere) {
-            $this->storeWhere->offsetSet($this->whereConst, $where);
+            $this->getStoreWhere()->offsetSet($this->whereConst, $where);
         }
     }
 
+    /**
+     * @throws FormsException
+     * @return string
+     */
     public function getWhereDir(): string
     {
-        if ($this->storeWhere && $this->storeWhere->offsetExists($this->whereConst)) {
-            return $this->storeWhere->offsetGet($this->whereConst);
+        if ($this->storeWhere && $this->getStoreWhere()->offsetExists($this->whereConst)) {
+            return $this->getStoreWhere()->offsetGet($this->whereConst);
         }
         if ($this->anotherSource) {
-            $dirs = $this->anotherSource->getInArray($this->whereConst);
+            $dirs = $this->getFilteredSource()->getInArray($this->whereConst);
             return strval(reset($dirs));
         }
         return '';
+    }
+
+    /**
+     * @throws FormsException
+     * @return ArrayAccess
+     */
+    protected function getStoreWhere(): ArrayAccess
+    {
+        if (empty($this->storeWhere)) {
+            throw new FormsException('Set first where to store target data');
+        }
+        return $this->storeWhere;
+    }
+
+    /**
+     * @throws FormsException
+     * @return IFiltered
+     */
+    protected function getFilteredSource(): IFiltered
+    {
+        if (empty($this->anotherSource)) {
+            throw new FormsException('Set first where to get data from another source');
+        }
+        return $this->anotherSource;
     }
 }

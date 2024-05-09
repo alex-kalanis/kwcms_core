@@ -8,18 +8,12 @@ use kalanis\kw_input\Interfaces\IFileEntry;
 
 class FileEntry implements IFileEntry
 {
-    /** @var string */
-    protected $key = '';
-    /** @var string */
-    protected $value = '';
-    /** @var string */
-    protected $temp = '';
-    /** @var string */
-    protected $mime = '';
-    /** @var int */
-    protected $error = 0;
-    /** @var int */
-    protected $size = 0;
+    protected string $key = '';
+    protected string $value = '';
+    protected string $temp = '';
+    protected string $mime = '';
+    protected int $error = 0;
+    protected int $size = 0;
 
     public function setData(string $key, string $value, string $temp, string $mime, int $error, int $size): self
     {

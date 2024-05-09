@@ -15,7 +15,7 @@ class SelectList extends AControl implements IMultiValue
 {
     use TMultiple;
 
-    protected $templateInput = '<select %2$s>%3$s</select>';
+    protected string $templateInput = '<select %2$s>%3$s</select>';
 
     /**
      * Create form element Select - variant for list

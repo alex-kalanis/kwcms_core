@@ -21,8 +21,7 @@ class Storage implements IEntriesSource
 {
     use TFilterHtml;
 
-    /** @var IStorage */
-    protected $storage = null;
+    protected IStorage $storage;
 
     public function __construct(IStorage $storage)
     {

@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class SeparatorTemplate extends ATemplate
 {
-    protected $moduleName = 'AdminMenu';
-    protected $templateName = 'separator';
+    protected string $moduleName = 'AdminMenu';
+    protected string $templateName = 'separator';
 
     protected function fillInputs(): void
     {

@@ -14,10 +14,9 @@ use kalanis\kw_rules\Rules;
  */
 trait TRules
 {
-    /** @var Interfaces\IRuleFactory */
-    protected $rulesFactory = null;
+    protected ?Interfaces\IRuleFactory $rulesFactory = null;
     /** @var Rules\ARule[]|Rules\File\AFileRule[] */
-    protected $rules = [];
+    protected array $rules = [];
 
     /**
      * @param string $ruleName
@@ -26,8 +25,7 @@ trait TRules
      */
     public function addRule(string $ruleName, string $errorText, ...$args): void
     {
-        $this->setFactory();
-        $rule = $this->rulesFactory->getRule($ruleName);
+        $rule = $this->getRulesFactory()->getRule($ruleName);
         $rule->setErrorText($errorText);
         $rule->setAgainstValue(empty($args) ? null : reset($args));
         $this->rules[] = $rule;
@@ -61,17 +59,18 @@ trait TRules
         $this->rules = [];
     }
 
-    protected function setFactory(): void
+    protected function getRulesFactory(): Interfaces\IRuleFactory
     {
         // @phpstan-ignore-next-line
         if (empty($this->rulesFactory)) {
-            $this->rulesFactory = $this->whichFactory();
+            $this->rulesFactory = $this->whichRulesFactory();
         }
+        return $this->rulesFactory;
     }
 
     /**
      * Set which factory will be used
      * @return Interfaces\IRuleFactory
      */
-    abstract protected function whichFactory(): Interfaces\IRuleFactory;
+    abstract protected function whichRulesFactory(): Interfaces\IRuleFactory;
 }

@@ -11,7 +11,7 @@ namespace kalanis\kw_modules\Output;
 class JsonError extends AOutput
 {
     /** @var array<string|int, string|int|float|array<string|int|float|array<string|int|float>>> */
-    protected $content = null;
+    protected array $content = [];
 
     /**
      * @param string|int $code

@@ -11,9 +11,6 @@ use kalanis\kw_bans\Sources\ASources;
 
 abstract class ABan
 {
-    /** @var IKBTranslations|null */
-    protected $lang = null;
-
     abstract public function __construct(ASources $source, ?IKBTranslations $lang = null);
 
     /**

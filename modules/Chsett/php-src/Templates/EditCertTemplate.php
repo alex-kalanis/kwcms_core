@@ -13,8 +13,8 @@ use KWCMS\modules\Chsett\Lib\FormUsers;
  */
 class EditCertTemplate extends ATemplate
 {
-    protected $moduleName = 'Chsett';
-    protected $templateName = 'edit_user_cert';
+    protected string $moduleName = 'Chsett';
+    protected string $templateName = 'edit_user_cert';
 
     protected function fillInputs(): void
     {

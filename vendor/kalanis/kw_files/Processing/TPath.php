@@ -9,8 +9,7 @@ namespace kalanis\kw_files\Processing;
  */
 trait TPath
 {
-    /** @var string */
-    protected $path = '';
+    protected string $path = '';
 
     public function setPath(string $path = ''): void
     {

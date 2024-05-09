@@ -14,10 +14,8 @@ use kalanis\kw_paths\PathsException;
  */
 class Processor
 {
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var Config */
-    protected $config = null;
+    protected CompositeAdapter $files;
+    protected Config $config;
 
     public function __construct(CompositeAdapter $files, Config $config)
     {

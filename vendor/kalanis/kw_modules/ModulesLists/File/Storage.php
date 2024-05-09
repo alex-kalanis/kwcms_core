@@ -21,12 +21,9 @@ class Storage implements IFile
 {
     use TMdLang;
 
-    /** @var IKwStorage */
-    protected $storage = null;
-    /** @var string */
-    protected $moduleConfPath = '';
-    /** @var string */
-    protected $path = '';
+    protected IKwStorage $storage;
+    protected string $moduleConfPath = '';
+    protected string $path = '';
 
     public function __construct(IKwStorage $storage, string $moduleConfPath, ?IMdTranslations $lang = null)
     {
@@ -46,8 +43,7 @@ class Storage implements IFile
     public function load(): string
     {
         try {
-            $data = $this->storage->read($this->getPath());
-            return is_resource($data) ? strval(stream_get_contents($data, -1, 0)) : strval($data);
+            return $this->storage->read($this->getPath());
         } catch (StorageException $ex) {
             throw new ModuleException($this->getMdLang()->mdStorageLoadProblem(), 0, $ex);
         }

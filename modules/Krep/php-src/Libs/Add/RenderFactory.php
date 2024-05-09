@@ -12,10 +12,8 @@ use KWCMS\modules\Krep\Libs\Interfaces\IContent;
  */
 class RenderFactory
 {
-    /** @var RenderSent */
-    protected $sent = null;
-    /** @var RenderForm */
-    protected $form = null;
+    protected RenderSent $sent;
+    protected RenderForm $form;
 
     public function __construct(RenderSent $sent, RenderForm $form)
     {

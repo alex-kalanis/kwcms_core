@@ -23,12 +23,9 @@ class ImageSize
 {
     use TLang;
 
-    /** @var Sources\Image */
-    protected $libImage = null;
-    /** @var Graphics */
-    protected $libGraphics = null;
-    /** @var ISizes */
-    protected $config = null;
+    protected Sources\Image $libImage;
+    protected Graphics $libGraphics;
+    protected ISizes $config;
 
     public function __construct(Graphics $graphics, ISizes $config, Sources\Image $image, ?IIMTranslations $lang = null)
     {

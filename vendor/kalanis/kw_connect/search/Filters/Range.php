@@ -19,10 +19,10 @@ class Range extends AType
         }
 
         if (!empty($value[0])) {
-            $this->search->from($colName, $value[0]);
+            $this->getSource()->from($colName, $value[0]);
         }
         if (!empty($value[1])) {
-            $this->search->to($colName, $value[1]);
+            $this->getSource()->to($colName, $value[1]);
         }
 
         return $this;

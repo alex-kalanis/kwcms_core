@@ -14,7 +14,7 @@ use kalanis\kw_forms\Exceptions\RenderException;
  */
 class EmptyControl extends Text
 {
-    protected $templateInput = '%3$s';
+    protected string $templateInput = '%3$s';
 
     public function getValue()
     {

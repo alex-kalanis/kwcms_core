@@ -34,16 +34,12 @@ class Page extends AModule
 {
     use TToString;
 
-    /** @var Processor */
-    protected $subModules = null;
-    /** @var string */
-    protected $content = '';
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected Processor $subModules;
+    protected string $content = '';
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -68,7 +64,10 @@ class Page extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new files_factory(new FilesTranslations()))->getClass($constructParams);
     }

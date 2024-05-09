@@ -11,7 +11,7 @@ use ReflectionException;
 
 
 /**
- * Class TaskFactory
+ * Class KwLoader
  * @package kalanis\kw_clipr\Tasks
  * Factory for creating tasks/commands from obtained name
  * In reality it runs like autoloader of own
@@ -19,7 +19,7 @@ use ReflectionException;
 class KwLoader implements Interfaces\ITargetDirs
 {
     /** @var array<string, array<string>> */
-    protected $paths = [];
+    protected array $paths = [];
 
     /**
      * @param array<string, array<string>> $paths

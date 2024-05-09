@@ -9,6 +9,7 @@ use kalanis\kw_files\Access;
 use kalanis\kw_forms\Adapters\InputVarsAdapter;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -26,6 +27,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -43,16 +45,13 @@ class MakeDir extends AAuthModule implements IHasTitle
     use TWhereDir;
     use TFilesDirs;
 
-    /** @var Forms\DirNewForm */
-    protected $createForm = null;
-    /** @var Access\CompositeAdapter */
-    protected $files = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var bool */
-    protected $processed = false;
+    protected Forms\DirNewForm $createForm;
+    protected Access\CompositeAdapter $files;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected bool $processed = false;
+
+    protected $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -67,6 +66,12 @@ class MakeDir extends AAuthModule implements IHasTitle
         $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $this->tree = new DataSources\Files($this->files);
         $this->userDir = new UserDir(new Lib\Translations());
+        $this->initLibAction(new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -80,8 +85,8 @@ class MakeDir extends AAuthModule implements IHasTitle
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->tree->setStartPath($userPath);
             $this->tree->wantDeep(true);
@@ -91,7 +96,7 @@ class MakeDir extends AAuthModule implements IHasTitle
             $this->createForm->composeForm($this->tree->getRoot(),'#');
             $this->createForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->createForm->process()) {
-                $libAction = $this->getLibDirAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibDirAction($this->constructParams, $userPath, $currentPath);
                 $this->processed = $libAction->createDir(
                     strval($this->createForm->getControl('where')->getValue()),
                     strval($this->createForm->getControl('name')->getValue())

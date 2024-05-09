@@ -12,14 +12,9 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class To extends AType
 {
-    /**
-     * @param string           $colName
-     * @param string|int|float $value
-     * @return $this
-     */
-    public function setFiltering($colName, $value)
+    public function setFiltering(string $colName, $value)
     {
-        $this->dataSource->setArray(array_filter($this->dataSource->getArray(), function (IRow $item) use ($colName, $value) {
+        $this->getSource()->setArray(array_filter($this->getSource()->getArray(), function (IRow $item) use ($colName, $value) {
             return $item->getValue($colName) < $value;
         }));
         return $this;

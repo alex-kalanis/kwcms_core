@@ -25,10 +25,8 @@ namespace kalanis\kw_paths;
  */
 class Path
 {
-    /** @var string */
-    protected $documentRoot = ''; // document root as set from server
-    /** @var string */
-    protected $pathToSystemRoot = ''; // because document root could not be every time that dir in which are user data dir
+    protected string $documentRoot = ''; // document root as set from server
+    protected string $pathToSystemRoot = ''; // because document root could not be every time that dir in which are user data dir
 
     /**
      * @param string $documentRoot

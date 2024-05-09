@@ -14,10 +14,8 @@ use kalanis\kw_forms\Interfaces\ICsrf;
  */
 class Simple implements ICsrf
 {
-    /** @var ArrayAccess */
-    protected $session = null;
-    /** @var int */
-    protected $expire = 3600;
+    protected ?ArrayAccess $session = null;
+    protected int $expire = 3600;
 
     public function init(ArrayAccess &$session, int $expire = 3600): void
     {
@@ -27,18 +25,18 @@ class Simple implements ICsrf
 
     public function removeToken(string $codeName): void
     {
-        if ($this->session->offsetExists($codeName)) {
-            $this->session->offsetUnset($codeName);
+        if ($this->getSession()->offsetExists($codeName)) {
+            $this->getSession()->offsetUnset($codeName);
         }
     }
 
     public function getToken(string $codeName): string
     {
-        if (!$this->session->offsetExists($codeName)) {
-            $this->session->offsetSet($codeName, uniqid('csrf', true));
-            $this->session->offsetSet($codeName . '_timer', time() + $this->expire);
+        if (!$this->getSession()->offsetExists($codeName)) {
+            $this->getSession()->offsetSet($codeName, uniqid('csrf', true));
+            $this->getSession()->offsetSet($codeName . '_timer', time() + $this->expire);
         }
-        return strval($this->session->offsetGet($codeName));
+        return strval($this->getSession()->offsetGet($codeName));
     }
 
     public function getExpire(): int
@@ -48,10 +46,21 @@ class Simple implements ICsrf
 
     public function checkToken(string $token, string $codeName): bool
     {
-        return $this->session->offsetExists($codeName)
-                && $this->session->offsetExists($codeName . '_timer')
-                && $this->session->offsetGet($codeName) == $token
-                && $this->session->offsetGet($codeName . '_timer') > time()
+        return $this->getSession()->offsetExists($codeName)
+                && $this->getSession()->offsetExists($codeName . '_timer')
+                && $this->getSession()->offsetGet($codeName) == $token
+                && $this->getSession()->offsetGet($codeName . '_timer') > time()
                 ;
+    }
+
+    protected function getSession(): ArrayAccess
+    {
+        if (!empty($this->session)) {
+            return $this->session;
+        }
+        // @codeCoverageIgnoreStart
+        // you need to whant session before call that sets the control
+        throw new \LogicException('Set the session first!');
+        // @codeCoverageIgnoreEnd
     }
 }

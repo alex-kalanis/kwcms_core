@@ -5,11 +5,9 @@ namespace kalanis\kw_forms\Controls;
 
 class DatePicker extends AControl
 {
-    protected $templateInput = '<input type="text" value="%1$s"%2$s />%3$s';
-    /** @var string */
-    protected $dateFormat = 'Y-m-d';
-    /** @var string */
-    protected $dateClass = 'datepicker';
+    protected string $templateInput = '<input type="text" value="%1$s"%2$s />%3$s';
+    protected string $dateFormat = 'Y-m-d';
+    protected string $dateClass = 'datepicker';
 
     public function set(string $alias, ?string $originalValue = null, string $label = ''): self
     {

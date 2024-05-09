@@ -5,6 +5,7 @@ namespace kalanis\kw_images\Sources;
 
 use kalanis\kw_files\Extended\FindFreeName;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_paths\PathsException;
 
 
@@ -15,6 +16,8 @@ use kalanis\kw_paths\PathsException;
  */
 class Image extends AFiles
 {
+    use TToString;
+
     /**
      * @param string[] $path
      * @param string $fileName
@@ -62,8 +65,7 @@ class Image extends AFiles
      */
     public function set(array $path, $content): bool
     {
-        $this->lib->saveFile($this->getPath($path), $content);
-        return true;
+        return $this->lib->saveFile($this->getPath($path), $this->toString(implode(DIRECTORY_SEPARATOR, $path), $content));
     }
 
     /**

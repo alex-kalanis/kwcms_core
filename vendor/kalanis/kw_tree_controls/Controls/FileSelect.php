@@ -19,8 +19,7 @@ class FileSelect extends ATreeControl
 {
     use TSimpleValue;
 
-    /** @var bool */
-    protected $wantEmptySub = false;
+    protected bool $wantEmptySub = false;
 
     /**
      * @param ControlNode|null $baseNode

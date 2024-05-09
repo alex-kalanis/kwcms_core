@@ -10,5 +10,5 @@ namespace kalanis\kw_forms\Controls;
  */
 class Email extends Text
 {
-    protected $templateInput = '<input type="email" value="%1$s"%2$s />%3$s';
+    protected string $templateInput = '<input type="email" value="%1$s"%2$s />%3$s';
 }

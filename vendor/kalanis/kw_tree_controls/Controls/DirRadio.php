@@ -18,7 +18,7 @@ class DirRadio extends ATreeControl
     use TRadio;
     use TSubEntry;
 
-    protected $templateLabel = '';
+    protected string $templateLabel = '';
 
     /**
      * @param ControlNode[] $nodes

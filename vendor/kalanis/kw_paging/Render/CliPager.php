@@ -7,6 +7,8 @@ use kalanis\kw_pager\Interfaces\IPager;
 use kalanis\kw_paging\Interfaces\IOutput;
 use kalanis\kw_paging\Interfaces\IPGTranslations;
 use kalanis\kw_paging\Interfaces\IPositions;
+use kalanis\kw_paging\Traits;
+use kalanis\kw_paging\Translations;
 
 
 /**
@@ -16,19 +18,23 @@ use kalanis\kw_paging\Interfaces\IPositions;
  */
 class CliPager implements IOutput
 {
-    use TDisplayPages;
-    use THelpingText;
+    use Traits\TDisplayPages;
+    use Traits\THelpingText;
 
-    const SELECT_PAGE = '*';
-    const NONE_PAGE = '-';
-    const PREV_PAGE = '<';
-    const NEXT_PAGE = '>';
+    public const SELECT_PAGE = '*';
+    public const NONE_PAGE = '-';
+    public const PREV_PAGE = '<';
+    public const NEXT_PAGE = '>';
 
-    public function __construct(IPositions $positions, int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT, ?IPGTranslations $lang = null)
+    public function __construct(
+        IPositions $positions,
+        int $displayPages = IPositions::DEFAULT_DISPLAY_PAGES_COUNT,
+        ?IPGTranslations $lang = null
+    )
     {
         $this->positions = $positions;
         $this->displayPagesCount = $displayPages;
-        $this->setLang($lang ?: new Translations());
+        $this->setKpgLang($lang ?: new Translations());
     }
 
     public function __toString()
@@ -38,22 +44,22 @@ class CliPager implements IOutput
 
     public function render(bool $showPositions = true): string
     {
-        if (!$this->positions->prevPageExists() && !$this->positions->nextPageExists()) {
+        if (!$this->getPositions()->prevPageExists() && !$this->getPositions()->nextPageExists()) {
             return '';
         }
         $pages = [];
 
-        $pages[] = $this->positions->prevPageExists() ? static::PREV_PAGE . static::PREV_PAGE . ' ' . $this->positions->getFirstPage() : static::NONE_PAGE . static::NONE_PAGE ;
-        $pages[] = $this->positions->prevPageExists() ? static::PREV_PAGE . ' ' . $this->positions->getPrevPage() : static::NONE_PAGE ;
-        $pages[] = $this->positions->getPager()->getActualPage() ;
-        $pages[] = $this->positions->nextPageExists() ? $this->positions->getNextPage() . ' ' . static::NEXT_PAGE : static::NONE_PAGE ;
-        $pages[] = $this->positions->nextPageExists() ? $this->positions->getLastPage() . ' ' . static::NEXT_PAGE . static::NEXT_PAGE : static::NONE_PAGE . static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->prevPageExists() ? static::PREV_PAGE . static::PREV_PAGE . ' ' . $this->getPositions()->getFirstPage() : static::NONE_PAGE . static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->prevPageExists() ? static::PREV_PAGE . ' ' . $this->getPositions()->getPrevPage() : static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->getPager()->getActualPage() ;
+        $pages[] = $this->getPositions()->nextPageExists() ? $this->getPositions()->getNextPage() . ' ' . static::NEXT_PAGE : static::NONE_PAGE ;
+        $pages[] = $this->getPositions()->nextPageExists() ? $this->getPositions()->getLastPage() . ' ' . static::NEXT_PAGE . static::NEXT_PAGE : static::NONE_PAGE . static::NONE_PAGE ;
 
-        return implode(' | ', $pages) . ($showPositions ? ( PHP_EOL . $this->getFilledText($this->positions) ) : '' );
+        return implode(' | ', $pages) . ($showPositions ? ( PHP_EOL . $this->getFilledText($this->getPositions()) ) : '' );
     }
 
     public function getPager(): IPager
     {
-        return $this->positions->getPager();
+        return $this->getPositions()->getPager();
     }
 }

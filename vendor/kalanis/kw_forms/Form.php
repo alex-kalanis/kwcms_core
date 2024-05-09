@@ -27,16 +27,12 @@ class Form implements IHtmlElement
     use THtmlElement;
     use Controls\TWrappers;
 
-    /** @var Controls\Factory */
-    protected $controlFactory = null;
-    /** @var Validate */
-    protected $validate = null;
-    /** @var AAdapter|null */
-    protected $entries = null;
-    /** @var FilesAdapter|null */
-    protected $files = null;
+    protected Controls\Factory $controlFactory;
+    protected Validate $validate;
+    protected ?AAdapter $entries = null;
+    protected ?FilesAdapter $files = null;
     /** @var string Form label */
-    protected $label = '';
+    protected string $label = '';
 
     /**
      * Main Form template

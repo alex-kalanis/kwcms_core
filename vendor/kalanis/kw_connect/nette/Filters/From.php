@@ -12,7 +12,7 @@ class From extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->netteTable->where($colName . ' > ?', $value);
+            $this->getSource()->where($colName . ' > ?', $value);
         }
         return $this;
     }

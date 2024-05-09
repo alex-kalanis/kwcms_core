@@ -5,15 +5,14 @@ namespace KWCMS\modules\Chsett\AdminControllers\Group;
 
 use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth\Auth;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_routed_paths\StoreRouted;
 use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
@@ -30,18 +29,12 @@ abstract class AGroups extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IProcessGroups|null */
-    protected $libGroups = null;
-    /** @var Interfaces\IGroup|null */
-    protected $group = null;
-    /** @var Lib\FormGroups|null */
-    protected $form = null;
-    /** @var Forward */
-    protected $forward = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var bool */
-    protected $redirect = false;
+    protected Interfaces\IProcessGroups $libGroups;
+    protected ?Interfaces\IGroup $group = null;
+    protected Lib\FormGroups $form;
+    protected Forward $forward;
+    protected bool $isProcessed = false;
+    protected bool $redirect = false;
 
 //    /**
 //     * @param mixed ...$constructParams
@@ -63,6 +56,7 @@ abstract class AGroups extends AAuthModule implements IHasTitle
      * @param ServerRequest $request
      * @param ExternalLink $external
      * @throws LangException
+     * @throws HandlerException
      */
     public function __construct(
         Interfaces\IProcessGroups $groups,

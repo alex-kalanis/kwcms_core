@@ -10,8 +10,8 @@ namespace kalanis\kw_clipr\Output;
  */
 class Posix extends AOutput
 {
-    protected $closeSequence = "\e[0m";
-    protected $formatBackSequence = "\033[%dD";
+    protected string $closeSequence = "\e[0m";
+    protected string $formatBackSequence = "\033[%dD";
 
     public function setTags(): void
     {

@@ -15,8 +15,7 @@ use kalanis\kw_storage\Interfaces\IStorage;
  */
 class ProcessNode implements IProcessNodes
 {
-    /** @var IProcessNodes */
-    protected $adapter = null;
+    protected IProcessNodes $adapter;
 
     public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {

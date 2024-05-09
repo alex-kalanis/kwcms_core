@@ -20,7 +20,7 @@ use KWCMS\modules\Core\Libs\AAuthModule;
  */
 class Logout extends AAuthModule implements IHasTitle
 {
-    protected $logoutTemplate = null;
+    protected Templates\LogoutTemplate $logoutTemplate;
 
     /**
      * @param mixed ...$constructParams

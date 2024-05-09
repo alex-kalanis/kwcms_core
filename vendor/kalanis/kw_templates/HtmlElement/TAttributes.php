@@ -14,7 +14,7 @@ namespace kalanis\kw_templates\HtmlElement;
 trait TAttributes
 {
     /** @var array<string, string> */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * Returns serialized attributes

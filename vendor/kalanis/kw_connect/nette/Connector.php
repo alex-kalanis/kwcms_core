@@ -20,18 +20,13 @@ use Nette\Database\Table\Selection;
  */
 class Connector extends AConnector implements IIterableConnector
 {
-    /** @var Selection */
-    protected $netteTable;
-    /** @var string */
-    protected $primaryKey;
+    protected Selection $netteTable;
+    protected string $primaryKey = '';
     /** @var array<int, array<string>> */
-    protected $ordering;
-    /** @var int|null */
-    protected $limit;
-    /** @var int|null */
-    protected $offset;
-    /** @var bool */
-    protected $dataFetched = false;
+    protected array $ordering;
+    protected ?int $limit = null;
+    protected ?int $offset = null;
+    protected bool $dataFetched = false;
 
     public function __construct(Selection $netteTable, string $primaryKey)
     {

@@ -5,6 +5,7 @@ namespace KWCMS\modules\Pedigree\Lib;
 
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_connect\core\ConnectException;
 use kalanis\kw_connect\search\Connector;
@@ -19,6 +20,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_pedigree\GetEntries;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
@@ -40,16 +42,11 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class PedigreeTable
 {
-    /** @var IFiltered|null */
-    protected $variables = null;
-    /** @var Forward|null */
-    protected $forward = null;
-    /** @var ExternalLink|null */
-    protected $link = null;
-    /** @var GetEntries|null */
-    protected $entries = null;
-    /** @var Table|null */
-    protected $table = null;
+    protected IFiltered $variables;
+    protected Forward $forward;
+    protected ExternalLink $link;
+    protected GetEntries $entries;
+    protected Table $table;
 
     public function __construct(IFiltered $inputs, ExternalLink $link, GetEntries $entries)
     {
@@ -57,13 +54,14 @@ class PedigreeTable
         $this->forward = new Forward();
         $this->link = $link;
         $this->entries = $entries;
-        $this->table = null;
+        $this->table = new Table();
     }
 
     /**
      * @return string
      * @throws ConnectException
      * @throws FormsException
+     * @throws HandlerException
      * @throws LangException
      * @throws MapperException
      * @throws TableException
@@ -71,7 +69,6 @@ class PedigreeTable
     public function prepareHtml()
     {
         // full table init
-        $this->table = new Table();
         $inputVariables = new Adapters\InputVarsAdapter($this->variables);
         $inputFiles = new Adapters\InputFilesAdapter($this->variables);
         $form = new Form('filterForm');
@@ -128,6 +125,7 @@ class PedigreeTable
      * @throws ConnectException
      * @throws MapperException
      * @throws FormsException
+     * @throws HandlerException
      * @throws TableException
      */
     public function prepareJson()
@@ -152,6 +150,8 @@ class PedigreeTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */
@@ -168,6 +168,8 @@ class PedigreeTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */
@@ -182,6 +184,8 @@ class PedigreeTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */
@@ -198,6 +202,8 @@ class PedigreeTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */

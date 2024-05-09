@@ -14,7 +14,7 @@ use kalanis\kw_input\Interfaces\IEntry;
 class Factory
 {
     /** @var AParser[] */
-    protected static $loaders;
+    protected static array $loaders;
 
     public function getLoader(string $source): AParser
     {

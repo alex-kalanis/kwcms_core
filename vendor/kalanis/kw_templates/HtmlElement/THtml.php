@@ -13,8 +13,7 @@ namespace kalanis\kw_templates\HtmlElement;
  */
 trait THtml
 {
-    /** @var string */
-    protected $innerHtml = '';
+    protected string $innerHtml = '';
 
     /**
      * Set internal content of element

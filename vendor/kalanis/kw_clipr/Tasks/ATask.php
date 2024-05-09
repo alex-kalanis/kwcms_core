@@ -24,14 +24,10 @@ abstract class ATask implements Interfaces\IStatuses
 {
     use Output\TWrite;
 
-    /** @var Interfaces\ILoader|null */
-    protected $loader = null;
-    /** @var Output\AOutput */
-    protected $translator = null;
-    /** @var Params */
-    protected $params = null;
-    /** @var IFiltered */
-    protected $inputs = null;
+    protected ?Interfaces\ILoader $loader = null;
+    protected Output\AOutput $translator;
+    protected Params $params;
+    protected IFiltered $inputs;
 
     /**
      * @param Output\AOutput $translator

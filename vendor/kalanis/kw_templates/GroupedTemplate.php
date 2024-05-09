@@ -11,7 +11,7 @@ namespace kalanis\kw_templates;
 abstract class GroupedTemplate extends ATemplate
 {
     /** @var array<string, string> */
-    protected static $knownTemplates;
+    protected static array $knownTemplates;
 
     protected function loadTemplate(): string
     {

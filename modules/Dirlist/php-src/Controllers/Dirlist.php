@@ -7,11 +7,11 @@ use kalanis\kw_address_handler\Sources\Inputs;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
-use kalanis\kw_files\Access\Factory;
+use kalanis\kw_files\Access\Factory as files_factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Node;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\Content\Images;
-use kalanis\kw_images\FilesHelper;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
@@ -46,33 +46,23 @@ use KWCMS\modules\Dirlist\Templates;
  */
 class Dirlist extends AModule
 {
-    protected $module = '';
-    /** @var Templates\Main */
-    protected $templateMain = null;
-    /** @var Templates\Row */
-    protected $templateRow = null;
-    /** @var Templates\Display */
-    protected $templateDisplay = null;
-    /** @var ExternalLink */
-    protected $linkExternal = null;
-    /** @var Images|null */
-    protected $libImages = null;
+    protected string $module = '';
+    protected Templates\Main $templateMain;
+    protected Templates\Row $templateRow;
+    protected Templates\Display $templateDisplay;
+    protected ExternalLink $linkExternal;
+    protected Images $libImages;
     /** @var SimplifiedPager|null */
     protected $pager = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Files */
-    protected $treeList = null;
+    protected ArrayPath $arrPath;
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
+    protected Files $treeList;
     /** @var string[] */
-    protected $path = [];
+    protected array $path = [];
     /** @var string[] */
-    protected $dir = [];
-    /** @var string */
-    protected $preselectExt = '';
+    protected array $dir = [];
+    protected string $preselectExt = '';
 
     /**
      * @param mixed ...$constructParams
@@ -91,18 +81,20 @@ class Dirlist extends AModule
         $this->templateRow = new Templates\Row();
         $this->templateDisplay = new Templates\Display();
         $this->linkExternal = new ExternalLink(StoreRouted::getPath());
-        $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
-        $this->libImages = FilesHelper::getImages(
+        $this->files = (new files_factory(new FilesTranslations()))->getClass($constructParams);
+        $this->libImages = (new images_factory(
             $this->files,
-            [],
-            new ImagesTranslations(),
-            new FilesTranslations()
-        );
+            null,
+            new ImagesTranslations()
+        ))->getImages($constructParams);
         $this->arrPath = new ArrayPath();
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->treeList = new Files($this->files);
     }

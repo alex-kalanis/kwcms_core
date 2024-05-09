@@ -19,8 +19,7 @@ class ArrayDirKey implements IKey
 {
     use TLang;
 
-    /** @var string */
-    protected $prefix = '';
+    protected string $prefix = '';
 
     /**
      * @param string[] $prefix

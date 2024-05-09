@@ -15,8 +15,7 @@ use kalanis\kw_storage\Interfaces\IStorage;
  */
 class ProcessFile implements IProcessFiles
 {
-    /** @var IProcessFiles */
-    protected $adapter = null;
+    protected IProcessFiles $adapter;
 
     public function __construct(IStorage $storage, ?IFLTranslations $lang = null)
     {
@@ -24,12 +23,12 @@ class ProcessFile implements IProcessFiles
         $this->adapter = $factory->getClass($storage, $lang);
     }
 
-    public function saveFile(array $entry, $content, ?int $offset = null): bool
+    public function saveFile(array $entry, string $content, ?int $offset = null, int $mode = 0): bool
     {
-        return $this->adapter->saveFile($entry, $content, $offset);
+        return $this->adapter->saveFile($entry, $content, $offset, $mode);
     }
 
-    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null): string
     {
         return $this->adapter->readFile($entry, $offset, $length);
     }

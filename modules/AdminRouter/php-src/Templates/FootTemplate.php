@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class FootTemplate extends ATemplate
 {
-    protected $moduleName = 'AdminRouter';
-    protected $templateName = 'foot';
+    protected string $moduleName = 'AdminRouter';
+    protected string $templateName = 'foot';
 
     protected function fillInputs(): void
     {

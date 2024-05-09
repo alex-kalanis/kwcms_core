@@ -20,7 +20,7 @@ use kalanis\kw_templates\TemplateException;
 abstract class ATemplate extends \kalanis\kw_templates\ATemplate
 {
     /** @var string[] */
-    protected static $paths = [
+    protected static array $paths = [
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%10$s%12$s', // user self-installed modules
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%10$s%13$s',
         '%2$s%1$s%3$s%1$s%4$s%1$s%7$s%1$s%8$s%1$s%10$s%12$s', // user - direct styles
@@ -39,10 +39,8 @@ abstract class ATemplate extends \kalanis\kw_templates\ATemplate
 
     use TFile;
 
-    /** @var string */
-    protected $moduleName = '';
-    /** @var string */
-    protected $templateName = '';
+    protected string $moduleName = '';
+    protected string $templateName = '';
 
     /**
      * @throws TemplateException

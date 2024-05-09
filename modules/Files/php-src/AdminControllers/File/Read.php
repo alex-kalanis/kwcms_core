@@ -42,22 +42,14 @@ class Read extends AAuthModule implements IHasTitle
     use TWhereDir;
     use TFilesFile;
 
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var Lib\Processor */
-    protected $processor = null;
-    /** @var Lib\FileForm */
-    protected $fileForm = null;
-    /** @var IMime */
-    protected $libFileMime = null;
-    /** @var string */
-    protected $fileMime = '';
-    /** @var string */
-    protected $fileContent = '';
-    /** @var bool */
-    protected $processed = false;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected Lib\Processor $processor;
+    protected Lib\FileForm $fileForm;
+    protected IMime $libFileMime;
+    protected string $fileMime = '';
+    protected string $fileContent = '';
+    protected bool $processed = false;
 
     /**
      * @param mixed ...$constructParams
@@ -87,8 +79,8 @@ class Read extends AAuthModule implements IHasTitle
         $this->userDir->setUserPath($this->getUserDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $workPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $workPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->tree->setStartPath(array_merge($userPath, $workPath));
             $this->tree->wantDeep(false);

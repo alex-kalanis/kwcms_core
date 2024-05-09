@@ -13,8 +13,8 @@ use KWCMS\modules\Chsett\Lib\FormGroups;
  */
 class EditGroupTemplate extends ATemplate
 {
-    protected $moduleName = 'Chsett';
-    protected $templateName = 'edit_group';
+    protected string $moduleName = 'Chsett';
+    protected string $templateName = 'edit_group';
 
     protected function fillInputs(): void
     {

@@ -14,8 +14,7 @@ use kalanis\kw_input\Interfaces\IFiltered;
  */
 class InputFilesAdapter extends FilesAdapter
 {
-    /** @var IFiltered */
-    protected $inputs = null;
+    protected IFiltered $inputs;
 
     public function __construct(IFiltered $inputs)
     {

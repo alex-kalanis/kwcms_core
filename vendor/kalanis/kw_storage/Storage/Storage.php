@@ -14,10 +14,8 @@ use Traversable;
  */
 class Storage implements Interfaces\IStorage
 {
-    /** @var Interfaces\ITarget */
-    protected $target = null;
-    /** @var Interfaces\IKey */
-    protected $key = null;
+    protected Interfaces\ITarget $target;
+    protected Interfaces\IKey $key;
 
     public function __construct(Interfaces\IKey $key, Interfaces\ITarget $target)
     {
@@ -30,12 +28,12 @@ class Storage implements Interfaces\IStorage
         return $this->target->check($this->key->fromSharedKey(''));
     }
 
-    public function write(string $sharedKey, $data, ?int $timeout = null): bool
+    public function write(string $sharedKey, string $data, ?int $timeout = null): bool
     {
         return $this->target->save($this->key->fromSharedKey($sharedKey), $data, $timeout);
     }
 
-    public function read(string $sharedKey)
+    public function read(string $sharedKey): string
     {
         return $this->target->load($this->key->fromSharedKey($sharedKey));
     }

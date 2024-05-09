@@ -71,8 +71,8 @@ class Upload extends AAuthModule implements IHasTitle
         $this->userDir->setUserPath($this->getUserDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $workPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $workPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->fileForm->composeUploadFile();
             $this->fileForm->setInputs(new InputVarsAdapter($this->inputs), new InputFilesAdapter($this->inputs));

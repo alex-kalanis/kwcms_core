@@ -10,12 +10,9 @@ namespace kalanis\kw_address_handler;
  */
 class SingleVariable
 {
-    /** @var Params */
-    protected $params = null;
-    /** @var string */
-    protected $variableValue = '';
-    /** @var string */
-    protected $variableName = 'variable';
+    protected Params $params;
+    protected string $variableValue = '';
+    protected string $variableName = 'variable';
 
     public function __construct(Params $params)
     {

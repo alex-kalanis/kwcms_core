@@ -15,8 +15,8 @@ use KWCMS\modules\Images\Forms\DirNewForm;
  */
 class DirNewTemplate extends ATemplate
 {
-    protected $moduleName = 'Images';
-    protected $templateName = 'dir_new';
+    protected string $moduleName = 'Images';
+    protected string $templateName = 'dir_new';
 
     protected function fillInputs(): void
     {

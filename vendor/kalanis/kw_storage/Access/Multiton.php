@@ -18,8 +18,7 @@ class Multiton
 {
     use TLang;
 
-    /** @var Factory */
-    protected $factory = null;
+    protected Factory $factory;
     /** @var array<string, IStorage> */
     protected $instances = [];
 

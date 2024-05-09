@@ -8,7 +8,7 @@ use KWCMS\modules\Krep\Libs;
 
 class Error extends ALogs
 {
-    protected $format = "{DATE}|{TIMESTAMP}|{CODE}|{MESSAGE}|{IP}|{TOPIC}|{NAME}|{BROWSER}|{ACCEPT}\r\n";
+    protected string $format = "{DATE}|{TIMESTAMP}|{CODE}|{MESSAGE}|{IP}|{TOPIC}|{NAME}|{BROWSER}|{ACCEPT}\r\n";
 
     protected function fileName(): string
     {

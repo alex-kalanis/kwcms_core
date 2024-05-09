@@ -15,8 +15,8 @@ class SelectOption extends AControl implements IOriginalValue
 {
     use TSelected;
 
-    protected $templateLabel = '';
-    protected $templateInput = '<option value="%1$s"%2$s>%3$s</option>';
+    protected string $templateLabel = '';
+    protected string $templateInput = '<option value="%1$s"%2$s>%3$s</option>';
 
     public function getOriginalValue()
     {

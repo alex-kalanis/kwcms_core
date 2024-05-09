@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class PinterestAccount extends AAccount
 {
-    protected $site = 'pinterest';
-    protected $accountSite = 'pinterest_account';
-    protected $shortSite = 'pin';
+    protected string $site = 'pinterest';
+    protected string $accountSite = 'pinterest_account';
+    protected string $shortSite = 'pin';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

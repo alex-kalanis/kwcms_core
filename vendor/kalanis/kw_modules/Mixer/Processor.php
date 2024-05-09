@@ -20,18 +20,17 @@ use kalanis\kw_modules\Parser;
  */
 class Processor
 {
-    /** @var ILoader */
-    protected $loader = null;
-    /** @var IModulesList */
-    protected $files = null;
-    /** @var Parser\GetModules */
-    protected $parser = null;
+    protected ILoader $loader;
+    protected IModulesList $files;
+    protected Parser\GetModules $parser;
+    protected PassedParams\Factory $paramsFactory;
 
-    public function __construct(ILoader $loader, IModulesList $files, ?IMdTranslations $lang = null)
+    public function __construct(ILoader $loader, IModulesList $files, ?IMdTranslations $lang = null, ?Parser\GetModules $parser = null)
     {
         $this->loader = $loader;
         $this->files = $files;
-        $this->parser = new Parser\GetModules($lang);
+        $this->parser = $parser ?: new Parser\GetModules($lang);
+        $this->paramsFactory = new PassedParams\Factory($lang);
     }
 
     /**
@@ -51,6 +50,7 @@ class Processor
         /** @var ModulesLists\Record[] $availableModules */
         $availableModules = $this->files->listing();
         $willChange = [];
+        // in child there can be available only modules filtered by their name - process only allowed ones, let others be
         foreach ($this->parser->getFoundModules() as $item) {
             if (isset($availableModules[$item->getModuleName()])) {
                 // known
@@ -66,7 +66,7 @@ class Processor
                     $module->init($inputs, array_merge(
                         $sharedParams,
                         $availableModules[$item->getModuleName()]->getParams(),
-                        $item->getParams(),
+                        $this->paramsFactory->getClass($module)->change($item->getContent()),
                         [ISitePart::KEY_LEVEL => $level]
                     ));
                     $module->process();

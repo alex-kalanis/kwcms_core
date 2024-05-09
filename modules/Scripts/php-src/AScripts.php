@@ -34,20 +34,13 @@ use KWCMS\modules\Core\Libs\FilesTranslations;
  */
 abstract class AScripts extends AModule
 {
-    /** @var IMime */
-    protected $mime = null;
-    /** @var ScriptsTemplate */
-    protected $template = null;
-    /** @var ExternalLink */
-    protected $libExtLink = '';
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Files */
-    protected $treeList = null;
+    protected IMime $mime;
+    protected ScriptsTemplate $template;
+    protected ExternalLink $libExtLink;
+    protected ArrayPath $arrPath;
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
+    protected Files $treeList;
 
     /**
      * @param mixed ...$constructParams
@@ -62,7 +55,10 @@ abstract class AScripts extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'site.more_lang', false))
+            boolval(Config::get('Core', 'site.more_lang', false)),
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->treeList = new Files($this->files);

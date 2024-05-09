@@ -5,6 +5,7 @@ namespace KWCMS\modules\Menu\AdminControllers;
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_files\FilesException;
@@ -18,6 +19,7 @@ use kalanis\kw_menu\Menu\Entry;
 use kalanis\kw_menu\MenuException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
+use kalanis\kw_notify\NotifyException;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_semaphore\SemaphoreException;
@@ -39,19 +41,17 @@ class Edit extends AAuthModule implements IHasTitle
     use Lib\TMenu;
     use Templates\TModuleTemplate;
 
-    /** @var Forms\EditNamesForm|null */
-    protected $form = null;
+    protected Forms\EditNamesForm $form;
     /** @var MapperException|null */
     protected $error = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
+    protected bool $isProcessed = false;
+    protected Forward $forward;
 
     /**
      * @param mixed ...$constructParams
      * @throws ConfException
      * @throws FilesException
+     * @throws HandlerException
      * @throws LangException
      * @throws MenuException
      * @throws PathsException
@@ -146,7 +146,7 @@ class Edit extends AAuthModule implements IHasTitle
             $editTmpl = new Templates\EditTemplate();
             Styles::want('Menu', 'menu.css');
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('menu.update_texts'))->render()));
-        } catch (FormsException $ex) {
+        } catch (FormsException | NotifyException $ex) {
             return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
         }
     }

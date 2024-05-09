@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class HeadTemplate extends ATemplate
 {
-    protected $moduleName = 'MediaRss';
-    protected $templateName = 'head';
+    protected string $moduleName = 'MediaRss';
+    protected string $templateName = 'head';
 
     protected function fillInputs(): void
     {

@@ -10,8 +10,7 @@ namespace kalanis\kw_routed_paths;
  */
 class StoreRouted
 {
-    /** @var null|RoutedPath */
-    protected static $paths = null;
+    protected static ?RoutedPath $paths = null;
 
     public static function init(RoutedPath $path): void
     {

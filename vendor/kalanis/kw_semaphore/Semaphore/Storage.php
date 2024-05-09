@@ -17,10 +17,8 @@ use kalanis\kw_storage\StorageException;
  */
 class Storage implements ISemaphore
 {
-    /** @var string */
-    protected $rootPath = '';
-    /** @var IStorage */
-    protected $storage = null;
+    protected string $rootPath = '';
+    protected IStorage $storage;
 
     public function __construct(IStorage $storage, string $rootPath)
     {

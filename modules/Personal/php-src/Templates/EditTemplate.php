@@ -15,8 +15,8 @@ use KWCMS\modules\Personal\Lib\FormProps;
  */
 class EditTemplate extends ATemplate
 {
-    protected $moduleName = 'Personal';
-    protected $templateName = 'edit';
+    protected string $moduleName = 'Personal';
+    protected string $templateName = 'edit';
 
     protected function fillInputs(): void
     {

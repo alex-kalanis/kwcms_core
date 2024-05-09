@@ -10,18 +10,12 @@ namespace KWCMS\modules\File\Lib;
  */
 class Seek
 {
-    /** @var int */
-    protected $stepBy = 16384; // 1024 * 16
-    /** @var bool */
-    protected $flushEachStep = false;
-    /** @var bool */
-    protected $usedRange = false;
-    /** @var int */
-    protected $max = 0;
-    /** @var int */
-    protected $start = 0;
-    /** @var int */
-    protected $end = 0;
+    protected int $stepBy = 16384; // 1024 * 16
+    protected bool $flushEachStep = false;
+    protected bool $usedRange = false;
+    protected int $max = 0;
+    protected int $start = 0;
+    protected int $end = 0;
 
     public function useRange(bool $useRange): self
     {

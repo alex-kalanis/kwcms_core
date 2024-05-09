@@ -25,8 +25,7 @@ use KWCMS\modules\Core\Interfaces\Modules\IHasUser;
  */
 abstract class AApiAuthModule extends AModule implements IHasUser
 {
-    /** @var IUser|null */
-    protected $user = null;
+    protected ?IUser $user = null;
     /** @var AuthException|LockException|null */
     protected $error = null;
 

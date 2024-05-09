@@ -18,11 +18,9 @@ use kalanis\kw_mapper\Storage;
 class Records extends AConnector
 {
     /** @var ARecord[] */
-    protected $initialRecords = [];
-    /** @var null|Storage\Shared\QueryBuilder\Condition */
-    protected $condition = null;
-    /** @var null|Storage\Shared\QueryBuilder\Order */
-    protected $sortingOrder = null;
+    protected array $initialRecords = [];
+    protected ?Storage\Shared\QueryBuilder\Condition $condition = null;
+    protected ?Storage\Shared\QueryBuilder\Order $sortingOrder = null;
 
     /**
      * @param ARecord $record

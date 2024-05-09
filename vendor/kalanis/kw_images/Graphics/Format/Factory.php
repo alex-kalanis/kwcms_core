@@ -16,7 +16,7 @@ use ReflectionException;
 class Factory
 {
     /** @var array<string, string> */
-    protected $types = [
+    protected array $types = [
         'bmp' => Bmp::class,
         'gif' => Gif::class,
         'jpeg' => Jpeg::class,

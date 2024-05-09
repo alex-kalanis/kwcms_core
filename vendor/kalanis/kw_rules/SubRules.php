@@ -13,7 +13,7 @@ class SubRules
 {
     use TRules;
 
-    protected function whichFactory(): Interfaces\IRuleFactory
+    protected function whichRulesFactory(): Interfaces\IRuleFactory
     {
         return new Rules\Factory();
     }

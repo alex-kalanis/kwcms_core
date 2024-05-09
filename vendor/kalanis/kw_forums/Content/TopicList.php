@@ -11,18 +11,12 @@ namespace kalanis\kw_forums\Content;
  */
 class TopicList
 {
-    /** @var int */
-    protected $id;
-    /** @var int */
-    protected $time;
-    /** @var int */
-    protected $counter;
-    /** @var string */
-    protected $name;
-    /** @var string */
-    protected $desc;
-    /** @var bool */
-    protected $isHeader;
+    protected int $id = 0;
+    protected int $time = 0;
+    protected int $counter = 0;
+    protected string $name = '';
+    protected string $desc = '';
+    protected bool $isHeader = false;
 
     public function setData(int $id = 0, int $time = 0, string $name = '', string $desc = '', int $counter = 0, bool $isHeader = false): self
     {

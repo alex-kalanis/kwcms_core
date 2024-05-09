@@ -7,6 +7,7 @@ use kalanis\kw_accounts\AccountsException;
 use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
 use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -17,6 +18,7 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
@@ -38,22 +40,14 @@ class UserTable
 {
     use TStatuses;
 
-    /** @var IFiltered|null */
-    protected $variables = null;
-    /** @var ExternalLink|null */
-    protected $link = null;
-    /** @var Interfaces\IProcessAccounts|null */
-    protected $libAccounts = null;
-    /** @var Interfaces\IProcessGroups|null */
-    protected $libGroups = null;
-    /** @var Interfaces\IProcessClasses|null */
-    protected $libClasses = null;
-    /** @var Interfaces\IUser|null */
-    protected $currentUser = null;
-    /** @var Forward|null */
-    protected $forward = null;
-    /** @var Table|null */
-    protected $table = null;
+    protected IFiltered $variables;
+    protected ExternalLink $link;
+    protected Interfaces\IProcessAccounts $libAccounts;
+    protected Interfaces\IProcessGroups $libGroups;
+    protected Interfaces\IProcessClasses $libClasses;
+    protected Interfaces\IUser $currentUser;
+    protected Forward $forward;
+    protected Table $table;
 
     public function __construct(IFiltered $inputs, ExternalLink $link, Interfaces\IProcessAccounts $libAccounts, Interfaces\IProcessGroups $libGroups, Interfaces\IProcessClasses $libClasses, Interfaces\IUser $currentUser)
     {
@@ -64,11 +58,13 @@ class UserTable
         $this->libClasses = $libClasses;
         $this->currentUser = $currentUser;
         $this->forward = new Forward();
+        $this->table = new Table();
     }
 
     /**
      * @throws AccountsException
      * @throws FormsException
+     * @throws HandlerException
      * @throws LangException
      * @throws TableException
      * @return Table
@@ -76,7 +72,6 @@ class UserTable
     public function getTable()
     {
         // full table init
-        $this->table = new Table();
         $inputVariables = new Adapters\InputVarsAdapter($this->variables);
         $form = new Form('filterForm');
         $this->table->addHeaderFilter(new KwFilter($form));
@@ -146,6 +141,8 @@ class UserTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */
@@ -162,6 +159,8 @@ class UserTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */
@@ -178,6 +177,8 @@ class UserTable
 
     /**
      * @param string|int $id
+     * @throws HandlerException
+     * @throws PathsException
      * @throws TableException
      * @return string
      */

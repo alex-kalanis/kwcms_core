@@ -25,7 +25,7 @@ class ProcessNode implements IProcessNodes
     public function __construct(string $path = '', ?IFLTranslations $lang = null)
     {
         $this->setPath($path);
-        $this->setLang($lang);
+        $this->setFlLang($lang);
     }
 
     public function exists(array $entry): bool
@@ -83,6 +83,6 @@ class ProcessNode implements IProcessNodes
      */
     protected function noDirectoryDelimiterSet(): string
     {
-        return $this->getLang()->flNoDirectoryDelimiterSet();
+        return $this->getFlLang()->flNoDirectoryDelimiterSet();
     }
 }

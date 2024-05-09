@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class DashboardTemplate extends ATemplate
 {
-    protected $moduleName = 'Files';
-    protected $templateName = 'dashboard';
+    protected string $moduleName = 'Files';
+    protected string $templateName = 'dashboard';
 
     protected function fillInputs(): void
     {

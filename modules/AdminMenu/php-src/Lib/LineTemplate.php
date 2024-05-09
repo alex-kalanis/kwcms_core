@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class LineTemplate extends ATemplate
 {
-    protected $moduleName = 'AdminMenu';
-    protected $templateName = 'line';
+    protected string $moduleName = 'AdminMenu';
+    protected string $templateName = 'line';
 
     protected function fillInputs(): void
     {

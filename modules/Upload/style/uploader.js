@@ -28,7 +28,7 @@ let UploadTranslations = function () {
  */
 let UploadIdentification = function () {
     this.baseProgress = 'base_progress';
-    this.knownBulk = 'progress_list';
+    this.knownBulk = 'list';
     this.elapsedTime = 'elapsed_time'; // time passed
     this.estimatedTimeLeft = 'est_time_left'; // time left
     this.currentPosition = 'current_position'; // last position
@@ -38,7 +38,7 @@ let UploadIdentification = function () {
     this.progressCounter = 'single';
     this.localId = 'id';
     this.dataKey = 'data-key'; // attribute to pass key between displayed and stored data
-    this.errorLog = 'error_log';
+    this.errorLog = 'errorlog';
 };
 
 /**
@@ -69,8 +69,8 @@ let UploadedFile = function () {
     // processing
     /** @var {number} upload status */
     this.readStatus = this.STATUS_STOP;
-    /** @var {string} shared key - need to remember during init and then sent repeatedly!!! */
-    this.sharedKey = "";
+    /** @var {string} what will be passed back to the server - need to remember during init and then sent repeatedly!!! */
+    this.serverData = "";
     /** @var {number} total parts number */
     this.totalParts = 0;
     /** @var {number} last known part on both sides is... */
@@ -83,6 +83,12 @@ let UploadedFile = function () {
     this.errorMessage = "";
     /** @var {number} when the upload starts */
     this.startTime = 0;
+    /** @var {string} what method will be used to encode data */
+    this.encode = "";
+    /** @var {string} what method will be used to check segments */
+    this.check = "";
+    /** @var {string} what passed back to this client */
+    this.clientData = "";
 
     // setters
     /**
@@ -101,7 +107,7 @@ let UploadedFile = function () {
      * @return {string}
      */
     this.parseLocalId = function(fileHandler) {
-        return "file_" + uploadedFile.parseBase(checkSumMD5.calcMD5(fileHandler.name));
+        return "file_" + checkSumMD5.calcMD5(uploadedFile.parseBase(fileHandler.name));
     };
 
     /**
@@ -117,13 +123,55 @@ let UploadedFile = function () {
      * @param {*} serverResponse
      * @returns {UploadedFile}
      */
-    this.setInfoFromServer = function(serverResponse) {
+    this.setInitialInfoFromServer = function(serverResponse) {
         uploadedFile.readStatus = this.STATUS_RUN;
-        uploadedFile.sharedKey = serverResponse.sharedKey;
+        uploadedFile.serverData = serverResponse.serverKey;
         uploadedFile.totalParts = parseInt(serverResponse.totalParts);
         uploadedFile.lastKnownPart = parseInt(serverResponse.lastKnownPart);
+        uploadedFile.lastCheckedPart = 0;
         uploadedFile.partSize = parseInt(serverResponse.partSize);
         uploadedFile.errorMessage = serverResponse.errorMessage;
+        uploadedFile.clientData = serverResponse.roundaboutClient;
+        uploadedFile.encode = serverResponse.encoder;
+        uploadedFile.check = serverResponse.check;
+        return uploadedFile;
+    };
+
+    /**
+     * @param {*} serverResponse
+     * @returns {UploadedFile}
+     */
+    this.setRunnerInfoFromServer = function(serverResponse) {
+        uploadedFile.readStatus = this.STATUS_RUN;
+        uploadedFile.serverData = serverResponse.serverKey;
+        uploadedFile.lastKnownPart = parseInt(serverResponse.lastKnownPart);
+        uploadedFile.errorMessage = serverResponse.errorMessage;
+        uploadedFile.clientData = serverResponse.roundaboutClient;
+        return uploadedFile;
+    };
+
+    /**
+     * @param {*} serverResponse
+     * @returns {UploadedFile}
+     */
+    this.setDoneInfoFromServer = function(serverResponse) {
+        uploadedFile.readStatus = this.STATUS_FINISH;
+        uploadedFile.fileName = serverResponse.fileName;
+        uploadedFile.serverData = serverResponse.serverKey;
+        uploadedFile.errorMessage = serverResponse.errorMessage;
+        uploadedFile.clientData = serverResponse.roundaboutClient;
+        return uploadedFile;
+    };
+
+    /**
+     * @param {*} serverResponse
+     * @returns {UploadedFile}
+     */
+    this.setCancelInfoFromServer = function(serverResponse) {
+        uploadedFile.readStatus = this.STATUS_FINISH;
+        uploadedFile.serverData = serverResponse.serverKey;
+        uploadedFile.errorMessage = serverResponse.errorMessage;
+        uploadedFile.clientData = serverResponse.roundaboutClient;
         return uploadedFile;
     };
 
@@ -148,14 +196,6 @@ let UploadedFile = function () {
         }
         uploadedFile.readStatus = status;
         uploadedFile.errorMessage = message;
-        return uploadedFile;
-    };
-
-    /**
-     * @returns {UploadedFile}
-     */
-    this.nextFilePart = function() {
-        uploadedFile.lastKnownPart++;
         return uploadedFile;
     };
 
@@ -198,17 +238,13 @@ let UploaderProcessor = function () {
      * @param {UploaderQuery} upQuery
      * @param {UploadTranslations} translations
      * @param {UploadTargetConfig} targetConfig
-     * @param {CheckSumMD5} checksum
      */
-    this.init = function(upQuery, translations, targetConfig, checksum) {
-        if (checksum === undefined) {
-            checksum = null;
-        }
+    this.init = function(upQuery, translations, targetConfig) {
         let remoteQuery = uploaderRemoteQuery.init(upQuery, targetConfig);
         let upRenderer = uploaderRenderer.init(upQuery, uploadIdentification);
         let upReader = uploaderReader.init(translations);
         uploaderProcessor.upInit = uploadInit.init(uploaderProcessor, upRenderer, remoteQuery, translations);
-        uploaderProcessor.upCheck = uploaderChecker.init(uploaderProcessor, uploaderChecksum.init(checksum), upReader, upRenderer, remoteQuery, translations);
+        uploaderProcessor.upCheck = uploaderChecker.init(uploaderProcessor, uploaderChecksum, upReader, upRenderer, remoteQuery, translations);
         uploaderProcessor.upRunner = uploaderRunner.init(uploaderProcessor, upReader, uploaderEncoder, upRenderer, remoteQuery, translations);
         uploaderProcessor.upFailure = uploaderFailure.init(uploaderProcessor, upRenderer, remoteQuery, translations);
         uploaderProcessor.upHandler = uploaderHandler.init(uploaderProcessor, upRenderer);
@@ -316,13 +352,15 @@ let UploadInit = function () {
         uploadInit.upQuery.begin(
             {
                 fileName: uploadedFile.fileName,
-                fileSize: uploadedFile.fileSize
+                fileSize: uploadedFile.fileSize,
+                clientData: uploadedFile.clientData
             },
             function(responseData) {
                 if (typeof responseData == "object") {
+                    uploadedFile.setInitialInfoFromServer(responseData);
                     if (uploadedFile.RESULT_OK === responseData.status) {
                         // start checking content
-                        uploadInit.upRenderer.renderReaded(uploadedFile.setInfoFromServer(responseData));
+                        uploadInit.upRenderer.renderReaded(uploadedFile);
                         uploadInit.upProcessor.checkParts(uploadedFile);
                     } else {
                         // uploadedFile.RESULT_FAIL
@@ -390,7 +428,7 @@ let UploaderChecker = function () {
         if (uploadedFile.STATUS_RUN === uploadedFile.readStatus) {
             uploaderChecker.stillCheck(uploadedFile);
         } else {
-            uploaderChecker.upProcessor.failProcess(uploadedFile);
+            uploaderChecker.upProcessor.failProcess(uploadedFile, null);
         }
     };
 
@@ -406,7 +444,7 @@ let UploaderChecker = function () {
         if (uploadedFile.STATUS_RUN === uploadedFile.readStatus) {
             uploaderChecker.upProcessor.uploadParts(uploadedFile);
         } else {
-            uploaderChecker.upProcessor.failProcess(uploadedFile);
+            uploaderChecker.upProcessor.failProcess(uploadedFile, null);
         }
     };
 
@@ -415,18 +453,22 @@ let UploaderChecker = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.checkPart = function(uploadedFile) {
-        if (uploaderChecker.upChecksum.can()) {
+        let encoder = uploaderChecker.upChecksum.getChecksum(uploadedFile.check);
+        if (uploaderChecker.upChecksum.can(encoder)) {
             uploaderChecker.upQuery.check(
                 {
-                    sharedKey: uploadedFile.sharedKey,
-                    segment: uploadedFile.lastCheckedPart
+                    serverData: uploadedFile.serverData,
+                    segment: uploadedFile.lastCheckedPart,
+                    method: encoder.type(),
+                    clientData: uploadedFile.clientData
                 },
                 function(responseData) {
                     if (typeof responseData == "object") {
+                        uploadedFile.setCancelInfoFromServer(responseData);
                         if (uploadedFile.RESULT_OK === responseData.status) {
                             // got known checksum on remote - check it against local file
                             uploaderChecker.upReader.processFileRead(uploadedFile, uploadedFile.lastCheckedPart, function (result) {
-                                if (responseData.checksum === uploaderChecker.upChecksum.md5(result)) {
+                                if (responseData.checksum === encoder.calculate(result)) {
                                     // this part is OK, move to the next one
                                     uploaderChecker.processNext(uploadedFile);
                                 } else {
@@ -438,12 +480,12 @@ let UploaderChecker = function () {
                             });
                         } else {
                             // failed query
-                            uploaderChecker.upProcessor.failProcess(uploadedFile);
+                            uploaderChecker.upProcessor.failProcess(uploadedFile, null);
                         }
                     } else {
                         // Query dead, sent user info
-                        uploadedFile.setError(uploaderChecker.upLang.initReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                         uploaderChecker.upRenderer.consoleError(uploadedFile, responseData);
+                        uploadedFile.setError(uploaderChecker.upLang.initReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                     }
                 },
                 function(err) {
@@ -481,23 +523,25 @@ let UploaderChecker = function () {
     this.truncatePart = function(uploadedFile) {
         uploaderChecker.upQuery.trim(
             {
-                sharedKey: uploadedFile.sharedKey,
-                segment: uploadedFile.lastCheckedPart
+                serverData: uploadedFile.serverData,
+                segment: uploadedFile.lastCheckedPart,
+                clientData: uploadedFile.clientData
             },
             function(responseData) {
                 if (typeof responseData == "object") {
+                    uploadedFile.setRunnerInfoFromServer(responseData);
                     if (uploadedFile.RESULT_OK === responseData.status) {
                         // Truncate came OK, time to upload the rest
                         uploaderChecker.upRenderer.updateBar(uploadedFile.setTruncatedFromServer(responseData));
                         uploaderChecker.nextStep(uploadedFile);
                     } else {
                         // Truncate failed, time say something
-                        uploaderChecker.upProcessor.failProcess(uploadedFile);
+                        uploaderChecker.upProcessor.failProcess(uploadedFile, null);
                     }
                 } else {
                     // Query dead, sent user info
-                    uploadedFile.setError(uploaderChecker.upLang.checkerReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                     uploaderChecker.upRenderer.consoleError(uploadedFile, responseData);
+                    uploadedFile.setError(uploaderChecker.upLang.checkerReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                 }
             },
             function(err) {
@@ -562,7 +606,7 @@ let UploaderRunner = function () {
         if (uploadedFile.STATUS_RUN === uploadedFile.readStatus) {
             uploaderRunner.stillRunning(uploadedFile);
         } else {
-            uploaderRunner.upProcessor.failProcess(uploadedFile);
+            uploaderRunner.upProcessor.failProcess(uploadedFile, null);
         }
     };
 
@@ -573,32 +617,39 @@ let UploaderRunner = function () {
     this.uploadPart = function(uploadedFile) {
         uploaderRunner.upRenderer.updateBar(uploadedFile);
         uploaderRunner.upReader.processFileRead(uploadedFile, uploadedFile.lastKnownPart, function (result) {
-            uploaderRunner.upQuery.upload(
-                {
-                    sharedKey: uploadedFile.sharedKey,
-                    content: uploaderRunner.upEncoder.base64(result),
-                    // lastKnownPart: uploadedFile.lastKnownPart
-                },
-                function(responseData) {
-                    if (typeof responseData == "object") {
-                        if (uploadedFile.RESULT_OK === responseData.status) {
-                            // everything ok
-                            uploadedFile.nextFilePart();
-                            uploaderRunner.upRenderer.updateBar(uploadedFile.nextCheckedPart());
-                            uploaderRunner.continueRunning(uploadedFile);
+            let encoder = uploaderRunner.upEncoder.getEncoder(uploadedFile.encode);
+            if (uploaderRunner.upEncoder.can(encoder)) {
+                uploaderRunner.upQuery.upload(
+                    {
+                        serverData: uploadedFile.serverData,
+                        content: encoder.encode(result),
+                        method: encoder.type(),
+                        clientData: uploadedFile.clientData
+                    },
+                    function(responseData) {
+                        if (typeof responseData == "object") {
+                            uploadedFile.setRunnerInfoFromServer(responseData);
+                            if (uploadedFile.RESULT_OK === responseData.status) {
+                                // everything ok
+                                uploaderRunner.upRenderer.updateBar(uploadedFile.nextCheckedPart());
+                                uploaderRunner.continueRunning(uploadedFile);
+                            } else {
+                                // dead file, user info
+                                uploaderRunner.upProcessor.failProcess(uploadedFile, null);
+                            }
                         } else {
-                            // dead file, user info
-                            uploaderRunner.upProcessor.failProcess(uploadedFile);
+                            uploaderRunner.upRenderer.consoleError(uploadedFile, responseData);
+                            uploadedFile.setError(uploaderRunner.upLang.dataUploadReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                         }
-                    } else {
-                        uploadedFile.setError(uploaderRunner.upLang.dataUploadReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
-                        uploaderRunner.upRenderer.consoleError(uploadedFile, responseData);
+                    },
+                    function(err) {
+                        uploaderRunner.upRenderer.consoleError(uploadedFile, err);
                     }
-                },
-                function(err) {
-                    uploaderRunner.upRenderer.consoleError(uploadedFile, err);
-                }
-            );
+                );
+            } else {
+                self.upRenderer.consoleError(uploadedFile, encoder);
+                uploadedFile.setError(self.upLang.dataUploadEncoderFailed, uploadedFile.RESULT_FAIL);
+            }
         }, function (event) {
             uploaderRunner.upProcessor.failProcess(uploadedFile, event);
         });
@@ -611,22 +662,24 @@ let UploaderRunner = function () {
     this.closePart = function(uploadedFile) {
         uploaderRunner.upQuery.done(
             {
-                sharedKey: uploadedFile.sharedKey
+                serverData: uploadedFile.serverData,
+                clientData: uploadedFile.clientData
             },
             function(responseData) {
                 if (typeof responseData == "object") {
+                    uploadedFile.setDoneInfoFromServer(responseData);
                     if (uploadedFile.RESULT_OK === responseData.status) {
                         // everything ok
                         uploadedFile.readStatus = uploadedFile.STATUS_FINISH;
                         uploaderRunner.upRenderer.renderFinished(uploadedFile);
                     } else {
                         // dead file, user info
-                        uploaderRunner.upProcessor.failProcess(uploadedFile);
+                        uploaderRunner.upProcessor.failProcess(uploadedFile, null);
                     }
                 } else {
                     // dead query, user info
-                    uploadedFile.setError(uploaderRunner.upLang.doneReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                     uploaderRunner.upRenderer.consoleError(uploadedFile, responseData);
+                    uploadedFile.setError(uploaderRunner.upLang.doneReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                 }
             },
             function(err) {
@@ -704,10 +757,12 @@ let UploaderFailure = function () {
     this.contentRemoval = function(uploadedFile) {
         uploaderFailure.upQuery.cancel(
             {
-                sharedKey: uploadedFile.sharedKey
+                serverData: uploadedFile.serverData,
+                clientData: uploadedFile.clientData
             },
             function(responseData) {
                 if (typeof responseData == "object") {
+                    uploadedFile.setCancelInfoFromServer(responseData);
                     if (uploadedFile.RESULT_OK === responseData.status) {
                         // everything done
                         uploaderFailure.checkContinue(uploadedFile);
@@ -717,8 +772,8 @@ let UploaderFailure = function () {
                     }
                 } else {
                     // dead query, user info
-                    uploadedFile.setError(uploaderFailure.upLang.doneReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                     uploaderFailure.upRenderer.consoleError(uploadedFile, responseData);
+                    uploadedFile.setError(uploaderFailure.upLang.doneReturnsSomethingFailed, uploadedFile.RESULT_FAIL);
                 }
             },
             function(err) {
@@ -814,86 +869,54 @@ let UploaderReader = function () {
 };
 
 /**
- * Encode binary file chunk into base64 to prevent problems with text-based transportation
+ * Encode binary file chunk into something else to prevent problems with text-based transportation
  */
 let UploaderEncoder = function () {
-
     /**
-     * Encode data into Base64
-     * @param {string} data
-     * @return {string}
+     * @param {string} encoder
+     * @return {null|EncoderBase64|EncoderRaw|EncoderHex2}
      */
-    this.base64 = function(data) {
-        // phpjs.org
-        // http://kevin.vanzonneveld.net
-        // *     example 1: base64_encode('Kevin van Zonneveld');
-        // *     returns 1: 'S2V2aW4gdmFuIFpvbm5ldmVsZA=='
-        // mozilla has this native
-        // - but breaks in 2.0.0.12!
-        let b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        let o1,
-            o2,
-            o3,
-            h1,
-            h2,
-            h3,
-            h4,
-            bits,
-            i = 0,
-            ac = 0,
-            tmp_arr = [];
-        if (!data) {
-            return data;
+    this.getEncoder = function(encoder) {
+        switch (encoder) {
+            // case 'raw':
+            //     return new EncoderRaw();
+            case 'hex':
+                return new EncoderHex2();
+            case 'base64':
+                return new EncoderBase64();
+            default:
+                return null;
         }
-        do {
-            // pack three octets into four hexets
-            o1 = data.charCodeAt(i++);
-            o2 = data.charCodeAt(i++);
-            o3 = data.charCodeAt(i++);
-            bits = (o1 << 16) | (o2 << 8) | o3;
-            h1 = (bits >> 18) & 0x3f;
-            h2 = (bits >> 12) & 0x3f;
-            h3 = (bits >> 6) & 0x3f;
-            h4 = bits & 0x3f;
-            // use hexets to index into b64, and append result to encoded string
-            tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
-        } while (i < data.length);
-        let enc = tmp_arr.join("");
-        let r = data.length % 3;
-        return (r ? enc.slice(0, r - 3) : enc) + "===".slice(r || 3);
-    }
+    };
+
+    this.can = function(encoder) {
+        return (null != encoder);
+    };
 };
 
 /**
  * Class for making checksum of segments, usually use MD5
  */
 let UploaderChecksum = function () {
-    /** @var {CheckSumMD5} */
-    this.checksum = null;
 
     /**
-     * @param {CheckSumMD5} checksum
+     * @param {string} checksum
+     * @return {null|CheckSumMD5|CheckSumSha1}
      */
-    this.init = function(checksum) {
-        if (checksum === undefined) {
-            checksum = null;
+    this.getChecksum = function(checksum) {
+        switch (checksum) {
+            case 'md5':
+                return new CheckSumMD5();
+            // case 'sha1':
+            //     return new CheckSumSha1();
+            default:
+                return null;
         }
-        uploaderChecksum.checksum = checksum;
-        return uploaderChecksum;
     };
 
-    this.can = function() {
-        return (null != uploaderChecksum.checksum);
+    this.can = function(checksum) {
+        return (null != checksum);
     };
-
-    /**
-     * Create file checksum
-     * @param {Blob} file
-     * @return {string}
-     */
-    this.md5 = function(file) {
-        return (uploaderChecksum.checksum) ? uploaderChecksum.checksum.calcMD5(file) : '';
-    }
 };
 
 /**
@@ -1197,7 +1220,7 @@ let UploaderHandler = function () {
  * Render output to browser
  * Usually main candidate to customization
  */
-let UploaderRenderer = function () {
+let UploaderRenderer  = function () {
     /** @var {UploadIdentification} */
     this.upIdent = null;
     /** @var {UploaderQuery} */
@@ -1217,18 +1240,18 @@ let UploaderRenderer = function () {
      * @param {UploadedFile} uploadedFile
      */
     this.renderFileItem = function(uploadedFile) {
-        let progressBasicBox = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.baseProgress);
-        let progressBox = progressBasicBox.clone(true);
-        progressBox.attr(uploaderRenderer.upIdent.localId, uploadedFile.localId);
+        let progress = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.baseProgress);
+        let progress_bar = progress.clone(true);
+        progress_bar.attr(uploaderRenderer.upIdent.localId, uploadedFile.localId);
         let list = uploaderRenderer.upQuery.getObjectById(uploaderRenderer.upIdent.knownBulk);
-        list.append(progressBox);
-        let fileName = progressBox.find(".filename").eq(1);
+        list.append(progress_bar);
+        let fileName = progress_bar.find(".filename").eq(1);
         fileName.append(uploadedFile.fileName);
-        let button1 = progressBox.find("button").eq(1);
+        let button1 = progress_bar.find("button").eq(1);
         button1.attr(uploaderRenderer.upIdent.dataKey, uploadedFile.localId);
-        let button2 = progressBox.find("button").eq(2);
+        let button2 = progress_bar.find("button").eq(2);
         button2.attr(uploaderRenderer.upIdent.dataKey, uploadedFile.localId);
-        let button3 = progressBox.find("button").eq(3);
+        let button3 = progress_bar.find("button").eq(3);
         button3.attr(uploaderRenderer.upIdent.dataKey, uploadedFile.localId);
     };
 
@@ -1244,7 +1267,7 @@ let UploaderRenderer = function () {
         let node = uploaderRenderer.upQuery.getObjectById(uploadedFile.localId);
         let button = node.find("button").eq(1);
         button.removeAttr("disabled");
-        node.attr(uploaderRenderer.upIdent.localId, uploadedFile.sharedKey);
+        node.attr(uploaderRenderer.upIdent.localId, uploadedFile.serverData);
     };
 
     /**
@@ -1252,7 +1275,7 @@ let UploaderRenderer = function () {
      */
     this.renderFinished = function(uploadedFile) {
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.elapsedTime, uploaderRenderer.formatTime(uploaderRenderer.getElapsedTime(uploadedFile)));
-        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile, 100));
+        uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedTimeLeft, uploaderRenderer.calculateEstimatedTimeLeft(uploadedFile,100));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.currentPosition, uploaderRenderer.calculateSize(uploadedFile.fileSize));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.totalSize, uploaderRenderer.calculateSize(uploadedFile.fileSize));
         uploaderRenderer.upQuery.setObjectContent(uploaderRenderer.upIdent.estimatedSpeed, uploaderRenderer.calculateSize(0));
@@ -1331,7 +1354,7 @@ let UploaderRenderer = function () {
     /**
      * calculate passed time
      * @param {UploadedFile} uploadedFile
-     * @param {numeric} percentDone
+     * @param {number} percentDone
      * @return {string}
      */
     this.calculateEstimatedTimeLeft = function(uploadedFile, percentDone) {
@@ -1375,8 +1398,7 @@ let UploaderRenderer = function () {
      * @return {number}
      */
     this.calculatePercent = function(uploadedFile) {
-        let percent = uploadedFile.lastKnownPart / uploadedFile.totalParts;
-        return Math.round(percent * 100);
+        return !uploadedFile.totalParts ? 0 : Math.round((uploadedFile.lastKnownPart / uploadedFile.totalParts) * 100);
     };
 
     /**
@@ -1385,8 +1407,7 @@ let UploaderRenderer = function () {
      * @return {number}
      */
     this.calculateCheckedPercent = function(uploadedFile) {
-        let percent = uploadedFile.lastCheckedPart / uploadedFile.totalParts;
-        return Math.round(percent * 100);
+        return !uploadedFile.totalParts ? 0 : Math.round((uploadedFile.lastCheckedPart / uploadedFile.totalParts) * 100);
     };
 
     /**
@@ -1455,5 +1476,3 @@ let uploaderQuery = new UploaderQuery();
 let uploaderRemoteQuery = new UploaderRemoteQuery();
 let uploaderHandler = new UploaderHandler();
 let uploaderRenderer = new UploaderRenderer();
-
-

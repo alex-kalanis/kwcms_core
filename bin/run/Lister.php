@@ -21,8 +21,7 @@ class Lister extends ATask
 {
     use TPrettyTable;
 
-    /** @var ArrayPath */
-    protected $arrPt = null;
+    protected ArrayPath $arrPt;
 
     public function __construct()
     {

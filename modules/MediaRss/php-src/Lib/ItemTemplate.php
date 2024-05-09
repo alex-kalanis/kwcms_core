@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ItemTemplate extends ATemplate
 {
-    protected $moduleName = 'MediaRss';
-    protected $templateName = 'item';
+    protected string $moduleName = 'MediaRss';
+    protected string $templateName = 'item';
 
     protected function fillInputs(): void
     {

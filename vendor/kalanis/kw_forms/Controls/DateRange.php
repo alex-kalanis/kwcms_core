@@ -5,10 +5,9 @@ namespace kalanis\kw_forms\Controls;
 
 class DateRange extends AControl
 {
-    /** @var int */
-    protected static $uniqid = 0;
-    protected $templateLabel = '<label>%2$s</label>';
-    protected $templateInput = '%3$s';
+    protected static int $uniqid = 0;
+    protected string $templateLabel = '<label>%2$s</label>';
+    protected string $templateInput = '%3$s';
 
     public function set(string $alias, ?string $value = null, string $label = ''): self
     {

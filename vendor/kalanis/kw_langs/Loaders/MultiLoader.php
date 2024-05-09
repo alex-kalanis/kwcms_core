@@ -14,7 +14,7 @@ use kalanis\kw_langs\Interfaces\ILoader;
 class MultiLoader implements ILoader
 {
     /** @var array<string, ILoader> */
-    protected $loaders = [];
+    protected array $loaders = [];
 
     public function addLoader(ILoader $loader): self
     {

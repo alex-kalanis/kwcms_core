@@ -19,7 +19,7 @@ class FileCheckboxes extends ATreeControl implements IMultiValue
     use TMultiValue;
     use TSubEntry;
 
-    protected $templateLabel = '';
+    protected string $templateLabel = '';
 
     /**
      * @param ControlNode[] $nodes

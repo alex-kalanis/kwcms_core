@@ -31,16 +31,13 @@ use KWCMS\modules\Short\ShortException;
  */
 class Short extends AModule
 {
-    /** @var Search|null */
-    protected $search = null;
+    /** @var Search */
+    protected ?Search $search = null;
     /** @var MapperException|null */
     protected $error = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected CompositeAdapter $files;
+    protected InnerLinks $innerLink;
+    protected ArrayPath $arrPath;
 
     /**
      * @param mixed ...$constructParams
@@ -55,7 +52,10 @@ class Short extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $this->files = (new Factory(new FilesTranslations()))->getClass($constructParams);
     }

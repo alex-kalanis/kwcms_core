@@ -11,10 +11,10 @@ namespace kalanis\kw_address_handler;
  */
 class Redirect
 {
-    const TARGET_MOVED = 301;
-    const TARGET_FOUND = 302;
-    const TARGET_TEMPORARY = 307;
-    const TARGET_PERMANENT = 308;
+    public const TARGET_MOVED = 301;
+    public const TARGET_FOUND = 302;
+    public const TARGET_TEMPORARY = 307;
+    public const TARGET_PERMANENT = 308;
 
     public function __construct(string $redirectTo, int $targetMethod = self::TARGET_MOVED, ?int $step = null)
     {

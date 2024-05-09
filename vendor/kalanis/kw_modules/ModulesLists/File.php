@@ -16,8 +16,8 @@ use kalanis\kw_paths\Stuff;
  */
 class File implements IModulesList
 {
-    const PARAM_SEPARATOR = '|';
-    const LINE_SEPARATOR = "\r\n";
+    protected const PARAM_SEPARATOR = '|';
+    protected const LINE_SEPARATOR = "\r\n";
 
     /** @var IFile */
     protected $storage = null;

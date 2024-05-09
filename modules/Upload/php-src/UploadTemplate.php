@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class UploadTemplate extends ATemplate
 {
-    protected $moduleName = 'Upload';
-    protected $templateName = 'page';
+    protected string $moduleName = 'Upload';
+    protected string $templateName = 'page';
 
     protected function fillInputs(): void
     {

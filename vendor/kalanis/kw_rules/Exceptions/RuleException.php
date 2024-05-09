@@ -9,8 +9,7 @@ use Throwable;
 
 class RuleException extends Exception
 {
-    /** @var Throwable|null */
-    protected $prev = null;
+    protected ?Throwable $prev = null;
 
     public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
     {

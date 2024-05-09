@@ -3,9 +3,12 @@
 namespace kalanis\kw_input\Simplified;
 
 
-use ArrayAccess;
+use ArrayIterator;
 use kalanis\kw_input\InputException;
+use kalanis\kw_input\Interfaces;
 use kalanis\kw_input\Parsers\FixServer;
+use kalanis\kw_input\Traits;
+use Traversable;
 
 
 /**
@@ -51,16 +54,22 @@ use kalanis\kw_input\Parsers\FixServer;
  * @property string $PATH_INFO
  * @property string $ORIG_PATH_INFO
  */
-class ServerAdapter implements ArrayAccess
+class ServerAdapter implements Interfaces\IFilteredInputs
 {
-    use TNullBytes;
-
-    /** @var array<string|int, string|int|bool|null> */
-    protected $server = [];
+    use Traits\TFill;
+    use Traits\TInputEntries;
+    use Traits\TKV;
 
     public final function __construct()
     {
-        $this->server = FixServer::updateAuth(FixServer::updateVars($_SERVER));
+        $this->input = $this->keysValues(
+            $this->fillFromEntries(
+                Interfaces\IEntry::SOURCE_SERVER,
+                FixServer::updateAuth(
+                    FixServer::updateVars($_SERVER)
+                )
+            )
+        );
     }
 
     /**
@@ -104,17 +113,6 @@ class ServerAdapter implements ArrayAccess
     }
     // @codeCoverageIgnoreEnd
 
-    public final function offsetExists($offset): bool
-    {
-        return isset($this->server[$this->removeNullBytes(strval($offset))]);
-    }
-
-    #[\ReturnTypeWillChange]
-    public final function offsetGet($offset)
-    {
-        return $this->server[$this->removeNullBytes(strval($offset))];
-    }
-
     /**
      * @param mixed $offset
      * @param mixed $value
@@ -132,5 +130,22 @@ class ServerAdapter implements ArrayAccess
     public final function offsetUnset($offset): void
     {
         throw new InputException('Cannot write into _SERVER variable');
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator(
+            $this->input,
+            ArrayIterator::STD_PROP_LIST | ArrayIterator::ARRAY_AS_PROPS
+        );
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore sets are disabled
+     */
+    protected function defaultSource(): string
+    {
+        return Interfaces\IEntry::SOURCE_SERVER;
     }
 }

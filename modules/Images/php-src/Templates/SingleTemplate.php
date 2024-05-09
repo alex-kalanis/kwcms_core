@@ -14,8 +14,8 @@ use KWCMS\modules\Images\Forms;
  */
 class SingleTemplate extends ATemplate
 {
-    protected $moduleName = 'Images';
-    protected $templateName = 'single_image';
+    protected string $moduleName = 'Images';
+    protected string $templateName = 'single_image';
 
     protected function fillInputs(): void
     {

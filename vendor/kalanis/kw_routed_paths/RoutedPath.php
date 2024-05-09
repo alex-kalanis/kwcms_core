@@ -29,20 +29,15 @@ use kalanis\kw_paths\Stuff;
  */
 class RoutedPath
 {
-    /** @var string */
-    protected $staticPath = ''; // in browser the path which stay the same and targets the document root from the outside
-    /** @var string */
-    protected $virtualPrefix = ''; // in browser the separation value between static part and virtual one
-    /** @var string */
-    protected $user = ''; // user whom content is looked for
-    /** @var string */
-    protected $lang = ''; // in which language will be content provided, also affects path
+    protected string $staticPath = ''; // in browser the path which stay the same and targets the document root from the outside
+    protected string $virtualPrefix = ''; // in browser the separation value between static part and virtual one
+    protected string $user = ''; // user whom content is looked for
+    protected string $lang = ''; // in which language will be content provided, also affects path
     /** @var string[] */
-    protected $path = []; // the rest of path
+    protected array $path = []; // the rest of path
     /** @var string[] */
-    protected $module = []; // basic module which will be used as default one to present the content
-    /** @var bool */
-    protected $isSingle = false; // is module the master of page and should be there another as wrapper?
+    protected array $module = []; // basic module which will be used as default one to present the content
+    protected bool $isSingle = false; // is module the master of page and should be there another as wrapper?
 
     /**
      * @param Sources\ASource $source

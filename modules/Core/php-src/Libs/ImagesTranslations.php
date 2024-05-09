@@ -33,6 +33,11 @@ class ImagesTranslations implements IIMTranslations
         return Lang::get('core.images.cannot_save_resource');
     }
 
+    public function imUnknownMime(): string
+    {
+        return Lang::get('core.images.unknown_mime_class');
+    }
+
     public function imUnknownType(string $mime): string
     {
         return Lang::get('core.images.unknown_type', $mime);

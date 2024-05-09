@@ -39,12 +39,9 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class MessageTable
 {
-    /** @var IFiltered|null */
-    protected $variables = null;
-    /** @var Forward|null */
-    protected $forward = null;
-    /** @var ExternalLink|null */
-    protected $link = null;
+    protected IFiltered $variables;
+    protected Forward $forward;
+    protected ExternalLink $link;
 
     public function __construct(IFiltered $inputs, ExternalLink $link = null)
     {

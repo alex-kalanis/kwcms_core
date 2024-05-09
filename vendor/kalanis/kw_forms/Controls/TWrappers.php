@@ -19,21 +19,20 @@ trait TWrappers
     use TTemplateError;
 
     /** @var IHtmlElement[] */
-    protected $wrappers = [];
+    protected array $wrappers = [];
     /** @var IHtmlElement[] */
-    protected $wrappersLabel = [];
+    protected array $wrappersLabel = [];
     /** @var IHtmlElement[] */
-    protected $wrappersInput = [];
+    protected array $wrappersInput = [];
     /** @var IHtmlElement[] */
-    protected $wrappersChild = [];
+    protected array $wrappersChild = [];
     /** @var IHtmlElement[] */
-    protected $wrappersChildren = [];
+    protected array $wrappersChildren = [];
     /** @var IHtmlElement[] */
-    protected $wrappersError = [];
+    protected array $wrappersError = [];
     /** @var IHtmlElement[] */
-    protected $wrappersErrors = [];
-    /** @var string */
-    protected $errorMustBeAnInstance = 'Wrapper must be an instance of IHtmlElement or array of its instances';
+    protected array $wrappersErrors = [];
+    protected string $errorMustBeAnInstance = 'Wrapper must be an instance of IHtmlElement or array of its instances';
 
     /**
      * Pack string into preset html element

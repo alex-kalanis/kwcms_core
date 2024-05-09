@@ -14,7 +14,7 @@ use kalanis\kw_connect\core\Interfaces\IRow;
  */
 class ConnectGroupItem implements IRow
 {
-    protected $array;
+    protected array $array;
 
     public function __construct(IGroup $group)
     {

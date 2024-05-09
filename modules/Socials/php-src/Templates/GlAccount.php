@@ -9,5 +9,5 @@ namespace KWCMS\modules\Socials\Templates;
  */
 class GlAccount extends ATmplAccount
 {
-    protected $templateName = 'gl_account';
+    protected string $templateName = 'gl_account';
 }

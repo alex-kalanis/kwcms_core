@@ -6,6 +6,7 @@ namespace KWCMS\modules\Chsett\AdminControllers\User;
 use kalanis\kw_accounts\AccountsException;
 use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_auth\AuthException;
 use kalanis\kw_langs\Lang;
@@ -23,20 +24,14 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class Delete extends AAuthModule
 {
-    /** @var Interfaces\IAuth|null */
-    protected $libAuth = null;
-    /** @var Interfaces\IProcessAccounts|null */
-    protected $libAccounts = null;
-    /** @var Interfaces\IUser|null */
-    protected $editUser = null;
+    protected Interfaces\IAuth $libAuth;
+    protected Interfaces\IProcessAccounts $libAccounts;
+    protected ?Interfaces\IUser $editUser = null;
     /** @var AuthException|null */
     protected $error = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var Forward */
-    protected $forward = null;
-    /** @var ExternalLink|null */
-    protected $links = null;
+    protected bool $isProcessed = false;
+    protected Forward $forward;
+    protected ExternalLink $links;
 
     /**
      * @param Interfaces\IAuth $auth
@@ -44,6 +39,7 @@ class Delete extends AAuthModule
      * @param Forward $forward
      * @param ServerRequest $request
      * @param ExternalLink $external
+     * @throws HandlerException
      * @throws LangException
      */
     public function __construct(

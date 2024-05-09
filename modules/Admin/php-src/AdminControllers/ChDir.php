@@ -37,14 +37,10 @@ abstract class ChDir extends AAuthModule
     use TWhereDir;
     use TFilesDirs;
 
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var Forms\ChDirForm|null */
-    protected $chDirForm = null;
-    /** @var bool */
-    protected $processedForm = false;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected Forms\ChDirForm $chDirForm;
+    protected bool $processedForm = false;
 
     /**
      * @param mixed $constructParams

@@ -17,7 +17,7 @@ use kalanis\kw_styles\Interfaces\ILoader;
 class PhpLoader implements ILoader
 {
     /** @var string[] */
-    protected $pathMasks = [
+    protected array $pathMasks = [
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%8$s', # user dir, user module with conf name
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s', # user dir, user module
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s', # user dir, all user confs
@@ -27,10 +27,8 @@ class PhpLoader implements ILoader
         '%2$s%1$s%5$s%1$s%6$s%1$s%7$s', # all modules, styles in root
     ];
 
-    /** @var Path */
-    protected $pathLib = null;
-    /** @var RoutedPath */
-    protected $routedLib = null;
+    protected Path $pathLib;
+    protected RoutedPath $routedLib;
 
     public function __construct(Path $pathLib, RoutedPath $routedLib)
     {

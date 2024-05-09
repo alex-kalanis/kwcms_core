@@ -13,6 +13,10 @@ use ArrayAccess;
  */
 class InputArray extends Sources
 {
+    /**
+     * @param ArrayAccess<string|int, string|int> $inputs
+     * @param string $entry
+     */
     public function __construct(ArrayAccess $inputs, string $entry = 'REQUEST_URI')
     {
         if ($inputs->offsetExists($entry) && '' != $inputs->offsetGet($entry)) {

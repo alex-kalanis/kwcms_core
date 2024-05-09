@@ -29,8 +29,8 @@ class Create extends ADir
         $this->userDir->setUserPath($this->getUserDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $workPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $workPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->dirForm->composeCreateDir();
             $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));

@@ -10,7 +10,7 @@ namespace kalanis\kw_menu\Traits;
 trait TFilterHtml
 {
     /** @var string[] */
-    protected static $allowedExtensions = ['htm', 'html', 'xhtm', 'xhtml'];
+    protected static array $allowedExtensions = ['htm', 'html', 'xhtm', 'xhtml'];
 
     public function filterExt(string $ext): bool
     {

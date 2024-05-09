@@ -20,20 +20,13 @@ class UserDir
 {
     use TLang;
 
-    /** @var string|null */
-    protected $userName = null; # obtained user's name (when need)
-    /** @var string|null */
-    protected $userPath = null; # system path to user's home dir - as set by values (contains slashes as extra info)
-    /** @var string */
-    protected $homeDir = ''; # relative path to user's home dir (from storage root)
-    /** @var string */
-    protected $dataDir = ''; # relative path to user's work dir (from storage root)
-    /** @var ArrayPath|null */
-    protected $fullPath = null; # full path as derived from user path or user settings
-    /** @var bool */
-    protected $hasHomeDir = true; # if use sub dirs or is it directly in user's home dir
-    /** @var bool */
-    protected $hasDataDir = true; # if use user dir or is it anywhere else directly from web root
+    protected ?string $userName = null; # obtained user's name (when need)
+    protected ?string $userPath = null; # system path to user's home dir - as set by values (contains slashes as extra info)
+    protected string $homeDir = ''; # relative path to user's home dir (from storage root)
+    protected string $dataDir = ''; # relative path to user's work dir (from storage root)
+    protected ?ArrayPath $fullPath = null; # full path as derived from user path or user settings
+    protected bool $hasHomeDir = true; # if use sub dirs or is it directly in user's home dir
+    protected bool $hasDataDir = true; # if use user dir or is it anywhere else directly from web root
 
     public function __construct(?Interfaces\IUPTranslations $lang = null)
     {

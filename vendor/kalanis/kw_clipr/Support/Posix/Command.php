@@ -14,17 +14,14 @@ use kalanis\kw_clipr\Interfaces\IStatuses;
  */
 class Command
 {
-    /** @var string */
-    protected $command = '';
-    /** @var bool */
-    protected $success = false;
-    /** @var int */
-    protected $returnStatus = 0;
+    protected string $command = '';
+    protected bool $success = false;
+    protected int $returnStatus = 0;
     /**
      * Output - what it write to output lines
      * @var array<int, string>
      */
-    protected $outputLines = [];
+    protected array $outputLines = [];
 
     /**
      * Run command immediately

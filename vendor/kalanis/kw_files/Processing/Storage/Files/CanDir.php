@@ -16,13 +16,12 @@ use kalanis\kw_storage\StorageException;
  */
 class CanDir extends AFiles
 {
-    /** @var IPassDirs */
-    protected $storage = null;
+    protected IPassDirs $passStorage;
 
     public function __construct(IPassDirs $storage, ?IFLTranslations $lang = null)
     {
-        $this->storage = $storage;
-        $this->setLang($lang);
+        parent::__construct($storage, $lang);
+        $this->passStorage = $storage;
     }
 
     public function copyFile(array $source, array $dest): bool
@@ -30,9 +29,9 @@ class CanDir extends AFiles
         $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
         $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
-            return $this->storage->copy($src, $dst);
+            return $this->passStorage->copy($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotCopyFile($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -41,9 +40,9 @@ class CanDir extends AFiles
         $src = $this->getStorageSeparator() . $this->compactName($source, $this->getStorageSeparator());
         $dst = $this->getStorageSeparator() . $this->compactName($dest, $this->getStorageSeparator());
         try {
-            return $this->storage->move($src, $dst);
+            return $this->passStorage->move($src, $dst);
         } catch (StorageException $ex) {
-            throw new FilesException($this->getLang()->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
+            throw new FilesException($this->getFlLang()->flCannotMoveFile($src, $dst), $ex->getCode(), $ex);
         }
     }
 
@@ -53,6 +52,6 @@ class CanDir extends AFiles
      */
     protected function noDirectoryDelimiterSet(): string
     {
-        return $this->getLang()->flNoDirectoryDelimiterSet();
+        return $this->getFlLang()->flNoDirectoryDelimiterSet();
     }
 }

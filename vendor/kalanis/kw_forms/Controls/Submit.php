@@ -10,14 +10,14 @@ namespace kalanis\kw_forms\Controls;
  */
 class Submit extends Button
 {
-    protected $templateInput = '<input type="submit" value="%1$s"%2$s />';
+    protected string $templateInput = '<input type="submit" value="%1$s"%2$s />';
     protected $originalValue = 'submit';
 
     /**
      * Check if form was sent by this button
      * @var boolean
      */
-    protected $submitted = false;
+    protected bool $submitted = false;
 
     public function setValue($value): void
     {

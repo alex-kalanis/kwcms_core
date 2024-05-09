@@ -11,7 +11,7 @@ namespace kalanis\kw_address_handler;
 class Headers
 {
     /** @var array<int, string> */
-    protected static $headerCodes = [
+    protected static array $headerCodes = [
         200 => '200 OK',
         201 => '201 Created',
         202 => '202 Accepted',

@@ -14,8 +14,8 @@ use kalanis\kw_paging\Render\SimplifiedPager;
  */
 class Main extends ATemplate
 {
-    protected $moduleName = 'Dirlist';
-    protected $templateName = 'main';
+    protected string $moduleName = 'Dirlist';
+    protected string $templateName = 'main';
 
     protected function fillInputs(): void
     {
@@ -23,6 +23,7 @@ class Main extends ATemplate
         $this->addInput('{PAGER}');
         $this->addInput('{FILES-DIRS}');
         $this->addInput('{FROM}');
+        $this->addInput('{SEP}');
         $this->addInput('{TO}');
         $this->addInput('{OF}');
         $this->addInput('{COUNT}');
@@ -38,6 +39,7 @@ class Main extends ATemplate
             $this->updateItem('{FILES-DIRS}', Lang::get('dirlist.files_dirs'));
             $this->updateItem('{OF}', Lang::get('dirlist.of'));
             $this->updateItem('{FROM}', $pager->getPager()->getOffset() ? $pager->getPager()->getOffset() + 1 : 1);
+            $this->updateItem('{SEP}', '-');
             $this->updateItem('{TO}', strval(min($pager->getPager()->getOffset() + $pager->getPager()->getLimit(), $pager->getPager()->getMaxResults())));
             $this->updateItem('{COUNT}', strval($pager->getPager()->getMaxResults()));
         }

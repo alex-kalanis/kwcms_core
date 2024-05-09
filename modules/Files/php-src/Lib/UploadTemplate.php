@@ -14,8 +14,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class UploadTemplate extends ATemplate
 {
-    protected $moduleName = 'Files';
-    protected $templateName = 'file_upload';
+    protected string $moduleName = 'Files';
+    protected string $templateName = 'file_upload';
 
     protected function fillInputs(): void
     {

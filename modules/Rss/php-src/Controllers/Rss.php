@@ -33,14 +33,10 @@ use KWCMS\modules\Rss\RssException;
  */
 class Rss extends AModule
 {
-    /** @var ExternalLink */
-    protected $libExternal = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected ExternalLink $libExternal;
+    protected CompositeAdapter $files;
+    protected ArrayPath $arrPath;
+    protected InnerLinks $innerLink;
 
     /**
      * @param mixed ...$constructParams
@@ -57,7 +53,10 @@ class Rss extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
     }
 
@@ -122,9 +121,10 @@ class Rss extends AModule
      */
     protected function getItems(): array
     {
+        $path = $this->pathLookup();
         $tmplItem = new Lib\ItemTemplate();
         $messages = [];
-        $adapter = new Lib\MessageAdapter($this->files, $this->innerLink->toFullPath($this->pathLookup()));
+        $adapter = new Lib\MessageAdapter($this->files, $this->innerLink->toFullPath($path));
         $search = new Search($adapter->getRecord());
         $search->offset(intval(strval($this->getFromParam('offset', 0))));
         $search->limit(intval(strval($this->getFromParam('limit', Config::get('Rss', 'count', 10)))));
@@ -134,7 +134,7 @@ class Rss extends AModule
         foreach ($results as $orm) {
             /** @var Lib\ShortMessage $orm */
             $messages[] = $tmplItem->reset()->setData(
-                $this->libExternal->linkVariant(null, ''),
+                $this->libExternal->linkVariant($path),
                 strval($orm->title),
                 intval($orm->date),
                 strval($orm->content)
@@ -149,7 +149,7 @@ class Rss extends AModule
     protected function pathLookup(): array
     {
         $this->arrPath->setArray(StoreRouted::getPath()->getPath());
-        return array_merge($this->arrPath->getArrayDirectory(), [Stuff::fileBase($this->arrPath->getFileName())]);
+        return array_filter(array_merge($this->arrPath->getArrayDirectory(), [Stuff::fileBase($this->arrPath->getFileName())]));
     }
 
     protected function getImage(): string

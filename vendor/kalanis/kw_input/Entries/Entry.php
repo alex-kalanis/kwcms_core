@@ -15,15 +15,13 @@ use kalanis\kw_input\Interfaces;
  */
 class Entry implements Interfaces\IEntry
 {
-    /** @var string */
-    protected $key = '';
+    protected string $key = '';
     /** @var mixed|null */
     protected $value = '';
-    /** @var string */
-    protected $source = '';
+    protected string $source = '';
 
     /** @var string[] */
-    protected static $availableSources = [
+    protected static array $availableSources = [
         self::SOURCE_CLI,
         self::SOURCE_GET,
         self::SOURCE_POST,

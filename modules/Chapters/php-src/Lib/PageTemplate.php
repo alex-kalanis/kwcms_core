@@ -14,8 +14,8 @@ use kalanis\kw_templates\TemplateException;
  */
 class PageTemplate extends ATemplate
 {
-    protected $moduleName = 'Chapters';
-    protected $templateName = 'actual_page';
+    protected string $moduleName = 'Chapters';
+    protected string $templateName = 'actual_page';
 
     /* Which styles are available and if they want solo rows */
     protected static $styles = [ # usage of one line - one file (for count cols)

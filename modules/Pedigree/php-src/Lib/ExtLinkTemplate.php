@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class ExtLinkTemplate extends ATemplate
 {
-    protected $moduleName = 'Pedigree';
-    protected $templateName = 'ext_link';
+    protected string $moduleName = 'Pedigree';
+    protected string $templateName = 'ext_link';
 
     protected function fillInputs(): void
     {

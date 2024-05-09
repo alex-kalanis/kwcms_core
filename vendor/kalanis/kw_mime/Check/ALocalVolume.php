@@ -19,10 +19,8 @@ abstract class ALocalVolume implements IMimeChecks
     use Traits\TCheckCalls;
     use Traits\TResult;
 
-    /** @var string */
-    protected $startPath = '';
-    /** @var ArrayPath */
-    protected $pathLib = null;
+    protected string $startPath = '';
+    protected ArrayPath $pathLib;
 
     public function __construct(?IMiTranslations $lang = null)
     {

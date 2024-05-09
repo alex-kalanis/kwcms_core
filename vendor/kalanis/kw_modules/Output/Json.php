@@ -11,7 +11,7 @@ namespace kalanis\kw_modules\Output;
 class Json extends AOutput
 {
     /** @var array<string|int, string|int|float|array<string|int|float|array<string|int|float>>> */
-    protected $content = null;
+    protected array $content = [];
 
     /**
      * @param array<string|int, string|int|float|array<string|int|float|array<string|int|float>>> $contentToEncode

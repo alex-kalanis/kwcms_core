@@ -3,12 +3,9 @@
 namespace KWCMS\modules\Images\Lib;
 
 
-use kalanis\kw_files\FilesException;
-use kalanis\kw_images\FilesHelper;
+use kalanis\kw_images\Access\Factory;
 use kalanis\kw_images\ImagesException;
-use kalanis\kw_paths\PathsException;
-use KWCMS\modules\Core\Libs\FilesTranslations;
-use KWCMS\modules\Core\Libs\ImagesTranslations;
+use kalanis\kw_images\Traits\TLang;
 use KWCMS\modules\Images\Interfaces;
 
 
@@ -19,23 +16,41 @@ use KWCMS\modules\Images\Interfaces;
  */
 trait TLibAction
 {
+    use TLang;
+
+    private ?Factory $factory;
+
+    protected function initLibAction(Factory $factory): void
+    {
+        $this->factory = $factory;
+        $this->setImLang($factory->getImLang());
+    }
+
+    /**
+     * @throws ImagesException
+     * @return Factory
+     */
+    protected function getLibImageFactory(): Factory
+    {
+        if (empty($this->factory)) {
+            throw new ImagesException($this->getImLang()->imSizesNotSet());
+        }
+        return $this->factory;
+    }
+
     /**
      * @param mixed $filesParams
      * @param string[] $userPath
      * @param string[] $currentPath
-     * @throws FilesException
      * @throws ImagesException
-     * @throws PathsException
      * @return Interfaces\IProcessFiles
      */
     protected function getLibFileAction($filesParams, array $userPath, array $currentPath): Interfaces\IProcessFiles
     {
-        $imLang = new ImagesTranslations();
-        $flLang = new FilesTranslations();
         return new ProcessFile(
-            FilesHelper::getOperations($filesParams, [], $imLang, $flLang),
-            FilesHelper::getUpload($filesParams, [], $imLang, $flLang),
-            FilesHelper::getImages($filesParams, [], $imLang, $flLang),
+            $this->getLibImageFactory()->getOperations($filesParams),
+            $this->getLibImageFactory()->getUpload($filesParams),
+            $this->getLibImageFactory()->getImages($filesParams),
             $userPath,
             $currentPath
         );
@@ -45,17 +60,13 @@ trait TLibAction
      * @param mixed $filesParams
      * @param string[] $userPath
      * @param string[] $currentPath
-     * @throws FilesException
      * @throws ImagesException
-     * @throws PathsException
      * @return Interfaces\IProcessDirs
      */
     protected function getLibDirAction($filesParams, array $userPath, array $currentPath): Interfaces\IProcessDirs
     {
-        $imLang = new ImagesTranslations();
-        $flLang = new FilesTranslations();
         return new ProcessDir(
-            FilesHelper::getDirs($filesParams, [], $imLang, $flLang),
+            $this->getLibImageFactory()->getDirs($filesParams),
             $userPath,
             $currentPath
         );

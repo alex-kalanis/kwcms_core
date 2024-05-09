@@ -16,8 +16,7 @@ use kalanis\kw_routed_paths\Support;
  */
 class Link
 {
-    /** @var string */
-    protected $prefix = '';
+    protected string $prefix = '';
 
     public function __construct(string $prefix = '')
     {

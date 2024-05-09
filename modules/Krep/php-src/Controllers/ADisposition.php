@@ -15,11 +15,9 @@ use KWCMS\modules\Core\Libs\AModule;
 abstract class ADisposition extends AModule
 {
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
-    /** @var Libs\Template */
-    protected $defaultTemplate = null;
-    /** @var Libs\Config */
-    protected $config;
+    protected array $constructParams = [];
+    protected Libs\Template $defaultTemplate;
+    protected Libs\Config $config;
 
     public function __construct(Libs\Config $config)
     {

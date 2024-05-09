@@ -27,8 +27,7 @@ class Groups extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IProcessGroups|null */
-    protected $libGroups = null;
+    protected Interfaces\IProcessGroups $libGroups;
 
     /**
      * @param Interfaces\IProcessGroups $groups

@@ -19,11 +19,11 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Player extends ATemplate
 {
-    protected $moduleName = 'Video';
-    protected $templateName = 'nothing';
+    protected string $moduleName = 'Video';
+    protected string $templateName = 'nothing';
 
     /* Which styles are available and if they want solo rows */
-    protected static $styles = [ # usage of one line - one file (for count cols)
+    protected static array $styles = [ # usage of one line - one file (for count cols)
         'player' => false,
         'nothing' => false,
     ];

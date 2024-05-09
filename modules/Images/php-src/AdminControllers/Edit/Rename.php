@@ -21,10 +21,8 @@ use KWCMS\modules\Images\Forms;
  */
 class Rename extends AEdit
 {
-    /** @var string */
-    protected $targetName = '';
-    /** @var Forms\FileRenameForm */
-    protected $renameForm = null;
+    protected string $targetName = '';
+    protected Forms\FileRenameForm $renameForm;
 
     public function __construct(...$constructParams)
     {
@@ -38,15 +36,15 @@ class Rename extends AEdit
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $fileName = strval($this->getFromParam('name'));
             $this->renameForm->composeForm($fileName, '#');
             $this->renameForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->renameForm->process()) {
                 $newName = strval($this->renameForm->getControl('newName')->getValue());
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->renameFile(
                     $this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName,

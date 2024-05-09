@@ -16,16 +16,12 @@ class MetaProcessor
 {
     use TLang;
 
-    /** @var Interfaces\IMetaSource */
-    protected $metaSource = null;
-    /** @var Menu\Menu */
-    protected $menu = null;
-    /** @var Menu\Entry */
-    protected $entry = null;
-    /** @var int */
-    protected $highest = 0;
+    protected Interfaces\IMetaSource $metaSource;
+    protected Menu\Menu $menu;
+    protected Menu\Entry $entry;
+    protected int $highest = 0;
     /** @var Menu\Entry[] */
-    protected $workList = [];
+    protected array $workList = [];
 
     public function __construct(Interfaces\IMetaSource $metaSource, ?IMNTranslations $lang = null)
     {
@@ -63,6 +59,13 @@ class MetaProcessor
         return $this->menu;
     }
 
+    public function reset(): void
+    {
+        $this->menu = new Menu\Menu();
+        $this->workList = [];
+        $this->highest = 0;
+    }
+
     /**
      * @throws MenuException
      */
@@ -73,13 +76,6 @@ class MetaProcessor
             $this->workList = $this->menu->getEntries();
             $this->highest = max([0] + array_map([$this, 'menuPosition'], $this->workList));
         }
-    }
-
-    public function reset(): void
-    {
-        $this->menu = new Menu\Menu();
-        $this->workList = [];
-        $this->highest = 0;
     }
 
     public function menuPosition(Menu\Entry $item): int

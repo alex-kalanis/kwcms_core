@@ -5,15 +5,16 @@ namespace KWCMS\modules\Chsett\AdminControllers\User;
 
 use kalanis\kw_accounts\Interfaces;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
-use kalanis\kw_auth\Auth;
 use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_forms\Exceptions\RenderException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_notify\Notification;
-use kalanis\kw_routed_paths\StoreRouted;
+use kalanis\kw_notify\NotifyException;
+use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Chsett\Lib;
 use KWCMS\modules\Chsett\Templates;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
@@ -30,22 +31,15 @@ abstract class AUsers extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IProcessGroups */
-    protected $libGroups = null;
-    /** @var Interfaces\IProcessClasses */
-    protected $libClasses = null;
+    protected Interfaces\IProcessGroups $libGroups;
+    protected Interfaces\IProcessClasses $libClasses;
     /** @var Interfaces\IProcessAccounts|Interfaces\IAuthCert */
-    protected $libAccounts = null;
-    /** @var Interfaces\IUser|null */
-    protected $editUser = null;
-    /** @var Lib\FormUsers */
-    protected $form = null;
-    /** @var Forward */
-    protected $forward = null;
-    /** @var bool */
-    protected $isProcessed = false;
-    /** @var bool */
-    protected $redirect = false;
+    protected Interfaces\IProcessAccounts $libAccounts;
+    protected ?Interfaces\IUser $editUser = null;
+    protected Lib\FormUsers $form;
+    protected Forward $forward;
+    protected bool $isProcessed = false;
+    protected bool $redirect = false;
 
 //    /**
 //     * @param mixed ...$constructParams
@@ -71,6 +65,7 @@ abstract class AUsers extends AAuthModule implements IHasTitle
      * @param ServerRequest $request
      * @param ExternalLink $external
      * @throws LangException
+     * @throws HandlerException
      */
     public function __construct(
         Interfaces\IProcessGroups $groups,
@@ -133,7 +128,7 @@ abstract class AUsers extends AAuthModule implements IHasTitle
                 }
             }
             return $out->setContent($this->outModuleTemplate($editTmpl->render()));
-        } catch ( FormsException $ex) {
+        } catch ( FormsException | NotifyException | PathsException $ex) {
             return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }

@@ -17,10 +17,8 @@ class AnyControl extends AControl implements IContainsControls
     use TSubControls;
     use TSubErrors;
 
-    /** @var bool */
-    protected $needAll = false;
-
-    protected $templateLabel = '';
+    protected bool $needAll = false;
+    protected string $templateLabel = '';
 
     public function removeControl(string $key): void
     {

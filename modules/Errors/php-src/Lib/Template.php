@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Template extends ATemplate
 {
-    protected $moduleName = 'Errors';
-    protected $templateName = 'errors';
+    protected string $moduleName = 'Errors';
+    protected string $templateName = 'errors';
 
     protected function fillInputs(): void
     {
@@ -22,13 +22,15 @@ class Template extends ATemplate
         $this->addInput('{CATCH_ERROR}', Lang::get('error.text'));
         $this->addInput('{ERROR_NUMBER}');
         $this->addInput('{ERROR_DESCRIPTION}');
+        $this->addInput('{ERROR_SPECIFIC}');
     }
 
-    public function setData(string $errNo, string $errDesc, string $imgLink): self
+    public function setData(string $errNo, string $errDesc, string $imgLink, string $specificDescription): self
     {
         $this->updateItem('{ERROR_IMAGE_LINK}', $imgLink);
         $this->updateItem('{ERROR_NUMBER}', $errNo);
         $this->updateItem('{ERROR_DESCRIPTION}', $errDesc);
+        $this->updateItem('{ERROR_SPECIFIC}', $specificDescription);
         return $this;
     }
 }

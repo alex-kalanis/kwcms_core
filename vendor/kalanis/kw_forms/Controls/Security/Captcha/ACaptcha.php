@@ -15,8 +15,7 @@ use kalanis\kw_forms\Interfaces\ITimeout;
  */
 abstract class ACaptcha extends AControl
 {
-    /** @var ITimeout|null */
-    protected $libTimeout = null;
+    protected ?ITimeout $libTimeout = null;
 
     public function addRules(/** @scrutinizer ignore-unused */ iterable $rules = []): void
     {

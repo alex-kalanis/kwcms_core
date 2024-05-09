@@ -18,7 +18,7 @@ use kalanis\kw_routed_paths\RoutedPath;
 class PhpLoader implements ILoader
 {
     /** @var string[] */
-    protected $pathMasks = [
+    protected array $pathMasks = [
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%8$s%9$s', # user dir, user module with conf name
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%1$s%7$s%9$s', # user dir, user module
         '%2$s%1$s%3$s%1$s%4$s%1$s%5$s%1$s%6$s%1$s%7$s%9$s', # user dir, all user confs
@@ -28,10 +28,8 @@ class PhpLoader implements ILoader
         '%2$s%1$s%5$s%1$s%6$s%1$s%7$s%9$s', # all modules, conf in root
     ];
 
-    /** @var Path */
-    protected $pathLib = null;
-    /** @var RoutedPath */
-    protected $routedLib = null;
+    protected Path $pathLib;
+    protected RoutedPath $routedLib;
 
     public function __construct(Path $pathLib, RoutedPath $routedLib)
     {

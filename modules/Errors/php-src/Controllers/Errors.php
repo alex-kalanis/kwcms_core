@@ -22,13 +22,11 @@ use KWCMS\modules\Errors\Lib;
  */
 class Errors extends AModule
 {
-    /** @var AOutput */
-    protected $out = null;
-    /** @var int */
-    protected $code = 0;
+    protected int $code = 0;
+    protected string $desc = '';
 
     /** @var int[] */
-    protected static $acceptable_errors = [400,401,403,404,405,406,407,408,409,410,411,413,414,415,500,501,502,503,504,505];
+    protected static array $acceptable_errors = [400,401,403,404,405,406,407,408,409,410,411,413,414,415,500,501,502,503,504,505];
 
     /**
      * @param mixed ...$constructParams
@@ -41,13 +39,18 @@ class Errors extends AModule
 
     public function process(): void
     {
-        $codesFromErr = $this->inputs->getInArray('err', [IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_GET]);
-        $codesFromError = $this->inputs->getInArray('error', [IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_GET]);
+        $codeFromErr = intval(strval($this->getFromInput('err', 0, [IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_GET])));
+        $codeFromError = intval(strval($this->getFromInput('error', 0, [IEntry::SOURCE_EXTERNAL, IEntry::SOURCE_GET])));
+        $codeFromPassed = intval(strval($this->getFromParam('error', 0)));
+        $descFromPassed = strval($this->getFromParam('error_message', ''));
 
-        if (!empty($codesFromErr)) {
-            $code = reset($codesFromErr);
+        if (!empty($codeFromErr)) {
+            $code = $codeFromErr;
         } elseif (!empty($codesFromError)) {
-            $code = reset($codesFromError);
+            $code = $codeFromError;
+        } elseif (!empty($codeFromPassed)) {
+            $code = $codeFromPassed;
+            $this->desc = $descFromPassed;
         } else {
             $arrPt = new ArrayPath();
             $code = Stuff::fileBase($arrPt->setArray(StoreRouted::getPath()->getPath())->getFileName());
@@ -63,7 +66,7 @@ class Errors extends AModule
             return $out->setContent($this->code, Lang::get('error.desc.' . $this->code));
         } else {
             $out = new Lib\OutHtml();
-            return $out->setContent((string)$this->code);
+            return $out->setContent(strval($this->code), $this->desc);
         }
     }
 }

@@ -14,8 +14,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class BodyTemplate extends ATemplate
 {
-    protected $moduleName = 'Layout';
-    protected $templateName = 'body';
+    protected string $moduleName = 'Layout';
+    protected string $templateName = 'body';
 
     protected function fillInputs(): void
     {

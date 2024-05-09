@@ -12,20 +12,15 @@ use kalanis\kw_accounts\Interfaces\IGroup;
  */
 class FileGroup implements IGroup
 {
-    /** @var string */
-    protected $id = '0';
-    /** @var string */
-    protected $name = '';
-    /** @var string */
-    protected $author = '0';
-    /** @var string */
-    protected $displayName = '';
-    /** @var int */
-    protected $status = 0;
+    protected string $id = '0';
+    protected string $name = '';
+    protected string $author = '0';
+    protected string $displayName = '';
+    protected int $status = 0;
     /** @var string[] */
-    protected $parents = [];
+    protected array $parents = [];
     /** @var array<string|int, string|int|float|bool> */
-    protected $extra = [];
+    protected array $extra = [];
 
     public function setGroupData(?string $id, ?string $name, ?string $desc, ?string $authorId, ?int $status, ?array $parents = [], ?array $extra = []): void
     {

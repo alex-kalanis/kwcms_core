@@ -13,15 +13,15 @@ use kalanis\kw_connect\core\ConnectException;
  */
 interface IFilterFactory
 {
-    const ACTION_EXACT = 'exact';
-    const ACTION_NOT_EXACT = 'notExact';
-    const ACTION_CONTAINS = 'contains';
-    const ACTION_FROM = 'from';
-    const ACTION_FROM_WITH = 'fromWith';
-    const ACTION_TO = 'to';
-    const ACTION_TO_WITH = 'toWith';
-    const ACTION_RANGE = 'range';
-    const ACTION_MULTIPLE = 'multiple';
+    public const ACTION_EXACT = 'exact';
+    public const ACTION_NOT_EXACT = 'notExact';
+    public const ACTION_CONTAINS = 'contains';
+    public const ACTION_FROM = 'from';
+    public const ACTION_FROM_WITH = 'fromWith';
+    public const ACTION_TO = 'to';
+    public const ACTION_TO_WITH = 'toWith';
+    public const ACTION_RANGE = 'range';
+    public const ACTION_MULTIPLE = 'multiple';
 
     /**
      * @param string $action

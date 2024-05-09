@@ -15,14 +15,11 @@ use kalanis\kw_paths\PathsException;
  */
 class UserInnerLinks
 {
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var string|null */
-    protected $useUser = null;
+    protected ArrayPath $arrPath;
+    protected UserDir $userDir;
+    protected ?string $useUser = null;
     /** @var string[] */
-    protected $prefixPath = [];
+    protected array $prefixPath = [];
 
     /**
      * @param string|null $useUser
@@ -113,7 +110,6 @@ class UserInnerLinks
             return [];
         }
         $this->userDir->setUserPath($this->useUser);
-        $this->userDir->process();
 
         return array_merge(
             $this->userDir->hasHomeDir() ? $this->addPrefixSeparator() : [],

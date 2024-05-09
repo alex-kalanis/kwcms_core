@@ -22,9 +22,9 @@ use kalanis\kw_menu\Menu\Entry;
 class EditPosForm extends Form
 {
     /** @var InputPosition[] */
-    protected $inputs = [];
+    protected array $inputs = [];
     /** @var array<string, int> */
-    protected $filledValues = [];
+    protected array $filledValues = [];
 
     /**
      * @param Entry[] $items

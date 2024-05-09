@@ -14,15 +14,15 @@ use kalanis\kw_input\Interfaces\IEntry;
 class Factory
 {
     /** @var ALoader[] */
-    protected static $loaders;
+    protected array $loaders;
 
     public function getLoader(string $source): ALoader
     {
-        if (isset(static::$loaders[$source])) {
-            return static::$loaders[$source];
+        if (isset($this->loaders[$source])) {
+            return $this->loaders[$source];
         }
         $loader = $this->select($source);
-        static::$loaders[$source] = $loader;
+        $this->loaders[$source] = $loader;
         return $loader;
     }
 

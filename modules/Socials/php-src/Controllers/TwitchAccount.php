@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class TwitchAccount extends AAccount
 {
-    protected $site = 'twitch';
-    protected $accountSite = 'twitch_account';
-    protected $shortSite = 'tt_account';
+    protected string $site = 'twitch';
+    protected string $accountSite = 'twitch_account';
+    protected string $shortSite = 'tt_account';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

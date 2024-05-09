@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class OperationTemplate extends ATemplate
 {
-    protected $moduleName = 'Files';
-    protected $templateName = 'file_oper';
+    protected string $moduleName = 'Files';
+    protected string $templateName = 'file_oper';
 
     protected function fillInputs(): void
     {

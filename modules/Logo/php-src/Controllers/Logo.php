@@ -36,16 +36,11 @@ use KWCMS\modules\Logo\Libs;
  */
 class Logo extends AModule
 {
-    /** @var IMime */
-    protected $mime = null;
-    /** @var ArrayPath */
-    protected $arrPath = null;
-    /** @var ExternalLink */
-    protected $extLink = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
-    /** @var Libs\ImageFill */
-    protected $processor = null;
+    protected IMime $mime;
+    protected ArrayPath $arrPath;
+    protected ExternalLink $extLink;
+    protected InnerLinks $innerLink;
+    protected Libs\ImageFill $processor;
 
     /**
      * @param mixed ...$constructParams
@@ -64,7 +59,10 @@ class Logo extends AModule
         $this->innerLink = new InnerLinks(
             StoreRouted::getPath(),
             boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false))
+            boolval(Config::get('Core', 'page.more_lang', false)),
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
         $files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->mime = (new Check\Factory())->getLibrary(null);

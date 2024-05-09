@@ -12,7 +12,7 @@ class Contains extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->dibiFluent->where($colName . ' LIKE %~like~', $value);
+            $this->getSource()->where($colName . ' LIKE %~like~', $value);
         }
         return $this;
     }

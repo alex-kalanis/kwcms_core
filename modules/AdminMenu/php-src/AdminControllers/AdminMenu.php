@@ -40,24 +40,17 @@ use KWCMS\modules\Core\Libs\ExternalLink;
  */
 class AdminMenu extends AModule
 {
-    /** @var ExternalLink */
-    protected $externalLink = null;
-    /** @var IModulesList */
-    protected $modulesList = null;
+    protected ExternalLink $externalLink;
+    protected IModulesList $modulesList;
 
-    /** @var Lib\LineTemplate */
-    protected $tmplLine = null;
-    /** @var Lib\SeparatorTemplate */
-    protected $tmplSep = null;
-    /** @var Lib\ListingTemplate */
-    protected $tmplListing = null;
+    protected Lib\LineTemplate $tmplLine;
+    protected Lib\SeparatorTemplate $tmplSep;
+    protected Lib\ListingTemplate $tmplListing;
 
-    /** @var string */
-    protected $menuKey = '';
-    /** @var int */
-    protected $maxPos = 0;
+    protected string $menuKey = '';
+    protected int $maxPos = 0;
     /** @var Record[] */
-    protected $entries = [];
+    protected array $entries = [];
 
     /**
      * @param mixed ...$constructParams

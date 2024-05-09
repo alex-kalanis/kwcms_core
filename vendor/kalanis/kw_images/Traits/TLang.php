@@ -14,8 +14,7 @@ use kalanis\kw_images\Translations;
  */
 trait TLang
 {
-    /** @var IIMTranslations|null */
-    protected $imLang = null;
+    protected ?IIMTranslations $imLang = null;
 
     public function setImLang(?IIMTranslations $lang = null): void
     {

@@ -20,10 +20,8 @@ abstract class AFiles
 {
     use TLang;
 
-    /** @var CompositeAdapter */
-    protected $lib = null;
-    /** @var Config */
-    protected $config = null;
+    protected CompositeAdapter $lib;
+    protected Config $config;
 
     public function __construct(CompositeAdapter $lib, Config $config, ?IIMTranslations $lang = null)
     {

@@ -18,20 +18,22 @@ use kalanis\kw_modules\Output;
  */
 class Module
 {
-    /** @var IFiltered|null */
-    protected $inputs = null;
+    protected IFiltered $inputs;
+    protected Access\Factory $modulesFactory;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
-    /** @var Interfaces\IModule|null */
-    protected $module = null;
+    protected array $constructParams = [];
+    /** @var Interfaces\IModule */
+    protected ?Interfaces\IModule $module = null;
 
     /**
      * @param IFiltered $inputs
+     * @param Access\Factory $modulesFactory
      * @param mixed $params
      */
-    public function __construct(IFiltered $inputs, $params)
+    public function __construct(IFiltered $inputs, Access\Factory $modulesFactory, $params)
     {
         $this->inputs = $inputs;
+        $this->modulesFactory = $modulesFactory;
         $this->constructParams = $params;
     }
 
@@ -42,9 +44,8 @@ class Module
      */
     public function process(array $defaultModule): self
     {
-        $modulesFactory = new Access\Factory();
         $limitedPath = ['Krep', $this->currentPath($defaultModule)];
-        $this->module = $modulesFactory
+        $this->module = $this->modulesFactory
             ->getLoader($this->constructParams)
             ->load($limitedPath, $this->constructParams);
         if (!$this->module) {

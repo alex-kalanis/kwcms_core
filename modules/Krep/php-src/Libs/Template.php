@@ -12,9 +12,10 @@ namespace KWCMS\modules\Krep\Libs;
  */
 class Template extends \kalanis\kw_templates\ATemplate
 {
-    protected $currentOne = '';
+    protected string $currentOne = '';
 
-    protected static $tpls = [
+    /** @var array<string, string> */
+    protected static array $tpls = [
         "default" => '{NOTHING}',
         "head" => '<!DOCTYPE html>
 <html><head>

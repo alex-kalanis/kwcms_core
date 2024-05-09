@@ -4,6 +4,7 @@ namespace kwcms;
 
 
 use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\Inputs;
 use kalanis\kw_clipr\Tasks\ATask;
 use kalanis\kw_confs\ConfException;
@@ -66,6 +67,7 @@ class ListNews extends ATask
     /**
      * @throws ConnectException
      * @throws FormsException
+     * @throws HandlerException
      * @throws MapperException
      * @throws TableException
      * @return int

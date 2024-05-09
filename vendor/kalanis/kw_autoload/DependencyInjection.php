@@ -16,11 +16,13 @@ use ReflectionException;
  */
 class DependencyInjection
 {
-    /** @var DependencyInjection|null */
-    protected static $instance = null;
+    protected static ?DependencyInjection $instance = null;
 
     /** @var array<string, object> */
-    protected $classes = [];
+    protected array $classes = [];
+
+    /** @var string[] */
+    protected array $paramNamesForAdditionalParams = [];
 
     public static function getInstance(): self
     {
@@ -39,6 +41,14 @@ class DependencyInjection
     private function __clone()
     {
         // disabled
+    }
+
+    /**
+     * @param string[] $names Which param names will get the whole passed configuration, not just the named parts
+     */
+    public function setParamNamesForAdditional(array $names): void
+    {
+        $this->paramNamesForAdditionalParams = $names;
     }
 
     /**
@@ -155,7 +165,7 @@ class DependencyInjection
         foreach ($construct->getParameters() as $parameter) {
 
             // by type (class/instance name) from internal storage
-            $classType = $parameter->getType() ? strval($parameter->getType()->getName()) : '';
+            $classType = strval($parameter->getType());
             if ($known = $this->getRep($classType)) {
                 $initParams[] = $known;
                 continue;
@@ -192,6 +202,12 @@ class DependencyInjection
             } catch (ReflectionException $ex) {
                 // set nothing, will fail
                 // next...
+            }
+
+            // hole for pass everything in DI
+            if (in_array($paramName, $this->paramNamesForAdditionalParams)) {
+                $initParams[] = $additionalParams;
+                continue;
             }
 
             // param not found

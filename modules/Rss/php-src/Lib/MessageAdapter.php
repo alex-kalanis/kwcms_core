@@ -21,12 +21,10 @@ use KWCMS\modules\Rss\RssException;
  */
 class MessageAdapter
 {
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var ShortMessage */
-    protected $record = null;
+    protected CompositeAdapter $files;
+    protected ShortMessage $record;
     /** @var string[] */
-    protected $targetPath = [];
+    protected array $targetPath = [];
 
     /**
      * @param CompositeAdapter $files

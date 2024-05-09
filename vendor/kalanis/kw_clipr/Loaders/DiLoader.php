@@ -20,10 +20,9 @@ use ReflectionException;
  */
 class DiLoader implements Interfaces\ITargetDirs
 {
-    /** @var Container\ContainerInterface */
-    protected $container = null;
+    protected Container\ContainerInterface $container;
     /** @var array<string, array<string>> */
-    protected $paths = [];
+    protected array $paths = [];
 
     /**
      * @param Container\ContainerInterface $container

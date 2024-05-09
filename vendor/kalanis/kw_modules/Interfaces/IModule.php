@@ -15,9 +15,9 @@ use kalanis\kw_modules\Output\AOutput;
  */
 interface IModule
 {
-    const MODULE_DISABLED = 0; # module manually disabled
-    const MODULE_ENABLED = 1; # module can be run
-    const MODULE_NO_DRIVE_CLASS = 2; # module did not have class to run
+    public const MODULE_DISABLED = 0; # module manually disabled
+    public const MODULE_ENABLED = 1; # module can be run
+    public const MODULE_NO_DRIVE_CLASS = 2; # module did not have class to run
 
     /**
      * Initialize module, set values from external sources

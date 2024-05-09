@@ -17,14 +17,11 @@ use Throwable;
  */
 class Processor
 {
-    /** @var AChain|null */
-    protected $first = null;
-    /** @var AChain|null */
-    protected $last = null;
-    /** @var IFiltered */
-    protected $inputs = null;
+    protected ?AChain $first = null;
+    protected ?AChain $last = null;
+    protected ?IFiltered $inputs = null;
     /** @var string[]|Entry[] */
-    protected $params = [];
+    protected array $params = [];
 
     public function init(IFiltered $inputs, array $passedParams): self
     {

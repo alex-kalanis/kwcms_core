@@ -14,8 +14,7 @@ use kalanis\kw_input\Interfaces\IFiltered;
  */
 class InputVarsAdapter extends VarsAdapter
 {
-    /** @var IFiltered */
-    protected $inputs = null;
+    protected IFiltered $inputs;
 
     public function __construct(IFiltered $inputs)
     {

@@ -9,5 +9,5 @@ namespace KWCMS\modules\Socials\Templates;
  */
 class RedditSub extends ATmplAccount
 {
-    protected $templateName = 'reddit_sub';
+    protected string $templateName = 'reddit_sub';
 }

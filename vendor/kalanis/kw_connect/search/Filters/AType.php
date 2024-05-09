@@ -15,7 +15,7 @@ use kalanis\kw_mapper\Search\Search;
 abstract class AType implements IFilterType
 {
     /** @var Search */
-    protected $search;
+    protected ?Search $search = null;
 
     /**
      * @param Search $dataSource
@@ -34,6 +34,18 @@ abstract class AType implements IFilterType
 
     public function getDataSource()
     {
+        return $this->search;
+    }
+
+    /**
+     * @throws ConnectException
+     * @return Search
+     */
+    public function getSource(): Search
+    {
+        if (!$this->search) {
+            throw new ConnectException('Set the datasource first!');
+        }
         return $this->search;
     }
 }

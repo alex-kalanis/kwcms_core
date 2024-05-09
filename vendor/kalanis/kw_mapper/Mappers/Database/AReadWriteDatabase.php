@@ -23,7 +23,7 @@ use kalanis\kw_mapper\Storage;
  *       frontu na vzdalenem ulozisti. V recordu pak pujde i prepinat zmenou patricneho mapperu, jestli se to provede
  *       takhle nebo jinak. Navic to umozni spojit veci se searchem, kde je obdobna implementace jen pro cteni dat.
  *
- * todo: Rozdelit read a write database podle interface - mozna to rozpadne tuhle classu
+ * todo: Rozdelit read a write database podle interface - mozna to rozpadne tuhle classu -> rozpadlo
  */
 abstract class AReadWriteDatabase extends AMapper
 {

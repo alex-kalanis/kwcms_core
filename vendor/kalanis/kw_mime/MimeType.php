@@ -13,8 +13,7 @@ use kalanis\kw_paths\PathsException;
  */
 class MimeType
 {
-    /** @var bool */
-    protected $customAtFirst = false;
+    protected bool $customAtFirst = false;
 
     public function __construct(bool $customAtFirst = false)
     {

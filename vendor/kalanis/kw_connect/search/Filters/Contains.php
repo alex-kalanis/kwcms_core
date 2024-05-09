@@ -12,7 +12,7 @@ class Contains extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->search->like($colName, $value);
+            $this->getSource()->like($colName, $value);
         }
         return $this;
     }

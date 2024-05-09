@@ -13,12 +13,9 @@ trait TExpandIp
     use TIp;
     use TLang;
 
-    /** @var int */
-    protected $type = IIpTypes::TYPE_NONE;
-    /** @var int */
-    protected $blocks = 4;
-    /** @var string */
-    protected $delimiter = '.';
+    protected int $type = IIpTypes::TYPE_NONE;
+    protected int $blocks = 4;
+    protected string $delimiter = '.';
 
     /**
      * @param string $knownIp

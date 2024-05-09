@@ -8,8 +8,7 @@ use kalanis\kw_bans\Ip;
 
 trait TIp
 {
-    /** @var Ip|null */
-    protected $basicIp = null;
+    protected ?Ip $basicIp = null;
 
     protected function setBasicIp(?Ip $ip = null): void
     {

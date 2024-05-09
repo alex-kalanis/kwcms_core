@@ -40,20 +40,16 @@ class Preview extends AAuthModule
     use Lib\TTexts;
     use Lib\TModuleTemplate;
 
-    /** @var IMime */
-    protected $mime = null;
+    protected IMime $mime;
     /** @var string[] */
-    protected $userPath = [];
+    protected array $userPath = [];
     /** @var string[] */
-    protected $fullPath = [];
-    /** @var string */
-    protected $displayContent = '';
-    /** @var Processor */
-    protected $subModules = null;
-    /** @var InnerLinks */
-    protected $innerLink = null;
+    protected array $fullPath = [];
+    protected string $displayContent = '';
+    protected Processor $subModules;
+    protected InnerLinks $innerLink;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
+    protected array $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -79,7 +75,10 @@ class Preview extends AAuthModule
         $this->innerLink = new InnerLinks(
             new RoutedPath(new Arrays([])),
             boolval(Config::get('Core', 'site.more_users', false)),
-            false
+            false,
+            [],
+            boolval(Config::get('Core', 'page.system_prefix', false)),
+            boolval(Config::get('Core', 'page.data_separator', false))
         );
 
         $this->mime = (new Check\Factory())->getLibrary($this->files);

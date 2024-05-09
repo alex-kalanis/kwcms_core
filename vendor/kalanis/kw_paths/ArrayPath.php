@@ -13,7 +13,7 @@ namespace kalanis\kw_paths;
 class ArrayPath
 {
     /** @var string[] */
-    protected $path = [];
+    protected array $path = [];
 
     /**
      * @throws PathsException

@@ -5,8 +5,7 @@ namespace kalanis\kw_forms\Controls;
 
 trait TKey
 {
-    /** @var string */
-    protected $key = '';
+    protected string $key = '';
 
     public function setKey(string $key): self
     {

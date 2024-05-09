@@ -4,6 +4,7 @@ namespace KWCMS\modules\Images\Lib;
 
 
 use kalanis\kw_address_handler\Handler;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources;
 use kalanis\kw_forms\Adapters;
 use kalanis\kw_forms\Exceptions\FormsException;
@@ -14,6 +15,7 @@ use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_pager\BasicPager;
 use kalanis\kw_paging\Positions;
+use kalanis\kw_paths\PathsException;
 use kalanis\kw_table\core\Connector\PageLink;
 use kalanis\kw_table\core\Table;
 use kalanis\kw_table\core\Table\Columns;
@@ -35,14 +37,11 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  */
 class ListTable
 {
-    /** @var IFiltered|null */
-    protected $variables = null;
-    /** @var ExternalLink|null */
-    protected $link = null;
+    protected IFiltered $variables;
+    protected ExternalLink $link;
     /** @var string[] */
-    protected $whereDir = [];
-    /** @var IProcessFiles */
-    protected $libFiles = null;
+    protected array $whereDir = [];
+    protected IProcessFiles $libFiles;
 
     /**
      * @param IFiltered $inputs
@@ -61,6 +60,7 @@ class ListTable
     /**
      * @param ITree $tree
      * @throws FormsException
+     * @throws HandlerException
      * @throws LangException
      * @throws TableException
      * @return Table
@@ -114,6 +114,7 @@ class ListTable
 
     /**
      * @param array<string|int> $data
+     * @throws PathsException
      * @return string
      */
     public function imageLink($data): string
@@ -127,6 +128,7 @@ class ListTable
 
     /**
      * @param string|int $name
+     * @throws PathsException
      * @return string
      */
     public function editLink($name): string

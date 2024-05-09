@@ -8,20 +8,24 @@ use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_modules\Output;
 use kalanis\kw_paths\PathsException;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
 use kalanis\kw_scripts\Scripts;
 use kalanis\kw_styles\Styles;
 use kalanis\kw_tree_controls\TWhereDir;
 use kalanis\kw_user_paths\UserDir;
-use kalanis\UploadPerPartes\Exceptions\UploadException;
-use kalanis\UploadPerPartes\Response;
+use kalanis\UploadPerPartes\Target;
+use kalanis\UploadPerPartes\Responses;
+use kalanis\UploadPerPartes\Target\Local\DrivingFile;
+use kalanis\UploadPerPartes\Target\Local\TemporaryStorage;
+use kalanis\UploadPerPartes\Uploader;
+use kalanis\UploadPerPartes\UploadException;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
@@ -40,13 +44,12 @@ class Upload extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
 
-    protected $inSteps = '';
-    /** @var Lib\Uploader */
-    protected $lib = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var FileLib\Processor */
-    protected $processor = null;
+    protected string $inSteps = '';
+    /** @var Uploader $lib */
+    protected Uploader $lib;
+    protected UserDir $userDir;
+    protected FileLib\Processor $processor;
+    protected Access\CompositeAdapter $files;
 
     /**
      * @param mixed ...$constructParams
@@ -54,17 +57,15 @@ class Upload extends AAuthModule implements IHasTitle
      * @throws FilesException
      * @throws LangException
      * @throws PathsException
-     * @throws UploadException
      */
     public function __construct(...$constructParams)
     {
         $this->initTModuleTemplate();
         Config::load('Upload');
-        $files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
+        $this->files = (new Access\Factory(new FilesTranslations()))->getClass($constructParams);
         $lang = new Lib\Translations();
-        $this->processor = new FileLib\Processor($files);
+        $this->processor = new FileLib\Processor($this->files);
         $this->userDir = new UserDir($lang);
-        $this->lib = new Lib\Uploader($files);
     }
 
     final public function allowedAccessClasses(): array
@@ -72,6 +73,10 @@ class Upload extends AAuthModule implements IHasTitle
         return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
     }
 
+    /**
+     * @throws PathsException
+     * @throws UploadException
+     */
     public function run(): void
     {
         $this->initWhereDir(new SessionAdapter(), $this->inputs);
@@ -79,6 +84,26 @@ class Upload extends AAuthModule implements IHasTitle
         if ('steps' == reset($pathArray)) {
             $this->inSteps = next($pathArray);
         }
+        $this->userDir->setUserPath($this->user->getDir());
+        $this->userDir->process();
+        $lang = new Lib\Translations();
+        $this->lib = new Uploader(null, [
+            'lang' => $lang,
+            'temp_location' => $this->userDir->getFullPath()->getString() . DIRECTORY_SEPARATOR . 'upload',
+            'target_location' => $this->userDir->getFullPath()->getString(), // target location - path
+            'target' => $this->userDir->getFullPath()->getString(), // if local or remote
+            'driving_file' => $this->files,
+            'data_encoder' => DrivingFile\DataEncoders\Text::class,
+            'data_modifier' => DrivingFile\DataModifiers\Clear::class,
+            'key_encoder' => DrivingFile\KeyEncoders\Name::class,
+            'key_modifier' => DrivingFile\KeyModifiers\Suffix::class,
+            'temp_storage' => $this->files,
+            'temp_encoder' => TemporaryStorage\KeyEncoders\Name::class,
+            'final_storage' => $this->files,
+            'final_encoder' =>  new Lib\FinalEncoder(null, $lang),
+            'checksum' => Target\Local\Checksums\Factory::FORMAT_MD5, // how to check parts
+            'decoder' => Target\Local\ContentDecoders\Factory::FORMAT_BASE64, // how to pass data in parts
+        ]);
     }
 
     protected function getUserDir(): string
@@ -103,9 +128,13 @@ class Upload extends AAuthModule implements IHasTitle
             $this->links->linkVariant('steps/file', 'upload', true),
             $this->links->linkVariant('steps/done', 'upload', true)
         );
-        Scripts::want('upload', 'md5GregHolt.js');
+        Scripts::want('upload', 'CheckSumMD5GregHolt.js');
+        Scripts::want('upload', 'EncoderBase64.js');
+        Scripts::want('upload', 'EncoderHex2.js');
         Scripts::want('upload', 'uploader.js');
+        Scripts::want('upload', 'into_page.js');
         Styles::want('upload', 'upload.css');
+        Styles::want('upload', 'into_page.css');
         return $out->setContent($this->outModuleTemplate($tmpl->render()));
     }
 
@@ -114,7 +143,7 @@ class Upload extends AAuthModule implements IHasTitle
         $out = new Output\Json();
         $methodToUse = 'step'. ucfirst(strtolower($this->inSteps));
         if (method_exists($this, $methodToUse)) {
-            $out->setContent($this->$methodToUse());
+            $out->setContent((array) $this->$methodToUse());
         } else {
             $out->setContent(['ERROR', 'Unknown action!']);
         }
@@ -122,85 +151,66 @@ class Upload extends AAuthModule implements IHasTitle
     }
 
     /**
-     * @throws PathsException
-     * @return Response\AResponse
+     * @throws FormsException
+     * @return Responses\BasicResponse
      */
-    protected function stepInit(): Response\AResponse
+    protected function stepInit(): Responses\BasicResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
         $this->userDir->setUserPath($this->user->getDir());
         return $this->lib->init( // change from array-based paths to string-based ones
-            Stuff::arrayToPath(array_merge(
-                $this->userDir->process()->getFullPath()->getArray(),
-                Stuff::linkToArray($this->getWhereDir()),
-                [] // empty for adding ending separator
-            )),
+            $this->getWhereDir(),
             strval($inputs['fileName']),
             intval(strval($inputs['fileSize']))
         );
     }
 
-    protected function stepCheck(): Response\AResponse
+    protected function stepCheck(): Responses\BasicResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
         return $this->lib->check(
-            strval($inputs['sharedKey']),
-            intval(strval($inputs['segment']))
+            strval($inputs['serverData']),
+            intval(strval($inputs['segment'])),
+            strval($inputs['method'])
         );
     }
 
-    protected function stepCancel(): Response\AResponse
-    {
-        $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
-        return $this->lib->cancel(
-            strval($inputs['sharedKey'])
-        );
-    }
-
-    protected function stepTrim(): Response\AResponse
+    protected function stepTrim(): Responses\BasicResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
         return $this->lib->truncateFrom(
-            strval($inputs['sharedKey']),
+            strval($inputs['serverData']),
             intval(strval($inputs['segment']))
         );
     }
 
-    protected function stepFile(): Response\AResponse
+    protected function stepFile(): Responses\BasicResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
         return $this->lib->upload(
-            strval($inputs['sharedKey']),
-            base64_decode(strval($inputs['content']))
+            strval($inputs['serverData']),
+            strval($inputs['content']),
+            strval($inputs['method'])
+        );
+    }
+
+    protected function stepCancel(): Responses\BasicResponse
+    {
+        $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
+        return $this->lib->cancel(
+            strval($inputs['serverData'])
         );
     }
 
     /**
-     * @throws FilesException
-     * @throws PathsException
-     * @throws UploadException
-     * @return Response\AResponse
+     * @return Responses\BasicResponse
      */
-    protected function stepDone(): Response\AResponse
+    protected function stepDone(): Responses\BasicResponse
     {
         $inputs = $this->inputs->getInArray(null, [IEntry::SOURCE_POST, IEntry::SOURCE_CLI]);
-        $result = $this->lib->done(
-            strval($inputs['sharedKey'])
+        return $this->lib->done(
+            strval($inputs['serverData'])
         );
-        /** @var Response\DoneResponse $result */
-
-        $this->userDir->setUserPath($this->getUserDir());
-
-        $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-        $workPath = Stuff::linkToArray($this->getWhereDir());
-
-        $this->processor->setUserPath($userPath)->setWorkPath($workPath);
-        $this->processor->renameFile(
-            Stuff::filename($result->getTemporaryLocation()),
-            Stuff::filename($result->getFileName())
-        );
-
-        return $result;
     }
 
     public function getTitle(): string

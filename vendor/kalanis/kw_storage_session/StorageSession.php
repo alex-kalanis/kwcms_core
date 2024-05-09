@@ -24,10 +24,8 @@ session_start();
  */
 class StorageSession implements SessionHandlerInterface
 {
-    /** @var IStorage */
-    protected $storage = null;
-    /** @var int */
-    protected $ttl = 1800; // 30 minutes default
+    protected IStorage $storage;
+    protected int $ttl = 1800; // 30 minutes default
 
     public function __construct(IStorage $storage, ?int $ttl = null)
     {

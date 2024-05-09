@@ -17,14 +17,11 @@ use kalanis\kw_rules\Rules;
  */
 class File extends AControl implements Interfaces\IValidateFile
 {
-    protected $templateInput = '<input type="file"%2$s />';
-    /** @var string */
-    protected $errorEntryNotFile = 'Entry %s does not contain a file';
+    protected string $templateInput = '<input type="file"%2$s />';
+    protected string $errorEntryNotFile = 'Entry %s does not contain a file';
+    protected ?IFileEntry $entry = null;
 
-    /** @var IFileEntry|null */
-    protected $entry = null;
-
-    protected function whichFactory(): Interfaces\IRuleFactory
+    protected function whichRulesFactory(): Interfaces\IRuleFactory
     {
         return new Rules\File\Factory();
     }

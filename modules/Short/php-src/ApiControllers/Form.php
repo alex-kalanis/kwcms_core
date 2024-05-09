@@ -10,6 +10,7 @@ use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Adapters\ArrayAdapter;
+use kalanis\kw_forms\Exceptions\FormsException;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mapper\MapperException;
@@ -33,16 +34,13 @@ class Form extends AApiAuthModule
 {
     use TWhereDir;
 
-    /** @var Lib\ShortMessage */
-    protected $record = null;
-    /** @var Lib\MessageForm */
-    protected $form = null;
     /** @var MapperException */
     protected $error = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
+    /** @var Lib\ShortMessage */
+    protected ?Lib\ShortMessage $record = null;
+    protected Lib\MessageForm $form;
+    protected CompositeAdapter $files;
+    protected UserDir $userDir;
 
     /**
      * @param mixed ...$constructParams
@@ -88,7 +86,7 @@ class Form extends AApiAuthModule
             $this->record = $record;
             $this->form->composeForm($record);
 
-        } catch (ConfException | FilesException | MapperException | PathsException | ShortException $ex) {
+        } catch (ConfException | FilesException | FormsException | MapperException | PathsException | ShortException $ex) {
             $this->error = $ex;
         }
     }

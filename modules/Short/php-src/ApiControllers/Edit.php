@@ -37,16 +37,12 @@ class Edit extends AApiAuthModule
 {
     use TWhereDir;
 
-    /** @var Lib\MessageForm */
-    protected $form = null;
     /** @var MapperException */
     protected $error = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var bool */
-    protected $isProcessed = false;
+    protected Lib\MessageForm $form;
+    protected CompositeAdapter $files;
+    protected UserDir $userDir;
+    protected bool $isProcessed = false;
 
     /**
      * @param mixed ...$constructParams

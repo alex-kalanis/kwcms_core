@@ -14,10 +14,8 @@ use kalanis\kw_cache\Interfaces;
  */
 class Formatted
 {
-    /** @var Interfaces\ICache */
-    protected $cache = null;
-    /** @var Interfaces\IFormat */
-    protected $format = null;
+    protected Interfaces\ICache $cache;
+    protected Interfaces\IFormat $format;
 
     public function __construct(Interfaces\ICache $cache, Interfaces\IFormat $format)
     {

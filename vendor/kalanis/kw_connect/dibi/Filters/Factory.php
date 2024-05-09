@@ -13,7 +13,7 @@ use kalanis\kw_connect\core\AFilterFactory;
  */
 class Factory extends AFilterFactory
 {
-    protected static $map = [
+    protected static array $map = [
         self::ACTION_EXACT => Exact::class,
         self::ACTION_CONTAINS => Contains::class,
         self::ACTION_FROM => From::class,

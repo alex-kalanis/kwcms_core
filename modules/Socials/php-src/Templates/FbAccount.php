@@ -9,5 +9,5 @@ namespace KWCMS\modules\Socials\Templates;
  */
 class FbAccount extends ATmplAccount
 {
-    protected $templateName = 'fb_account';
+    protected string $templateName = 'fb_account';
 }

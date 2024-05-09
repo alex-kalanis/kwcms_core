@@ -14,12 +14,11 @@ use kalanis\kw_confs\Interfaces\ILoader;
  */
 class Config
 {
-    /** @var ILoader */
-    protected static $loader = null;
+    protected static ?ILoader $loader = null;
     /** @var array<string, array<string|int, string|int|float|bool|null>> */
-    protected static $configs = [];
+    protected static array $configs = [];
 
-    public static function init(ILoader $loader): void
+    public static function init(?ILoader $loader): void
     {
         static::$loader = $loader;
     }
@@ -31,6 +30,9 @@ class Config
      */
     public static function load(string $module, string $conf = ''): void
     {
+        if (!static::$loader) {
+            throw new ConfException('Set the loader first!');
+        }
         $data = static::$loader->load($module, $conf);
         if (!is_null($data)) {
             static::loadData($module, $data);

@@ -15,7 +15,7 @@ use kalanis\kw_confs\Interfaces\ILoader;
 class ClassLoader implements ILoader
 {
     /** @var IConf[] */
-    protected $confs = [];
+    protected array $confs = [];
 
     public function addClass(IConf $conf): self
     {

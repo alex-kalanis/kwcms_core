@@ -13,9 +13,9 @@ use KWCMS\modules\Socials\Templates;
  */
 class GithubAccount extends AAccount
 {
-    protected $site = 'github';
-    protected $accountSite = 'github_account';
-    protected $shortSite = 'gh_account';
+    protected string $site = 'github';
+    protected string $accountSite = 'github_account';
+    protected string $shortSite = 'gh_account';
 
     protected function getTemplate(): Templates\ATmplAccount
     {

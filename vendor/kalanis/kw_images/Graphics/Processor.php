@@ -17,8 +17,7 @@ class Processor
 {
     use TLang;
 
-    /** @var Format\Factory */
-    protected $factory = null;
+    protected Format\Factory $factory;
     /** @var resource|\GdImage|null */
     protected $resource = null;
 

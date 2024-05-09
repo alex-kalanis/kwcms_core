@@ -13,10 +13,10 @@ namespace kalanis\kw_accounts\Interfaces;
  */
 interface IProcessClasses
 {
-    const CLASS_UNKNOWN = 0;
-    const CLASS_MAINTAINER = 1;
-    const CLASS_ADMIN = 2;
-    const CLASS_USER = 3;
+    public const CLASS_UNKNOWN = 0;
+    public const CLASS_MAINTAINER = 1;
+    public const CLASS_ADMIN = 2;
+    public const CLASS_USER = 3;
 
     /**
      * @return array<int, string>

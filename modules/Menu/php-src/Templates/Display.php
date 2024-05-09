@@ -13,11 +13,11 @@ use kalanis\kw_templates\TemplateException;
  */
 class Display extends ATemplate
 {
-    protected $moduleName = 'Menu';
-    protected $templateName = 'item';
+    protected string $moduleName = 'Menu';
+    protected string $templateName = 'item';
 
     /* Which styles are available */
-    protected static $styles = [
+    protected static array $styles = [
         'free',
         'head',
         'item',

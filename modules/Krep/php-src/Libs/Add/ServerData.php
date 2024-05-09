@@ -18,7 +18,7 @@ use KWCMS\modules\Krep\Libs\ModuleException;
 class ServerData
 {
     /** @var IEntry[] */
-    protected $in = [];
+    protected array $in = [];
 
     public function setInputs(IFiltered $filtered)
     {

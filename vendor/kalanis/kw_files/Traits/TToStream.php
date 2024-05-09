@@ -24,11 +24,11 @@ trait TToStream
     protected function toStream(string $target, $content)
     {
         if (is_null($content)) {
-            throw new FilesException($this->getLang()->flCannotLoadFile($target));
+            throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
         } elseif (is_bool($content)) {
-            throw new FilesException($this->getLang()->flCannotLoadFile($target));
+            throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
         } elseif (is_object($content)) {
-            throw new FilesException($this->getLang()->flCannotLoadFile($target));
+            throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
         } elseif (is_resource($content)) {
             rewind($content);
             return $content;
@@ -37,16 +37,15 @@ trait TToStream
             if (false === $handle) {
                 // @codeCoverageIgnoreStart
                 // must die something with stream reading
-                throw new FilesException($this->getLang()->flCannotLoadFile($target));
+                throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
             }
             // @codeCoverageIgnoreEnd
             if (false === fwrite($handle, strval($content))) {
                 // @codeCoverageIgnoreStart
                 // must die something with stream reading
-                throw new FilesException($this->getLang()->flCannotLoadFile($target));
+                throw new FilesException($this->getFlLang()->flCannotLoadFile($target));
             }
             // @codeCoverageIgnoreEnd
-            rewind($handle);
             return $handle;
         }
     }

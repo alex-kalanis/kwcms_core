@@ -15,10 +15,8 @@ use kalanis\kw_routed_paths\Support;
  */
 class Request extends ASource
 {
-    /** @var string */
-    protected $requestUri = '';
-    /** @var string|null */
-    protected $virtualDir = '';
+    protected string $requestUri = '';
+    protected ?string $virtualDir = '';
 
     /**
      * @param string $requestUri

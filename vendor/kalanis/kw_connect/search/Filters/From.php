@@ -12,7 +12,7 @@ class From extends AType
     public function setFiltering(string $colName, $value)
     {
         if ('' !== $value) {
-            $this->search->from($colName, $value, false);
+            $this->getSource()->from($colName, $value, false);
         }
         return $this;
     }

@@ -12,8 +12,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class DummyTemplate extends ATemplate
 {
-    protected $moduleName = 'Admin';
-    protected $templateName = 'dummy';
+    protected string $moduleName = 'Admin';
+    protected string $templateName = 'dummy';
 
     protected function fillInputs(): void
     {

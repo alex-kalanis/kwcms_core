@@ -14,14 +14,8 @@ use kalanis\kw_connect\core\Interfaces\IFilterType;
  */
 abstract class AType implements IFilterType
 {
-    /** @var FilteringArrays */
-    protected $dataSource;
+    protected ?FilteringArrays $dataSource = null;
 
-    /**
-     * @param FilteringArrays $dataSource
-     * @throws ConnectException
-     * @return $this
-     */
     public function setDataSource($dataSource)
     {
         if (!$dataSource instanceof FilteringArrays) {
@@ -34,6 +28,18 @@ abstract class AType implements IFilterType
 
     public function getDataSource()
     {
+        return $this->dataSource;
+    }
+
+    /**
+     * @throws ConnectException
+     * @return FilteringArrays
+     */
+    public function getSource(): FilteringArrays
+    {
+        if (!$this->dataSource) {
+            throw new ConnectException('Set the datasource first!');
+        }
         return $this->dataSource;
     }
 }

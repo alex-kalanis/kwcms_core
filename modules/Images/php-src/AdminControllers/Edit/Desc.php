@@ -21,10 +21,8 @@ use KWCMS\modules\Images\Forms;
  */
 class Desc extends AEdit
 {
-    /** @var string */
-    protected $fileName = '';
-    /** @var Forms\DescForm */
-    protected $descForm = null;
+    protected string $fileName = '';
+    protected Forms\DescForm $descForm;
 
     public function __construct(...$constructParams)
     {
@@ -38,11 +36,11 @@ class Desc extends AEdit
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $this->fileName = strval($this->getFromParam('name'));
-            $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+            $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
             $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->descForm->composeForm($libAction->readDesc(

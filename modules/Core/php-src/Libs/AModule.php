@@ -20,9 +20,9 @@ use kalanis\kw_modules\Interfaces\IModule;
 abstract class AModule implements IModule
 {
     /** @var IFiltered|null */
-    protected $inputs = null;
+    protected ?IFiltered $inputs = null;
     /** @var array<int|string, bool|float|int|string|array<int|string>> */
-    protected $params = [];
+    protected array $params = [];
 
     // enable if you do not use DI and want just pass params into modules
 //    abstract public function __construct(...$constructParams);

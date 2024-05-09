@@ -16,16 +16,13 @@ use KWCMS\modules\Images\Interfaces\IProcessFiles;
  */
 class ProcessFile implements IProcessFiles
 {
-    /** @var Content\BasicOperations */
-    protected $libOper = null;
-    /** @var Content\ImageUpload */
-    protected $libUpload = null;
-    /** @var Content\Images */
-    protected $libImages = null;
+    protected Content\BasicOperations $libOper;
+    protected Content\ImageUpload $libUpload;
+    protected Content\Images $libImages;
     /** @var string[] */
-    protected $userDir = [];
+    protected array $userDir = [];
     /** @var string[] */
-    protected $currentDir = [];
+    protected array $currentDir = [];
 
     /**
      * @param Content\BasicOperations $libOper

@@ -14,14 +14,13 @@ use kalanis\kw_forms\Interfaces\ITimeout;
  */
 class Timeout implements ITimeout
 {
-    const CAPTCHA_TIME = 'captchaTime';
+    public const CAPTCHA_TIME = 'captchaTime';
 
-    /** @var ArrayAccess */
-    protected $session = null;
+    protected ArrayAccess $session;
     /** @var int When ends time of pass */
-    protected $time = 0;
+    protected int $time = 0;
     /** @var int How log interval is preset after correct response */
-    protected $timeout = 0;
+    protected int $timeout = 0;
 
     public function __construct(ArrayAccess &$session, int $timeout = 0)
     {

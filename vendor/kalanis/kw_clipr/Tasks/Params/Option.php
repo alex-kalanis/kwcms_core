@@ -9,20 +9,15 @@ namespace kalanis\kw_clipr\Tasks\Params;
  */
 class Option
 {
-    /** @var string */
-    protected $variable = '';
-    /** @var string */
-    protected $cliKey = '';
-    /** @var string|null */
-    protected $match = '';
+    protected string $variable = '';
+    protected string $cliKey = '';
+    protected ?string $match = null;
     /** @var mixed */
     protected $defaultValue = null;
     /** @var mixed */
     protected $value = null;
-    /** @var string|null */
-    protected $short = null;
-    /** @var string */
-    protected $description = '';
+    protected ?string $short = null;
+    protected string $description = '';
 
     /**
      * @param string $variable

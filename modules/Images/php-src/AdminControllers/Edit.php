@@ -5,10 +5,12 @@ namespace KWCMS\modules\Images\AdminControllers;
 
 use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_address_handler\Forward;
+use kalanis\kw_address_handler\HandlerException;
 use kalanis\kw_address_handler\Sources\ServerRequest;
 use kalanis\kw_files\Access;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_forms\Exceptions\FormsException;
+use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
@@ -25,6 +27,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\ImagesTranslations;
 use KWCMS\modules\Images\Lib;
 use KWCMS\modules\Images\Forms;
 use KWCMS\modules\Images\Templates;
@@ -43,34 +46,22 @@ class Edit extends AAuthModule implements IHasTitle
     use TWhereDir;
     use TFilesDirs;
 
-    /** @var string */
-    protected $fileName = '';
-    /** @var Access\CompositeAdapter */
-    protected $files = null;
-    /** @var Forms\FileRenameForm */
-    protected $renameForm = null;
-    /** @var Forms\DescForm */
-    protected $descForm = null;
-    /** @var Forms\FileThumbForm */
-    protected $thumbForm = null;
-    /** @var Forms\FileActionForm */
-    protected $moveForm = null;
-    /** @var Forms\FileActionForm */
-    protected $copyForm = null;
-    /** @var Forms\FileThumbForm */
-    protected $primaryForm = null;
-    /** @var Forms\FileDeleteForm */
-    protected $deleteForm = null;
-    /** @var Lib\ProcessFile */
-    protected $libAction = null;
-    /** @var UserDir */
-    protected $userDir = null;
-    /** @var ITree */
-    protected $tree = null;
-    /** @var Forward */
-    protected $forward = null;
-    /** @var bool */
-    protected $redirect = false;
+    protected string $fileName = '';
+    protected Access\CompositeAdapter $files;
+    protected Forms\FileRenameForm $renameForm;
+    protected Forms\DescForm $descForm;
+    protected Forms\FileThumbForm $thumbForm;
+    protected Forms\FileActionForm $moveForm;
+    protected Forms\FileActionForm $copyForm;
+    protected Forms\FileThumbForm $primaryForm;
+    protected Forms\FileDeleteForm $deleteForm;
+    protected Lib\ProcessFile $libAction;
+    protected UserDir $userDir;
+    protected ITree $tree;
+    protected Forward $forward;
+    protected bool $redirect = false;
+
+    protected $constructParams = [];
 
     /**
      * @param mixed ...$constructParams
@@ -92,6 +83,12 @@ class Edit extends AAuthModule implements IHasTitle
         $this->tree = new DataSources\Files($this->files);
         $this->userDir = new UserDir(new Lib\Translations());
         $this->forward = new Forward();
+        $this->initLibAction(new images_factory(
+            $this->files,
+            null,
+            new ImagesTranslations()
+        ));
+        $this->constructParams = $constructParams;
     }
 
     public function allowedAccessClasses(): array
@@ -107,10 +104,10 @@ class Edit extends AAuthModule implements IHasTitle
             $this->fileName = strval($this->getFromParam('name'));
             // no name or invalid file name -> redirect!
 
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
-            $this->libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+            $this->libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
             $this->checkExistence($this->libAction->getLibImage(), array_merge($userPath, $currentPath), $this->fileName);
 
             $this->tree->wantDeep(true);
@@ -149,7 +146,7 @@ class Edit extends AAuthModule implements IHasTitle
                 ->setForward($this->links->linkVariant('images/edit?name='. $this->fileName));
             $this->primaryForm->composeForm($this->forward->getLink());
 
-        } catch (ImagesException | FilesException | PathsException $ex) {
+        } catch (ImagesException | FilesException | FormsException | HandlerException | PathsException $ex) {
             $this->redirect = true;
             $this->error = $ex;
         }

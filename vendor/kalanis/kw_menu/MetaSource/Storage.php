@@ -28,11 +28,9 @@ class Storage implements IMetaSource
     use TToString;
 
     /** @var string[] */
-    protected $key = [];
-    /** @var IStorage */
-    protected $storage = null;
-    /** @var IMetaFileParser */
-    protected $parser = null;
+    protected array $key = [];
+    protected IStorage $storage;
+    protected IMetaFileParser $parser;
 
     /**
      * @param IStorage $storage

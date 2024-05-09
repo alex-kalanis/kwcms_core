@@ -13,8 +13,8 @@ use KWCMS\modules\Core\Libs\ATemplate;
  */
 class Template extends ATemplate
 {
-    protected $moduleName = 'Image';
-    protected $templateName = 'image';
+    protected string $moduleName = 'Image';
+    protected string $templateName = 'image';
 
     protected function fillInputs(): void
     {

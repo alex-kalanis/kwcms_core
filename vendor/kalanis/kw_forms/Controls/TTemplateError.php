@@ -10,8 +10,7 @@ namespace kalanis\kw_forms\Controls;
 trait TTemplateError
 {
     // 1 text
-    /** @var string */
-    protected $templateError = '%s';
+    protected string $templateError = '%s';
 
     public function getTemplateError(): string
     {

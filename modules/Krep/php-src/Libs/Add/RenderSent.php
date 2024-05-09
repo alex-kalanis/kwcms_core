@@ -8,8 +8,7 @@ use KWCMS\modules\Krep\Libs;
 
 class RenderSent implements Libs\Interfaces\IContent
 {
-    /** @var Libs\Shared\Links */
-    protected $links = null;
+    protected Libs\Shared\Links $links;
 
     public function __construct(Libs\Shared\Links $links)
     {

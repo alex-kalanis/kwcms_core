@@ -21,8 +21,7 @@ use KWCMS\modules\Images\Forms;
  */
 class Delete extends AEdit
 {
-    /** @var Forms\FileDeleteForm */
-    protected $deleteForm = null;
+    protected Forms\FileDeleteForm $deleteForm;
 
     public function __construct(...$constructParams)
     {
@@ -36,14 +35,14 @@ class Delete extends AEdit
         $this->userDir->setUserPath($this->user->getDir());
 
         try {
-            $userPath = array_values($this->userDir->process()->getFullPath()->getArray());
-            $currentPath = Stuff::linkToArray($this->getWhereDir());
+            $userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
+            $currentPath = array_filter(Stuff::linkToArray($this->getWhereDir()));
 
             $fileName = strval($this->getFromParam('name'));
             $this->deleteForm->composeForm('#');
             $this->deleteForm->setInputs(new InputVarsAdapter($this->inputs));
             if ($this->deleteForm->process()) {
-                $libAction = $this->getLibFileAction($this->files, $userPath, $currentPath);
+                $libAction = $this->getLibFileAction($this->constructParams, $userPath, $currentPath);
                 $this->checkExistence($libAction->getLibImage(), array_merge($userPath, $currentPath), $fileName);
                 $this->isProcessed = $libAction->deleteFile($this->getWhereDir() . DIRECTORY_SEPARATOR . $fileName);
             }

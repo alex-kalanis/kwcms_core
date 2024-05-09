@@ -18,12 +18,11 @@ use kalanis\kw_modules\Output;
  */
 class Module
 {
-    /** @var IFiltered|null */
-    protected $inputs = null;
+    protected IFiltered $inputs;
     /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected $constructParams = [];
-    /** @var Interfaces\IModule|null */
-    protected $module = null;
+    protected array $constructParams = [];
+    /** @var Interfaces\IModule */
+    protected ?Interfaces\IModule $module = null;
 
     /**
      * @param IFiltered $inputs
