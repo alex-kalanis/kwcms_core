@@ -68,7 +68,7 @@ class ImageUpload
     {
         $fullPath = array_values($wantedPath);
         // check file
-        $this->graphics->setSizes($this->config)->check($tempPath);
+        $this->graphics->setSizes($this->config)->check($tempPath, $fullPath);
 
         // resize if set
         if ($wantResize) {
