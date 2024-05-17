@@ -72,6 +72,8 @@ class Single extends AModule
         $this->libImages = (new images_factory(
             $this->files,
             $this->fileMime,
+            null,
+            null,
             new ImagesTranslations()
         ))->getImages($constructParams);
         $this->arrPath = new ArrayPath();

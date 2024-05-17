@@ -4,6 +4,7 @@ namespace kalanis\kw_images\Content;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_images\Configs;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\ISizes;
@@ -25,13 +26,21 @@ class ImageUpload
     protected Sources\Image $imageSource;
     protected ISizes $config;
     protected Images $images;
+    protected Configs\ProcessorConfig $procConfig;
 
-    public function __construct(Graphics $graphics, Sources\Image $libImage, ISizes $config, Images $images)
+    public function __construct(
+        Graphics $graphics,
+        Sources\Image $libImage,
+        ISizes $config,
+        Images $images,
+        Configs\ProcessorConfig $procConfig
+    )
     {
         $this->graphics = $graphics;
         $this->imageSource = $libImage;
         $this->config = $config;
         $this->images = $images;
+        $this->procConfig = $procConfig;
     }
 
     /**
@@ -44,7 +53,9 @@ class ImageUpload
     public function findFreeName(array $wantedPath, string $name): string
     {
         $name = Stuff::canonize($name);
-        $ext = Stuff::fileExt($name);
+        $ext = $this->procConfig->canLimitExt() && !empty($this->procConfig->getDefaultExt())
+            ? $this->procConfig->getDefaultExt()
+            : Stuff::fileExt($name);
         if (0 < mb_strlen($ext)) {
             $ext = IPaths::SPLITTER_DOT . $ext;
         }
@@ -56,22 +67,20 @@ class ImageUpload
      * @param string[] $wantedPath where we want to store the file
      * @param string $tempPath where the file is accessible after upload
      * @param string $description
-     * @param bool $hasThumb
-     * @param bool $wantResize
      * @throws FilesException
      * @throws ImagesException
      * @throws MimeException
      * @throws PathsException
      * @return bool
      */
-    public function process(array $wantedPath, string $tempPath = '', string $description = '', bool $hasThumb = true, bool $wantResize = false): bool
+    public function process(array $wantedPath, string $tempPath = '', string $description = ''): bool
     {
         $fullPath = array_values($wantedPath);
         // check file
         $this->graphics->setSizes($this->config)->check($tempPath, $fullPath);
 
         // resize if set
-        if ($wantResize) {
+        if ($this->procConfig->canLimitSize() && !empty($this->config->getMaxInWidth()) && !empty($this->config->getMaxInHeight())) {
             $this->graphics->setSizes($this->config)->resize($tempPath, $fullPath);
         }
 
@@ -81,7 +90,7 @@ class ImageUpload
 
         // thumbs
         $this->images->removeThumb($fullPath);
-        if ($hasThumb) {
+        if ($this->procConfig->hasThumb()) {
             $this->images->updateThumb($fullPath);
         }
 

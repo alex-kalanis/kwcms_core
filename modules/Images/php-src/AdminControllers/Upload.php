@@ -65,6 +65,8 @@ class Upload extends AAuthModule implements IHasTitle
         $this->initLibAction(new images_factory(
             $this->files,
             null,
+            null,
+            null,
             new ImagesTranslations()
         ));
         $this->constructParams = $constructParams;

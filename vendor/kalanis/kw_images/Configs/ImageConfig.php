@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_images\Graphics;
+namespace kalanis\kw_images\Configs;
 
 
 use kalanis\kw_images\Interfaces\ISizes;

@@ -77,6 +77,8 @@ class MediaRss extends AModule
         $this->sources = (new images_factory(
             $this->files,
             null,
+            null,
+            null,
             new ImagesTranslations()
         ))->getImages($constructParams);
 

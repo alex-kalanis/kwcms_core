@@ -6,6 +6,7 @@ namespace kalanis\kw_images\Access;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Extended\Config;
 use kalanis\kw_files\Extended\Processor;
+use kalanis\kw_images\Configs;
 use kalanis\kw_images\Content\BasicOperations;
 use kalanis\kw_images\Content\Dirs;
 use kalanis\kw_images\Content\Images;
@@ -30,16 +31,22 @@ class Factory
     use TLang;
 
     protected CompositeAdapter $composite;
+    protected Configs\ConfigFactory $configFactory;
+    protected Config $fileConfig;
     protected IMime $mime;
 
     public function __construct(
         CompositeAdapter $compositeAdapter,
         ?IMime $mime = null,
+        ?Configs\ConfigFactory $configFactory = null,
+        ?Config $fileConfig = null,
         ?IIMTranslations $imLang = null
     )
     {
         $this->setImLang($imLang);
         $this->composite = $compositeAdapter;
+        $this->configFactory = $configFactory ?: new Configs\ConfigFactory();
+        $this->fileConfig = $fileConfig ?: new Config();
         $this->mime = $mime ?: new Check\CustomList();
     }
 
@@ -49,7 +56,7 @@ class Factory
      */
     public function getOperations(array $params = []): BasicOperations
     {
-        $fileConf = (new Config())->setData($params);
+        $fileConf = $this->fileConfig->setData($params);
         return new BasicOperations(  // operations with images
             new Sources\Image($this->composite, $fileConf, $this->getImLang()),
             new Sources\Thumb($this->composite, $fileConf, $this->getImLang()),
@@ -64,7 +71,8 @@ class Factory
      */
     public function getDirs(array $params = []): Dirs
     {
-        $fileConf = (new Config())->setData($params);
+        $this->configFactory->setData($params);
+        $fileConf = $this->fileConfig->setData($params);
         return new Dirs(
             new Content\ImageSize(
                 new Graphics(
@@ -75,7 +83,7 @@ class Factory
                     $this->mime,
                     $this->getImLang()
                 ),
-                (new Graphics\ThumbConfig())->setData($params),
+                $this->configFactory->getThumb(),
                 new Sources\Image($this->composite, $fileConf, $this->getImLang()),
                 $this->getImLang()
             ),
@@ -94,7 +102,8 @@ class Factory
      */
     public function getImages(array $params = []): Images
     {
-        $fileConf = (new Config())->setData($params);
+        $this->configFactory->setData($params);
+        $fileConf = $this->fileConfig->setData($params);
         $image = new Sources\Image($this->composite, $fileConf, $this->getImLang());
         return new Images(
             new Content\ImageSize(
@@ -106,7 +115,7 @@ class Factory
                     $this->mime,
                     $this->getImLang()
                 ),
-                (new Graphics\ThumbConfig())->setData($params),
+                $this->configFactory->getThumb(),
                 $image,
                 $this->getImLang()
             ),
@@ -123,7 +132,8 @@ class Factory
      */
     public function getUpload(array $params = []): ImageUpload
     {
-        $fileConf = (new Config())->setData($params);
+        $this->configFactory->setData($params);
+        $fileConf = $this->fileConfig->setData($params);
         $graphics = new Graphics(
             new Graphics\Processor(
                 new Graphics\Format\Factory(),
@@ -136,18 +146,19 @@ class Factory
         return new ImageUpload(  // process uploaded images
             $graphics,
             $image,
-            (new Graphics\ImageConfig())->setData($params),
+            $this->configFactory->getImage(),
             new Images(
                 new Content\ImageSize(
                     $graphics,
-                    (new Graphics\ThumbConfig())->setData($params),
+                    $this->configFactory->getThumb(),
                     $image,
                     $this->getImLang()
                 ),
                 new Sources\Image($this->composite, $fileConf, $this->getImLang()),
                 new Sources\Thumb($this->composite, $fileConf, $this->getImLang()),
                 new Sources\Desc($this->composite, $fileConf, $this->getImLang())
-            )
+            ),
+            $this->configFactory->getProcessor()
         );
     }
 }

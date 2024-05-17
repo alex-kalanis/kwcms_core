@@ -85,6 +85,8 @@ class Dirlist extends AModule
         $this->libImages = (new images_factory(
             $this->files,
             null,
+            null,
+            null,
             new ImagesTranslations()
         ))->getImages($constructParams);
         $this->arrPath = new ArrayPath();

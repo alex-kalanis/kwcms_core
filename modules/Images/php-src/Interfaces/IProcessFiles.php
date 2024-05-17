@@ -19,7 +19,7 @@ use kalanis\kw_paths\PathsException;
 interface IProcessFiles
 {
     /**
-     * @param string $name
+     * @param string $name provided current name
      * @throws FilesException
      * @throws PathsException
      * @return string
@@ -27,9 +27,9 @@ interface IProcessFiles
     public function findFreeName(string $name): string;
 
     /**
-     * @param IFileEntry $file
-     * @param string $targetName
-     * @param string $description
+     * @param IFileEntry $file File which came from the client
+     * @param string $targetName Which name has been used for file
+     * @param string $description Description of image, empty will remove existing
      * @throws FilesException
      * @throws ImagesException
      * @throws MimeException

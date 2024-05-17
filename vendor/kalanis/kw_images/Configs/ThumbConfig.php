@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_images\Graphics;
+namespace kalanis\kw_images\Configs;
 
 
 use kalanis\kw_images\Interfaces\ISizes;
@@ -9,7 +9,7 @@ use kalanis\kw_images\Interfaces\ISizes;
 /**
  * Class ThumbConfig
  * File thumbnail configuration
- * @package kalanis\kw_images\Graphics
+ * @package kalanis\kw_images\Configs
  */
 class ThumbConfig implements ISizes
 {

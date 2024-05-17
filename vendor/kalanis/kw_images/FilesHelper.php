@@ -66,7 +66,7 @@ class FilesHelper
         return new Dirs(
             new Content\ImageSize(
                 new Graphics(new Graphics\Processor(new Graphics\Format\Factory(), $langIm), new CustomList(), $langIm),
-                (new Graphics\ThumbConfig())->setData($params),
+                (new Configs\ThumbConfig())->setData($params),
                 new Sources\Image($libProcess, $fileConf, $langIm),
                 $langIm
             ),
@@ -97,7 +97,7 @@ class FilesHelper
         return new Images(
             new Content\ImageSize(
                 new Graphics(new Graphics\Processor(new Graphics\Format\Factory(), $langIm), new CustomList(), $langIm),
-                (new Graphics\ThumbConfig())->setData($params),
+                (new Configs\ThumbConfig())->setData($params),
                 $image,
                 $langIm
             ),
@@ -127,18 +127,19 @@ class FilesHelper
         return new ImageUpload(  // process uploaded images
             $graphics,
             $image,
-            (new Graphics\ImageConfig())->setData($params),
+            (new Configs\ImageConfig())->setData($params),
             new Images(
                 new Content\ImageSize(
                     $graphics,
-                    (new Graphics\ThumbConfig())->setData($params),
+                    (new Configs\ThumbConfig())->setData($params),
                     $image,
                     $langIm
                 ),
                 new Sources\Image($libProcess, $fileConf, $langIm),
                 new Sources\Thumb($libProcess, $fileConf, $langIm),
                 new Sources\Desc($libProcess, $fileConf, $langIm)
-            )
+            ),
+            (new Configs\ProcessorConfig())->setData($params)
         );
     }
 }

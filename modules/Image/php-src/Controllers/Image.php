@@ -76,6 +76,8 @@ class Image extends AModule
         $this->sources = (new images_factory(
             (new files_factory(new FilesTranslations()))->getClass($constructParams),
             $this->mime,
+            null,
+            null,
             new ImagesTranslations()
         ))->getImages($constructParams);
 
