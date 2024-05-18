@@ -1,6 +1,8 @@
 DUMMY CONTENT FOR TESTING
 =========================
 
+------------------------
+
 <p style="text-align: center;">Welcome on these pages!</p>
 
  <h2 style="color: rgb(255, 0, 0);">NEWS !</h2>
@@ -9,4 +11,12 @@ Another data entry
 
 |||
 |:----|:----|
-| {SHORTM}count=2{/SHORTM} | {LANGS} |
+| {SHORT}count=2{/SHORT} | {LANGS} |
+
+
+Dalsi texty ktere se nikam nepropisou...
+
+* Protože máme load preview!
+* Ještě skrz markdown
+
+Jinak nic

@@ -207,6 +207,14 @@ try {
                 'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot()
 //                'path' => $systemPaths->getDocumentRoot() . $systemPaths->getPathToSystemRoot() . DIRECTORY_SEPARATOR . \kalanis\kw_paths\Interfaces\IPaths::DIR_USER
             ],
+            'images' => [
+                'want_limit_size' => true,
+                'want_limit_ext' => true,
+                'max_upload_width' => 8192,
+                'max_upload_height' => 8192,
+                'max_width' => 1024,
+                'max_height' => 1024,
+            ],
             'module_pedigree' => 'single',
         ]
     ]);

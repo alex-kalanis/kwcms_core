@@ -38,17 +38,26 @@ class Graphics
 
     /**
      * @param string $tempPath path to temp file
+     * @param string[] $realSourceName real file name for extension detection of source image
      * @throws ImagesException
+     * @throws MimeException
      * @return bool
      */
-    public function check(string $tempPath): bool
+    public function check(string $tempPath, array $realSourceName): bool
     {
         $this->getLibSizes();
         $size = @filesize($tempPath);
         if (false === $size) {
             throw new ImagesException($this->getImLang()->imImageSizeExists());
         }
-        if ($this->getLibSizes()->getMaxSize() < $size) {
+        if ($this->getLibSizes()->getMaxFileSize() < $size) {
+            throw new ImagesException($this->getImLang()->imImageSizeTooLarge());
+        }
+        $this->libGraphics->load($this->getType($realSourceName), $tempPath);
+        if ($this->getLibSizes()->getMaxInHeight() < $this->libGraphics->height()) {
+            throw new ImagesException($this->getImLang()->imImageSizeTooLarge());
+        }
+        if ($this->getLibSizes()->getMaxInWidth() < $this->libGraphics->width()) {
             throw new ImagesException($this->getImLang()->imImageSizeTooLarge());
         }
         return true;
@@ -69,9 +78,9 @@ class Graphics
         $this->libGraphics->load($this->getType($realSourceName), $tempPath);
         $sizes = $this->calculateSize(
             $this->libGraphics->width(),
-            $this->getLibSizes()->getMaxWidth(),
+            $this->getLibSizes()->getMaxStoreWidth(),
             $this->libGraphics->height(),
-            $this->getLibSizes()->getMaxHeight()
+            $this->getLibSizes()->getMaxStoreHeight()
         );
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
         $this->libGraphics->save($this->getType($realTargetName), $tempPath);

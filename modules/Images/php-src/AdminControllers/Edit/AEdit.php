@@ -69,6 +69,8 @@ abstract class AEdit extends AAuthModule
         $this->initLibAction(new images_factory(
             $this->files,
             null,
+            null,
+            null,
             new ImagesTranslations()
         ));
         $this->constructParams = $constructParams;
