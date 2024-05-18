@@ -8,6 +8,7 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\Access\Factory as access_factory;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_images\Configs;
 use kalanis\kw_images\Graphics;
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Sources;
@@ -85,7 +86,7 @@ class Watermark extends AModule
             new Libs\ImageProcessor(
                 new Graphics\Format\Factory(), $lang
             ),
-            (new Graphics\ImageConfig())->setData($params),
+            (new Configs\ImageConfig())->setData($params),
             new Sources\Image($files, (new \kalanis\kw_files\Extended\Config())->setData($params)),
             $mime,
             $lang

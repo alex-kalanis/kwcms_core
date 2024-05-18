@@ -30,7 +30,7 @@ class Video extends Dirlist
     protected ?Handler $currentPageHandler;
     protected Templates\Player $templatePlayer;
     protected IMime $fileMime;
-    protected string $fileToPlay;
+    protected string $fileToPlay = '';
 
     public function __construct(...$constructParams)
     {
@@ -140,7 +140,7 @@ class Video extends Dirlist
     public function output(): Output\AOutput
     {
         $out = new Output\Html();
-        if ($this->fileToPlay) {
+        if (!empty($this->fileToPlay)) {
             $this->templatePlayer->setTemplateName('player');
             $path = array_merge($this->path, [$this->fileToPlay]);
             $thumb = $this->getThumb($path, Stuff::fileExt($this->fileToPlay));
