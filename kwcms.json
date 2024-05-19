@@ -30,7 +30,7 @@
     "alex-kalanis/kw_tree": "dev-master",
     "ext-mbstring": "*",
     "ext-json": "*",
-    "php": ">=7.2.0"
+    "php": ">=7.4.0"
   },
   "suggest": {
   },

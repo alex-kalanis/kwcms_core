@@ -69,7 +69,7 @@ class Watermark extends AModule
         );
         $libProcess = (new access_factory(new FilesTranslations()))->getClass($constructParams);
         $this->mime = $this->getMimeLib($libProcess);
-        $this->processor = $this->getFillLib($libProcess, $this->mime);
+        $this->processor = $this->getFillLib($libProcess, $this->mime, $constructParams);
     }
 
     /**

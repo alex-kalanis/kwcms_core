@@ -67,7 +67,7 @@ class Logo extends AModule
         );
         $files = (new Factory(new FilesTranslations()))->getClass($constructParams);
         $this->mime = (new Check\Factory())->getLibrary(null);
-        $this->processor = $this->getFillLib($files);
+        $this->processor = $this->getFillLib($files, $constructParams);
     }
 
     /**

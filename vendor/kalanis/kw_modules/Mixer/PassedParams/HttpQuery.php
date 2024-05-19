@@ -14,6 +14,6 @@ class HttpQuery extends APassedParam
 {
     public function change(string $content): array
     {
-        return Stuff::httpStringIntoArray($content);
+        return Stuff::httpStringIntoArray(html_entity_decode($content));
     }
 }

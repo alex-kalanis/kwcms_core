@@ -8,7 +8,9 @@ use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_paths\PathsException;
 use KWCMS\modules\Short\ShortException;
 
@@ -71,6 +73,22 @@ class MessageAdapter
         $mapper->setAccessing($this->files);
         $mapper->setCombinedPath($this->targetPath);
         return $this->record;
+    }
+
+    /**
+     * @throws FilesException
+     * @throws MapperException
+     * @throws PathsException
+     * @throws ShortException
+     * @return ShortMessage|null
+     */
+    public function getLast(): ?ShortMessage
+    {
+        $search = new Search($this->getRecord());
+        $search->orderBy('id', IQueryBuilder::ORDER_DESC);
+        $search->limit(1);
+        $results = $search->getResults();
+        return empty($results) ? null : reset($results);
     }
 
     /**

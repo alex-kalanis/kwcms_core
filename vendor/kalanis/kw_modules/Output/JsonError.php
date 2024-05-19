@@ -20,6 +20,16 @@ class JsonError extends AOutput
      */
     public function setContent($code, string $message): self
     {
+        return $this->setContentStructure($code, $message);
+    }
+
+    /**
+     * @param string|int $code
+     * @param string|int|float|array<string|int|float|array<string|int|float>> $message
+     * @return $this
+     */
+    public function setContentStructure($code, $message): self
+    {
         $this->content = compact('code', 'message');
         return $this;
     }

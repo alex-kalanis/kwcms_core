@@ -50,7 +50,7 @@ class Add extends AAuthModule implements IHasTitle
     protected Lib\MessageForm $form;
     protected UserDir $userDir;
     protected Forward $forward;
-    protected bool $isProcessed = false;
+    protected ?int $newEntryNumber = null;
 
     /**
      * @param mixed ...$constructParams
@@ -99,7 +99,10 @@ class Add extends AAuthModule implements IHasTitle
                 $ex = new DataExchange($record);
                 if ((bool)$ex->import($this->form->getValues())) {
                     $record->date = time();
-                    $this->isProcessed = $record->save(true);
+                    if ($record->save(true)) {
+                        $last = $adapter->getLast();
+                        $this->newEntryNumber = $last?->id;
+                    }
                 }
             }
         } catch (ConfException | FilesException | FormsException | MapperException | PathsException | ShortException $ex) {
@@ -125,14 +128,15 @@ class Add extends AAuthModule implements IHasTitle
             if ($this->error) {
                 Notification::addError($this->error->getMessage());
             }
-            if ($this->isProcessed) {
-                Notification::addSuccess(Lang::get('short.updated'));
+            if ($this->newEntryNumber) {
+                Notification::addSuccess(Lang::get('short.added'));
+                $this->forward->setForward($this->links->linkVariant('short/edit/?id=' . $this->newEntryNumber));
             }
-            $this->forward->forward($this->isProcessed);
+            $this->forward->forward(boolval($this->newEntryNumber));
             $editTmpl = new Lib\EditTemplate();
             return $out->setContent($this->outModuleTemplate($editTmpl->setData($this->form, Lang::get('short.add_record'))->render()));
-        } catch (FormsException | NotifyException $ex) {
-            return $out->setContent($this->outModuleTemplate($this->error->getMessage() . nl2br($this->error->getTraceAsString())));
+        } catch (FormsException | NotifyException | PathsException $ex) {
+            return $out->setContent($this->outModuleTemplate($ex->getMessage() . nl2br($ex->getTraceAsString())));
         }
     }
 
@@ -147,7 +151,7 @@ class Add extends AAuthModule implements IHasTitle
             return $out->setContent($this->error->getCode(), $this->error->getMessage());
         } elseif (!$this->form->isValid()) {
             $out = new Output\JsonError();
-            return $out->setContent(1, $this->form->renderErrorsArray());
+            return $out->setContentStructure(1, $this->form->renderErrorsArray());
         } else {
             $out = new Output\Json();
             return $out->setContent(['Success']);

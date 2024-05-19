@@ -21,6 +21,7 @@ $lang = [
         'short.message'=>'Message',
         'short.date'=>'Date',
         'short.actions'=>'Actions',
+        'short.added'=>'Added',
         'short.updated'=>'Updated',
         'short.removed'=>'Removed',
 
@@ -44,6 +45,7 @@ $lang = [
         'short.message'=>'Message',
         'short.date'=>'Date',
         'short.actions'=>'Actions',
+        'short.added'=>'Ajout&#x00E9;',
         'short.updated'=>'Actualis&#x00E9;',
         'short.removed'=>'Retri&#x00E9;',
 
@@ -67,6 +69,7 @@ $lang = [
         'short.message'=>'Zpr&#x00E1;va',
         'short.date'=>'Datum',
         'short.actions'=>'Operace',
+        'short.added'=>'P&#x0159;id&#x00E1;no',
         'short.updated'=>'Upraveno',
         'short.removed'=>'Smaz&#x00E1;no',
 
