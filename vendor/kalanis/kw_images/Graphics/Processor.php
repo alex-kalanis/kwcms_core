@@ -5,6 +5,7 @@ namespace kalanis\kw_images\Graphics;
 
 use kalanis\kw_images\ImagesException;
 use kalanis\kw_images\Interfaces\IIMTranslations;
+use kalanis\kw_images\Interfaces\IExifConstants;
 use kalanis\kw_images\Traits\TLang;
 
 
@@ -37,6 +38,8 @@ class Processor
             && function_exists('imagecopyresampled')
             && function_exists('imagesx')
             && function_exists('imagesy')
+            && function_exists('imagerotate')
+            && function_exists('imageflip')
         )) {
             // @codeCoverageIgnoreStart
             throw new ImagesException($this->getImLang()->imGdLibNotPresent());
@@ -104,7 +107,7 @@ class Processor
      * @throws ImagesException
      * @return $this
      */
-    public function resample(?int $width = null, ?int $height = null)
+    public function resample(?int $width = null, ?int $height = null): self
     {
         $fromWidth = $this->width();
         $fromHeight = $this->height();
@@ -119,6 +122,53 @@ class Processor
         // @codeCoverageIgnoreEnd
         imagedestroy($this->getResource());
         $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * Orientate image by passed info
+     * @param int $currentOrientation
+     * @throws ImagesException
+     * @return $this
+     * @link https://jdhao.github.io/2019/07/31/image_rotation_exif_info/#exif-orientation-flag
+     * @link https://stackoverflow.com/questions/7489742/php-read-exif-data-and-adjust-orientation
+     */
+    public function orientate(int $currentOrientation): self
+    {
+        $image = $this->resource; // normal
+        if (in_array($currentOrientation, [
+            IExifConstants::EXIF_ORIENTATION_UPSIDE_DOWN,
+            IExifConstants::EXIF_ORIENTATION_MIRROR_UPSIDE_DOWN,
+        ])) {
+            $image = imagerotate($this->resource, 180, 0);
+        }
+        if (in_array($currentOrientation, [
+            IExifConstants::EXIF_ORIENTATION_ON_LEFT,
+            IExifConstants::EXIF_ORIENTATION_MIRROR_ON_LEFT,
+        ])) {
+            $image = imagerotate($this->resource, 270, 0);
+        }
+        if (in_array($currentOrientation, [
+            IExifConstants::EXIF_ORIENTATION_ON_RIGHT,
+            IExifConstants::EXIF_ORIENTATION_MIRROR_ON_RIGHT,
+        ])) {
+            $image = imagerotate($this->resource, 90, 0);
+        }
+        if (empty($image)) {
+            // @codeCoverageIgnoreStart
+            throw new ImagesException($this->getImLang()->imImageCannotOrientate());
+        }
+        // @codeCoverageIgnoreEnd
+        if (in_array($currentOrientation, [
+            IExifConstants::EXIF_ORIENTATION_MIRROR_SIMPLE,
+            IExifConstants::EXIF_ORIENTATION_MIRROR_ON_LEFT,
+            IExifConstants::EXIF_ORIENTATION_MIRROR_ON_RIGHT,
+            IExifConstants::EXIF_ORIENTATION_MIRROR_UPSIDE_DOWN,
+        ])) {
+            imageflip($image, IMG_FLIP_HORIZONTAL);
+        }
+        $this->resource = $image;
+
         return $this;
     }
 

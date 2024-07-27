@@ -18,6 +18,11 @@ class ImagesTranslations implements IIMTranslations
         return Lang::get('core.images.no_gd_library');
     }
 
+    public function imRotateLibNotPresent(): string
+    {
+        return Lang::get('core.images.no_rotate_library');
+    }
+
     public function imImageMagicLibNotPresent(): string
     {
         return Lang::get('core.images.no_imagemagick');
@@ -66,6 +71,11 @@ class ImagesTranslations implements IIMTranslations
     public function imImageCannotResample(): string
     {
         return Lang::get('core.images.image_cannot_be_resampled');
+    }
+
+    public function imImageCannotOrientate(): string
+    {
+        return Lang::get('core.images.image_cannot_orientate');
     }
 
     public function imImageCannotCreateEmpty(): string

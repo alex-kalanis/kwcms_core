@@ -45,9 +45,9 @@ class ProcessFile implements IProcessFiles
         return $this->libUpload->findFreeName(array_merge($this->userDir, $this->currentDir), $name);
     }
 
-    public function uploadFile(IFileEntry $file, string $targetName, string $description): bool
+    public function uploadFile(IFileEntry $file, string $targetName, string $description, bool $orientate): bool
     {
-        return $this->libUpload->process(array_merge($this->userDir, $this->currentDir, [Stuff::filename($targetName)]), $file->getTempName(), $description);
+        return $this->libUpload->process(array_merge($this->userDir, $this->currentDir, [Stuff::filename($targetName)]), $file->getTempName(), $description, $orientate);
     }
 
     public function readCreated(string $path, string $format = 'Y-m-d H:i:s'): string

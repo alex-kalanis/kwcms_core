@@ -11,6 +11,8 @@ interface IIMTranslations
 {
     public function imGdLibNotPresent(): string;
 
+    public function imRotateLibNotPresent(): string;
+
     public function imImageMagicLibNotPresent(): string;
 
     public function imCannotCreateFromResource(): string;
@@ -30,6 +32,8 @@ interface IIMTranslations
     public function imSizesNotSet(): string;
 
     public function imImageCannotResample(): string;
+
+    public function imImageCannotOrientate(): string;
 
     public function imImageCannotCreateEmpty(): string;
 

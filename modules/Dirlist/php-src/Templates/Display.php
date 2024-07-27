@@ -24,8 +24,9 @@ class Display extends ATemplate
     /* Which styles are available and if they want solo rows */
     protected static array $styles = [ # usage of one line - one file (for count cols)
         'icon' => false,
+        'named' => false,
         'compact' => false,
-        'list' => true
+        'list' => true,
     ];
 
     public function setTemplateName(string $name): self

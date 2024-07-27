@@ -28,6 +28,7 @@ class FileUploadForm extends Form
         $input->addRule(IRules::FILE_RECEIVED, Lang::get('images.must_be_sent'));
         $input->addRule(IRules::IS_IMAGE, Lang::get('images.must_be_sent'));
         $this->addText('description', Lang::get('images.description'));
+        $this->addCheckbox('rotate', Lang::get('images.rotate'));
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
         $this->addReset('resetFile', Lang::get('dashboard.button_reset'));
         return $this;

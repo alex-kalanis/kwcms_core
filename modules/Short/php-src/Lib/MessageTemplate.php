@@ -24,9 +24,9 @@ class MessageTemplate extends ATemplate
         $this->addInput('{MESSAGE}');
     }
 
-    public function setData(int $date, string $title, string $message): self
+    public function setData(int $date, string $title, string $message, string $format): self
     {
-        $this->updateItem('{DATE}', date(Config::get('Short', 'date', 'Y-m-d'), $date));
+        $this->updateItem('{DATE}', date($format, $date));
         $this->updateItem('{TITLE}', $title);
         $this->updateItem('{MESSAGE}', $message);
         return $this;

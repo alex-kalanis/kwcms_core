@@ -158,7 +158,19 @@ class Factory
                 new Sources\Thumb($this->composite, $fileConf, $this->getImLang()),
                 new Sources\Desc($this->composite, $fileConf, $this->getImLang())
             ),
-            $this->configFactory->getProcessor()
+            $this->configFactory->getProcessor(),
+            new Content\ImageOrientate(
+                $graphics,
+                $this->configFactory->getImage(),
+                $image,
+                $this->getImLang()
+            ),
+            new Content\ImageSize(
+                $graphics,
+                $this->configFactory->getImage(),
+                $image,
+                $this->getImLang()
+            ),
         );
     }
 }

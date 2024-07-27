@@ -1,8 +1,9 @@
 <?php
 
-namespace KWCMS\modules\Image\Controllers;
+namespace KWCMS\modules\Image\AdminControllers;
 
 
+use kalanis\kw_accounts\Interfaces\IProcessClasses;
 use kalanis\kw_confs\ConfException;
 use kalanis\kw_confs\Config;
 use kalanis\kw_files\Access\Factory as files_factory;
@@ -11,6 +12,7 @@ use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_images\Access\Factory as images_factory;
 use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\ImagesException;
+use kalanis\kw_input\Simplified\SessionAdapter;
 use kalanis\kw_langs\Lang;
 use kalanis\kw_langs\LangException;
 use kalanis\kw_mime\Check;
@@ -23,8 +25,10 @@ use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_routed_paths\StoreRouted;
-use kalanis\kw_user_paths\InnerLinks;
-use KWCMS\modules\Core\Libs\AModule;
+use kalanis\kw_tree_controls\TWhereDir;
+use kalanis\kw_user_paths\UserDir;
+use KWCMS\modules\Admin\Shared\ChDirTranslations;
+use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
 use KWCMS\modules\Core\Libs\ImagesTranslations;
@@ -37,15 +41,18 @@ use KWCMS\modules\Layout\Controllers\Layout;
  * @package KWCMS\modules\Image\Controllers
  * Users images - controller
  */
-class Image extends AModule
+class Image extends AAuthModule
 {
     use TToString;
+    use TWhereDir;
 
     protected IMime $mime;
     protected ArrayPath $arrPath;
     protected ExternalLink $extLink;
-    protected InnerLinks $innerLink;
+    protected UserDir $userDir;
     protected Images $sources;
+    /** @var string[] */
+    protected array $userPath = [];
     /** @var mixed */
     protected $constructParams = [];
 
@@ -62,16 +69,9 @@ class Image extends AModule
         Config::load(static::getClassName(static::class));
         Lang::load(static::getClassName(static::class));
         $this->constructParams = $constructParams;
+        $this->userDir = new UserDir(new ChDirTranslations());
         $this->extLink = new ExternalLink(StoreRouted::getPath());
         $this->arrPath = new ArrayPath();
-        $this->innerLink = new InnerLinks(
-            StoreRouted::getPath(),
-            boolval(Config::get('Core', 'site.more_users', false)),
-            boolval(Config::get('Core', 'page.more_lang', false)),
-            array_filter(Stuff::linkToArray(Config::get('Core', 'page.image_prefix', ''))),
-            boolval(Config::get('Core', 'page.system_prefix', false)),
-            boolval(Config::get('Core', 'page.data_separator', false))
-        );
         $this->mime = (new Check\Factory())->getLibrary(null);
         $this->sources = (new images_factory(
             (new files_factory(new FilesTranslations()))->getClass($constructParams),
@@ -83,8 +83,16 @@ class Image extends AModule
 
     }
 
-    public function process(): void
+    public function allowedAccessClasses(): array
     {
+        return [IProcessClasses::CLASS_MAINTAINER, IProcessClasses::CLASS_ADMIN, IProcessClasses::CLASS_USER, ];
+    }
+
+    public function run(): void
+    {
+        $this->initWhereDir(new SessionAdapter(), $this->inputs);
+        $this->userDir->setUserPath($this->user->getDir());
+        $this->userPath = array_filter(array_values($this->userDir->process()->getFullPath()->getArray()));
     }
 
     /**
@@ -95,7 +103,7 @@ class Image extends AModule
      * @throws PathsException
      * @return Output\AOutput
      */
-    public function output(): Output\AOutput
+    public function result(): Output\AOutput
     {
         $path = StoreRouted::getPath()->getPath();
         return (StoreRouted::getPath()->isSingle())
@@ -151,7 +159,7 @@ class Image extends AModule
     protected function getContentData(array $path): array
     {
         $name = $this->arrPath->setArray($path)->getFileName();
-        $imagePath = $this->innerLink->toFullPath($path);
+        $imagePath = array_merge($this->userPath, $path);
         if ($this->sources->exists($imagePath)) {
             return [$this->toString($name, $this->sources->get($imagePath)), $imagePath];
         }
@@ -199,12 +207,11 @@ class Image extends AModule
      */
     protected function imagePath(array $path): string
     {
-        $linkPath = $this->arrPath->setArray($path)->getString();
         $hasWatermark = (bool) Config::get('Image', 'watermark', false);
         $canWatermark = (array) Config::get('Image', 'accept_watermark', []);
         return $hasWatermark && in_array(strtolower(Stuff::fileExt($this->arrPath->getFileName())), $canWatermark)
-            ? $this->extLink->linkVariant($linkPath, 'watermark', true)
-            : $this->extLink->linkVariant($linkPath, 'image', true) ;
+            ? $this->extLink->linkVariant($path, 'watermark', true)
+            : $this->extLink->linkVariant($path, 'image', true) ;
     }
 
     /**
@@ -216,7 +223,7 @@ class Image extends AModule
     protected function imageCreated(array $path): string
     {
         $dateFormat = Config::get('Image', 'date_format', 'd.m.Y\ \@\ H:i:s');
-        return strval($this->sources->created($this->innerLink->toFullPath($path), $dateFormat));
+        return strval($this->sources->created(array_merge($this->userPath, $path), $dateFormat));
     }
 
     /**
@@ -227,6 +234,6 @@ class Image extends AModule
      */
     protected function descriptionFile(array $path): string
     {
-        return strval($this->sources->getDescription($this->innerLink->toFullPath($path)));
+        return $this->sources->getDescription(array_merge($this->userPath, $path));
     }
 }

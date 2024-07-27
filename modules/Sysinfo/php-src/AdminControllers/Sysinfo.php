@@ -16,6 +16,8 @@ use KWCMS\modules\Core\Libs\AAuthModule;
  */
 class Sysinfo extends AAuthModule implements IHasTitle
 {
+    protected $content = '';
+
     public function __construct(...$constructParams)
     {
     }
@@ -27,15 +29,16 @@ class Sysinfo extends AAuthModule implements IHasTitle
 
     final public function run(): void
     {
+        ob_start();
+        phpinfo();
+        $content = ob_get_clean();
+        $this->content = $this->insideStyles($content) . $this->insideBody($content);
     }
 
     public function result(): Output\AOutput
     {
         $out = new Output\Html();
-        ob_start();
-        phpinfo();
-        $content = ob_get_clean();
-        return $out->setContent($this->insideStyles($content) . $this->insideBody($content));
+        return $out->setContent($this->content);
     }
 
     protected function insideBody(string $content): string

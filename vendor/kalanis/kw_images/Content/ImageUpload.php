@@ -27,13 +27,17 @@ class ImageUpload
     protected ISizes $config;
     protected Images $images;
     protected Configs\ProcessorConfig $procConfig;
+    protected ImageOrientate $orientate;
+    protected ImageSize $libSizes;
 
     public function __construct(
         Graphics $graphics,
         Sources\Image $libImage,
         ISizes $config,
         Images $images,
-        Configs\ProcessorConfig $procConfig
+        Configs\ProcessorConfig $procConfig,
+        ImageOrientate $orientate,
+        ImageSize $libSizes
     )
     {
         $this->graphics = $graphics;
@@ -41,6 +45,8 @@ class ImageUpload
         $this->config = $config;
         $this->images = $images;
         $this->procConfig = $procConfig;
+        $this->orientate = $orientate;
+        $this->libSizes = $libSizes;
     }
 
     /**
@@ -67,26 +73,37 @@ class ImageUpload
      * @param string[] $wantedPath where we want to store the file
      * @param string $tempPath where the file is accessible after upload
      * @param string $description
+     * @param bool $orientate
      * @throws FilesException
      * @throws ImagesException
      * @throws MimeException
      * @throws PathsException
      * @return bool
      */
-    public function process(array $wantedPath, string $tempPath = '', string $description = ''): bool
+    public function process(array $wantedPath, string $tempPath = '', string $description = '', bool $orientate = false): bool
     {
         $fullPath = array_values($wantedPath);
         // check file
         $this->graphics->setSizes($this->config)->check($tempPath, $fullPath);
 
-        // resize if set
-        if ($this->procConfig->canLimitSize() && !empty($this->config->getMaxInWidth()) && !empty($this->config->getMaxInHeight())) {
-            $this->graphics->setSizes($this->config)->resize($tempPath, $fullPath);
-        }
-
         // store image
         $uploaded = strval(@file_get_contents($tempPath));
         $this->imageSource->set($fullPath, $uploaded);
+        @unlink($tempPath);
+
+        // orientate if set
+        if ($orientate) {
+            try {
+                $this->orientate->process($fullPath);
+            } catch (ImagesException $ex) {
+                // this failure will be skipped
+            }
+        }
+
+        // resize if set
+        if ($this->procConfig->canLimitSize() && !empty($this->config->getMaxInWidth()) && !empty($this->config->getMaxInHeight())) {
+            $this->libSizes->process($fullPath, $fullPath);
+        }
 
         // thumbs
         $this->images->removeThumb($fullPath);

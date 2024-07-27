@@ -30,13 +30,14 @@ interface IProcessFiles
      * @param IFileEntry $file File which came from the client
      * @param string $targetName Which name has been used for file
      * @param string $description Description of image, empty will remove existing
+     * @param bool $orientate try to rotate image into its real position
      * @throws FilesException
      * @throws ImagesException
      * @throws MimeException
      * @throws PathsException
      * @return bool
      */
-    public function uploadFile(IFileEntry $file, string $targetName, string $description): bool;
+    public function uploadFile(IFileEntry $file, string $targetName, string $description, bool $orientate): bool;
 
     /**
      * @param string $path

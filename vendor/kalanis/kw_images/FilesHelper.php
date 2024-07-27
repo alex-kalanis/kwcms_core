@@ -10,6 +10,7 @@ use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IFLTranslations;
 use kalanis\kw_images\Content\BasicOperations;
 use kalanis\kw_images\Content\Dirs;
+use kalanis\kw_images\Content\ImageOrientate;
 use kalanis\kw_images\Content\Images;
 use kalanis\kw_images\Content\ImageUpload;
 use kalanis\kw_images\Interfaces\IIMTranslations;
@@ -124,10 +125,11 @@ class FilesHelper
         $libProcess = $compositeFactory->getClass($filesParams);
         $graphics = new Graphics(new Graphics\Processor(new Graphics\Format\Factory(), $langIm), new CustomList(), $langIm);
         $image = new Sources\Image($libProcess, $fileConf, $langIm);
+        $imgConfig = (new Configs\ImageConfig())->setData($params);
         return new ImageUpload(  // process uploaded images
             $graphics,
             $image,
-            (new Configs\ImageConfig())->setData($params),
+            $imgConfig,
             new Images(
                 new Content\ImageSize(
                     $graphics,
@@ -139,7 +141,18 @@ class FilesHelper
                 new Sources\Thumb($libProcess, $fileConf, $langIm),
                 new Sources\Desc($libProcess, $fileConf, $langIm)
             ),
-            (new Configs\ProcessorConfig())->setData($params)
+            (new Configs\ProcessorConfig())->setData($params),
+            new ImageOrientate(
+                $graphics,
+                $imgConfig,
+                $image
+            ),
+            new Content\ImageSize(
+                $graphics,
+                $imgConfig,
+                $image,
+                $langIm
+            ),
         );
     }
 }

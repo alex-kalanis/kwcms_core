@@ -15,11 +15,11 @@ use kalanis\kw_paths\PathsException;
 
 
 /**
- * Class ImageSize
- * Process image from source
+ * Class ImageOrientate
+ * Orientate image against the data in its exif
  * @package kalanis\kw_images\Content
  */
-class ImageSize
+class ImageOrientate
 {
     use TLang;
 
@@ -37,17 +37,17 @@ class ImageSize
 
     /**
      * @param string[] $sourcePath
-     * @param string[] $targetPath
+     * @param string[]|null $targetPath
      * @throws FilesException
      * @throws ImagesException
      * @throws MimeException
      * @throws PathsException
      * @return bool
      */
-    public function process(array $sourcePath, array $targetPath): bool
+    public function process(array $sourcePath, ?array $targetPath = null): bool
     {
         $sourceFull = array_values($sourcePath);
-        $targetFull = array_values($targetPath);
+        $targetFull = $targetPath ? array_values($targetPath) : $sourceFull;
 
         $tempPath = strval(tempnam(sys_get_temp_dir(), $this->config->getTempPrefix()));
 
@@ -65,9 +65,9 @@ class ImageSize
         }
         // @codeCoverageIgnoreEnd
 
-        // now process image locally
         try {
-            $this->libGraphics->setSizes($this->config)->resize($tempPath, $sourceFull, $targetFull);
+            // now process image locally
+            $this->libGraphics->orientate($tempPath, $sourceFull, $targetFull);
         } catch (ImagesException $ex) {
             // clear when fails
             @unlink($tempPath);

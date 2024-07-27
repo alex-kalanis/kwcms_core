@@ -30,6 +30,7 @@ use kalanis\kw_tree\DataSources\Files;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_user_paths\InnerLinks;
+use kalanis\kw_user_paths\UserInnerLinks;
 use KWCMS\modules\Core\Libs\AModule;
 use KWCMS\modules\Core\Libs\ExternalLink;
 use KWCMS\modules\Core\Libs\FilesTranslations;
@@ -56,7 +57,7 @@ class Dirlist extends AModule
     protected $pager = null;
     protected ArrayPath $arrPath;
     protected CompositeAdapter $files;
-    protected InnerLinks $innerLink;
+    protected UserInnerLinks $innerLink;
     protected Files $treeList;
     /** @var string[] */
     protected array $path = [];
@@ -90,13 +91,13 @@ class Dirlist extends AModule
             new ImagesTranslations()
         ))->getImages($constructParams);
         $this->arrPath = new ArrayPath();
-        $this->innerLink = new InnerLinks(
-            StoreRouted::getPath(),
-            boolval(Config::get('Core', 'site.more_users', false)),
-            false,
-            [],
-            boolval(Config::get('Core', 'page.system_prefix', false)),
-            boolval(Config::get('Core', 'page.data_separator', false))
+        $this->innerLink = new UserInnerLinks(
+            strval(
+                Config::get('Core', 'page.default_user', isset($constructParams['default_user'])
+                    ? $constructParams['default_user']
+                    : '/user/'
+                )
+            )
         );
         $this->treeList = new Files($this->files);
     }
@@ -318,7 +319,7 @@ class Dirlist extends AModule
      */
     protected function getDetails(array $path, string $renderStyle): string
     {
-        $detailContent = $this->libImages->getDescription($path);
+        $detailContent = $this->libImages->getDescription($this->innerLink->toFullPath($path));
         if (empty($detailContent)) {
             return '';
         }

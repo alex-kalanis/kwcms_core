@@ -106,7 +106,8 @@ class Upload extends AAuthModule implements IHasTitle
                 $this->processed = $libAction->uploadFile(
                     $file,
                     $usedName,
-                    strval($this->fileForm->getControl('description')->getValue())
+                    strval($this->fileForm->getControl('description')->getValue()),
+                    boolval(intval(strval($this->fileForm->getControl('rotate')->getValue()))),
                 );
             }
         } catch (ImagesException | FormsException | FilesException | PathsException | MimeException $ex) {

@@ -101,7 +101,8 @@ class Short extends AModule
                     $messages[] = $tmpl->reset()->setData(
                         intval($orm->date),
                         strval($orm->title),
-                        strval($orm->content)
+                        strval($orm->content),
+                        $this->getFromParam('format', Config::get('Short', 'date', 'Y-m-d')),
                     )->render();
                 }
             } catch (MapperException $ex) {

@@ -3,6 +3,7 @@
 namespace kalanis\kw_images;
 
 
+use kalanis\kw_images\Interfaces\IExifConstants;
 use kalanis\kw_images\Interfaces\IIMTranslations;
 use kalanis\kw_images\Interfaces\ISizes;
 use kalanis\kw_images\Traits\TSizes;
@@ -85,6 +86,41 @@ class Graphics
         $this->libGraphics->resample($sizes['width'], $sizes['height']);
         $this->libGraphics->save($this->getType($realTargetName), $tempPath);
         return true;
+    }
+
+    /**
+     * @param string $tempPath path to temp file which will be loaded and saved
+     * @param string[] $realSourceName real file name for extension detection of source image
+     * @param string[]|null $realTargetName real file name for extension detection of target image
+     * @throws ImagesException
+     * @throws MimeException
+     * @return bool
+     * @link https://stackoverflow.com/questions/7489742/php-read-exif-data-and-adjust-orientation
+     */
+    public function orientate(string $tempPath, array $realSourceName, ?array $realTargetName = null): bool
+    {
+        $exif = @exif_read_data($tempPath);
+        if (false === $exif) {
+            throw new ImagesException($this->getImLang()->imImageCannotOrientate());
+        }
+        if (!empty($exif['Orientation']) && in_array($exif['Orientation'], [
+                IExifConstants::EXIF_ORIENTATION_NORMAL,
+                IExifConstants::EXIF_ORIENTATION_MIRROR_SIMPLE,
+                IExifConstants::EXIF_ORIENTATION_UPSIDE_DOWN,
+                IExifConstants::EXIF_ORIENTATION_MIRROR_UPSIDE_DOWN,
+                IExifConstants::EXIF_ORIENTATION_ON_LEFT,
+                IExifConstants::EXIF_ORIENTATION_MIRROR_ON_LEFT,
+                IExifConstants::EXIF_ORIENTATION_ON_RIGHT,
+                IExifConstants::EXIF_ORIENTATION_MIRROR_ON_RIGHT,
+            ])) {
+            $realTargetName = is_null($realTargetName) ? $realSourceName : $realTargetName;
+            $this->libGraphics->load($this->getType($realSourceName), $tempPath);
+            $this->libGraphics->orientate($exif['Orientation']);
+            $this->libGraphics->save($this->getType($realTargetName), $tempPath);
+            return true;
+        }
+
+        return false;
     }
 
     /**

@@ -28,6 +28,8 @@ class UploadTemplate extends ATemplate
         $this->addInput('{UPLOAD_INPUT}');
         $this->addInput('{DESC_LABEL}');
         $this->addInput('{DESC_INPUT}');
+        $this->addInput('{ROTATE_LABEL}');
+        $this->addInput('{ROTATE_INPUT}');
         $this->addInput('{INPUT_SUBMIT}');
         $this->addInput('{INPUT_RESET}');
     }
@@ -44,6 +46,8 @@ class UploadTemplate extends ATemplate
         $this->updateItem('{UPLOAD_INPUT}', $form->getControl('uploadedFile')->renderInput());
         $this->updateItem('{DESC_LABEL}', $form->getControl('description')->renderLabel());
         $this->updateItem('{DESC_INPUT}', $form->getControl('description')->renderInput());
+        $this->updateItem('{ROTATE_LABEL}', $form->getControl('rotate')->renderLabel());
+        $this->updateItem('{ROTATE_INPUT}', $form->getControl('rotate')->renderInput());
         $this->updateItem('{INPUT_SUBMIT}', $form->getControl('saveFile')->renderInput());
         $this->updateItem('{INPUT_RESET}', $form->getControl('resetFile')->renderInput());
         $this->updateItem('{FORM_END}', $form->renderEnd());

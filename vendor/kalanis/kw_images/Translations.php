@@ -25,6 +25,15 @@ class Translations implements IIMTranslations
      * @return string
      * @codeCoverageIgnore
      */
+    public function imRotateLibNotPresent(): string
+    {
+        return 'Libraries for rotation is not present!';
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
     public function imImageMagicLibNotPresent(): string
     {
         return 'ImageMagic not installed or too old!';
@@ -89,6 +98,15 @@ class Translations implements IIMTranslations
     public function imImageCannotResample(): string
     {
         return 'Image cannot be resampled!';
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
+    public function imImageCannotOrientate(): string
+    {
+        return 'Image cannot be orientated!';
     }
 
     /**
