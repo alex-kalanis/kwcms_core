@@ -12,13 +12,11 @@ use KWCMS\modules\Krep\Libs;
  */
 class BlockResult
 {
-    protected Libs\Shared\Links $links;
-    protected Libs\Config $config;
-
-    public function __construct(Libs\Shared\Links $links, Libs\Config $config)
+    public function __construct(
+        protected readonly Libs\Shared\Links $links,
+        protected readonly Libs\Config $config,
+    )
     {
-        $this->links = $links;
-        $this->config = $config;
     }
 
     public function render(Libs\Interfaces\IContent $content, Libs\Shared\PageData $pageData): string

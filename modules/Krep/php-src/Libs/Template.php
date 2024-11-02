@@ -61,18 +61,19 @@ class Template extends \kalanis\kw_templates\ATemplate
 //        "" => '',
     ];
 
-    public function __construct(string $contentKey)
+    public function __construct(
+        protected readonly string $contentKey,
+    )
     {
         static::$tpls["discus_thema"] = '<p>{NAME} &nbsp;<a href="{LINK}" name="d_{NUM}" id="d_{NUM}" title="{READ}"> &gt;&gt; </a>  &nbsp; <a href="{LINK}#dwn" title="{DOWN}">&nbsp;v&nbsp;</a>&nbsp;<small> &nbsp; ({DATE})</small> {ADD}</p><hr>' . "\r\n";
         static::$tpls["discus_thema_spec"] = '<h4>{NAME}</h4><hr>' . "\r\n";
 
-        $this->currentOne = $contentKey;
         parent::__construct();
     }
 
     protected function loadTemplate(): string
     {
-        return isset(static::$tpls[$this->currentOne]) ? static::$tpls[$this->currentOne] : $this->currentOne ;
+        return static::$tpls[$this->contentKey] ?? $this->contentKey ;
     }
 
     protected function fillInputs(): void

@@ -14,14 +14,12 @@ use KWCMS\modules\Core\Libs\AModule;
  */
 abstract class ADisposition extends AModule
 {
-    /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected array $constructParams = [];
     protected Libs\Template $defaultTemplate;
-    protected Libs\Config $config;
 
-    public function __construct(Libs\Config $config)
+    public function __construct(
+        protected readonly Libs\Config $config,
+    )
     {
-        $this->config = $config;
         $this->defaultTemplate = new Libs\Template('head');
     }
 

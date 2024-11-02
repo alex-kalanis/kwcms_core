@@ -10,11 +10,10 @@ use KWCMS\modules\Krep\Libs;
 
 class RenderTopics implements ITargets, Libs\Interfaces\IContent
 {
-    protected Libs\Config $config;
-
-    public function __construct(Libs\Config $config)
+    public function __construct(
+        protected readonly Libs\Config $config,
+    )
     {
-        $this->config = $config;
     }
 
     public function getContent(Libs\Shared\PageData $pageData): string

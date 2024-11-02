@@ -60,7 +60,7 @@ $di->initDeepStoredClass(\kalanis\kw_input\Filtered\Variables::class);
 
 // translations
 if (!function_exists('__')) {
-    function __($key){
+    function __(string $key): string {
         return \KWCMS\modules\Krep\Libs\Translations::tr($key);
     }
 }

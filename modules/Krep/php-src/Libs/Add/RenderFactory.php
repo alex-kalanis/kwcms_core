@@ -12,13 +12,11 @@ use KWCMS\modules\Krep\Libs\Interfaces\IContent;
  */
 class RenderFactory
 {
-    protected RenderSent $sent;
-    protected RenderForm $form;
-
-    public function __construct(RenderSent $sent, RenderForm $form)
+    public function __construct(
+        protected readonly RenderSent $sent,
+        protected readonly RenderForm $form,
+    )
     {
-        $this->sent = $sent;
-        $this->form = $form;
     }
 
     public function whichContent(?PostForm $form): IContent

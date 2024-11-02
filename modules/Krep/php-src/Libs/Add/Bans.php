@@ -19,16 +19,17 @@ class Bans
     protected kw\Basic $browser;
     protected kw\IP4 $ip4;
     protected kw\IP6 $ip6;
-    protected Libs\Logs\CompositeLogger $logger;
 
     /**
      * @param Libs\Logs\CompositeLogger $logger
      * @param string $bans_path
      * @throws BanException
      */
-    public function __construct(Libs\Logs\CompositeLogger $logger, string $bans_path)
+    public function __construct(
+        protected readonly Libs\Logs\CompositeLogger $logger,
+        readonly string $bans_path,
+    )
     {
-        $this->logger = $logger;
         $this->name = new kw\Basic(new File($bans_path . 'bannm.txt'));
         $this->browser = new kw\Basic(new File($bans_path . 'banbw.txt'));
         $this->ip4 = new kw\IP4(new File($bans_path . 'ban4.txt'));

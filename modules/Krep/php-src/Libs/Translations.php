@@ -55,7 +55,7 @@ class Translations
         "" => '',
     ];
 
-    public static function tr($key)
+    public static function tr(string $key): string
     {
         return isset(static::$lang[$key]) ? static::$lang[$key] : $key ;
     }

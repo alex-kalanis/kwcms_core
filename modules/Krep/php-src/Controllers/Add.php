@@ -15,39 +15,21 @@ use KWCMS\modules\Krep\Libs;
  */
 class Add extends ADisposition
 {
-    /** @var Libs\Add\PostForm */
     protected ?Libs\Add\PostForm $form = null;
-    protected Libs\Add\ServerData $serverData;
-    protected Libs\Add\ProcessPage $processPage;
-    protected Libs\Add\ProcessForm $processForm;
-    protected Libs\Shared\PageData $pageData;
     protected ?Libs\ModuleException $error = null;
-    protected Libs\Add\BlockResult $blockResult;
-    protected Libs\Add\ErrorResult $errorResult;
-    protected Libs\Add\RenderFactory $renderFactory;
-    protected Libs\Logs\CompositeLogger $logger;
 
     public function __construct(
         Libs\Config $config,
-        Libs\Add\ServerData $serverData,
-        Libs\Add\ProcessPage $processPage,
-        Libs\Add\ProcessForm $processForm,
-        Libs\Shared\PageData $pageData,
-        Libs\Add\BlockResult $blockResult,
-        Libs\Add\ErrorResult $errorResult,
-        Libs\Add\RenderFactory $renderFactory,
-        Libs\Logs\CompositeLogger $logger
+        protected readonly Libs\Add\ServerData $serverData,
+        protected readonly Libs\Add\ProcessPage $processPage,
+        protected readonly Libs\Add\ProcessForm $processForm,
+        protected Libs\Shared\PageData $pageData,
+        protected readonly Libs\Add\BlockResult $blockResult,
+        protected readonly Libs\Add\ErrorResult $errorResult,
+        protected readonly Libs\Add\RenderFactory $renderFactory,
+        protected readonly Libs\Logs\CompositeLogger $logger,
     ) {
         parent::__construct($config);
-
-        $this->processPage = $processPage;
-        $this->processForm = $processForm;
-        $this->pageData = $pageData;
-        $this->blockResult = $blockResult;
-        $this->errorResult = $errorResult;
-        $this->renderFactory = $renderFactory;
-        $this->serverData = $serverData;
-        $this->logger = $logger;
     }
 
     public function process(): void

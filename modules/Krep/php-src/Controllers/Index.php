@@ -26,7 +26,7 @@ class Index extends ADisposition
         $indexInfo->change('{HINT}', __("hint"));
         $r = "";
         $domain = $this->config->remote_domain;
-        foreach ($this->config->menulinks as $name => $address) {
+        foreach ($this->config->menuLinks as $name => $address) {
             $li = clone $linksInfo;
             $li->change('{ADDR}', 'discus.php?addr=' . urlencode($domain . $address));
             $li->change('{NAME}', $name);

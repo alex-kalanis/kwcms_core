@@ -6,6 +6,7 @@ namespace KWCMS\modules\Krep\Controllers;
 use kalanis\kw_modules\Output;
 use KWCMS\modules\Krep\Libs\Config;
 use KWCMS\modules\Krep\Libs\ModuleException;
+use KWCMS\modules\Krep\Libs\Shared\Query;
 
 
 /**
@@ -22,16 +23,18 @@ use KWCMS\modules\Krep\Libs\ModuleException;
  */
 class Bans extends ADisposition
 {
-    protected string $bansPath = '';
     protected string $banIp = 'https://www.k-report.net/pomocnaslozka/bnip.txt';
     protected string $banWord = 'https://www.k-report.net/pomocnaslozka/bnwd.txt';
     /** @var array<mixed> */
     protected array $data = [];
 
-    public function __construct(Config $config, string $bans_path)
+    public function __construct(
+        Config $config,
+        protected readonly string $bans_path,
+        protected readonly Query $query,
+    )
     {
         parent::__construct($config);
-        $this->bansPath = $bans_path;
     }
 
     public function process(): void
@@ -69,14 +72,14 @@ class Bans extends ADisposition
      */
     protected function updateFromRemote(string $address, string $file): bool
     {
-        $remoteData = $this->remoteRequest($address, $this->contextData());
-        if (preg_match('/(.*?)<h[12345]>(.*)/s', $remoteData)) {
+        $remoteData = $this->query->postToServer($address, $this->contextData());
+        if (preg_match('/(.*?)<h[12345]>(.*)/s', $remoteData->data)) {
             throw new ModuleException('Not Acceptable', 406);
         }
-        $currentFile = $this->bansPath . $file;
-        $backupFile = $this->bansPath . $file . '.backup';
-        $newFile = $this->bansPath . $file . '.new';
-        if (false === @file_put_contents($newFile, $remoteData)) {
+        $currentFile = $this->bans_path . $file;
+        $backupFile = $this->bans_path . $file . '.backup';
+        $newFile = $this->bans_path . $file . '.new';
+        if (false === @file_put_contents($newFile, $remoteData->data)) {
             throw new ModuleException('Cannot save', 400);
         }
         if (is_file($currentFile)) {
@@ -90,21 +93,6 @@ class Bans extends ADisposition
         }
         chmod($currentFile, 0666);
         return true;
-    }
-
-    /**
-     * @param string $address
-     * @param array<mixed> $contextData
-     * @throws ModuleException
-     * @return string
-     */
-    protected function remoteRequest(string $address, array $contextData): string
-    {
-        $content = @file_get_contents($address, false, stream_context_create($contextData));
-        if (false === $content) {
-            throw new ModuleException('Gone', 410);
-        }
-        return strval($content);
     }
 
     protected function contextData(): array

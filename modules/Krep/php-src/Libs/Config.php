@@ -18,15 +18,15 @@ class Config
     /** @var array<string, string> */
     protected static array $conf = [
         'path' => '/',
-        'site_name' => 'K-REPORT MOBILE 3.1',
+        'site_name' => 'K-REPORT MOBILE 3.2',
         'site_link' => 'krep.kalanys.com',
         'remote_domain' => 'www.k-report.net',
         'encoding' => 'utf-8',
-        'sign' => '\-2{Posláno z mobilu. 3.1}',
+        'sign' => '\-2{Posláno z mobilu. 3.2}',
     ];
 
     /** @var array<string, string> */
-    public array $menulinks = [
+    public array $menuLinks = [
         "Železnice" => "/discus/messages/28/28.html",
         "Tramvaje a metro" => "/discus/messages/48/48.html",
         "Autobusy a trolejbusy" => "/discus/messages/2484/2484.html",

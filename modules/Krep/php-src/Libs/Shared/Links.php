@@ -12,11 +12,10 @@ use KWCMS\modules\Krep\Libs;
  */
 class Links
 {
-    protected Libs\Config $config;
-
-    public function __construct(Libs\Config $config)
+    public function __construct(
+        protected readonly Libs\Config $config,
+    )
     {
-        $this->config = $config;
     }
 
     public function get(Libs\Shared\PageData $pageData, bool $alwaysShowThema = false): string

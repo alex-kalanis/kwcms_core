@@ -18,23 +18,20 @@ use kalanis\kw_modules\Output;
  */
 class Module
 {
-    protected IFiltered $inputs;
-    protected Access\Factory $modulesFactory;
-    /** @param array<string, string|int|float|bool|object> $constructParams  */
-    protected array $constructParams = [];
     /** @var Interfaces\IModule */
     protected ?Interfaces\IModule $module = null;
 
     /**
      * @param IFiltered $inputs
      * @param Access\Factory $modulesFactory
-     * @param mixed $params
+     * @param array<string, string|int|float|bool|object> $params
      */
-    public function __construct(IFiltered $inputs, Access\Factory $modulesFactory, $params)
+    public function __construct(
+        protected readonly IFiltered $inputs,
+        protected readonly Access\Factory $modulesFactory,
+        protected readonly array $params = [],
+    )
     {
-        $this->inputs = $inputs;
-        $this->modulesFactory = $modulesFactory;
-        $this->constructParams = $params;
     }
 
     /**
@@ -46,8 +43,8 @@ class Module
     {
         $limitedPath = ['Krep', $this->currentPath($defaultModule)];
         $this->module = $this->modulesFactory
-            ->getLoader($this->constructParams)
-            ->load($limitedPath, $this->constructParams);
+            ->getLoader($this->params)
+            ->load($limitedPath, $this->params);
         if (!$this->module) {
             throw new ModuleException(sprintf('Controller for wanted default module *%s* not found', strval(reset($defaultModule))));
         }

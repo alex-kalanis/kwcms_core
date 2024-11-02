@@ -13,20 +13,19 @@ use KWCMS\modules\Krep\Libs;
  */
 abstract class ALogs
 {
-    protected string $logsPath = '';
-
     // datum_citelne|datum_ux|ip|clanek|jmeno|poslana_ip|prohlizec|bere...
     protected string $format = "{DATE}|{TIMESTAMP}|{IP}|{TOPIC}|{NAME}|posted_ip|{BROWSER}|{ACCEPT}\r\n";
 
-    public function __construct(string $logs_path)
+    public function __construct(
+        protected readonly string $logs_path,
+    )
     {
-        $this->logsPath = $logs_path;
     }
 
     public function write(string $line): bool
     {
         return boolval(file_put_contents(
-            $this->logsPath . $this->fileName(),
+            $this->logs_path . $this->fileName(),
             $line,
             FILE_APPEND
         ));

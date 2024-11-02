@@ -16,24 +16,13 @@ use KWCMS\modules\Krep\Libs;
  */
 class ProcessForm
 {
-    protected Libs\Config $config;
-    protected Libs\Shared\Query $query;
-    protected PostForm $form;
-    protected Libs\Add\Bans $bans;
-    protected Libs\Logs\CompositeLogger $logger;
-
     public function __construct(
-        Libs\Config $config,
-        Libs\Shared\Query $query,
-        PostForm $form,
-        Libs\Add\Bans $bans,
-        Libs\Logs\CompositeLogger $logger
+        protected readonly Libs\Config $config,
+        protected readonly Libs\Shared\Query $query,
+        protected PostForm $form,
+        protected readonly Libs\Add\Bans $bans,
+        protected readonly Libs\Logs\CompositeLogger $logger,
     ) {
-        $this->config = $config;
-        $this->query = $query;
-        $this->form = $form;
-        $this->bans = $bans;
-        $this->logger = $logger;
     }
 
     /**
@@ -43,7 +32,7 @@ class ProcessForm
      * @throws BanException
      * @throws FormsException
      * @throws Libs\ModuleException
-     * @return PostForm|null null if sent, form if need to fill
+     * @return PostForm|null null when sent, instance when need to fill
      */
     public function processForm(IFiltered $filtered, Libs\Shared\PageData $pageData, ServerData $serverData): ?PostForm
     {
@@ -57,7 +46,7 @@ class ProcessForm
                 strval($this->form->getValue('username'))
             );
 
-            $headersData = $this->query->postToServer(
+            $response = $this->query->postToServer(
                 'https://www.k-report.net/cgi-bin/discus/board-post.pl',
                 $this->query->contextDataForPost(
                     $pageData,
@@ -70,7 +59,7 @@ class ProcessForm
                 )
             );
 
-            $code = $this->parseResponseCode($headersData);
+            $code = $this->parseResponseCode($response);
             if (!in_array($code, [200, 302])) {
                 throw new Libs\ModuleException('Error during post', $code);
             }
@@ -116,18 +105,11 @@ class ProcessForm
     }
 
     /**
-     * @param array<mixed> $headersArray
+     * @param Libs\Shared\ResponseData $response
      * @return int
      */
-    protected function parseResponseCode(array $headersArray): int
+    protected function parseResponseCode(Libs\Shared\ResponseData $response): int
     {
-        $responseCode = 406; // default
-        foreach ($headersArray as $key => $line) {
-            if (is_numeric($key)) {
-                $responseCode = intval(substr($line, 9, 3));
-                break;
-            }
-        }
-        return $responseCode;
+        return (!empty($response->headers['response_code'])) ? intval($response->headers['response_code']) : 406;
     }
 }

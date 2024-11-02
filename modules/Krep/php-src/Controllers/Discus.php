@@ -14,50 +14,17 @@ use KWCMS\modules\Krep\Libs;
  */
 class Discus extends ADisposition
 {
-    protected Libs\Discus\ProcessPage $processor;
-    protected Libs\Shared\PageData $pageData;
     protected ?Libs\ModuleException $error = null;
-    protected Libs\Discus\BlockResult $blockResult;
-    protected Libs\Discus\ErrorResult $errorResult;
-    protected Libs\Discus\RenderFactory $renderFactory;
-
-//    /**
-//     * @param mixed ...$constructParams
-//     */
-//    public function __construct(...$constructParams)
-//    {
-//        parent::__construct(...$constructParams);
-//
-//        $this->processor = new Libs\Discus\ProcessPage(
-//            new Libs\Shared\Query($this->config),
-//            new Libs\Discus\Moved(),
-//            new Libs\Shared\Parser($this->config)
-//        );
-//        $this->pageData = new Libs\Shared\PageData();
-//        $this->blockResult = new Libs\Discus\BlockResult(new Libs\Shared\Links($this->config), $this->config);
-//        $this->errorResult = new Libs\Discus\ErrorResult(new Libs\Shared\Links($this->config));
-//        $this->renderFactory = new Libs\Discus\RenderFactory(
-//            new Libs\Discus\RenderSinglePost($this->config),
-//            new Libs\Discus\RenderTopics($this->config),
-//            new Libs\Discus\RenderThemas($this->config)
-//        );
-//    }
 
     public function __construct(
         Libs\Config $config,
-        Libs\Discus\ProcessPage $processor,
-        Libs\Shared\PageData $pageData,
-        Libs\Discus\BlockResult $blockResult,
-        Libs\Discus\ErrorResult $errorResult,
-        Libs\Discus\RenderFactory $renderFactory
+        protected readonly Libs\Discus\ProcessPage $processor,
+        protected Libs\Shared\PageData $pageData,
+        protected readonly Libs\Discus\BlockResult $blockResult,
+        protected readonly Libs\Discus\ErrorResult $errorResult,
+        protected readonly Libs\Discus\RenderFactory $renderFactory,
     ) {
         parent::__construct($config);
-
-        $this->processor = $processor;
-        $this->pageData = $pageData;
-        $this->blockResult = $blockResult;
-        $this->errorResult = $errorResult;
-        $this->renderFactory = $renderFactory;
     }
 
     public function process(): void

@@ -14,15 +14,12 @@ use KWCMS\modules\Krep\Libs\Shared\PageData;
  */
 class RenderFactory
 {
-    protected RenderSinglePost $post;
-    protected RenderTopics $topics;
-    protected RenderThemas $themas;
-
-    public function __construct(RenderSinglePost $post, RenderTopics $topics, RenderThemas $themas)
+    public function __construct(
+        protected readonly RenderSinglePost $post,
+        protected readonly RenderTopics $topics,
+        protected readonly RenderThemas $themas,
+    )
     {
-        $this->post = $post;
-        $this->topics = $topics;
-        $this->themas = $themas;
     }
 
     public function whichContent(PageData $pageData): IContent

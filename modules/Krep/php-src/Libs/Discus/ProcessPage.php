@@ -12,15 +12,12 @@ use KWCMS\modules\Krep\Libs;
  */
 class ProcessPage
 {
-    protected Libs\Shared\Query $query;
-    protected Moved $moved;
-    protected Libs\Shared\Parser $parser;
-
-    public function __construct(Libs\Shared\Query $query, Moved $moved, Libs\Shared\Parser $parser)
+    public function __construct(
+        protected readonly Libs\Shared\Query $query,
+        protected readonly Moved $moved,
+        protected readonly Libs\Shared\Parser $parser,
+    )
     {
-        $this->query = $query;
-        $this->moved = $moved;
-        $this->parser = $parser;
     }
 
     /**
@@ -36,24 +33,24 @@ class ProcessPage
     {
         $remoteData = $this->query->getContent($addr);
 
-        $len = strlen($remoteData);
+        $len = strlen($remoteData->data);
         if ($len < 1) {
             throw new Libs\ModuleException('No Content', 204);
         } elseif ($len < 60) { // bacha na redirect!
             throw new Libs\ModuleException('Partial Content', 206);
         }
 
-        if (strpos($remoteData, 'Litujeme') && strpos($remoteData, 'se v diskusi ani archivech od roku')) {
+        if (strpos($remoteData->data, 'Litujeme') && strpos($remoteData->data, 'se v diskusi ani archivech od roku')) {
             throw new Libs\ModuleException('No Content found', 204);
         }
 
-        if (strpos($remoteData, 'Moved')) {
-            return $this->moved->process($remoteData, $host, $script);
+        if (strpos($remoteData->data, 'Moved')) {
+            return $this->moved->process($remoteData->data, $host, $script);
         }
 
-        if (strpos($remoteData, "<head>")) {
+        if (strpos($remoteData->data, "<head>")) {
             return $this->parser->process(
-                $remoteData,
+                $remoteData->data,
                 !$archived,
                 (!empty($postNumber)) ? intval($postNumber): null
             );

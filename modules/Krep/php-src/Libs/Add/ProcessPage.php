@@ -12,15 +12,10 @@ use KWCMS\modules\Krep\Libs;
  */
 class ProcessPage
 {
-    protected Libs\Shared\Query $query;
-    protected Libs\Shared\Parser $parser;
-
     public function __construct(
-        Libs\Shared\Query $query,
-        Libs\Shared\Parser $parser
+        protected readonly Libs\Shared\Query $query,
+        protected readonly Libs\Shared\Parser $parser,
     ) {
-        $this->query = $query;
-        $this->parser = $parser;
     }
 
     /**
@@ -30,19 +25,22 @@ class ProcessPage
      */
     public function pageData(string $addr): Libs\Shared\PageData
     {
-        $remoteData = $this->query->getContent($addr);
+        $response = $this->query->getContent($addr);
 
-        $len = strlen($remoteData);
+        $len = strlen($response->data);
         if ($len < 1) {
             throw new Libs\ModuleException('No Content', 204);
-        } elseif ($len < 60) { // bacha na redirect!
+        } elseif (
+            ($len < 60)
+            || (!empty($response->headers['response_code'])) && in_array($response->headers['response_code'], [301, 302, 307])
+        ) { // bacha na redirect!
             throw new Libs\ModuleException('Partial Content', 206);
         }
 
-        if (strpos($remoteData, "<head>")) {
-            return $this->parser->process($remoteData, true, null);
+        if (strpos($response->data, "<head>")) {
+            return $this->parser->process($response->data, true, null);
         }
 
-        throw new Libs\ModuleException('No Content for display', 204);
+        throw new Libs\ModuleException('No Content to display', 204);
     }
 }

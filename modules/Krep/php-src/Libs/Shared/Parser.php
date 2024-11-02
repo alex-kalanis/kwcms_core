@@ -16,19 +16,15 @@ use KWCMS\modules\Krep\Libs\Config;
  */
 class Parser implements ITargets
 {
-    protected Config $config;
-    protected PageData $libPage;
-    protected TopicList $libTopic;
-    protected PostList $libPost;
-    /** @var PageData */
     protected ?PageData $pageData = null;
 
-    public function __construct(Config $config, PageData $libPage, TopicList $libTopic, PostList $libPost)
+    public function __construct(
+        protected readonly Config $config,
+        protected readonly PageData $libPage,
+        protected readonly TopicList $libTopic,
+        protected readonly PostList $libPost,
+    )
     {
-        $this->config = $config;
-        $this->libPage = $libPage;
-        $this->libTopic = $libTopic;
-        $this->libPost = $libPost;
     }
 
     public function process(string $response, bool $canPost, ?int $currentPost): PageData
