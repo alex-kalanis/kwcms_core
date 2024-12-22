@@ -24,7 +24,7 @@ abstract class ALogs
 
     public function write(string $line): bool
     {
-        return boolval(file_put_contents(
+        return boolval(@file_put_contents(
             $this->logs_path . $this->fileName(),
             $line,
             FILE_APPEND

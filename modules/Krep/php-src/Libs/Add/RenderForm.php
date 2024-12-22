@@ -33,7 +33,7 @@ class RenderForm implements Libs\Interfaces\IContent
     public function getContent(Libs\Shared\PageData $pageData): string
     {
         if (empty($this->form)) {
-            throw new Libs\ModuleException('Form not set!');
+            throw new Libs\ModuleException(__('no_form_data'));
         }
 
         $addFormTemplate = new Libs\Template("add_reply");

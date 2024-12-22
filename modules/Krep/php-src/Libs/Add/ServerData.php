@@ -20,7 +20,7 @@ class ServerData
     /** @var IEntry[] */
     protected array $in = [];
 
-    public function setInputs(IFiltered $filtered)
+    public function setInputs(IFiltered $filtered): void
     {
         $this->in = $filtered->getInArray(null, [IEntry::SOURCE_SERVER]);
     }
@@ -120,7 +120,7 @@ class ServerData
     protected function getIn(): array
     {
         if (empty($this->in)) {
-            throw new ModuleException('No inputs set!');
+            throw new ModuleException(__('no_server_data'));
         }
         return $this->in;
     }

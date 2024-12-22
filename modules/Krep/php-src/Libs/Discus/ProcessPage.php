@@ -22,6 +22,7 @@ class ProcessPage
 
     /**
      * @param string $addr
+     * @param string $scheme
      * @param string $host
      * @param string $script
      * @param bool $archived
@@ -29,23 +30,23 @@ class ProcessPage
      * @throws Libs\ModuleException
      * @return Libs\Shared\PageData
      */
-    public function process(string $addr, string $host, string $script, bool $archived, string $postNumber): Libs\Shared\PageData
+    public function process(string $addr, string $scheme, string $host, string $script, bool $archived, string $postNumber): Libs\Shared\PageData
     {
         $remoteData = $this->query->getContent($addr);
 
         $len = strlen($remoteData->data);
         if ($len < 1) {
-            throw new Libs\ModuleException('No Content', 204);
+            throw new Libs\ModuleException(__('no_connect'), 204);
         } elseif ($len < 60) { // bacha na redirect!
             throw new Libs\ModuleException('Partial Content', 206);
         }
 
         if (strpos($remoteData->data, 'Litujeme') && strpos($remoteData->data, 'se v diskusi ani archivech od roku')) {
-            throw new Libs\ModuleException('No Content found', 204);
+            throw new Libs\ModuleException(__('no_content'), 404);
         }
 
         if (strpos($remoteData->data, 'Moved')) {
-            return $this->moved->process($remoteData->data, $host, $script);
+            return $this->moved->process($remoteData->data, $scheme, $host, $script);
         }
 
         if (strpos($remoteData->data, "<head>")) {

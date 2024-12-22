@@ -12,11 +12,11 @@ use KWCMS\modules\Krep\Libs\Shared\PageData;
  */
 class Moved
 {
-    public function process(string $remoteData, string $host, string $script): PageData
+    public function process(string $remoteData, string $scheme, string $host, string $script): PageData
     {
         $addr = $this->getAddr($remoteData);
         header("HTTP/1.1 302 Moved Permanently");
-        header("Location: http://" . $host . $script . '?addr=' . $addr);
+        header("Location: " . $scheme . "://" . $host . $script . '?addr=' . $addr);
         $data = new PageData();
         $data->die = true;
         return $data;
@@ -27,7 +27,7 @@ class Moved
         $w = explode("\r\n", $head);
         $c = true;
         $l = '';
-        foreach ($w as $i => $v) {
+        foreach ($w as $v) {
             if ($c) {
                 $d = explode(":", $v, 2);
                 if (strpos(" " . $d[0], 'Location')) {

@@ -38,8 +38,12 @@ class Bans
 
     /**
      * @param Libs\Shared\PageData $pageData
+     * @param ServerData $serverData
+     * @param string $userName
      * @throws Libs\ModuleException
      * @throws BanException
+     * @throws Libs\ModuleException
+     * @return void
      */
     public function checkBans(Libs\Shared\PageData $pageData, ServerData $serverData, string $userName): void
     {
@@ -55,7 +59,7 @@ class Bans
                 $pageData,
                 $userName
             );
-            throw new Libs\ModuleException('User banned', 403);
+            throw new Libs\ModuleException(__('on_banlist'), 403);
         }
     }
 

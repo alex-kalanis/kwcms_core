@@ -29,7 +29,7 @@ class ProcessPage
 
         $len = strlen($response->data);
         if ($len < 1) {
-            throw new Libs\ModuleException('No Content', 204);
+            throw new Libs\ModuleException(__('no_connect'), 204);
         } elseif (
             ($len < 60)
             || (!empty($response->headers['response_code'])) && in_array($response->headers['response_code'], [301, 302, 307])

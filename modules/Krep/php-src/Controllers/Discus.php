@@ -21,7 +21,7 @@ class Discus extends ADisposition
         protected readonly Libs\Discus\ProcessPage $processor,
         protected Libs\Shared\PageData $pageData,
         protected readonly Libs\Discus\BlockResult $blockResult,
-        protected readonly Libs\Discus\ErrorResult $errorResult,
+        protected readonly Libs\Shared\ErrorResult $errorResult,
         protected readonly Libs\Discus\RenderFactory $renderFactory,
     ) {
         parent::__construct($config);
@@ -32,6 +32,7 @@ class Discus extends ADisposition
         try {
             $this->pageData = $this->processor->process(
                 strval($this->getFromInput('addr', '')),
+                strval($this->getFromInput('REQUEST_SCHEME', 'http', [IEntry::SOURCE_SERVER])),
                 strval($this->getFromInput('HTTP_HOST', '', [IEntry::SOURCE_SERVER])),
                 strval($this->getFromInput('SCRIPT_NAME', '', [IEntry::SOURCE_SERVER])),
                 boolval(intval(strval($this->getFromInput('arch', 0)))),

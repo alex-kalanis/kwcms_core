@@ -18,11 +18,11 @@ class Config
     /** @var array<string, string> */
     protected static array $conf = [
         'path' => '/',
-        'site_name' => 'K-REPORT MOBILE 3.2',
+        'site_name' => 'K-REPORT MOBILE 3.3',
         'site_link' => 'krep.kalanys.com',
         'remote_domain' => 'www.k-report.net',
         'encoding' => 'utf-8',
-        'sign' => '\-2{Posláno z mobilu. 3.2}',
+        'sign' => '\-2{Posláno z mobilu. 3.3}',
     ];
 
     /** @var array<string, string> */
@@ -40,7 +40,7 @@ class Config
 
     public function __construct()
     {
-        $this->__set('path', realpath(__DIR__ . '/../../../') . '/');
+        $this->__set('path', realpath(dirname(__DIR__, 4)) . DIRECTORY_SEPARATOR);
     }
 
     public function __set($key, $value)

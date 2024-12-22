@@ -84,7 +84,8 @@ class Query
         string $pass,
         string $mail,
         string $url
-    ) {
+    ): array
+    {
         $content = [
             'action' => '',
             'HTTP_REFERER' => sprintf('%s/%s', $pageData->getDiscusNumber(), $pageData->getTopicNumber()),
@@ -182,7 +183,7 @@ class Query
     private function parseHeaders(array $headers): array
     {
         $head = [];
-        foreach ($headers as $k => $v) {
+        foreach ($headers as $v) {
             $t = explode(':', $v, 2);
             if (isset($t[1])) {
                 $head[trim($t[0])] = trim($t[1]);

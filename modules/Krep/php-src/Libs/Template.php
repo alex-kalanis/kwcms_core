@@ -12,8 +12,6 @@ namespace KWCMS\modules\Krep\Libs;
  */
 class Template extends \kalanis\kw_templates\ATemplate
 {
-    protected string $currentOne = '';
-
     /** @var array<string, string> */
     protected static array $tpls = [
         "default" => '{NOTHING}',
@@ -56,7 +54,7 @@ class Template extends \kalanis\kw_templates\ATemplate
         "" => '',
         "continue" => '<p><a href="{LINK_DISCUS}">{BACK_TO_DISCUS}</a> <a href="{LINK_THEMES}">{BACK_TO_THEMES}</a> <a href="{LINK_BEGIN}">{BACK_TO_BEGIN}</a></p>',
         "sent" => '<h3>{HIGH}</h3><p>{DESC}<br> {CONTINUE}</p>',
-        "nosent" => '<h3>{PROBLEM}</h3><p> {ERRNUM} ({ERRSTR}) <br /> {NOT_SENT}<br />{CONTINUE}</p>',
+        "nosent" => '<h3>{PROBLEM}</h3><p> <i>{ERRNUM}</i> : {ERRSTR} <br /> {MADE_BY}<br /> {NOT_SENT}<br />{CONTINUE}</p>',
         "ban" => '<h3>{PROBLEM}</h3><p>{CONTINUE}</p><br />',
 //        "" => '',
     ];

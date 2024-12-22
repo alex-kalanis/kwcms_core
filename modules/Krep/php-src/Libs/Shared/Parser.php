@@ -54,8 +54,10 @@ class Parser implements ITargets
         if (preg_match('#<form[^>]*?>(.*)?</form>#si', $body, $form)) {
             $body = preg_replace('#<form[^>]*?>.*?</form>#si', '', $body); // remove form
             $this->processForm($form[1]);
+        } else {
+            $this->pageData->showForm = static::FORM_SEND_NOBODY;
         }
-        if (preg_match('#charset=([^"]*)"#si', $body, $codePage)) {
+        if (preg_match('#charset=([^"]*)"#i', $body, $codePage)) {
             $this->pageData->encodingRemote = $codePage[1];
         }
         /*    $body = preg_replace('#<head[^>]*?>.*?</head>#si', '', $body); // remove whole head*/
@@ -71,7 +73,7 @@ class Parser implements ITargets
 
     protected function processForm(string $formMatch): void
     {
-        if (preg_match('#class="jenreg"#si', $formMatch)) {
+        if (preg_match('#class="jenreg"#i', $formMatch)) {
             $this->pageData->showForm = static::FORM_SEND_REGISTERED;
         }
     }
@@ -189,7 +191,7 @@ class Parser implements ITargets
             $name = $this->getLargerBlock($topics, '(<a href=")(.*?)(a>)');
             $name = $this->getLargerBlock($name, '(">)(.*?)(</)');
             $time = $this->getLargerBlock($topics, '(.html?)(.*?)(">');
-            if ((false !== strpos($name, '<div>')) || (false !== strpos($name, '<em>'))) { // je to hlavicka
+            if ((str_contains($name, '<div>')) || (str_contains($name, '<em>'))) { // je to hlavicka
                 preg_match('#name="[^"]+"><\/a>\s([^<]+)\s<#i', $topics, $matches);
                 $name = $matches[1];
                 $asHeader = true;

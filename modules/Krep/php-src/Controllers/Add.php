@@ -25,7 +25,7 @@ class Add extends ADisposition
         protected readonly Libs\Add\ProcessForm $processForm,
         protected Libs\Shared\PageData $pageData,
         protected readonly Libs\Add\BlockResult $blockResult,
-        protected readonly Libs\Add\ErrorResult $errorResult,
+        protected readonly Libs\Shared\ErrorResult $errorResult,
         protected readonly Libs\Add\RenderFactory $renderFactory,
         protected readonly Libs\Logs\CompositeLogger $logger,
     ) {
@@ -43,13 +43,19 @@ class Add extends ADisposition
             $this->form = $this->processForm->processForm($this->inputs, $this->pageData, $this->serverData);
 
         } catch (Libs\ModuleException | BanException | FormsException $ex) {
-            $this->logger->logError(
-                $this->serverData,
-                $this->pageData,
-                strval($this->form->username->getValue()),
-                $ex
-            );
-            $this->error = $ex;
+            try {
+                $this->logger->logError(
+                    $this->serverData,
+                    $this->pageData,
+                    strval($this->form?->username?->getValue()),
+                    $ex
+                );
+
+                $this->error = $ex;
+            } catch (Libs\ModuleException $e) {
+                // when it fails also for logs...
+                $this->error = new Libs\ModuleException($e->getMessage(), $e->getCode(), $ex);
+            }
         }
     }
 
@@ -60,7 +66,7 @@ class Add extends ADisposition
         }
 
         if ($this->error) {
-            return $this->errorResult->getContent($this->pageData, $this->error);
+            return $this->errorResult->getContent($this->pageData, $this->error, true);
         }
 
         return $this->blockResult->render($this->renderFactory->whichContent($this->form), $this->pageData);

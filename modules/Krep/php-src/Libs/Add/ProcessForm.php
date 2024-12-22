@@ -39,6 +39,10 @@ class ProcessForm
         $this->form->compose();
         $this->form->setInputs(new InputVarsAdapter($filtered));
 
+        if (!$pageData->canPost() || Libs\Shared\PageData::FORM_SEND_NOBODY == $pageData->getShowForm()) {
+            throw new Libs\ModuleException(__('only_to_open_page'), 403);
+        }
+
         if ($this->form->process()) {
             $this->bans->checkBans(
                 $pageData,
@@ -61,7 +65,7 @@ class ProcessForm
 
             $code = $this->parseResponseCode($response);
             if (!in_array($code, [200, 302])) {
-                throw new Libs\ModuleException('Error during post', $code);
+                throw new Libs\ModuleException(__('no_target'), $code);
             }
 
             $this->logger->logPass($serverData, $pageData, strval($this->form->getValue('username')));
@@ -97,7 +101,7 @@ class ProcessForm
             "jidlo", "ok", "ko", "kladivo", "bomba", "cunik", "zadnice",
             "fotic", "vypravci", "masinka", "tramvaj", "auto",
             "andel", "smrt", "satan", "kecal", "blesk", "pozor", "new"];
-        foreach ($sm as $i => $nm) {
+        foreach ($sm as $nm) {
             $message = str_replace('::' . $nm . '::', '\clipart{' . $nm . '}', $message);
             $message = str_replace('[' . $nm . ']', '\clipart{' . $nm . '}', $message);
         }
