@@ -186,12 +186,11 @@ class Processor
      */
     public function uploadFile(IFileEntry $file, string $targetName): bool
     {
-        $stream = fopen($file->getTempName(), 'rb+');
         return $this->files->saveFile(array_merge(
             $this->userPath,
             $this->workPath,
             [Stuff::filename($targetName)]
-        ), $stream);
+        ), file_get_contents($file->getTempName()));
     }
 
     /**

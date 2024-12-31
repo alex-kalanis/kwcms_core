@@ -31,7 +31,7 @@ use KWCMS\modules\Core\Libs\AModule;
  * Class AdminRouter
  * @package KWCMS\modules\AdminRouter\AdminControllers
  * Admin's router
- * What to sent back on http level - router to decide which controller will be loaded
+ * What to send back on http level - router to decide which controller will be loaded
  * - parse path from input to get correct controller which will make the page content
  * - then put result from that controller into the page layout
  * @link http://kwcms_core.lemp.test

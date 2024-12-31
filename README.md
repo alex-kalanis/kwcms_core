@@ -5,7 +5,7 @@
 ------------
 
 Basic idea about KWCMS is framework with its own modular system. It contains basic tree in
-which the application should exists on their own and without dependency on databases.
+which the application should exist on their own and without dependency on databases.
 
 A many things has been ported from KWCMS1 and used here and many are brand new as necessity
 calls.
