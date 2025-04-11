@@ -20,6 +20,8 @@ use kalanis\kw_tree_controls\Controls\FileRadio;
  */
 class FileForm extends AForm
 {
+    use TMultiRule;
+
     public function composeUploadFile(): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
@@ -36,6 +38,7 @@ class FileForm extends AForm
 
         $checkboxes = new FileRadio();
         $checkboxes->set('sourceName', '', Lang::get('files.file.select'), $sourceTree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.file.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -49,10 +52,12 @@ class FileForm extends AForm
 
         $checkboxes = new FileCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.file.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
+        $radios->addRule(IRules::IS_NOT_EMPTY, Lang::get('files.dir.rule_not_empty'));
         $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -66,10 +71,12 @@ class FileForm extends AForm
 
         $checkboxes = new FileCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $sourceTree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.file.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
+        $radios->addRule(IRules::IS_NOT_EMPTY, Lang::get('files.dir.rule_not_empty'));
         $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -83,6 +90,7 @@ class FileForm extends AForm
 
         $radios = new FileRadio();
         $radios->set('sourceName', '', Lang::get('files.file.select'), $tree, false);
+        $radios->addRule(IRules::IS_NOT_EMPTY, Lang::get('files.file.rule_not_empty'));
         $this->addControlDefaultKey($radios);
 
         $this->addText('targetPath', Lang::get('files.file.newName'));
@@ -97,6 +105,7 @@ class FileForm extends AForm
 
         $checkboxes = new FileCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.file.selectMany'), $tree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.file.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new Controls\RadioSet();

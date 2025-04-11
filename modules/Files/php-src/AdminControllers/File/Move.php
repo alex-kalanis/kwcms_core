@@ -65,6 +65,8 @@ class Move extends AFile
                 $this->fileForm->composeMoveFile($sourceTree, $targetTree); // again, changes in tree
                 $this->fileForm->setInputs(new InputVarsAdapter($this->inputs));
                 $this->fileForm->setSentValues();
+            } elseif ($errors = $this->fileForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

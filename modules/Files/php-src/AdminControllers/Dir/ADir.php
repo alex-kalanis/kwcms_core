@@ -22,6 +22,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\TFormErrors;
 use KWCMS\modules\Files\Lib;
 
 
@@ -35,6 +36,7 @@ abstract class ADir extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
     use TFilesDirs;
+    use TFormErrors;
 
     protected UserDir $userDir;
     protected ITree $tree;

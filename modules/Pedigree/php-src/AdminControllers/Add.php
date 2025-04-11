@@ -101,7 +101,7 @@ class Add extends APedigree
             return $out->setContent($this->error->getCode(), $this->error->getMessage());
         } elseif (!$this->form->isValid()) {
             $out = new Output\JsonError();
-            return $out->setContent(1, $this->form->renderErrorsArray());
+            return $out->setContentStructure(1, $this->form->renderErrorsArray());
         } else {
             $out = new Output\Json();
             return $out->setContent(['Success']);

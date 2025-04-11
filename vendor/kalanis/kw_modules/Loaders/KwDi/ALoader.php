@@ -50,9 +50,9 @@ abstract class ALoader implements ILoader
     }
 
     /**
-     * @param string[] $module
+     * @param string[] $path
      * @throws ModuleException
      * @return string
      */
-    abstract protected function getClassName(array $module): string;
+    abstract protected function getClassName(array $path): string;
 }

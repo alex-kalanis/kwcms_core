@@ -196,9 +196,10 @@ class DependencyInjection
 
             // default value set
             try {
-                $defaultParam = $parameter->getDefaultValue();
-                $initParams[] = $defaultParam;
-                continue;
+                if ($parameter->isDefaultValueAvailable()) {
+                    $initParams[] = $parameter->getDefaultValue();
+                    continue;
+                }
             } catch (ReflectionException $ex) {
                 // set nothing, will fail
                 // next...

@@ -23,6 +23,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\TFormErrors;
 use KWCMS\modules\Files\Lib;
 
 
@@ -35,6 +36,7 @@ class Upload extends AAuthModule implements IHasTitle
 {
     use Lib\TModuleTemplate;
     use TWhereDir;
+    use TFormErrors;
 
     /** @var Lib\FileForm|null */
     protected $fileForm = null;
@@ -88,6 +90,8 @@ class Upload extends AAuthModule implements IHasTitle
                 $this->processor->setUserPath($userPath)->setWorkPath($workPath);
                 $usedName = $this->processor->findFreeName($file->getValue());
                 $this->processed = $this->processor->uploadFile($file, $usedName);
+            } elseif ($errors = $this->fileForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

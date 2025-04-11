@@ -56,6 +56,8 @@ class Delete extends ADir
                 }
                 $this->tree->process();
                 $this->dirForm->composeDeleteDir($this->tree->getRoot()); // again, changes in tree
+            } elseif ($errors = $this->dirForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

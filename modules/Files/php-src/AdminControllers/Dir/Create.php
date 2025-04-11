@@ -39,6 +39,8 @@ class Create extends ADir
                 $item = $this->dirForm->getControl('targetPath')->getValue();
                 $this->processed[$item] = $this->processor->setUserPath($userPath)->setWorkPath($workPath)->createDir($item);
                 $this->dirForm->composeCreateDir(); // again, changes in tree
+            } elseif ($errors = $this->dirForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

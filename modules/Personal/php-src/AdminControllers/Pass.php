@@ -29,9 +29,7 @@ class Pass extends AAuthModule implements IHasTitle
 {
     use Templates\TModuleTemplate;
 
-    /** @var Interfaces\IAuth */
     protected ?Interfaces\IAuth $libAuth = null;
-    /** @var Interfaces\IProcessAccounts */
     protected ?Interfaces\IProcessAccounts $libAccount = null;
     protected Lib\FormPass $form;
     protected bool $isProcessed = false;
@@ -109,7 +107,7 @@ class Pass extends AAuthModule implements IHasTitle
             return $out->setContent($this->error->getCode(), $this->error->getMessage());
         } elseif (!$this->form->isValid()) {
             $out = new Output\JsonError();
-            return $out->setContent(1, $this->form->renderErrorsArray());
+            return $out->setContentStructure(1, $this->form->renderErrorsArray());
         } else {
             $out = new Output\Json();
             return $out->setContent(['Success']);

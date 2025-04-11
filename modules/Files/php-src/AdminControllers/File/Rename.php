@@ -49,6 +49,8 @@ class Rename extends AFile
                 );
                 $this->tree->process();
                 $this->fileForm->composeRenameFile($this->tree->getRoot()); // again, changes in tree
+            } elseif ($errors = $this->fileForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

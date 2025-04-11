@@ -66,6 +66,7 @@ $lang = [
         'files.file.not_cloned' => 'The file %s hasn\'t been cloned.',
         'files.file.not_renamed' => 'The file %s hasn\'t been renamed.',
         'files.file.not_deleted' => 'The file %s hasn\'t been deleted.',
+        'files.file.rule_not_empty' => 'There must be any file selected.',
         'files.dir.created' => 'The directory %s has been copied.',
         'files.dir.copied' => 'The directory %s has been copied.',
         'files.dir.moved' => 'The directory %s has been moved.',
@@ -78,6 +79,7 @@ $lang = [
         'files.dir.not_cloned' => 'The directory %s hasn\'t been cloned.',
         'files.dir.not_renamed' => 'The directory %s hasn\'t been renamed.',
         'files.dir.not_deleted' => 'The directory %s hasn\'t been deleted.',
+        'files.dir.rule_not_empty' => 'There must be any directory selected.',
 
         'files.dashboard.short' => 'Actions',
         'files.file.upload.short' => 'Upload',
@@ -152,6 +154,7 @@ $lang = [
         'files.file.not_cloned' => 'Le fichier %s n\'est pas clon&#x00E9;.',
         'files.file.not_renamed' => 'Le fichier %s n\'est pas renomm&#x00E9;.',
         'files.file.not_deleted' => 'Le fichier %s n\'est pas supprim&#x00E9;.',
+        'files.file.rule_not_empty' => 'There must be any file selected.',
         'files.dir.created' => 'La composante %s est cr&#x00E9;e.',
         'files.dir.copied' => 'La composante %s est copi&#x00E9;.',
         'files.dir.moved' => 'La composante %s est d&#x00E9;plac&#x00E9;.',
@@ -164,6 +167,7 @@ $lang = [
         'files.dir.not_cloned' => 'La composante %s n\'est pas clon&#x00E9;.',
         'files.dir.not_renamed' => 'La composante %s n\'est pas renomm&#x00E9;.',
         'files.dir.not_deleted' => 'La composante %s n\'est pas supprim&#x00E9;.',
+        'files.dir.rule_not_empty' => 'There must be any directory selected.',
 
         'files.dashboard.short' => 'Actions',
         'files.file.upload.short' => 'T&#x00E9;l&#x00E9;charger',
@@ -262,6 +266,7 @@ $lang = [
         'files.file.cloned' => 'Soubor %s zklonov&#x00E1;n.',
         'files.file.renamed' => 'Soubor %s p&#x0159;ejmenov&#x00E1;n.',
         'files.file.deleted' => 'Soubor %s smaz&#x00E1;n.',
+        'files.file.rule_not_empty' => 'Mus&#x00ED; b&#x00FD;t vybr&#x00E1;n aspo&#x0148; n&#x011B;jak&#x00FD; soubor.',
         'files.file.not_copied' => 'Soubor %s nebyl zkop&#x00ED;rov&#x00E1;n.',
         'files.file.not_moved' => 'Soubor %s nebyl p&#x0159;esunut.',
         'files.file.not_cloned' => 'Soubor %s nebyl zklonov&#x00E1;n.',
@@ -280,6 +285,7 @@ $lang = [
         'files.dir.not_cloned' => 'Slo&#x017E;ka %s nebyla zklonov&#x00E1;na.',
         'files.dir.not_renamed' => 'Slo&#x017E;ka %s nebyla p&#x0159;ejmenov&#x00E1;na.',
         'files.dir.not_deleted' => 'Slo&#x017E;ka %s nebyla smaz&#x00E1;na.',
+        'files.dir.rule_not_empty' => 'Mus&#x00ED; b&#x00FD;t vybr&#x00E1;na aspo&#x0148; n&#x011B;jak&#x00E1; slo&#x017E;ka.',
 
         // menu naming
         'files.dashboard.short' => 'Operace',

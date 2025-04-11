@@ -65,6 +65,8 @@ class Move extends ADir
                 $this->dirForm->composeMoveDir($sourceTree, $targetTree); // again, changes in tree
                 $this->dirForm->setInputs(new InputVarsAdapter($this->inputs));
                 $this->dirForm->setSentValues();
+            } elseif ($errors = $this->dirForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException $ex) {
             $this->error = $ex;

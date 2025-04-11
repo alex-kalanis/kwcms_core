@@ -6,6 +6,7 @@ namespace KWCMS\modules\Files\Lib;
 use kalanis\kw_forms\Controls;
 use kalanis\kw_input\Interfaces\IEntry;
 use kalanis\kw_langs\Lang;
+use kalanis\kw_rules\Interfaces\IRules;
 use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree_controls\Controls\DirCheckboxes;
 use kalanis\kw_tree_controls\Controls\DirSelect;
@@ -19,6 +20,8 @@ use kalanis\kw_tree_controls\Controls\DirRadio;
  */
 class DirForm extends AForm
 {
+    use TMultiRule;
+
     public function composeCreateDir(): self
     {
         $this->setMethod(IEntry::SOURCE_POST);
@@ -34,10 +37,12 @@ class DirForm extends AForm
 
         $checkboxes = new DirCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.dir.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
+        $radios->addRule(IRules::IS_NOT_EMPTY, Lang::get('files.dir.rule_not_empty'));
         $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -51,10 +56,12 @@ class DirForm extends AForm
 
         $checkboxes = new DirCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $sourceTree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.dir.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new DirSelect();
         $radios->set('targetPath', '', Lang::get('files.dir.selectTo'), $targetTree);
+        $radios->addRule(IRules::IS_NOT_EMPTY, Lang::get('files.dir.rule_not_empty'));
         $this->addControlDefaultKey($radios);
 
         $this->addSubmit('saveFile', Lang::get('dashboard.button_ok'));
@@ -68,6 +75,7 @@ class DirForm extends AForm
 
         $radios = new DirRadio();
         $radios->set('sourceName', '', Lang::get('files.dir.select'), $tree, false);
+        $radios->addRule(IRules::IS_NOT_EMPTY, Lang::get('files.dir.rule_not_empty'));
         $this->addControlDefaultKey($radios);
 
         $this->addText('targetPath', Lang::get('files.dir.newName'));
@@ -82,6 +90,7 @@ class DirForm extends AForm
 
         $checkboxes = new DirCheckboxes();
         $checkboxes->set('sourceName[]', '', Lang::get('files.dir.selectMany'), $tree, false);
+        $checkboxes->addRules($this->getMulti(Lang::get('files.dir.rule_not_empty')));
         $this->addControlDefaultKey($checkboxes);
 
         $radios = new Controls\RadioSet();

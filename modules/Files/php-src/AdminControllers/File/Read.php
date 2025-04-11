@@ -28,6 +28,7 @@ use kalanis\kw_user_paths\UserDir;
 use KWCMS\modules\Core\Interfaces\Modules\IHasTitle;
 use KWCMS\modules\Core\Libs\AAuthModule;
 use KWCMS\modules\Core\Libs\FilesTranslations;
+use KWCMS\modules\Core\Libs\TFormErrors;
 use KWCMS\modules\Files\Lib;
 
 
@@ -41,6 +42,7 @@ class Read extends AAuthModule implements IHasTitle
     use Lib\TModuleTemplate;
     use TWhereDir;
     use TFilesFile;
+    use TFormErrors;
 
     protected UserDir $userDir;
     protected ITree $tree;
@@ -96,6 +98,8 @@ class Read extends AAuthModule implements IHasTitle
                 $this->fileContent = $this->processor->readFile($item);
                 $this->fileMime = $this->libFileMime->getMime(array_merge($userPath, $workPath, [$item]));
                 $this->processed = true;
+            } elseif ($errors = $this->fileForm->getValidatedErrors()) {
+                $this->error = $this->parseErrors($errors);
             }
         } catch (FilesException | FormsException | PathsException | MimeException $ex) {
             $this->error = $ex;
